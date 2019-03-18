@@ -1,0 +1,10 @@
+Motorola 68k single-board computer
+
+This repository holds design files, firmware and software for my m68k 
+single-board computer, AKA the Roscom68k.
+
+You can find the project along with some logs about its development
+on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
+
+All released under the MIT licence. See LICENSE for details.
+
