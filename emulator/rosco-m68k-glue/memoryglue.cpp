@@ -9,7 +9,7 @@ extern "C" {
 #endif
 
 //static rosco::m68k::emu::Memory __mem(16777216);
-static rosco::m68k::emu::AddressDecoder __mem(262144, 1048576, NULL);
+rosco::m68k::emu::AddressDecoder __mem(262144, 1048576, NULL);
 
 /* Read from anywhere */
 unsigned int  m68k_read_memory_8(unsigned int address) {

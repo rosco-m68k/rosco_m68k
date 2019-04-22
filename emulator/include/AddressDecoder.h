@@ -20,6 +20,8 @@ namespace rosco {
                 Memory* getMemoryForAddress(std::uint32_t address);
                 std::uint32_t makeRelativeAddress(std::uint32_t address);
 
+                void reset();
+
                 std::uint32_t read32(std::uint32_t address);
                 std::uint16_t read16(std::uint32_t address);
                 std::uint8_t read8(std::uint32_t address);

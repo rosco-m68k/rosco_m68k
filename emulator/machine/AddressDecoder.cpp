@@ -61,6 +61,11 @@ namespace rosco {
                 }
             }
 
+            void AddressDecoder::reset() {
+                this->bootLineActive = true;
+                this->bootReadCount = 0;
+            }
+
             std::uint32_t AddressDecoder::read32(std::uint32_t address) {
                 Memory *mem;
 

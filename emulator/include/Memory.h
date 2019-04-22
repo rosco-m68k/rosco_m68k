@@ -5,7 +5,7 @@
 #ifndef ROSCOM68K_EMU_MEMORY_H
 #define ROSCOM68K_EMU_MEMORY_H
 
-#define MEM_TRACE
+// #define MEM_TRACE
 
 #include <cstdint>
 #include <memory>

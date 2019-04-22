@@ -106,8 +106,8 @@
 /* If ON, CPU will call the output reset callback when it encounters a reset
  * instruction.
  */
-#define M68K_EMULATE_RESET          OPT_OFF
-#define M68K_RESET_CALLBACK()       your_reset_handler_function()
+#define M68K_EMULATE_RESET          OPT_SPECIFY_HANDLER
+#define M68K_RESET_CALLBACK()       resetMachineHandler()
 
 
 /* If ON, CPU will call the set fc callback on every memory access to
@@ -165,7 +165,7 @@
 /* If ON, the enulation core will use 64-bit integers to speed up some
  * operations.
 */
-#define M68K_USE_64_BIT  OPT_OFF
+#define M68K_USE_64_BIT  OPT_ON
 
 
 /* Set to your compiler's static inline keyword to enable it, or

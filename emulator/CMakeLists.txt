@@ -20,6 +20,7 @@ add_executable(
         musashi/m68kops.c
         musashi/m68kops.h
         rosco-m68k-glue/memoryglue.cpp
+        rosco-m68k-glue/cpuglue.cpp
         machine/Memory.cpp
         machine/AddressDecoder.cpp
         include/Memory.h
