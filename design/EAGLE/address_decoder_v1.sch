@@ -5370,23 +5370,23 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="-22.86" y="102.235" size="1.778" layer="95"/>
 <attribute name="VALUE" x="-22.86" y="93.98" size="1.778" layer="96"/>
 </instance>
-<instance part="IC5" gate="D" x="58.42" y="106.68" smashed="yes">
+<instance part="IC6" gate="A" x="58.42" y="106.68" smashed="yes">
 <attribute name="NAME" x="60.96" y="109.855" size="1.778" layer="95"/>
 <attribute name="VALUE" x="60.96" y="101.6" size="1.778" layer="96"/>
 </instance>
-<instance part="IC6" gate="A" x="58.42" y="93.98" smashed="yes">
+<instance part="IC6" gate="B" x="58.42" y="93.98" smashed="yes">
 <attribute name="NAME" x="60.96" y="97.155" size="1.778" layer="95"/>
 <attribute name="VALUE" x="60.96" y="88.9" size="1.778" layer="96"/>
 </instance>
-<instance part="IC6" gate="B" x="58.42" y="81.28" smashed="yes">
+<instance part="IC6" gate="C" x="58.42" y="81.28" smashed="yes">
 <attribute name="NAME" x="60.96" y="84.455" size="1.778" layer="95"/>
 <attribute name="VALUE" x="60.96" y="76.2" size="1.778" layer="96"/>
 </instance>
-<instance part="IC6" gate="C" x="58.42" y="68.58" smashed="yes">
+<instance part="IC6" gate="D" x="58.42" y="68.58" smashed="yes">
 <attribute name="NAME" x="60.96" y="71.755" size="1.778" layer="95"/>
 <attribute name="VALUE" x="60.96" y="63.5" size="1.778" layer="96"/>
 </instance>
-<instance part="IC6" gate="D" x="25.4" y="127" smashed="yes">
+<instance part="IC5" gate="D" x="25.4" y="127" smashed="yes">
 <attribute name="NAME" x="27.94" y="130.175" size="1.778" layer="95"/>
 <attribute name="VALUE" x="27.94" y="121.92" size="1.778" layer="96"/>
 </instance>
@@ -5402,11 +5402,11 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="99.06" y="104.775" size="1.778" layer="95"/>
 <attribute name="VALUE" x="99.06" y="96.52" size="1.778" layer="96"/>
 </instance>
-<instance part="IC7" gate="B" x="119.38" y="93.98" smashed="yes">
+<instance part="IC7" gate="C" x="119.38" y="93.98" smashed="yes">
 <attribute name="NAME" x="121.92" y="97.155" size="1.778" layer="95"/>
 <attribute name="VALUE" x="121.92" y="88.9" size="1.778" layer="96"/>
 </instance>
-<instance part="IC7" gate="C" x="119.38" y="109.22" smashed="yes">
+<instance part="IC7" gate="B" x="119.38" y="109.22" smashed="yes">
 <attribute name="NAME" x="121.92" y="112.395" size="1.778" layer="95"/>
 <attribute name="VALUE" x="121.92" y="104.14" size="1.778" layer="96"/>
 </instance>
@@ -5414,7 +5414,7 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="149.86" y="104.775" size="1.778" layer="95"/>
 <attribute name="VALUE" x="149.86" y="96.52" size="1.778" layer="96"/>
 </instance>
-<instance part="IC8" gate="A" x="119.38" y="124.46" smashed="yes">
+<instance part="IC8" gate="C" x="119.38" y="124.46" smashed="yes">
 <attribute name="NAME" x="121.92" y="127.635" size="1.778" layer="95"/>
 <attribute name="VALUE" x="121.92" y="119.38" size="1.778" layer="96"/>
 </instance>
@@ -5422,7 +5422,7 @@ Source: AVX .. aphvc.pdf</description>
 <attribute name="NAME" x="121.92" y="140.335" size="1.778" layer="95"/>
 <attribute name="VALUE" x="121.92" y="132.08" size="1.778" layer="96"/>
 </instance>
-<instance part="IC8" gate="C" x="96.52" y="132.08" smashed="yes">
+<instance part="IC8" gate="A" x="96.52" y="132.08" smashed="yes">
 <attribute name="NAME" x="99.06" y="135.255" size="1.778" layer="95"/>
 <attribute name="VALUE" x="99.06" y="127" size="1.778" layer="96"/>
 </instance>
@@ -5474,10 +5474,10 @@ Source: AVX .. aphvc.pdf</description>
 <nets>
 <net name="N$1" class="0">
 <segment>
-<pinref part="IC8" gate="C" pin="O"/>
+<pinref part="IC8" gate="A" pin="O"/>
 <pinref part="IC8" gate="B" pin="I1"/>
 <wire x1="111.76" y1="132.08" x2="111.76" y2="134.62" width="0.1524" layer="91"/>
-<pinref part="IC8" gate="A" pin="I0"/>
+<pinref part="IC8" gate="C" pin="I0"/>
 <wire x1="104.14" y1="132.08" x2="111.76" y2="132.08" width="0.1524" layer="91"/>
 <wire x1="111.76" y1="132.08" x2="111.76" y2="127" width="0.1524" layer="91"/>
 <junction x="111.76" y="132.08"/>
@@ -5485,7 +5485,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$3" class="0">
 <segment>
-<pinref part="IC8" gate="A" pin="O"/>
+<pinref part="IC8" gate="C" pin="O"/>
 <pinref part="IC8" gate="D" pin="I1"/>
 <wire x1="127" y1="124.46" x2="139.7" y2="124.46" width="0.1524" layer="91"/>
 <wire x1="139.7" y1="124.46" x2="139.7" y2="129.54" width="0.1524" layer="91"/>
@@ -5493,12 +5493,12 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$4" class="0">
 <segment>
-<pinref part="IC5" gate="D" pin="O"/>
+<pinref part="IC6" gate="A" pin="O"/>
 <wire x1="66.04" y1="106.68" x2="68.58" y2="106.68" width="0.1524" layer="91"/>
 <wire x1="68.58" y1="106.68" x2="68.58" y2="139.7" width="0.1524" layer="91"/>
 <pinref part="IC8" gate="B" pin="I0"/>
 <wire x1="68.58" y1="139.7" x2="83.82" y2="139.7" width="0.1524" layer="91"/>
-<pinref part="IC8" gate="C" pin="I0"/>
+<pinref part="IC8" gate="A" pin="I0"/>
 <wire x1="83.82" y1="139.7" x2="111.76" y2="139.7" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="134.62" x2="83.82" y2="134.62" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="134.62" x2="83.82" y2="139.7" width="0.1524" layer="91"/>
@@ -5509,16 +5509,16 @@ Source: AVX .. aphvc.pdf</description>
 <segment>
 <pinref part="IC7" gate="A" pin="O"/>
 <wire x1="104.14" y1="101.6" x2="111.76" y2="101.6" width="0.1524" layer="91"/>
-<pinref part="IC7" gate="C" pin="I1"/>
+<pinref part="IC7" gate="B" pin="I1"/>
 <wire x1="111.76" y1="101.6" x2="111.76" y2="106.68" width="0.1524" layer="91"/>
-<pinref part="IC7" gate="B" pin="I0"/>
+<pinref part="IC7" gate="C" pin="I0"/>
 <wire x1="111.76" y1="101.6" x2="111.76" y2="96.52" width="0.1524" layer="91"/>
 <junction x="111.76" y="101.6"/>
 </segment>
 </net>
 <net name="N$8" class="0">
 <segment>
-<pinref part="IC7" gate="C" pin="I0"/>
+<pinref part="IC7" gate="B" pin="I0"/>
 <wire x1="111.76" y1="111.76" x2="83.82" y2="111.76" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="111.76" x2="83.82" y2="104.14" width="0.1524" layer="91"/>
 <pinref part="IC7" gate="A" pin="I0"/>
@@ -5526,7 +5526,7 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="83.82" y1="111.76" x2="71.12" y2="111.76" width="0.1524" layer="91"/>
 <junction x="83.82" y="111.76"/>
 <wire x1="71.12" y1="111.76" x2="71.12" y2="93.98" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="A" pin="O"/>
+<pinref part="IC6" gate="B" pin="O"/>
 <wire x1="71.12" y1="93.98" x2="66.04" y2="93.98" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -5537,14 +5537,14 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="111.76" y1="76.2" x2="76.2" y2="76.2" width="0.1524" layer="91"/>
 <pinref part="IC1" gate="C" pin="I1"/>
 <wire x1="111.76" y1="63.5" x2="76.2" y2="63.5" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="D" pin="O"/>
+<pinref part="IC5" gate="D" pin="O"/>
 <wire x1="33.02" y1="127" x2="76.2" y2="127" width="0.1524" layer="91"/>
 <wire x1="76.2" y1="76.2" x2="76.2" y2="96.52" width="0.1524" layer="91"/>
 <junction x="76.2" y="76.2"/>
-<pinref part="IC8" gate="C" pin="I1"/>
+<pinref part="IC8" gate="A" pin="I1"/>
 <wire x1="76.2" y1="96.52" x2="76.2" y2="127" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="129.54" x2="88.9" y2="129.54" width="0.1524" layer="91"/>
-<pinref part="IC8" gate="A" pin="I1"/>
+<pinref part="IC8" gate="C" pin="I1"/>
 <wire x1="111.76" y1="121.92" x2="83.82" y2="121.92" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="121.92" x2="83.82" y2="127" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="127" x2="83.82" y2="129.54" width="0.1524" layer="91"/>
@@ -5553,7 +5553,7 @@ Source: AVX .. aphvc.pdf</description>
 <junction x="83.82" y="127"/>
 <pinref part="IC7" gate="A" pin="I1"/>
 <wire x1="83.82" y1="99.06" x2="88.9" y2="99.06" width="0.1524" layer="91"/>
-<pinref part="IC7" gate="B" pin="I1"/>
+<pinref part="IC7" gate="C" pin="I1"/>
 <wire x1="111.76" y1="91.44" x2="83.82" y2="91.44" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="91.44" x2="83.82" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="83.82" y1="96.52" x2="83.82" y2="99.06" width="0.1524" layer="91"/>
@@ -5572,7 +5572,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$7" class="0">
 <segment>
-<pinref part="IC7" gate="C" pin="O"/>
+<pinref part="IC7" gate="B" pin="O"/>
 <wire x1="127" y1="109.22" x2="139.7" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="IC7" gate="D" pin="I0"/>
 <wire x1="139.7" y1="109.22" x2="139.7" y2="104.14" width="0.1524" layer="91"/>
@@ -5580,7 +5580,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$10" class="0">
 <segment>
-<pinref part="IC7" gate="B" pin="O"/>
+<pinref part="IC7" gate="C" pin="O"/>
 <wire x1="127" y1="93.98" x2="139.7" y2="93.98" width="0.1524" layer="91"/>
 <pinref part="IC7" gate="D" pin="I1"/>
 <wire x1="139.7" y1="93.98" x2="139.7" y2="99.06" width="0.1524" layer="91"/>
@@ -5588,14 +5588,14 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="N$11" class="0">
 <segment>
-<pinref part="IC6" gate="B" pin="O"/>
+<pinref part="IC6" gate="C" pin="O"/>
 <pinref part="IC1" gate="B" pin="I0"/>
 <wire x1="66.04" y1="81.28" x2="111.76" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$12" class="0">
 <segment>
-<pinref part="IC6" gate="C" pin="O"/>
+<pinref part="IC6" gate="D" pin="O"/>
 <pinref part="IC1" gate="C" pin="I0"/>
 <wire x1="66.04" y1="68.58" x2="111.76" y2="68.58" width="0.1524" layer="91"/>
 </segment>
@@ -5665,11 +5665,11 @@ Source: AVX .. aphvc.pdf</description>
 <pinref part="IC3" gate="A" pin="O"/>
 <wire x1="27.94" y1="73.66" x2="40.64" y2="73.66" width="0.1524" layer="91"/>
 <wire x1="40.64" y1="73.66" x2="40.64" y2="83.82" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="B" pin="I0"/>
+<pinref part="IC6" gate="C" pin="I0"/>
 <wire x1="40.64" y1="83.82" x2="50.8" y2="83.82" width="0.1524" layer="91"/>
 <wire x1="40.64" y1="73.66" x2="40.64" y2="66.04" width="0.1524" layer="91"/>
 <junction x="40.64" y="73.66"/>
-<pinref part="IC6" gate="C" pin="I1"/>
+<pinref part="IC6" gate="D" pin="I1"/>
 <wire x1="40.64" y1="66.04" x2="50.8" y2="66.04" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -5731,13 +5731,13 @@ Source: AVX .. aphvc.pdf</description>
 <wire x1="-17.78" y1="99.06" x2="7.62" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="7.62" y1="99.06" x2="40.64" y2="99.06" width="0.1524" layer="91"/>
 <wire x1="40.64" y1="99.06" x2="40.64" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="IC5" gate="D" pin="I0"/>
+<pinref part="IC6" gate="A" pin="I0"/>
 <wire x1="40.64" y1="109.22" x2="50.8" y2="109.22" width="0.1524" layer="91"/>
 <wire x1="40.64" y1="99.06" x2="40.64" y2="91.44" width="0.1524" layer="91"/>
 <junction x="40.64" y="99.06"/>
-<pinref part="IC6" gate="A" pin="I1"/>
+<pinref part="IC6" gate="B" pin="I1"/>
 <wire x1="40.64" y1="91.44" x2="50.8" y2="91.44" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="D" pin="I1"/>
+<pinref part="IC5" gate="D" pin="I1"/>
 <wire x1="17.78" y1="124.46" x2="7.62" y2="124.46" width="0.1524" layer="91"/>
 <wire x1="7.62" y1="124.46" x2="7.62" y2="99.06" width="0.1524" layer="91"/>
 <junction x="7.62" y="99.06"/>
@@ -5807,12 +5807,12 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="/UDS" class="0">
 <segment>
-<pinref part="IC5" gate="D" pin="I1"/>
+<pinref part="IC6" gate="A" pin="I1"/>
 <wire x1="50.8" y1="104.14" x2="43.18" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="104.14" x2="43.18" y2="78.74" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="78.74" x2="43.18" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="43.18" y1="38.1" x2="-88.9" y2="38.1" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="B" pin="I1"/>
+<pinref part="IC6" gate="C" pin="I1"/>
 <wire x1="43.18" y1="78.74" x2="50.8" y2="78.74" width="0.1524" layer="91"/>
 <junction x="43.18" y="78.74"/>
 <label x="-96.52" y="38.1" size="1.778" layer="95" xref="yes"/>
@@ -5820,12 +5820,12 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="/LDS" class="0">
 <segment>
-<pinref part="IC6" gate="A" pin="I0"/>
+<pinref part="IC6" gate="B" pin="I0"/>
 <wire x1="50.8" y1="96.52" x2="48.26" y2="96.52" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="96.52" x2="48.26" y2="71.12" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="71.12" x2="48.26" y2="33.02" width="0.1524" layer="91"/>
 <wire x1="48.26" y1="33.02" x2="-88.9" y2="33.02" width="0.1524" layer="91"/>
-<pinref part="IC6" gate="C" pin="I0"/>
+<pinref part="IC6" gate="D" pin="I0"/>
 <wire x1="48.26" y1="71.12" x2="50.8" y2="71.12" width="0.1524" layer="91"/>
 <junction x="48.26" y="71.12"/>
 <label x="-96.52" y="33.02" size="1.778" layer="95" xref="yes"/>
@@ -5851,7 +5851,7 @@ Source: AVX .. aphvc.pdf</description>
 </net>
 <net name="/BOOT" class="0">
 <segment>
-<pinref part="IC6" gate="D" pin="I0"/>
+<pinref part="IC5" gate="D" pin="I0"/>
 <wire x1="17.78" y1="129.54" x2="-88.9" y2="129.54" width="0.1524" layer="91"/>
 <label x="-99.06" y="129.54" size="1.778" layer="95" xref="yes"/>
 </segment>
