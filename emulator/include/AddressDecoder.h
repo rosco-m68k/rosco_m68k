@@ -15,7 +15,7 @@ namespace rosco {
         namespace emu {
             class AddressDecoder {
             public:
-                explicit AddressDecoder(std::uint32_t romsize, std::uint32_t ramsize, std::ifstream *romdata);
+                explicit AddressDecoder(std::uint32_t romsize, std::uint32_t ramsize, char const* filename);
 
                 Memory* getMemoryForAddress(std::uint32_t address);
                 std::uint32_t makeRelativeAddress(std::uint32_t address);
@@ -35,6 +35,8 @@ namespace rosco {
                 std::unique_ptr<Memory> ram;
                 bool bootLineActive;
                 uint32_t bootReadCount;
+
+                void AddressDecoder::ReadRomData(char const* filename);
             };
         }
     }

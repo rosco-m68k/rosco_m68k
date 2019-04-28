@@ -3,12 +3,13 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include "AddressDecoder.h"
 
 namespace rosco {
     namespace m68k {
         namespace emu {
-            AddressDecoder::AddressDecoder(std::uint32_t romsize, std::uint32_t ramsize, std::ifstream *romdata) {
+            AddressDecoder::AddressDecoder(std::uint32_t romsize, std::uint32_t ramsize, char const* filename) {
                 this->rom = std::unique_ptr<Memory>(new Memory(romsize));
                 this->ram = std::unique_ptr<Memory>(new Memory(ramsize));
                 this->bootLineActive = true;
@@ -18,7 +19,7 @@ namespace rosco {
                 std::cout << "Initialized with " << this->ram->size << " bytes RAM and " << this->rom->size << " bytes ROM" << std::endl;
 #endif
 
-                // TODO Read ROM data
+                ReadRomData("C:\\Users\\rosco\\devel\\retro\\rosco_m68k\\firmware\\memcount_single.bin");
             }
 
             Memory* AddressDecoder::getMemoryForAddress(std::uint32_t address) {
@@ -143,6 +144,18 @@ namespace rosco {
                     mem->write8(makeRelativeAddress(address), data);
                 } else {
                     // /BERR!
+                }
+            }
+
+            void AddressDecoder::ReadRomData(char const* filename) {
+                std::ifstream ifs(filename, std::ios::binary | std::ios::ate);
+                std::ifstream::pos_type pos = ifs.tellg();
+
+                if (pos > this->rom->size) {
+                    throw std::exception();
+                } else {
+                    ifs.seekg(0, std::ios::beg);
+                    ifs.read((char*)this->rom->store, pos);
                 }
             }
         }

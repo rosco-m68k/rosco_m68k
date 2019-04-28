@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <intrin.h> // NOTE MSVC-specific!
 #include "Memory.h"
 
 namespace rosco {
@@ -24,7 +25,7 @@ namespace rosco {
 #endif
 
                 if (address < this->size) {
-                    return *((uint32_t*)(this->store + address));
+                    return _byteswap_ulong(*((uint32_t*)(this->store + address)));
                 } else {
                     return 0xFFFFFFFF;
                 }
@@ -37,7 +38,7 @@ namespace rosco {
 #endif
 
                 if (address < this->size) {
-                    return *((uint16_t*)(this->store + address));
+                    return _byteswap_ushort(*((uint16_t*)(this->store + address)));
                 } else {
                     return 0xFFFF;
                 }
@@ -63,7 +64,7 @@ namespace rosco {
 #endif
 
                 if (address < this->size) {
-                    *((uint32_t*)(this->store + address)) = data;
+                    *((uint32_t*)(this->store + address)) = _byteswap_ulong(data);
                 }
             }
 
@@ -74,7 +75,7 @@ namespace rosco {
 #endif
 
                 if (address < this->size) {
-                    *((uint16_t*)(this->store + address)) = data;
+                    *((uint16_t*)(this->store + address)) = _byteswap_ushort(data);
                 }
             }
 
