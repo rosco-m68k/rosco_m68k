@@ -19,7 +19,7 @@ namespace rosco {
                 std::cout << "Initialized with " << this->ram->size << " bytes RAM and " << this->rom->size << " bytes ROM" << std::endl;
 #endif
 
-                ReadRomData("C:\\Users\\rosco\\devel\\retro\\rosco_m68k\\firmware\\memcount_single.bin");
+                ReadRomData(filename);
             }
 
             Memory* AddressDecoder::getMemoryForAddress(std::uint32_t address) {

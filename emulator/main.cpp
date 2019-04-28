@@ -31,7 +31,12 @@ int main(int argc, char** argv) {
 		uint32_t memWord2 = m68k_read_memory_32(0xfc0004);
 		uint32_t memWord3 = m68k_read_memory_32(0);
 
+		uint32_t biosMagic = m68k_read_memory_32(0x400);
+		uint32_t oshiCode = m68k_read_memory_32(0x404);
+
 		std::cout << "PC          : 0x" << m68k_get_reg(&ctx, M68K_REG_PC) << std::endl;
+		std::cout << "BIOS Magic  : 0x" << biosMagic << std::endl;
+		std::cout << "OSHI Code   : 0x" << oshiCode << std::endl;
 		std::cout << "mem[0]      : 0x" << memWord3 << std::endl;
 		std::cout << "mem[fc0000] : 0x" << memWord << std::endl;
 		std::cout << "mem[fc0004] : 0x" << memWord2 << std::endl;
@@ -51,7 +56,12 @@ int main(int argc, char** argv) {
 		memWord2 = m68k_read_memory_32(0xfc0004);
 		memWord3 = m68k_read_memory_32(0);
 
+		biosMagic = m68k_read_memory_32(0x400);
+		oshiCode = m68k_read_memory_32(0x404);
+
 		std::cout << "PC          : 0x" << m68k_get_reg(&ctx, M68K_REG_PC) << std::endl;
+		std::cout << "BIOS Magic  : 0x" << biosMagic << std::endl;
+		std::cout << "OSHI Code   : 0x" << oshiCode << std::endl;
 		std::cout << "mem[0]      : 0x" << memWord3 << std::endl;
 		std::cout << "mem[fc0000] : 0x" << memWord << std::endl;
 		std::cout << "mem[fc0004] : 0x" << memWord2 << std::endl;
