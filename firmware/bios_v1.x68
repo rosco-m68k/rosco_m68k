@@ -60,38 +60,40 @@ ISR_COPY_DONE:
 *				uint8_t reserved[248];
 *			} __BIOS_DATA_BLOCK;
 *   
-SETUP_BIOS_DATA_BLOCK:
-    move.l  #$B105D47A, $400
+    move.l  #$B105D47A, $400        
     move.l  #$0,        $404
+    
+* Test that we can TRAP to our TRAP_HANDLER. Should put 0xC001C0DE in the 
+* BDB's oshi_code (at address $404).    
+    trap    #$0
 
-HALT:
+* And we're done for now.
     stop    #$2700
 
 * Exception handlers    
 GENERIC_HANDLER:
-    move.l  #$2BADB105
-    bra.s   HALT
-
+    move.l  #$2BADB105, $404
+    rte
+    
 RESERVED_HANDLER:
-    move.l  #$0BADC0DE
-    bra.s   HALT
+    move.l  #$0BADC0DE, $404
+    rte
     
 UNMAPPED_USER_HANDLER:
-    move.l  #$002BAD05
-    bra.s   HALT
+    move.l  #$002BAD05, $404
+    rte
     
 INTERRUPT_HANDLER:
-    move.l  #$0BADF00D
-    bra.s   HALT
+    move.l  #$0BADF00D, $404
+    rte
 
 TRAP_HANDLER:
-    move.l  #$C001C0DE
-    bra.s   HALT
+    move.l  #$C001C0DE, $404
+    rte
     
     END    START        ; last line of source
-
-
+  
 *~Font name~Courier New~
-*~Font size~10~
+*~Font size~12~
 *~Tab type~1~
 *~Tab size~4~
