@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
 		int cycles = 0;
 		while (!ctx.stopped) {
-			cycles += m68k_execute(1000000);
+			cycles += m68k_execute(10000);
 			m68k_get_context(&ctx);
 		}
 
