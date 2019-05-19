@@ -14,8 +14,8 @@ All Hardware released under the CERN Open Hardware licence.See LICENCE.hardware.
 Currently, the design for the system is:
 
 * MC68010P10 at 8MHz, /DTACK grounded
-* 16KB IO Space (0xF80000 - 0xFEFFFF)
-* 16KB ROM (at 0xFC0000)
+* 256KB IO Space (0xF80000 - 0xFEFFFF)
+* 16KB ROM (at 0xFC0000, 256KB reserved for ROM up to 0xFFFFFF)
 * 1MB RAM (0x0 - 0xFFFFF)
 * TTL-based address decoding
 
