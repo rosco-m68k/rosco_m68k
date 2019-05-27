@@ -6,11 +6,11 @@
 *-----------------------------------------------------------
     org     $FC0000
 RESET:
-    dc.l    $FFFFF      ; Stack (top of on-board RAM)
+    dc.l    $100000     ; Stack (top of on-board RAM)
     dc.l    $FC0008     ; Initial PC (start of ROM)
     
 START:
-    move.l  #$F80000, A0    ; Top of RAM + 1 into loop counter
+    move.l  #$100000, A0    ; Top of RAM + 1 into loop counter
     move.l  0, D7           ; Use D7 for count
 
 LOOP:    
@@ -37,6 +37,7 @@ HALT:
 
     
     END    START        ; last line of source
+
 
 *~Font name~Courier New~
 *~Font size~10~
