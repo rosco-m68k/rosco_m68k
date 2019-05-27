@@ -47,6 +47,7 @@ CHECKLOOP:
 ; This is here just to have some visual feedback on the decoder LEDs that we're still alive...
 IOINIT:
     move.l  #$F80000, A0    ; Start at bottom of IO space
+    move.l  #$FC0000, A1    ; Store top of IO space in A1
 IOLOOP:
     move.l  (A0)+, D0       ; Read memory
     cmpa.l  A0, A1          ; Have we reached top of IO space?
@@ -62,6 +63,7 @@ HALT:
 
     
     END    START        ; last line of source
+
 
 
 *~Font name~Courier New~
