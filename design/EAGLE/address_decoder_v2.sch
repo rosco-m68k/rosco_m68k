@@ -7388,8 +7388,8 @@ naming: grid - package width</description>
 <part name="P+3" library="supply1" library_urn="urn:adsk.eagle:library:371" deviceset="VCC" device=""/>
 <part name="SUPPLY2" library="supply2" library_urn="urn:adsk.eagle:library:372" deviceset="GND" device=""/>
 <part name="IC11" library="74xx-eu" library_urn="urn:adsk.eagle:library:85" deviceset="74*32" device="N" package3d_urn="urn:adsk.eagle:package:16407/2" technology="LS"/>
-<part name="IC12" library="74xx-eu" library_urn="urn:adsk.eagle:library:85" deviceset="74*08" device="N" package3d_urn="urn:adsk.eagle:package:16407/2" technology="AC"/>
 <part name="C6" library="capacitor-wima" library_urn="urn:adsk.eagle:library:116" deviceset="C" device="5/3" package3d_urn="urn:adsk.eagle:package:5433/1" value="100nF"/>
+<part name="IC12" library="74xx-eu" library_urn="urn:adsk.eagle:library:85" deviceset="74*21" device="N" package3d_urn="urn:adsk.eagle:package:16407/2" technology="LS"/>
 </parts>
 <sheets>
 <sheet>
@@ -8067,27 +8067,8 @@ naming: grid - package width</description>
 <attribute name="NAME" x="195.58" y="193.675" size="1.778" layer="95"/>
 <attribute name="VALUE" x="195.58" y="185.42" size="1.778" layer="96"/>
 </instance>
-<instance part="IC12" gate="A" x="193.04" y="223.52" smashed="yes">
-<attribute name="NAME" x="195.58" y="226.695" size="1.778" layer="95"/>
-<attribute name="VALUE" x="195.58" y="218.44" size="1.778" layer="96"/>
-</instance>
-<instance part="IC12" gate="B" x="193.04" y="208.28" smashed="yes">
-<attribute name="NAME" x="195.58" y="211.455" size="1.778" layer="95"/>
-<attribute name="VALUE" x="195.58" y="203.2" size="1.778" layer="96"/>
-</instance>
-<instance part="IC12" gate="C" x="231.14" y="215.9" smashed="yes">
-<attribute name="NAME" x="233.68" y="219.075" size="1.778" layer="95"/>
-<attribute name="VALUE" x="233.68" y="210.82" size="1.778" layer="96"/>
-</instance>
-<instance part="IC12" gate="D" x="266.7" y="203.2" smashed="yes">
-<attribute name="NAME" x="269.24" y="206.375" size="1.778" layer="95"/>
-<attribute name="VALUE" x="269.24" y="198.12" size="1.778" layer="96"/>
-</instance>
 <instance part="IC11" gate="P" x="152.4" y="48.26" smashed="yes">
 <attribute name="NAME" x="151.765" y="47.625" size="1.778" layer="95"/>
-</instance>
-<instance part="IC12" gate="P" x="165.1" y="48.26" smashed="yes">
-<attribute name="NAME" x="164.465" y="47.625" size="1.778" layer="95"/>
 </instance>
 <instance part="C6" gate="G$1" x="139.7" y="50.8" smashed="yes">
 <attribute name="NAME" x="141.224" y="51.181" size="1.778" layer="95"/>
@@ -8096,6 +8077,17 @@ naming: grid - package width</description>
 <instance part="IC11" gate="B" x="292.1" y="218.44" smashed="yes">
 <attribute name="NAME" x="294.64" y="221.615" size="1.778" layer="95"/>
 <attribute name="VALUE" x="294.64" y="213.36" size="1.778" layer="96"/>
+</instance>
+<instance part="IC12" gate="A" x="200.66" y="213.36" smashed="yes">
+<attribute name="NAME" x="204.47" y="218.44" size="1.778" layer="95"/>
+<attribute name="VALUE" x="204.47" y="206.375" size="1.778" layer="96"/>
+</instance>
+<instance part="IC12" gate="B" x="266.7" y="195.58" smashed="yes">
+<attribute name="NAME" x="270.51" y="200.66" size="1.778" layer="95"/>
+<attribute name="VALUE" x="270.51" y="188.595" size="1.778" layer="96"/>
+</instance>
+<instance part="IC12" gate="P" x="165.1" y="48.26" smashed="yes">
+<attribute name="NAME" x="164.465" y="47.625" size="1.778" layer="95"/>
 </instance>
 </instances>
 <busses>
@@ -8142,9 +8134,9 @@ naming: grid - package width</description>
 <pinref part="IC11" gate="P" pin="VCC"/>
 <wire x1="152.4" y1="55.88" x2="152.4" y2="60.96" width="0.1524" layer="91"/>
 <junction x="152.4" y="60.96"/>
-<pinref part="IC12" gate="P" pin="VCC"/>
 <wire x1="165.1" y1="55.88" x2="165.1" y2="60.96" width="0.1524" layer="91"/>
 <junction x="165.1" y="60.96"/>
+<pinref part="IC12" gate="P" pin="VCC"/>
 </segment>
 </net>
 <net name="N$16" class="0">
@@ -8308,9 +8300,9 @@ naming: grid - package width</description>
 <pinref part="IC11" gate="P" pin="GND"/>
 <wire x1="152.4" y1="40.64" x2="152.4" y2="33.02" width="0.1524" layer="91"/>
 <junction x="152.4" y="33.02"/>
-<pinref part="IC12" gate="P" pin="GND"/>
 <wire x1="165.1" y1="40.64" x2="165.1" y2="33.02" width="0.1524" layer="91"/>
 <junction x="165.1" y="33.02"/>
+<pinref part="IC12" gate="P" pin="GND"/>
 </segment>
 </net>
 <net name="N$23" class="0">
@@ -8333,30 +8325,34 @@ naming: grid - package width</description>
 </net>
 <net name="/ODDROMCS" class="0">
 <segment>
+<wire x1="190.5" y1="220.98" x2="154.94" y2="220.98" width="0.1524" layer="91"/>
+<label x="132.08" y="220.98" size="1.778" layer="95" xref="yes"/>
 <pinref part="IC12" gate="A" pin="I0"/>
-<wire x1="185.42" y1="226.06" x2="154.94" y2="226.06" width="0.1524" layer="91"/>
-<label x="132.08" y="226.06" size="1.778" layer="95" xref="yes"/>
+<wire x1="193.04" y1="218.44" x2="190.5" y2="218.44" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="218.44" x2="190.5" y2="220.98" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="/EVENROMCS" class="0">
 <segment>
+<wire x1="193.04" y1="215.9" x2="154.94" y2="215.9" width="0.1524" layer="91"/>
+<label x="129.54" y="215.9" size="1.778" layer="95" xref="yes"/>
 <pinref part="IC12" gate="A" pin="I1"/>
-<wire x1="185.42" y1="220.98" x2="154.94" y2="220.98" width="0.1524" layer="91"/>
-<label x="129.54" y="220.98" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="/ODDRAMCS" class="0">
 <segment>
-<pinref part="IC12" gate="B" pin="I0"/>
-<wire x1="185.42" y1="210.82" x2="154.94" y2="210.82" width="0.1524" layer="91"/>
+<wire x1="193.04" y1="210.82" x2="154.94" y2="210.82" width="0.1524" layer="91"/>
 <label x="132.08" y="210.82" size="1.778" layer="95" xref="yes"/>
+<pinref part="IC12" gate="A" pin="I2"/>
 </segment>
 </net>
 <net name="/EVENRAMCS" class="0">
 <segment>
-<pinref part="IC12" gate="B" pin="I1"/>
-<wire x1="185.42" y1="205.74" x2="154.94" y2="205.74" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="205.74" x2="154.94" y2="205.74" width="0.1524" layer="91"/>
 <label x="129.54" y="205.74" size="1.778" layer="95" xref="yes"/>
+<pinref part="IC12" gate="A" pin="I3"/>
+<wire x1="193.04" y1="208.28" x2="190.5" y2="208.28" width="0.1524" layer="91"/>
+<wire x1="190.5" y1="208.28" x2="190.5" y2="205.74" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="/IOSEL" class="0">
@@ -8373,40 +8369,11 @@ naming: grid - package width</description>
 <label x="142.24" y="187.96" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="N$29" class="0">
-<segment>
-<pinref part="IC12" gate="A" pin="O"/>
-<wire x1="200.66" y1="223.52" x2="213.36" y2="223.52" width="0.1524" layer="91"/>
-<wire x1="213.36" y1="223.52" x2="213.36" y2="218.44" width="0.1524" layer="91"/>
-<pinref part="IC12" gate="C" pin="I0"/>
-<wire x1="213.36" y1="218.44" x2="223.52" y2="218.44" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$30" class="0">
-<segment>
-<pinref part="IC12" gate="B" pin="O"/>
-<wire x1="200.66" y1="208.28" x2="213.36" y2="208.28" width="0.1524" layer="91"/>
-<wire x1="213.36" y1="208.28" x2="213.36" y2="213.36" width="0.1524" layer="91"/>
-<pinref part="IC12" gate="C" pin="I1"/>
-<wire x1="213.36" y1="213.36" x2="223.52" y2="213.36" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$31" class="0">
-<segment>
-<pinref part="IC12" gate="C" pin="O"/>
-<wire x1="238.76" y1="215.9" x2="248.92" y2="215.9" width="0.1524" layer="91"/>
-<wire x1="248.92" y1="215.9" x2="248.92" y2="205.74" width="0.1524" layer="91"/>
-<pinref part="IC12" gate="D" pin="I0"/>
-<wire x1="248.92" y1="205.74" x2="259.08" y2="205.74" width="0.1524" layer="91"/>
-</segment>
-</net>
 <net name="N$32" class="0">
 <segment>
 <pinref part="IC11" gate="A" pin="O"/>
-<wire x1="200.66" y1="190.5" x2="248.92" y2="190.5" width="0.1524" layer="91"/>
-<wire x1="248.92" y1="190.5" x2="248.92" y2="200.66" width="0.1524" layer="91"/>
-<pinref part="IC12" gate="D" pin="I1"/>
-<wire x1="248.92" y1="200.66" x2="259.08" y2="200.66" width="0.1524" layer="91"/>
+<wire x1="200.66" y1="190.5" x2="259.08" y2="190.5" width="0.1524" layer="91"/>
+<pinref part="IC12" gate="B" pin="I3"/>
 </segment>
 </net>
 <net name="/DTACK" class="0">
@@ -8429,11 +8396,28 @@ naming: grid - package width</description>
 </net>
 <net name="N$15" class="0">
 <segment>
-<pinref part="IC12" gate="D" pin="O"/>
-<wire x1="274.32" y1="203.2" x2="279.4" y2="203.2" width="0.1524" layer="91"/>
-<wire x1="279.4" y1="203.2" x2="279.4" y2="215.9" width="0.1524" layer="91"/>
 <pinref part="IC11" gate="B" pin="I1"/>
 <wire x1="279.4" y1="215.9" x2="284.48" y2="215.9" width="0.1524" layer="91"/>
+<wire x1="279.4" y1="215.9" x2="279.4" y2="195.58" width="0.1524" layer="91"/>
+<pinref part="IC12" gate="B" pin="O"/>
+<wire x1="274.32" y1="195.58" x2="279.4" y2="195.58" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$27" class="0">
+<segment>
+<pinref part="IC12" gate="B" pin="I0"/>
+<pinref part="IC12" gate="B" pin="I1"/>
+<pinref part="IC12" gate="A" pin="O"/>
+<wire x1="208.28" y1="213.36" x2="248.92" y2="213.36" width="0.1524" layer="91"/>
+<pinref part="IC12" gate="B" pin="I2"/>
+<wire x1="248.92" y1="213.36" x2="248.92" y2="200.66" width="0.1524" layer="91"/>
+<wire x1="248.92" y1="200.66" x2="248.92" y2="198.12" width="0.1524" layer="91"/>
+<wire x1="248.92" y1="198.12" x2="248.92" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="248.92" y1="193.04" x2="259.08" y2="193.04" width="0.1524" layer="91"/>
+<wire x1="259.08" y1="198.12" x2="248.92" y2="198.12" width="0.1524" layer="91"/>
+<junction x="248.92" y="198.12"/>
+<wire x1="259.08" y1="200.66" x2="248.92" y2="200.66" width="0.1524" layer="91"/>
+<junction x="248.92" y="200.66"/>
 </segment>
 </net>
 </nets>
