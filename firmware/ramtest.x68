@@ -8,6 +8,8 @@
 *              on the decoder LEDs.
 *              Will halt the CPU on error, loop forever otherwise. 
 *-----------------------------------------------------------
+    include "equates.x68"
+    
     org     $FC0000
 RESET:
     dc.l    $100000     ; Stack (top of on-board RAM)
@@ -17,6 +19,11 @@ START:
     move.l  #$100000, A0    ; Top of RAM + 1 into loop counter
     move.l  #0, D7          ; Use D7 for value
 
+; Init MFP
+    move.b  #$01, MFP_DDR   ; Set GPIO 0 to output
+    move.b  #$00, MFP_GPDR  ; Turn GPIO 0 on initially
+    move.b  #$00, D5        ; D5 stores current value of GPDR  
+    
 FILLLOOP:
     move.l  D7, -(A0)       ; Write value
 
@@ -48,6 +55,10 @@ CHECKLOOP:
 IOINIT:
     move.l  #$F80000, A0    ; Start at bottom of IO space
     move.l  #$FC0000, A1    ; Store top of IO space in A1
+    
+    not.b   D5              ; Toggle GPIO 0...
+    move.b  D5, MFP_GPDR    ; ... of the MFP.    
+    
 IOLOOP:
     move.l  (A0)+, D0       ; Read memory
     cmpa.l  A0, A1          ; Have we reached top of IO space?
@@ -63,6 +74,7 @@ HALT:
 
     
     END    START        ; last line of source
+
 
 
 
