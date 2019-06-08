@@ -16,10 +16,29 @@ RESET:
     dc.l    $FC0008     ; Initial PC (start of ROM)
     
 START:
+; Disable interrupts - MFP is on IRQ 5 and will immediately generate them once the USART is enabled.
+; We don't have any handlers yet, so we'll just ignore them.
+    or.w    #$0700, SR
+    
+; MFP INITIALISATION
+; GPIO Setup
+    move.b  #$01, MFP_DDR   ; Set GPIO 0 to output
+    move.b  #$00, MFP_GPDR  ; Turn GPIO 0 on initially
+    move.b  #$00, D5        ; D5 stores current value of GPDR  
+    
+; Timer Setup - Timer D controls serial clock
+    move.b  #$18, MFP_TDDR  ; Timer D count is 0x18 (24) for 9600 baud
+    move.b  #$01, MFP_TCDCR ; Timer D uses /4 prescaler
+    
+; USART Setup
+;    move.b  #$08, MFP_UCR   ; Fundamental clock, 8N1
+;    move.b  #$01, MFP_TSR   ; Enable transmitter
+;    move.b  #$4F, MFP_UDR   ; Send O
+;    move.b  #$6B, MFP_UDR   ;      k via USART.
+
+MAIN:
     move.l  #$100000, A0    ; Top of RAM + 1 into loop counter
     move.l  #0, D7          ; Use D7 for value
-
-    bsr.s   MFPINIT         ; Initialise MFP
     
 FILLLOOP:
     move.l  D7, -(A0)       ; Write value
@@ -59,33 +78,15 @@ IOINIT:
 IOLOOP:
     move.l  (A0)+, D0       ; Read memory
     cmpa.l  A0, A1          ; Have we reached top of IO space?
-    beq.s   START           ; Restart program if so
+    beq.s   MAIN            ; Restart program if so
     bra.s   IOLOOP          ; Otherwise, carry on looping...
     
          
 HALT:
-    stop    #$2700
-    
-MFPINIT:
-; GPIO Setup
-    move.b  #$01, MFP_DDR   ; Set GPIO 0 to output
-    move.b  #$00, MFP_GPDR  ; Turn GPIO 0 on initially
-    move.b  #$00, D5        ; D5 stores current value of GPDR  
-    
-; Timer Setup - Timer D controls serial clock
-    move.b  #$30, MFP_TDDR  ; Timer D count is 0x30 (48) for 9600 baud
-    move.b  #$01, MFP_TCDCR ; Timer D uses /4 prescaler
-    
-; USART Setup - Fundamental clock, 8N1
-    move.b  #$08, MFP_UCR
-    move.b  #$4F, MFP_UDR   ; Send O
-    move.b  #$6B, MFP_UDR   ;      k via USART.
-    
-; MFP is configured    
-    rts
-    
+    stop    #$2700    
     
     END    START        ; last line of source
+
 
 
 

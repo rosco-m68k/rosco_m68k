@@ -14,7 +14,7 @@ ROMBASE     equ     $FC0000
 
 ; Initialisation
 INIT_SSP    equ     RAMLIMIT
-INIT_PC     equ     ROMBASE + $400
+INIT_PC     equ     ROMBASE+$400
 
 ; MFP Location
 MFPBASE     equ     IOBASE
@@ -46,6 +46,7 @@ MFP_UCR     equ     MFPBASE+$29
 MFP_RSR     equ     MFPBASE+$2B
 MFP_TSR     equ     MFPBASE+$2D
 MFP_UDR     equ     MFPBASE+$2F
+
 
 
 *~Font name~Courier New~
