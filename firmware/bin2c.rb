@@ -3,15 +3,15 @@ if ARGV.length < 1
 else
   basename = ARGV[0]
 
-  even = File.read(basename + '_0.BIN').bytes
-  odd  = File.read(basename + '_1.BIN').bytes
+  even = File.open(basename + '_0.BIN', 'rb') { |f| f.read }.bytes
+  odd  = File.open(basename + '_1.BIN', 'rb') { |f| f.read }.bytes
 
   if even.length != odd.length
-    puts "I can't handle uneven ROM length yet"
+    puts "I can't handle uneven ROM length yet (even is #{even.length}, while odd is #{odd.length})"
   else
     puts "static unsigned int len = #{even.length};"
-    puts "static unsigned char even[] = { #{File.read(basename + '_0.BIN').bytes.map { |b| "0x" + b.to_s(16) }.join(",") } };"
-    puts "static unsigned char odd[]  = { #{File.read(basename + '_1.BIN').bytes.map { |b| "0x" + b.to_s(16) }.join(",") } };"
+    puts "static unsigned char even[] = { #{even.map { |b| "0x" + b.to_s(16) }.join(",") } };"
+    puts "static unsigned char odd[]  = { #{odd.map { |b| "0x" + b.to_s(16) }.join(",") } };"
   end
 end
 
