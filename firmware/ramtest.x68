@@ -19,10 +19,7 @@ START:
     move.l  #$100000, A0    ; Top of RAM + 1 into loop counter
     move.l  #0, D7          ; Use D7 for value
 
-; Init MFP
-    move.b  #$01, MFP_DDR   ; Set GPIO 0 to output
-    move.b  #$00, MFP_GPDR  ; Turn GPIO 0 on initially
-    move.b  #$00, D5        ; D5 stores current value of GPDR  
+    bsr.s   MFPINIT         ; Initialise MFP
     
 FILLLOOP:
     move.l  D7, -(A0)       ; Write value
@@ -69,9 +66,24 @@ IOLOOP:
 HALT:
     stop    #$2700
     
-   
-
-
+MFPINIT:
+; GPIO Setup
+    move.b  #$01, MFP_DDR   ; Set GPIO 0 to output
+    move.b  #$00, MFP_GPDR  ; Turn GPIO 0 on initially
+    move.b  #$00, D5        ; D5 stores current value of GPDR  
+    
+; Timer Setup - Timer D controls serial clock
+    move.b  #$30, MFP_TDDR  ; Timer D count is 0x30 (48) for 9600 baud
+    move.b  #$01, MFP_TCDCR ; Timer D uses /4 prescaler
+    
+; USART Setup - Fundamental clock, 8N1
+    move.b  #$08, MFP_UCR
+    move.b  #$4F, MFP_UDR   ; Send O
+    move.b  #$6B, MFP_UDR   ;      k via USART.
+    
+; MFP is configured    
+    rts
+    
     
     END    START        ; last line of source
 
