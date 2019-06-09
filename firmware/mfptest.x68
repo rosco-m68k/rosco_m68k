@@ -1,5 +1,5 @@
 *-----------------------------------------------------------
-* Title      : rosco_m68k BIOS v2
+* Title      : MFP Test for rosco_m68k
 * Written by : Ross Bamford
 * Date       : 28/04/2019
 * Description: Basic machine set-up and prep for a kernel
@@ -52,114 +52,48 @@ ISR_COPY_LOOP:
     bra.s   ISR_COPY_LOOP   ; Next iteration
 
 ISR_COPY_DONE:
-* Now set up the BIOS data block. This is a reserved area of RAM from 0x400
-* to 0x4FF (256 bytes) that will be used to store assorted stuff.
-*
-* Currently, it looks like this:
-*
-*			typedef struct {
-*				uint32_t magic;
-*				uint32_t oshi_code;
-*               MemoryRegion *free_list;
-*               Task *task_list;
-*				uint8_t reserved[240];
-*			} BiosDataBlock;
-*
-* Where the referenced structures are stored in regular RAM, and look like:
-*
-*           typedef struct __MEMORY_REGION {
-*               void *start;
-*               uint32_t size;
-*               uint32_t flags;
-*               __MEMORY_REGION *next;               
-*           } MemoryRegion;
-*
-*           typedef struct __TASK {
-*               uint32_t tid;
-*               uint16_t flags;
-*               uint8_t priority;
-*               uint8_t status;
-*               uint32_t sr;
-*               uint32_t sp;
-*               uint32_t pc;
-*               uint32_t reserved[3];
-*           } Task;
-*
-*   
-    move.l  #$B105D47A, $400                ; Magic in $400        
-    move.l  #$0,        $404                ; No oshi_code yet
-    move.l  #$500,      $408                ; Initial memory region at $500
-    move.l  #$0,        $40C                ; No tasks yet
+* Set up the MFP
+* GPIOs
+    move.b  #$FF, MFP_DDR   ; All GPIOs are output
+    move.b  #$FE, MFP_GPDR  ; Turn on GPIO #0
     
-* Setup initial free memory region
-
-    move.l  #$50F,      $500                ; Free RAM starts after this region header
-    move.l  #$FFAF1,    $504                ; Up to top of RAM (1MB).
-    move.l  #$0,        $508                ; Zero flags for now
-    move.l  #$0,        $50C                ; This is the last region
+* Timer setup - Timer D controls serial clock
+    move.b  #$18, MFP_TDDR  ; Timer D count is 0x18 (24) for 9600 baud
+    move.b  #$01, MFP_TCDCR ; Timer D uses /4 prescaler
     
-* Test that we can TRAP to our TRAP_HANDLER. Should put 0xC001C0DE in the 
-* BDB's oshi_code (at address $404).       
-    trap    #0
+* USART setup
+    move.b  #$08, MFP_UCR   ; Fundamental clock, 8N1
+    move.b  #$01, MFP_TSR   ; Enable transmitter
     
-* Show message
-    lea     WAITING_MESSAGE, A1
-    bsr.s   PRINTLN    
-
+    lea.l   HELLOWORLD, A0  ; Load message
+    lea.l   MESSAGEEND, A1  ; And end of message
+    
+    bsr.s   PRINT
+    
+    move.b  #$FC, MFP_GPDR  ; Turn on GPIO #1
+        
 * And we're done for now.
 IDLE:
     stop    #$2300
     bra.s   IDLE
 
-* Output - Null-terminated string in A1
+* Subroutines
+*
+* PRINT expects A0 to point to the start of a message, and A1 to point after last character
 PRINT:
-    move.l  D0, -(A7)
-    move.l  #14, D0
-    trap    #15
-    move.l  (A7)+, D0
-    rts
-
-PRINTLN:
-    move.l  D0, -(A7)
-    move.l  #13, D0
-    trap    #15
-    move.l  (A7)+, D0
-    rts
-
-* Output D1 as hex
-PRINTNUM:
-    move.l  D0, -(A7)
-    move.l  D2, -(A7)
-    move.l  #15, D0
-    move.b  #16, D2
-    trap    #15
-    move.l  (A7)+, D2
-    move.l  (A7)+, D0
-    rts    
-
-PANIC:
-    lea     OSHI_MESSAGE, A1
-    bsr.s   PRINT
-    move.l  $404, D1
-    bsr.s   PRINTNUM
-    lea     SR_STRING, A1
-    bsr.s   PRINT
-    eor.l   D1, D1
-    move.w  4(A7), D1
-    bsr.s   PRINTNUM
-    lea     RET_PC_STRING, A1
-    bsr.s   PRINT
-    eor.l   D1, D1
-    move.l  6(A7), D1
-    bsr.s   PRINTNUM
-    lea     EMPTY_STRING, A1
-    bsr.s   PRINTLN
-    rts
+    btst.b  #7, MFP_TSR     ; Is buffer empty?
+    beq.s   PRINT           ; Busywait if not
+    
+    move.b  (A0)+, D0       ; Get next character
+    move.b  D0, MFP_UDR     ; Give it to the MFP
+    cmpa    A1, A0          ; Last character sent?
+    bge.s   PRINT           ; Loop if not
+    
+    rts                     ; We're done
     
 * Exception handlers    
 GENERIC_HANDLER:
     move.l  #$2BADB105, $404
-    bsr.s   PANIC
     rte
     
 RESERVED_HANDLER:
@@ -172,21 +106,20 @@ UNMAPPED_USER_HANDLER:
     
 INTERRUPT_HANDLER:
     move.l  #$0BADF00D, $404
-    bsr.s   PANIC
     rte
 
 TRAP_HANDLER:
     move.l  #$C001C0DE, $404
     rte
 
-EMPTY_STRING:       dc.b    '', 0    
-WAITING_MESSAGE:    dc.b    'Waiting for interrupts...', 0
-OSHI_MESSAGE:       dc.b    'OSHI... (Unhandled Interrupt): 0x', 0
-SR_STRING:          dc.b    '; SR: 0x', 0
-RET_PC_STRING:      dc.b    '; RET PC: 0x', 0
+HELLOWORLD      dc.b    'Hello, World!'
+MESSAGEEND:
     
     END    START        ; last line of source
   
+
+
+
 
 *~Font name~Courier New~
 *~Font size~12~
