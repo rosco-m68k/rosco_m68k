@@ -52,45 +52,54 @@ ISR_COPY_LOOP:
     bra.s   ISR_COPY_LOOP   ; Next iteration
 
 ISR_COPY_DONE:
-* Set up the MFP
-* GPIOs
-    move.b  #$FF, MFP_DDR   ; All GPIOs are output
-    move.b  #$FE, MFP_GPDR  ; Turn on GPIO #0
+    bsr.s   INITMFP
     
-* Timer setup - Timer D controls serial clock
-    move.b  #$18, MFP_TDDR  ; Timer D count is 0x18 (24) for 9600 baud
-    move.b  #$01, MFP_TCDCR ; Timer D uses /4 prescaler
-    
-* USART setup
-    move.b  #$08, MFP_UCR   ; Fundamental clock, 8N1
-    move.b  #$01, MFP_TSR   ; Enable transmitter
-    
-    lea.l   HELLOWORLD, A0  ; Load message
-    lea.l   MESSAGEEND, A1  ; And end of message
-    
+    lea.l   HELLOWORLD, A0  ; Load message    
     bsr.s   PRINT
-    
-    move.b  #$FC, MFP_GPDR  ; Turn on GPIO #1
+
+    move.b  #$FC, MFP_GPDR  ; Turn on GPIO #1 (Red LED)
         
 * And we're done for now.
 IDLE:
     stop    #$2300
     bra.s   IDLE
 
+*******************************************************************************
 * Subroutines
 *
-* PRINT expects A0 to point to the start of a message, and A1 to point after last character
+* PRINT null-terminated string pointed to by A0
 PRINT:
-    btst.b  #7, MFP_TSR     ; Is buffer empty?
-    beq.s   PRINT           ; Busywait if not
-    
     move.b  (A0)+, D0       ; Get next character
-    move.b  D0, MFP_UDR     ; Give it to the MFP
-    cmpa    A1, A0          ; Last character sent?
-    bge.s   PRINT           ; Loop if not
+    tst.b   D0              ; Is it null?
+    beq.s   PRINT_DONE      ; ... we're done if so.
+
+BUFF_WAIT:
+    btst.b  #7, MFP_TSR     ; Is transmit buffer empty?
+    beq.s   BUFF_WAIT       ; Busywait if not
     
+    move.b  D0, MFP_UDR     ; ... otherwise, give character to the MFP
+    bra.s   PRINT           ; and loop
+PRINT_DONE:    
     rts                     ; We're done
     
+* Initialise MFP
+INITMFP:
+* GPIOs
+    move.b  #$FF, MFP_DDR   ; All GPIOs are output
+    
+* Timer setup - Timer D controls serial clock
+    move.b  #$18, MFP_TDDR  ; Timer D count is 24 for 9.6KHz
+    move.b  #$01, MFP_TCDCR ; Enable timer with /4 prescaler
+    
+* USART setup
+    move.b  #$08, MFP_UCR   ; Fundamental clock, async, 8N1
+    move.b  #$05, MFP_TSR   ; Set pin state high and enable transmitter
+
+* Indicate success and return
+    move.b  #$FE, MFP_GPDR  ; Turn on GPIO #0 (Green LED)
+    rts
+
+*******************************************************************************
 * Exception handlers    
 GENERIC_HANDLER:
     move.l  #$2BADB105, $404
@@ -112,11 +121,14 @@ TRAP_HANDLER:
     move.l  #$C001C0DE, $404
     rte
 
-HELLOWORLD      dc.b    'Hello, World!'
-MESSAGEEND:
+
+*******************************************************************************
+* Consts 
+HELLOWORLD      dc.b    'Hello, World from rosco_m68k!', $D, 0
     
     END    START        ; last line of source
   
+
 
 
 
