@@ -29,18 +29,19 @@ noreturn void kmain() {
   // TODO Really ought to have zeroed BSS by this point...
   
   // Set up the rest of the System Data Block
-  EARLY_PRINT_C("Initialising System Data Block...\n\r");
+  EARLY_PRINT_C("Initialising System Data Block...\r\n");
   // TODO
   
   // Set up the KernelAPI pointer (at 0x04)
-  EARLY_PRINT_C("Initialising kernel API...\n\r");
+  EARLY_PRINT_C("Initialising kernel API...\r\n");
   __initializeKernelApiPtr();
 
   // Have the serial server initalize itself
-  // EARLY_PRINT_C("Initialising serial server...\n\r");
+  // EARLY_PRINT_C("Initialising serial server...\r\n");
   //__initializeSerialServer();
 
   // Start the timer tick
+  EARLY_PRINT_C("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
   START_HEART();
   
   // Blink IO1 forever to show we're still alive.
