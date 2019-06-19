@@ -22,7 +22,20 @@
 
 static uint8_t * const mfp_gpdr = (uint8_t * const)0xf80001;
 
+extern void __initializeKernelApiPtr();
+extern void __initializeSerialServer();
+
 noreturn void kmain() {
+  // Set up the rest of the System Data Block
+  // TODO
+  
+  // Set up the KernelAPI pointer (at 0x04)
+  __initializeKernelApiPtr();
+
+  // Have the serial server initalize itself
+  __initializeSerialServer();
+
+  // Blink IO1 forever to show we're still alive.
   int i = 0;
 
   do {

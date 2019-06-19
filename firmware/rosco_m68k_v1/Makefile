@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -Iinclude \
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -I./include \
        -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int -mno-strict-align
 LDFLAGS=-T rosco_m68k_rom.ld
 ASFLAGS=-Felf
@@ -21,7 +21,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-OBJECTS=bootstrap.o kmain.o
+OBJECTS=bootstrap.o kmain.o api/api.o base_servers/serial.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -31,6 +31,7 @@ OBJECTS=bootstrap.o kmain.o
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@
+	chmod a-x $@
 
 $(BINARY_EVEN): $(BINARY)
 	srec_cat -output $(BINARY_EVEN) -Binary rom.bin -Binary -Split 2 0
