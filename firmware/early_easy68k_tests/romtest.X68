@@ -1,3 +1,4 @@
+* NOTE! This program will no longer work with the current board design!
 *-----------------------------------------------------------
 * Title      : Initial ROM test code for rosco_m68k
 * Written by : Ross Bamford
