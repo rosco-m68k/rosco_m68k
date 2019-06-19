@@ -9,10 +9,11 @@ SECTIONS
     *(.rodata)
     . = ALIGN(2);
   }
-  .data : AT(phys + (data - code - 2))
+  .data : AT(phys + (data - code))
   {
     data = .;
     *(.data)
+    *(.bss)
     . = ALIGN(2);
   }
   end = .;
