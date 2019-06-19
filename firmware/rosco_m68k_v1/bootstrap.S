@@ -62,7 +62,7 @@ VECTORS:
 ; 68010 VBR defaults to that location anyway for 68000 compatibility.
 START::
     OR.W    #$0700,SR                 ; Disable interrupts for now    
-    move.l  #START,A0                  ; Start into A0 (source)
+    move.l  #START,A0                 ; Start into A0 (source)
     move.l  #$400,A1                  ; 0x400 into A1 (destination)
 
 .ISR_COPY_LOOP:    
@@ -83,13 +83,8 @@ START::
     and.w   #$F0FF,SR                 ; Enable interrupts
 
     jmp     kmain                     ; Call kmain
-   
-; In case kmain returns, just idle.
-; This is externally available via include/machine.h
-IDLE::
-    stop    #$2300
-    bra.s   IDLE
 
+; kmain is noreturn, so That's All, Folks(tm).
 
 ;------------------------------------------------------------
 ; Subroutines
@@ -109,6 +104,16 @@ PRINT_BANNER:
     bsr.s   EARLY_PRINTLN
     
     rts                               ; We're done
+
+; Wraps EARLY_PRINT so it can be called from C-land
+;
+; Trashes: D0, MFP_UDR
+; Modifies: A0 (Will point to address after null terminator)
+EARLY_PRINT_C::
+    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
+    bsr.s   EARLY_PRINT               ; Call EARLY_PRINT
+
+    rts                               ; We're done.
 
 ; PRINT null-terminated string pointed to by A0
 ;
@@ -176,8 +181,8 @@ INITMFP:
     ; Interrupt setup - Enable timer C interrupt for kernel tick
     move.l  #MFP_VECBASE,D0           ; Set up the base MFP vector...
     move.b  D0,MFP_VR                 ; ... at 0x40 (first 16 user vectors)
-    or.b    #$20,MFP_IERB             ; Enable Timer C interrupt...
-    move.b  #$20,MFP_IMRB             ; ... and unmask it.
+    or.b    #$20,MFP_IERB             ; Enable Timer C interrupt, but leave it masked for now
+                                      ; (kmain will call START_HEART later)
     
     ; Indicate success and return
     move.b  #$FE,MFP_GPDR             ; Turn on GPIO #0 (Green LED)
@@ -187,12 +192,22 @@ INITMFP:
 ;------------------------------------------------------------
 ; Routines for include/machine.h
 HALT::
+    bsr.s   STOP_HEART
     stop    #$2700
     bra.s   HALT
 
 SET_INTR::
-  ; Not yet implemented
-  rts
+    ; TODO Not yet implemented
+    rts
+
+; TODO These should just be masking/unmasking the Timer C interrupt!
+START_HEART::
+    move.b  #$20,MFP_IMRB             ; Unmask Timer C interrupt ONLY
+    rts
+
+STOP_HEART::
+    move.b  #$0,MFP_IMRB              ; Mask ALL MFP interrupts
+    rts
 
 ;------------------------------------------------------------
 ; Exception handlers    
@@ -235,12 +250,12 @@ TRAP_HANDLER:
 ; Consts 
     section .rodata
 
-SZ_BANNER0      dc.b    "                                 ___ ___ _   ", 0
-SZ_BANNER1      dc.b    ' ___ ___ ___ ___ ___       _____|  _| . | |_ ', 0
-SZ_BANNER2      dc.b    '|  _| . |_ -|  _| . |     |     | . | . | `_|', 0
-SZ_BANNER3      dc.b    '|_| |___|___|___|___|_____|_|_|_|___|___|_,_|', 0 
-SZ_BANNER4      dc.b    '                    |_____|                  ', 0
-SZ_INITDONE     dc.b    'Hardware initialisation complete', 0
+SZ_BANNER0      dc.b    $1B, "[1;33m                                 ___ ___ _   ", 0
+SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", 0
+SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", 0
+SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", 0 
+SZ_BANNER4      dc.b    "                    |_____|       ", $1B, "[1;37mfirmware v1", $D, $A, 0
+SZ_INITDONE     dc.b    $1B, '[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...', 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 
