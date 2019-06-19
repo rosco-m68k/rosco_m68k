@@ -26,15 +26,23 @@ extern void __initializeKernelApiPtr();
 extern void __initializeSerialServer();
 
 noreturn void kmain() {
+  // TODO Really ought to have zeroed BSS by this point...
+  
   // Set up the rest of the System Data Block
+  EARLY_PRINT_C("Initialising System Data Block...\n\r");
   // TODO
   
   // Set up the KernelAPI pointer (at 0x04)
+  EARLY_PRINT_C("Initialising kernel API...\n\r");
   __initializeKernelApiPtr();
 
   // Have the serial server initalize itself
-  __initializeSerialServer();
+  // EARLY_PRINT_C("Initialising serial server...\n\r");
+  //__initializeSerialServer();
 
+  // Start the timer tick
+  START_HEART();
+  
   // Blink IO1 forever to show we're still alive.
   int i = 0;
 
@@ -47,6 +55,4 @@ noreturn void kmain() {
 
     *(mfp_gpdr) ^= i;
   } while (true);
-
-  HALT();
 }
