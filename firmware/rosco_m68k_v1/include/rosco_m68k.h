@@ -13,6 +13,9 @@
  * (including servers).
  * ------------------------------------------------------------
  */
+#ifndef _ROSCOM68K_H
+#define _ROSCOM68K_H
+
 #include <stdint.h>
 
 typedef struct {
@@ -56,4 +59,6 @@ typedef struct {
  * This is the only safe way to obtain this. 
  */
 KernelApi* GetKernelApi();
+
+#endif
 

@@ -12,6 +12,8 @@
  * C prototypes for routines implemented in assembly.
  * ------------------------------------------------------------
  */
+#ifndef _ROSCOM68K_MACHINE_H
+#define _ROSCOM68K_MACHINE_H
 
 /* 
  * Idle the processor.
@@ -64,4 +66,6 @@ void SET_INTR(uint8_t priority);
  * Don't use this after START_HEART has been called. 
  */
 void EARLY_PRINT_C(char *str);
+
+#endif
 

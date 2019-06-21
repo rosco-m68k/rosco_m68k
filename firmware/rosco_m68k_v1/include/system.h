@@ -12,6 +12,8 @@
  * Typedefs and utilities for system-level structures.
  * ------------------------------------------------------------
  */
+#ifndef _ROSCOM68K_SYSTEM_H
+#define _ROSCOM68K_SYSTEM_H
 
 #include <stdint.h>
 
@@ -66,4 +68,5 @@ typedef struct {
 
 } __attribute__ ((packed)) SystemDataBlock;
 
+#endif
 
