@@ -213,7 +213,7 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER:    
     move.w  $408,D0                   ; Read SDB byte 8
-    tst.l   D0                        ; Is it zero?
+    tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
     
     ; counted to zero, so toggle indicator 0 and reset counter
@@ -221,7 +221,7 @@ TICK_HANDLER:
     move.w  #100,D0
     
 .TICK_HANDLER_DONE:
-    sub.l   #$1,D0                    ; Decrement counter...
+    sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,$408                   ; ... and write back to SDB
     rte                               ; We're done
     
