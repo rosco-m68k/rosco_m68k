@@ -13,11 +13,14 @@
  * ------------------------------------------------------------
  */
 
+#ifndef _ROSCOM68K_PRINTF_CONFIG_H
+#define _ROSCOM68K_PRINTF_CONFIG_H
+
 #define PRINTF_DISABLE_SUPPORT_FLOAT
 #define PRINTF_DISABLE_SUPPORT_EXPONENTIAL
 #define PRINTF_DISABLE_SUPPORT_LONG_LONG
 #define PRINTF_DISABLE_SUPPORT_PTRDIFF_T
 
-inline uint32_t __udivsi3(uint32_t dividend, uint32_t divisor) { return 0; }
-inline uint32_t __umodsi3(uint32_t dividend, uint32_t divisor) { return 0; }
+extern void (*putchar_func)(char chr, void* arg);
 
+#endif

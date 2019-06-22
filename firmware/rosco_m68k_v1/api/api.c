@@ -15,15 +15,20 @@
  */
 
 #include "rosco_m68k.h"
+#include "servers/serial.h"
+
+static Serial *serial;
 
 KernelApi* GetKernelApi() {
   return (KernelApi*)0x04;
 }
 
-static void FindLibraryImpl(char *name, uint32_t magic) {
+static void* FindLibraryImpl(char *name, uint32_t magic) {
+  return serial;
 }
 
 static void RegisterLibraryImpl(char *name, uint32_t magic, void *library) {
+  serial = library;
 }
 
 static KernelApi __kernelApi;

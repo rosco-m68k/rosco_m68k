@@ -51,7 +51,8 @@ VECTORS:
     dc.l    TICK_HANDLER                ; 45: MFP Timer C (System tick)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 46-47: MFP GPIO #4-5 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
-    dcb.l   2,UNMAPPED_USER_HANDLER     ; 49-4A: Transmitter status (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 49: Transmitter error (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 4A: Transmitter empty (Not used)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4B-4C: Receiver status (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 4D: Timer A (Not used)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4E-4F: MFP GPIO #6-7 (Not used)
@@ -79,7 +80,7 @@ START::
     
     bsr.s   PRINT_BANNER
 
-    move.b  #$FD,MFP_GPDR             ; Turn on GPIO #1 (Red LED)  
+    bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
     and.w   #$F0FF,SR                 ; Enable interrupts
 
     jsr     kinit                     ; Init C land
@@ -187,6 +188,7 @@ INITMFP:
     
     ; Indicate success and return
     move.b  #$FE,MFP_GPDR             ; Turn on GPIO #0 (Green LED)
+    bclr.b  #2,MFP_GPDR
     rts
 
     
@@ -203,16 +205,17 @@ SET_INTR::
 
 ; TODO These should just be masking/unmasking the Timer C interrupt!
 START_HEART::
-    move.b  #$20,MFP_IMRB             ; Unmask Timer C interrupt ONLY
+    bset.b  #5,MFP_IMRB               ; Unmask Timer C interrupt
     rts
 
 STOP_HEART::
-    move.b  #$0,MFP_IMRB              ; Mask ALL MFP interrupts
+    bclr.b  #5,MFP_IMRB               ; Mask Timer C interrupt
     rts
 
 ;------------------------------------------------------------
 ; Exception handlers    
-TICK_HANDLER:    
+TICK_HANDLER:
+    move.l  D0,-(A7)                  ; Save D0
     move.w  $408,D0                   ; Read SDB byte 8
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
@@ -224,8 +227,13 @@ TICK_HANDLER:
 .TICK_HANDLER_DONE:
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,$408                   ; ... and write back to SDB
+    move.l  (A7)+,D0                  ; Restore D0
     rte                               ; We're done
     
+TX_EMPTY_HANDLER:
+    bchg.b  #2,MFP_GPDR               ; toggle LED
+    rte
+
 GENERIC_HANDLER:
     move.l  #$2BADB105,$404
     rte
