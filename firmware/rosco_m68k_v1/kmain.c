@@ -29,6 +29,11 @@ extern void __initializeSerialServer();
 
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 
+void _putchar(char chr) {
+  char s[2] = { chr, 0 };
+  EARLY_PRINT_C(s); 
+}
+
 void kinit() {
   // copy .data
   for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; dst++, src++) {
