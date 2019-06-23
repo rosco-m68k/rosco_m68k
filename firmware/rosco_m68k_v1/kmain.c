@@ -23,26 +23,19 @@
 #include "servers/serial.h"
 #include "3rdparty/printf.h"
 
-static uint8_t * const mfp_gpdr = (uint8_t * const)0xf80001;
-static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
-
-static Serial *serial;
-
+// Linker defines
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 
 extern void __initializeKernelApiPtr();
 extern void __initializeSerialServer();
+extern void __initializePrintf(Serial *serial);
 
-/*
- * This is used by printf. Cannot be used until serial is set up!
- */
-void _putchar(char chr) {
-  //serial->SendChar(chr);
-}
+static uint8_t * const mfp_gpdr = (uint8_t * const)0xf80001;
+static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
 
 void kinit() {
   // copy .data
-  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; dst++, src++) {
+  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++) {
     *dst = *src;
   }
 
@@ -70,15 +63,18 @@ noreturn void kmain() {
   EARLY_PRINT_C("Initialising serial server...\r\n");
   __initializeSerialServer();
 
-  serial = GetKernelApi()->FindLibrary("serial0", ROSCOM68K_SERIAL_MAGIC);
+  Serial *serial = GetKernelApi()->FindLibrary("serial0", ROSCOM68K_SERIAL_MAGIC);
 
   if (serial == NULL) {
     EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Serial driver failed to initialise. Halting.\r\n");
     HALT();
   }
-  
+
+  // Initialize printf with the new serial
+  __initializePrintf(serial);
+
   // Start the timer tick
-  //printf("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
+  printf("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
   START_HEART();
 
   // Blink IO1 forever to show we're still alive.

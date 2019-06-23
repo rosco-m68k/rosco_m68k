@@ -29,7 +29,4 @@ typedef struct {
   void (*SendChar)(unsigned char ch);
 } Serial;
 
-void ENABLE_XMIT();
-void DISABLE_XMIT();
-
 #endif

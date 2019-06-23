@@ -8,9 +8,9 @@
 ; Copyright (c)2019 Ross Bamford
 ; See top-level LICENSE.md for licence information.
 ;
-; This is low-level UART stuff for and exception handlers
-; for the serial driver. Some of this could probably be
-; moved to C eventually.
+; This is low-level UART stuff and exception handlers for the
+; serial driver. Some of this could probably be moved to C 
+; eventually.
 ;------------------------------------------------------------
     include "../equates.S"
 
@@ -27,18 +27,19 @@ TX_EMPTY_HANDLER::
     move.l  D0,-(A7)
     move.l  D1,-(A7)
 
-    move.l  read_pointer,D0   ; Get read pointer
-    move.l  write_pointer,D1  ; and write pointer
-    cmp.l   D0,D1             ; Are they equal?
+    eor.l   D0,D0             ; Zero D0
+    move.w  read_pointer,D0   ; Get read pointer
+    move.w  write_pointer,D1  ; and write pointer
+    cmp.w   D0,D1             ; Are they equal?
     beq.s   .DISABLE_XMIT     ; Nothing to send if so...
 
-    lea     tx_buffer,A0      ; Get the tx buffer
+    lea.l   tx_buffer,A0      ; Get the tx buffer
     add.l   D0,A0             ; point to the next byte to read
     move.b  (A0),MFP_UDR      ; And send it to the UART.
     
-    add.l   #1,D0             ; Incremement the read pointer
-    and.l   #BUF_MASK,D0      ; Keep it in range
-    move.l  D0,read_pointer   ; And store back to the variable
+    add.w   #1,D0             ; Incremement the read pointer
+    and.w   #BUF_MASK,D0      ; Keep it in range
+    move.w  D0,read_pointer   ; And store back to the variable
 
     bra.s   .DONE             ; Fin
 
@@ -46,9 +47,9 @@ TX_EMPTY_HANDLER::
     bsr.s   DISABLE_XMIT      ; Disable the transmitter
 
 .DONE:
-    move.l  D1,(A7)+          ; Restore regs
-    move.l  D0,(A7)+
-    move.l  A0,(A7)+
+    move.l  (A7)+,D1          ; Restore regs
+    move.l  (A7)+,D0
+    move.l  (A7)+,A0
     rte                       ; We're outta here.
 
 ; Enable the transmitter and turn on GPIO #2.

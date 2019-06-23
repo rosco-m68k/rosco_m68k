@@ -23,7 +23,7 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 OBJECTS=bootstrap.o kmain.o api/api.o rtlsupport.o 3rdparty/printf.o \
-	base_servers/serial.o base_servers/serial_isr.o
+	putchar.o base_servers/serial.o base_servers/serial_isr.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
