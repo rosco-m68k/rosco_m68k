@@ -24,9 +24,9 @@ RESET:
     dc.l    INIT_PC                     ; 01: Initial PC (start of ROM)
     
 VECTORS:
-    dc.l    GENERIC_HANDLER             ; 02: Bus Error
-    dc.l    GENERIC_HANDLER             ; 03: Address Error
-    dc.l    GENERIC_HANDLER             ; 04: Illegal Instruction
+    dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error
+    dc.l    ADDRESS_ERROR_HANDLER       ; 03: Address Error
+    dc.l    ILLEGAL_INSTRUCTION_HANDLER ; 04: Illegal Instruction
     dc.l    GENERIC_HANDLER             ; 05: Divide by Zero
     dc.l    GENERIC_HANDLER             ; 06: CHK Instruction
     dc.l    GENERIC_HANDLER             ; 07: TRAPV Instruction
@@ -192,6 +192,7 @@ INITMFP:
     rts
 
     
+    
 ;------------------------------------------------------------
 ; Routines for include/machine.h
 HALT::
@@ -233,6 +234,87 @@ TICK_HANDLER:
 TX_EMPTY_HANDLER:
     bchg.b  #2,MFP_GPDR               ; toggle LED
     rte
+
+; Busywait - expects a delay in D0, returns when D0 gets to 0 
+;
+; Trashes: D0
+BUSYWAIT:
+    sub.l   #1,D0
+    tst.l   D0
+    bne.s   BUSYWAIT
+    rts
+
+BUS_ERROR_HANDLER:
+    or.w    #0700,SR                  ; Disable exceptions
+    move.b  #0,MFP_IERA
+    move.b  #0,MFP_IERB
+
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #100000,D0                ; Wait a while
+    bsr.s   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #200000,D0                ; Wait a while
+    bsr.s   BUSYWAIT
+    bra.s   BUS_ERROR_HANDLER
+    
+    rte                               ; Never reached
+
+ADDRESS_ERROR_HANDLER:
+    or.w    #0700,SR                  ; Disable exceptions
+    move.b  #0,MFP_IERA
+    move.b  #0,MFP_IERB
+
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.s   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.s   BUSYWAIT
+    
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #200000,D0                ; Wait a while
+    bsr.w   BUSYWAIT
+    bra.s   ADDRESS_ERROR_HANDLER
+    
+    rte                               ; Never reached
+
+ILLEGAL_INSTRUCTION_HANDLER:
+    or.w    #0700,SR                  ; Disable exceptions
+    move.b  #0,MFP_IERA
+    move.b  #0,MFP_IERB
+
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+    
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+    
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.l  #200000,D0                ; Wait a while
+    bsr.w   BUSYWAIT
+    bra.w   ILLEGAL_INSTRUCTION_HANDLER
+    
+    rte                               ; Never reached
 
 GENERIC_HANDLER:
     move.l  #$2BADB105,$404
