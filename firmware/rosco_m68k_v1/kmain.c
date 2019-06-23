@@ -35,14 +35,10 @@ static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
 
 void kinit() {
   // copy .data
-  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++) {
-    *dst = *src;
-  }
+  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
 
   // zero .bss
-  for (uint32_t *dst = &_bss_start; dst < &_bss_end; dst++) {
-    *dst = 0;
-  }
+  for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 }
 
 noreturn void kmain() {
