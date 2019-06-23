@@ -43,7 +43,7 @@ VECTORS:
     
     dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
     
-    dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-4 Autovectors
+    dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
     dcb.l   16,TRAP_HANDLER             ; 20-2F: TRAP Handlers
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
     dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
@@ -52,7 +52,7 @@ VECTORS:
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 46-47: MFP GPIO #4-5 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 49: Transmitter error (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 4A: Transmitter empty (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 4A: Transmitter empty (Replaced later)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4B-4C: Receiver status (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 4D: Timer A (Not used)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4E-4F: MFP GPIO #6-7 (Not used)
@@ -62,7 +62,7 @@ VECTORS:
 ; First of all, copy the exception table to RAM at 0x0.
 ; 68010 VBR defaults to that location anyway for 68000 compatibility.
 START::
-    OR.W    #$0700,SR                 ; Disable interrupts for now    
+    or.w    #$0700,SR                 ; Disable interrupts for now    
     move.l  #START,A0                 ; Start into A0 (source)
     move.l  #$400,A1                  ; 0x400 into A1 (destination)
 
@@ -172,7 +172,7 @@ INITMFP:
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
-    move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz
+    move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$0C,MFP_TDDR             ; Timer D count is 12 for 19.2KHz
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
@@ -204,7 +204,6 @@ SET_INTR::
     ; TODO Not yet implemented
     rts
 
-; TODO These should just be masking/unmasking the Timer C interrupt!
 START_HEART::
     bset.b  #5,MFP_IMRB               ; Unmask Timer C interrupt
     rts
