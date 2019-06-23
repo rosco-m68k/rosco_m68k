@@ -4,8 +4,8 @@ kram = 0x00000500;
 phys = 0x00FC0000;
 MEMORY
 {
-  KRAM : org = 0x00000500, l = 0x3B00   /* KRAM up to 16K mark */
-  ROM : org = 0x00FC0000, l = 16K
+  KRAM : org = kram, l = 0x3B00   /* KRAM up to 16K mark */
+  ROM : org = phys, l = 16K
 }
 
 SECTIONS
