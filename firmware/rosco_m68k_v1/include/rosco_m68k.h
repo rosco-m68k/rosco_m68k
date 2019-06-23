@@ -37,7 +37,7 @@ typedef struct {
    * to know what they are expecting and cast accordingly. This is made (a bit) safer
    * thanks to the magic number.
    */
-  void (*FindLibrary)(char *name, uint32_t magic);
+  void* (*FindLibrary)(char *name, uint32_t magic);
 
   /*
    * Register a library with the kernel.

@@ -58,7 +58,7 @@ typedef struct {
   uint32_t      magic;                /* Magic number B105DA7A */
   uint32_t      oshi_code;            /* OSHI code, only valid in OSHI condition */
   uint16_t      heartbeat_counter;    /* Counter used to flash I0 */
-  uint16_t      hearbeat_frequency;   /* Value used to reset heartbeat counter (100 = ~1 beat per second) */
+  uint16_t      heartbeat_frequency;  /* Value used to reset heartbeat counter (100 = ~1 beat per second) */
   uint32_t      upticks;              /* Running counter of the number of ticks the system has been up */
   MemoryRegion  *free_list;           /* List of free memory blocks */
   Task          *next_runnable_task;  /* Next runnable task (circular list, doubly linked) */

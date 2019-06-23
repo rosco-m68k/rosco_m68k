@@ -9,36 +9,22 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Implementations of the standard Kernel API functions.
- * These should be accessed via the pointer at address 0x4!
+ * Configures printf. Don't call this until the serial driver
+ * is loaded and initialized.
  * ------------------------------------------------------------
  */
-
-#include "rosco_m68k.h"
 #include "servers/serial.h"
 
 static Serial *serial;
 
-KernelApi* GetKernelApi() {
-  return (KernelApi*)0x04;
+/*
+ * This is used by printf.
+ */
+void _putchar(char chr) {
+  serial->SendChar(chr);
 }
 
-static void* FindLibraryImpl(char *name, uint32_t magic) {
-  return serial;
+void __initializePrintf(Serial *theSerial) {
+  serial = theSerial;
 }
-
-static void RegisterLibraryImpl(char *name, uint32_t magic, void *library) {
-  serial = library;
-}
-
-static KernelApi __kernelApi;
-
-void __initializeKernelApiPtr() {
-  __kernelApi.FindLibrary = FindLibraryImpl;
-  __kernelApi.RegisterLibrary = RegisterLibraryImpl;
-
-  KernelApi* ptr = (KernelApi*)0x04;
-  *ptr = __kernelApi;
-}
-
 
