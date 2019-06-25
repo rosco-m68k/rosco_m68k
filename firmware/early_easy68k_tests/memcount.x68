@@ -1,3 +1,5 @@
+* NOTE: This program will no longer work with the current board design!
+*
 *-----------------------------------------------------------
 * Title      : rosco_m68k RAM check
 * Written by : Ross Bamford
