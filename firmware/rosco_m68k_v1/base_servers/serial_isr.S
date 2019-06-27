@@ -55,13 +55,13 @@ TX_EMPTY_HANDLER::
 ; Enable the transmitter and turn on GPIO #2.
 ENABLE_XMIT::
     bset.b  #0,MFP_TSR
-    bclr.b  #2,MFP_GPDR                 ; :LED off
+    bclr.b  #2,MFP_GPDR                 ; :LED on
     rts
 
 ; Disable the transmitter and turn off GPIO #2.
 DISABLE_XMIT::
     bclr.b  #0,MFP_TSR
-    bset.b  #2,MFP_GPDR                 ; :LED on
+    bset.b  #2,MFP_GPDR                 ; :LED off
     rts
 
 ; Hook the handlers into the appropriate vectors.
