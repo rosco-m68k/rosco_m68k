@@ -1,0 +1,44 @@
+Name     address_decoder ;
+PartNo   00 ;
+Date     14/07/2019 ;
+Revision 03 ;
+Designer Ross Bamford ;
+Company  rosco_m68k ;
+Assembly None ;
+Location  ;
+Device   g16v8a ;
+
+/* *************** INPUT PINS *********************/
+PIN 1   = A18                     ; /*                                 */ 
+PIN 2   = A19                     ; /*                                 */ 
+PIN 3   = A20                     ; /*                                 */ 
+PIN 4   = A21                     ; /*                                 */ 
+PIN 5   = A22                     ; /*                                 */ 
+PIN 6   = A23                     ; /*                                 */ 
+PIN 7   = UDS                     ; /*                                 */ 
+PIN 8   = LDS                     ; /*                                 */ 
+PIN 9   = BOOT                    ; /*                                 */
+PIN 11  = !oe                     ; /*                                 */ 
+
+/* *************** OUTPUT PINS *********************/
+PIN 12  = EVENRAMSEL              ; /*                                 */ 
+PIN 13  = ODDRAMSEL               ; /*                                 */ 
+PIN 14  = EVENROMSEL              ; /*                                 */ 
+PIN 15  = ODDROMSEL               ; /*                                 */ 
+PIN 16  = IOSEL                   ; /*                                 */ 
+PIN 17  = EXPSEL                  ; /*                                 */ 
+
+
+EVENRAMSEL  = (!BOOT & !UDS) # A23 # A22 # A21 # A20 # (BOOT & UDS);
+ODDRAMSEL   = (!BOOT & !LDS) # A23 # A22 # A21 # A20 # (BOOT & LDS);
+!EVENROMSEL = ((A18 & A19 & A20 & A21 & A22 & A23) # !BOOT) & !UDS;
+!ODDROMSEL  = ((A18 & A19 & A20 & A21 & A22 & A23) # !BOOT) & !LDS;
+!IOSEL      = !A18 & A20 & A21 & A22 & A23;		
+EXPSEL      = (!BOOT & !A20 & !A21 & !A22 & !A23) # (!A20 & !A21 & !A22 & !A23 & !UDS) # (!A20 & !A21 & !A22 & !A23 & !LDS) # (!A18 & A20 & A21 & A22 & A23) # (A19 & A20 & A21 & A22 & A23 & !UDS) # (A19 & A20 & A21 & A22 & A23 & !LDS);
+
+EVENRAMSEL.OE = oe;
+ODDRAMSEL.OE  = oe;
+EVENROMSEL.OE = oe;
+ODDROMSEL.OE  = oe;
+IOSEL.OE      = oe;
+EXPSEL.OE     = oe;
