@@ -5,7 +5,7 @@
 
 CUPL(WM)        5.0a Serial# 60008009
 Device          g16v8ma  Library DLIB-h-40-8
-Created         Mon Jul 15 19:03:45 2019
+Created         Wed Jul 31 20:43:56 2019
 Name            address_decoder 
 Partno          00 
 Revision        03 
@@ -19,58 +19,51 @@ Location
                             Expanded Product Terms
 ===============================================================================
 
-EVENRAMSEL =>
-    !BOOT & !UDS
-  # A23
-  # A22
-  # A21
-  # A20
-  # BOOT & UDS
+!EVENRAMSEL =>
+    !A20 & !A21 & !A22 & !A23 & BOOT & IACK & !UDS
 
 EVENRAMSEL.oe  =>
     oe
 
 !EVENROMSEL =>
-    A18 & A19 & A20 & A21 & A22 & A23 & !UDS
-  # !BOOT & !UDS
+    !BOOT & IACK & !UDS
+  # A18 & A19 & A20 & A21 & A22 & A23 & IACK & !UDS
 
 EVENROMSEL.oe  =>
     oe
 
-EXPSEL =>
-    !A20 & !A21 & !A22 & !A23 & !BOOT
-  # !A20 & !A21 & !A22 & !A23 & !UDS
-  # !A20 & !A21 & !A22 & !A23 & !LDS
-  # !A18 & A20 & A21 & A22 & A23
-  # A19 & A20 & A21 & A22 & A23 & !UDS
-  # A19 & A20 & A21 & A22 & A23 & !LDS
+!EXPSEL =>
+    !A20 & A23 & IACK
+  # !A20 & A22 & IACK
+  # A21 & !A22 & IACK
+  # A21 & !A23 & IACK
+  # A18 & !A19 & A20 & IACK
+  # A20 & !A21 & IACK
 
 EXPSEL.oe  =>
     oe
 
 !IOSEL =>
-    !A18 & A20 & A21 & A22 & A23
+    !A18 & A20 & A21 & A22 & A23 & IACK
 
 IOSEL.oe  =>
     oe
 
-ODDRAMSEL =>
-    !BOOT & !LDS
-  # A23
-  # A22
-  # A21
-  # A20
-  # BOOT & LDS
+!ODDRAMSEL =>
+    !A20 & !A21 & !A22 & !A23 & BOOT & IACK & !LDS
 
 ODDRAMSEL.oe  =>
     oe
 
 !ODDROMSEL =>
-    A18 & A19 & A20 & A21 & A22 & A23 & !LDS
-  # !BOOT & !LDS
+    !BOOT & IACK & !LDS
+  # A18 & A19 & A20 & A21 & A22 & A23 & IACK & !LDS
 
 ODDROMSEL.oe  =>
     oe
+
+IACK.oe  =>
+    0 
 
 
 ===============================================================================
@@ -88,21 +81,23 @@ Pol   Name              Ext     Pin     Type     Used   Pterms  Level
     A22                         5        V        -       -       -     
     A23                         6        V        -       -       -     
     BOOT                        9        V        -       -       -     
-    EVENRAMSEL                  12       V        6       7       1     
+    EVENRAMSEL                  12       V        1       7       1     
     EVENRAMSEL          oe      12       X        1       1       1     
     EVENROMSEL                  14       V        2       7       1     
     EVENROMSEL          oe      14       X        1       1       1     
     EXPSEL                      17       V        6       7       1     
     EXPSEL              oe      17       X        1       1       1     
+    IACK                        18       V        -       -       -     
     IOSEL                       16       V        1       7       1     
     IOSEL               oe      16       X        1       1       1     
     LDS                         8        V        -       -       -     
-    ODDRAMSEL                   13       V        6       7       1     
+    ODDRAMSEL                   13       V        1       7       1     
     ODDRAMSEL           oe      13       X        1       1       1     
     ODDROMSEL                   15       V        2       7       1     
     ODDROMSEL           oe      15       X        1       1       1     
     UDS                         7        V        -       -       -     
  !  oe                          11       V        -       -       -     
+    IACK                oe      18       D        1       1       0     
 
 
 LEGEND    D : default variable         F : field      G : group
@@ -135,18 +130,18 @@ Pin #18  02049  Pol x  02121  Ac1 -
  00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-Pin #17  02050  Pol -  02122  Ac1 - 
+Pin #17  02050  Pol x  02122  Ac1 - 
  00512 -------------------------------x 
- 00544 -----x---x---x---x-----------x-- 
- 00576 -----x---x---x---x---x---------- 
- 00608 -----x---x---x---x-------x------ 
- 00640 ---xx---x---x---x--------------- 
- 00672 x---x---x---x---x----x---------- 
- 00704 x---x---x---x---x--------x------ 
+ 00544 -----xx---------x--------------- 
+ 00576 -----xx-----x------------------- 
+ 00608 ------x-x----x------------------ 
+ 00640 ------x-x--------x-------------- 
+ 00672 -xx-x-x------------------------- 
+ 00704 ----x-x--x---------------------- 
  00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 Pin #16  02051  Pol x  02123  Ac1 - 
  00768 -------------------------------x 
- 00800 ---xx---x---x---x--------------- 
+ 00800 ---xx-x-x---x---x--------------- 
  00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
@@ -155,8 +150,8 @@ Pin #16  02051  Pol x  02123  Ac1 -
  00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 Pin #15  02052  Pol x  02124  Ac1 - 
  01024 -------------------------------x 
- 01056 x-x-x---x---x---x--------x------ 
- 01088 -------------------------x---x-- 
+ 01056 ------x------------------x---x-- 
+ 01088 x-x-x-x-x---x---x--------x------ 
  01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
@@ -164,30 +159,30 @@ Pin #15  02052  Pol x  02124  Ac1 -
  01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 Pin #14  02053  Pol x  02125  Ac1 - 
  01280 -------------------------------x 
- 01312 x-x-x---x---x---x----x---------- 
- 01344 ---------------------x-------x-- 
+ 01312 ------x--------------x-------x-- 
+ 01344 x-x-x-x-x---x---x----x---------- 
  01376 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01408 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01440 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-Pin #13  02054  Pol -  02126  Ac1 - 
+Pin #13  02054  Pol x  02126  Ac1 - 
  01536 -------------------------------x 
- 01568 -------------------------x---x-- 
- 01600 ----------------x--------------- 
- 01632 ------------x------------------- 
- 01664 --------x----------------------- 
- 01696 ----x--------------------------- 
- 01728 ------------------------x---x--- 
+ 01568 -----xx--x---x---x-------x--x--- 
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
-Pin #12  02055  Pol -  02127  Ac1 - 
+Pin #12  02055  Pol x  02127  Ac1 - 
  01792 -------------------------------x 
- 01824 ---------------------x-------x-- 
- 01856 ----------------x--------------- 
- 01888 ------------x------------------- 
- 01920 --------x----------------------- 
- 01952 ----x--------------------------- 
- 01984 --------------------x-------x--- 
+ 01824 -----xx--x---x---x---x------x--- 
+ 01856 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01888 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
  02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
 
 
@@ -202,7 +197,7 @@ LEGEND    X : fuse not blown
                               |address_decode|
                       A18 x---|1           20|---x Vcc                      
                       A19 x---|2           19|---x                          
-                      A20 x---|3           18|---x                          
+                      A20 x---|3           18|---x IACK                     
                       A21 x---|4           17|---x EXPSEL                   
                       A22 x---|5           16|---x IOSEL                    
                       A23 x---|6           15|---x ODDROMSEL                
