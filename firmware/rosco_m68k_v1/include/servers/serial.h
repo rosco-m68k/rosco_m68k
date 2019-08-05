@@ -27,6 +27,8 @@
 
 typedef struct {
   void (*SendChar)(unsigned char ch);
+  unsigned char (*BlockingReadChar)(void);
+  unsigned char (*AsyncReadChar)(void);
 } Serial;
 
 #endif

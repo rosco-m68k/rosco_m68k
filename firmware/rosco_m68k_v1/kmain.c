@@ -33,6 +33,8 @@ extern void __initializePrintf(Serial *serial);
 static uint8_t * const mfp_gpdr = (uint8_t * const)0xf80001;
 static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
 
+static Serial *serial;
+
 void kinit() {
   // copy .data
   for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
@@ -59,7 +61,7 @@ noreturn void kmain() {
   EARLY_PRINT_C("Initialising serial server...\r\n");
   __initializeSerialServer();
 
-  Serial *serial = GetKernelApi()->FindLibrary("serial0", ROSCOM68K_SERIAL_MAGIC);
+  serial = GetKernelApi()->FindLibrary("serial0", ROSCOM68K_SERIAL_MAGIC);
 
   if (serial == NULL) {
     EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Serial driver failed to initialise. Halting.\r\n");
@@ -73,16 +75,18 @@ noreturn void kmain() {
   printf("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
   START_HEART();
 
-  // Blink IO1 forever to show we're still alive.
-  int i = 0;
+  printf("Initialisation complete\r\n");
+
+  // Just loop receiving characters and echoing them back.
+  // Each character also toggles I1.
+  *(mfp_gpdr) ^= 2;
 
   do {
-    for (int j = 0; j < 100000; j++) {
-      i = j;
-    }
+    unsigned char chr = serial->BlockingReadChar();
+    serial->SendChar(chr);
 
-    i = 2;
-
-    *(mfp_gpdr) ^= i;
+    *(mfp_gpdr) ^= 2;
   } while (true);
 }
+
+

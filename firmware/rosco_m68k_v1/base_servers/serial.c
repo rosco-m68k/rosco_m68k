@@ -26,35 +26,92 @@
 #include "rosco_m68k.h"
 #include "machine.h"
 #include "servers/serial.h"
+#include "3rdparty/printf.h"
 
 // If these are changed they *must* also be changed in serial_isr.S!
 // TODO find a way to not repeat these...
 #define BUF_SIZE 4096
 #define BUF_MASK ((BUF_SIZE - 1))
 
+static volatile uint8_t * const mfp_rsr = (uint8_t * const)MFP_RSR;
 static volatile uint8_t * const mfp_tsr = (uint8_t * const)MFP_TSR;
+static volatile uint8_t * const mfp_udr = (uint8_t * const)MFP_UDR;
 static volatile uint8_t * const mfp_iera = (uint8_t * const)MFP_IERA;
 static volatile uint8_t * const mfp_imra = (uint8_t * const)MFP_IMRA;
 
-uint8_t tx_buffer[BUF_SIZE];
-uint16_t read_pointer = 0;
-uint16_t write_pointer = 0;
+volatile uint8_t tx_buffer[BUF_SIZE];
+volatile uint8_t rx_buffer[BUF_SIZE];
+
+volatile uint16_t tx_read_pointer = 0;
+volatile uint16_t tx_write_pointer = 0;
+volatile uint16_t rx_read_pointer = 0;
+volatile uint16_t rx_write_pointer = 0;
+
+volatile uint8_t tx_enabled;
 
 static Serial serial;
 
 extern void INIT_SERIAL_HANDLERS();
 extern void ENABLE_XMIT();
 extern void DISABLE_XMIT();
+extern void ENABLE_RECV();
+extern void DISABLE_RECV();
 
 static void SendCharImpl(unsigned char ch) {
-  // N.B Order is important here - can't change write_pointer until valid data in buffer!
-  uint16_t wp = write_pointer;
-  uint16_t nwp = (wp + 1) & BUF_MASK;
-  tx_buffer[wp] = ch;
-  write_pointer = nwp;
+  // TODO race condition here! 
+  //
+  // If transmitter becomes disabled, output may get missed (or at least delayed).
+  // Ideally want a spinlock around this whole thing...
+  if (!tx_enabled) {
+    // Just enable transmitter and send character
+    ENABLE_XMIT();
+    *mfp_udr = ch;
+  } else {
+    // Buffer this character
+    // N.B Order is important here - can't change write_pointer until valid data in buffer!
+    uint16_t wp = tx_write_pointer;
+    uint16_t nwp = (wp + 1) & BUF_MASK;
+    tx_buffer[wp] = ch;
+    tx_write_pointer = nwp;
+  } 
+}
 
-  // Enable transmitter (if it isn't already)
-  ENABLE_XMIT();
+static unsigned char BlockingReadCharImpl() {
+  ENABLE_RECV();
+
+  while (rx_read_pointer == rx_write_pointer) {
+    // spin
+  }
+
+  uint16_t ptr = rx_read_pointer;
+  
+  unsigned char c = rx_buffer[ptr++];
+
+  ptr &= BUF_MASK;
+  rx_read_pointer = ptr;
+  
+  DISABLE_RECV();
+  return c;
+}
+
+static unsigned char AsyncReadCharImpl() {
+  ENABLE_RECV();
+  
+  unsigned char c;
+
+  if ((*mfp_rsr & 128) == 0) {
+    c = 0;
+  } else {
+    c = *mfp_udr;
+  }
+
+  DISABLE_RECV();
+
+  return c;
+}
+
+void handleRxError(uint8_t data, uint8_t status) {
+  printf("Receiver error: 0x%02x\n", status);
 }
 
 void __initializeSerialServer() {
@@ -65,12 +122,15 @@ void __initializeSerialServer() {
 
   // Start off disabled
   DISABLE_XMIT();
+  DISABLE_RECV();
   
-  // Enable and unmask buffer empty exception
-  *mfp_iera |= 4;
-  *mfp_imra |= 4;
+  // Enable and unmask USART exceptions (TODO no tx error handler yet!)
+  *mfp_iera |= 0x1C;    // bits 2,3,4
+  *mfp_imra |= 0x1C;
 
   serial.SendChar = SendCharImpl;
+  serial.BlockingReadChar = BlockingReadCharImpl;
+  serial.AsyncReadChar = AsyncReadCharImpl;
 
   // Register this driver
   KernelApi *api = GetKernelApi();
