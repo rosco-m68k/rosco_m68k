@@ -8,7 +8,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -I./include
        -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int -mno-strict-align    \
        -DPRINTF_INCLUDE_CONFIG_H
 LDFLAGS=-T rosco_m68k_rom.ld -Map=rom.map
-ASFLAGS=-Felf
+ASFLAGS=-Felf -m68010
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
@@ -36,10 +36,10 @@ $(BINARY) : $(OBJECTS)
 	chmod a-x $@
 
 $(BINARY_EVEN): $(BINARY)
-	srec_cat -output $(BINARY_EVEN) -Binary rom.bin -Binary -Split 2 0
+	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0
 
 $(BINARY_ODD): $(BINARY)
-	srec_cat -output $(BINARY_ODD) -Binary rom.bin -Binary -Split 2 1
+	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
 
 .PHONY: all clean dump
 
