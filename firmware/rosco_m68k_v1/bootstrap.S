@@ -188,7 +188,6 @@ INITMFP:
     
     ; Indicate success and return
     move.b  #$FE,MFP_GPDR             ; Turn on GPIO #0 (Green LED)
-    bclr.b  #2,MFP_GPDR
     rts
 
     
