@@ -1,0 +1,58 @@
+%SIGNAL
+PIN  14 = !DTACK 
+PIN   7 = !EVENRAMSEL 
+PIN   6 = !EVENROMSEL 
+PIN   1 =  FC0 
+PIN   2 =  FC1 
+PIN   3 =  FC2 
+PIN  13 = !IACK 
+PIN   8 = !IOSEL 
+PIN  18 = !LDS 
+PIN  15 = !MFPDS 
+PIN   9 = !MFPDTACK 
+PIN   5 = !ODDRAMSEL 
+PIN   4 = !ODDROMSEL 
+PIN  16 = !RAMOE 
+PIN  17 =  RW 
+%END
+
+%FIELD
+%END
+
+%EQUATION
+DTACK =>
+    IACK & !IOSEL & !MFPDTACK
+  # !EVENROMSEL & IACK
+  # IACK & !ODDROMSEL
+  # !EVENRAMSEL & IACK
+  # IACK & !ODDRAMSEL
+
+IACK =>
+    FC0 & FC1 & FC2
+
+MFPDS =>
+    !LDS
+  # !IACK
+
+RAMOE =>
+    RW
+
+DTACK.oe  =>
+    1 
+
+IACK.oe  =>
+    1 
+
+LDS.oe  =>
+    0 
+
+MFPDS.oe  =>
+    1 
+
+RAMOE.oe  =>
+    1 
+
+RW.oe  =>
+    0 
+
+%END
