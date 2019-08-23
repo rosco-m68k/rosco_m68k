@@ -1,0 +1,195 @@
+
+*******************************************************************************
+                                  glue_logic
+*******************************************************************************
+
+CUPL(WM)        5.0a Serial# 60008009
+Device          g16v8ma  Library DLIB-h-40-8
+Created         Thu Aug 22 13:55:39 2019
+Name            glue_logic 
+Partno          00 
+Revision        03 
+Date            14/07/2019 
+Designer        Ross Bamford 
+Company         rosco_m68k 
+Assembly        None 
+Location        
+
+===============================================================================
+                            Expanded Product Terms
+===============================================================================
+
+DTACK =>
+    !IACK & IOSEL & MFPDTACK
+  # EVENROMSEL & !IACK
+  # !IACK & ODDROMSEL
+  # EVENRAMSEL & !IACK
+  # !IACK & ODDRAMSEL
+
+IACK =>
+    FC0 & FC1 & FC2
+
+MFPDS =>
+    LDS
+  # IACK
+
+RAMOE =>
+    RW
+
+DTACK.oe  =>
+    1 
+
+IACK.oe  =>
+    1 
+
+LDS.oe  =>
+    0 
+
+MFPDS.oe  =>
+    1 
+
+RAMOE.oe  =>
+    1 
+
+RW.oe  =>
+    0 
+
+
+===============================================================================
+                                 Symbol Table
+===============================================================================
+
+Pin Variable                                    Pterms   Max     Min    
+Pol   Name              Ext     Pin     Type     Used   Pterms  Level   
+--- --------            ---     ---     ----    ------  ------  -----   
+
+ !  DTACK                       14       V        5       7       1     
+ !  EVENRAMSEL                  7        V        -       -       -     
+ !  EVENROMSEL                  6        V        -       -       -     
+    FC0                         1        V        -       -       -     
+    FC1                         2        V        -       -       -     
+    FC2                         3        V        -       -       -     
+ !  IACK                        13       V        1       7       1     
+ !  IOSEL                       8        V        -       -       -     
+ !  LDS                         18       V        -       -       -     
+ !  MFPDS                       15       V        2       7       1     
+ !  MFPDTACK                    9        V        -       -       -     
+ !  ODDRAMSEL                   5        V        -       -       -     
+ !  ODDROMSEL                   4        V        -       -       -     
+ !  RAMOE                       16       V        1       7       1     
+    RW                          17       V        -       -       -     
+    DTACK               oe      14       D        1       1       0     
+    IACK                oe      13       D        1       1       0     
+    LDS                 oe      18       D        1       1       0     
+    MFPDS               oe      15       D        1       1       0     
+    RAMOE               oe      16       D        1       1       0     
+    RW                  oe      17       D        1       1       0     
+
+
+LEGEND    D : default variable         F : field      G : group
+          I : intermediate variable    N : node       M : extended node
+          U : undefined                V : variable   X : extended variable
+          T : function
+
+
+===============================================================================
+                                   Fuse Plot
+===============================================================================
+
+Syn   02192 - Ac0   02193 - 
+
+Pin #19  02048  Pol x  02120  Ac1 - 
+ 00000 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00032 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00064 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00096 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00128 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00160 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00192 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00224 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #18  02049  Pol x  02121  Ac1 - 
+ 00256 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00288 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00320 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00352 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00384 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00416 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00448 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00480 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #17  02050  Pol x  02122  Ac1 - 
+ 00512 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00544 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00576 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00608 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00640 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00672 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00704 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00736 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #16  02051  Pol x  02123  Ac1 - 
+ 00768 -------------------------------- 
+ 00800 ----------x--------------------- 
+ 00832 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00864 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00896 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00928 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00960 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 00992 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #15  02052  Pol x  02124  Ac1 - 
+ 01024 -------------------------------- 
+ 01056 -------x------------------------ 
+ 01088 ---------------------------x---- 
+ 01120 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01152 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01184 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01216 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01248 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #14  02053  Pol x  02125  Ac1 - 
+ 01280 -------------------------------- 
+ 01312 -------------------------xx--x-- 
+ 01344 -----------------x--------x----- 
+ 01376 ---------x----------------x----- 
+ 01408 ---------------------x----x----- 
+ 01440 -------------x------------x----- 
+ 01472 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01504 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #13  02054  Pol x  02126  Ac1 - 
+ 01536 -------------------------------- 
+ 01568 x-x-x--------------------------- 
+ 01600 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01632 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01664 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01696 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01728 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01760 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+Pin #12  02055  Pol x  02127  Ac1 - 
+ 01792 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01824 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01856 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01888 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01920 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01952 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 01984 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 02016 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+
+
+LEGEND    X : fuse not blown 
+          - : fuse blown 
+
+===============================================================================
+                                 Chip Diagram
+===============================================================================
+
+                               ______________
+                              |  glue_logic  |
+                      FC0 x---|1           20|---x Vcc                      
+                      FC1 x---|2           19|---x                          
+                      FC2 x---|3           18|---x !LDS                     
+               !ODDROMSEL x---|4           17|---x RW                       
+               !ODDRAMSEL x---|5           16|---x !RAMOE                   
+              !EVENROMSEL x---|6           15|---x !MFPDS                   
+              !EVENRAMSEL x---|7           14|---x !DTACK                   
+                   !IOSEL x---|8           13|---x !IACK                    
+                !MFPDTACK x---|9           12|---x                          
+                      GND x---|10          11|---x                          
+                              |______________|
+

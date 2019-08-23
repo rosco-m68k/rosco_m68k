@@ -1,0 +1,15 @@
+Name     glue_logic;
+PartNo   00;
+Date     14/07/2019;
+Revision 03;
+Designer Ross Bamford;
+Company  rosco_m68k;
+Assembly None;
+Location ;
+Device   g16v8a;
+
+
+ORDER: !DTACK, !EVENRAMSEL, !EVENROMSEL, FC0, FC1, FC2, !IACK, !IOSEL, !LDS, !MFPDS, !MFPDTACK, !ODDRAMSEL, !ODDROMSEL; 
+
+
+VECTORS:

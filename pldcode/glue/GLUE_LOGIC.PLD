@@ -1,0 +1,33 @@
+Name     glue_logic ;
+PartNo   00 ;
+Date     14/07/2019 ;
+Revision 03 ;
+Designer Ross Bamford ;
+Company  rosco_m68k ;
+Assembly None ;
+Location  ;
+Device   g16v8a ;
+
+/* *************** INPUT PINS *********************/
+PIN 1   = FC0;
+PIN 2   = FC1;
+PIN 3   = FC2;
+PIN 4   = !ODDROMSEL;
+PIN 5   = !ODDRAMSEL;
+PIN 6   = !EVENROMSEL;
+PIN 7   = !EVENRAMSEL;
+PIN 8   = !IOSEL;
+PIN 9   = !MFPDTACK;
+PIN 18  = !LDS;
+PIN 17  = RW;
+
+/* *************** OUTPUT PINS *********************/
+PIN 13  = !IACK;
+PIN 14  = !DTACK;
+PIN 15  = !MFPDS;
+PIN 16  = !RAMOE;
+
+IACK         = FC0 & FC1 & FC2;
+DTACK        = !IACK & ((IOSEL & MFPDTACK) # EVENROMSEL # ODDROMSEL # EVENRAMSEL # ODDRAMSEL );
+MFPDS        = LDS # IACK;
+RAMOE        = RW;
