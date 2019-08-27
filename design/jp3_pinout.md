@@ -26,7 +26,7 @@ filtering.
 | 1   | A1     | MC68010 Address line 1                       | High   | O   |
 | 2   | VCC    | +5V (Recommend 250mA max depending on PSU)   | N/A    | O   |
 | 3   | A2     | MC68010 Address line 2                       | High   | O   |
-| 4   | CLK    | Main system clock (4MHz, 50% duty cycle)     | N/A    | O   |
+| 4   | CLK    | Main system clock (8MHz, 50% duty cycle)     | N/A    | O   |
 | 5   | A3     | MC68010 Address line 3                       | High   | O   |
 | 6   | GND    | Ground                                       | N/A    | O   |
 | 7   | A4     | MC68010 Address line 4                       | High   | O   |
