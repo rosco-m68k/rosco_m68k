@@ -24597,6 +24597,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="124.46" x2="-33.02" y2="116.84" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="CLK"/>
 <wire x1="-33.02" y1="116.84" x2="15.24" y2="116.84" width="0.1524" layer="91"/>
+<label x="-27.94" y="116.84" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FC1" class="0">
@@ -24604,6 +24605,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="119.38" x2="-33.02" y2="111.76" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I1"/>
 <wire x1="-33.02" y1="111.76" x2="15.24" y2="111.76" width="0.1524" layer="91"/>
+<label x="-27.94" y="111.76" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="FC2" class="0">
@@ -24611,6 +24613,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="116.84" x2="-33.02" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I2"/>
 <wire x1="-33.02" y1="109.22" x2="15.24" y2="109.22" width="0.1524" layer="91"/>
+<label x="-27.94" y="109.22" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ODDROMSEL" class="0">
@@ -24618,6 +24621,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="114.3" x2="-33.02" y2="106.68" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I3"/>
 <wire x1="-33.02" y1="106.68" x2="15.24" y2="106.68" width="0.1524" layer="91"/>
+<label x="-27.94" y="106.68" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="ODDRAMSEL" class="0">
@@ -24625,6 +24629,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="111.76" x2="-33.02" y2="104.14" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I4"/>
 <wire x1="-33.02" y1="104.14" x2="15.24" y2="104.14" width="0.1524" layer="91"/>
+<label x="-27.94" y="104.14" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EVENROMSEL" class="0">
@@ -24632,6 +24637,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="109.22" x2="-33.02" y2="101.6" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I5"/>
 <wire x1="-33.02" y1="101.6" x2="15.24" y2="101.6" width="0.1524" layer="91"/>
+<label x="-27.94" y="101.6" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="EVENRAMSEL" class="0">
@@ -24639,6 +24645,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="106.68" x2="-33.02" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I6"/>
 <wire x1="-33.02" y1="99.06" x2="15.24" y2="99.06" width="0.1524" layer="91"/>
+<label x="-27.94" y="99.06" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="IOSEL" class="0">
@@ -24646,6 +24653,7 @@ Source: www.kingbright.com</description>
 <wire x1="-40.64" y1="104.14" x2="-33.02" y2="96.52" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="I7"/>
 <wire x1="-33.02" y1="96.52" x2="15.24" y2="96.52" width="0.1524" layer="91"/>
+<label x="-27.94" y="96.52" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="/IODTACK" class="0">
@@ -24667,6 +24675,7 @@ Source: www.kingbright.com</description>
 <wire x1="71.12" y1="106.68" x2="63.5" y2="99.06" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="O6"/>
 <wire x1="63.5" y1="99.06" x2="35.56" y2="99.06" width="0.1524" layer="91"/>
+<label x="38.1" y="99.06" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="/MFPDS" class="0">
@@ -24688,6 +24697,7 @@ Source: www.kingbright.com</description>
 <wire x1="71.12" y1="116.84" x2="60.96" y2="106.68" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="O3"/>
 <wire x1="60.96" y1="106.68" x2="35.56" y2="106.68" width="0.1524" layer="91"/>
+<label x="48.26" y="106.68" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="LDS" class="0">
@@ -24695,6 +24705,7 @@ Source: www.kingbright.com</description>
 <wire x1="71.12" y1="119.38" x2="60.96" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="IC5" gate="G$1" pin="O2"/>
 <wire x1="60.96" y1="109.22" x2="35.56" y2="109.22" width="0.1524" layer="91"/>
+<label x="48.26" y="109.22" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>

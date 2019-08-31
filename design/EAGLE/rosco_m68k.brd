@@ -3,7 +3,7 @@
 <eagle version="9.4.2">
 <drawing>
 <settings>
-<setting alwaysvectorfont="yes"/>
+<setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="12.5" unitdist="mil" unit="mil" style="lines" multiple="1" display="no" altdistance="5" altunitdist="mil" altunit="mil"/>
@@ -117,6 +117,10 @@
 revision zero</text>
 <text x="157.48" y="26.9875" size="1.4224" layer="26" font="vector" rot="MR0">copyright 2019</text>
 <text x="143.8275" y="34.6075" size="1.4224" layer="25" font="vector">copyright 2019</text>
+<text x="26.67" y="32.7025" size="2.1844" layer="25">ODD</text>
+<text x="73.3425" y="34.6075" size="2.1844" layer="25">ODD</text>
+<text x="95.25" y="34.6075" size="2.1844" layer="25">EVEN</text>
+<text x="49.2125" y="32.7025" size="2.1844" layer="25">EVEN</text>
 </plain>
 <libraries>
 <library name="capacitor-wima" urn="urn:adsk.eagle:library:116">
@@ -2963,11 +2967,11 @@ design rules under a new name.</description>
 <attribute name="POPULARITY" value="38" x="205.74" y="-60.96" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="125.349" y="69.342" size="1.27" layer="27" ratio="10"/>
 </element>
-<element name="C16" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-5" package3d_urn="urn:adsk.eagle:package:23344/1" value="100uF" x="101.9175" y="41.91" smashed="yes">
-<attribute name="NAME" x="100.5205" y="45.085" size="1.27" layer="25" ratio="10"/>
-<attribute name="POPULARITY" value="16" x="146.3675" y="-106.68" size="1.778" layer="27" display="off"/>
-<attribute name="SPICEPREFIX" value="C" x="146.3675" y="-106.68" size="1.778" layer="27" display="off"/>
-<attribute name="VALUE" x="99.568" y="37.592" size="1.27" layer="27" ratio="10"/>
+<element name="C16" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-5" package3d_urn="urn:adsk.eagle:package:23344/1" value="100uF" x="153.67" y="71.4375" smashed="yes">
+<attribute name="NAME" x="152.273" y="74.6125" size="1.27" layer="25" ratio="10"/>
+<attribute name="POPULARITY" value="16" x="198.12" y="-77.1525" size="1.778" layer="27" display="off"/>
+<attribute name="SPICEPREFIX" value="C" x="198.12" y="-77.1525" size="1.778" layer="27" display="off"/>
+<attribute name="VALUE" x="151.3205" y="67.1195" size="1.27" layer="27" ratio="10"/>
 </element>
 <element name="C17" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-5" package3d_urn="urn:adsk.eagle:package:23344/1" value="100uF" x="102.235" y="66.675" smashed="yes">
 <attribute name="NAME" x="100.5205" y="69.5325" size="1.27" layer="25" ratio="10"/>
@@ -2976,7 +2980,7 @@ design rules under a new name.</description>
 <attribute name="VALUE" x="100.203" y="62.6745" size="1.27" layer="27" ratio="10"/>
 </element>
 <element name="C18" library="rcl" library_urn="urn:adsk.eagle:library:334" package="E2,5-5" package3d_urn="urn:adsk.eagle:package:23344/1" value="100uF" x="17.145" y="3.175" smashed="yes">
-<attribute name="NAME" x="19.558" y="4.445" size="1.27" layer="25" ratio="10"/>
+<attribute name="NAME" x="15.748" y="6.0325" size="1.27" layer="25" ratio="10"/>
 <attribute name="POPULARITY" value="16" x="84.455" y="-145.415" size="1.778" layer="27" display="off"/>
 <attribute name="SPICEPREFIX" value="C" x="84.455" y="-145.415" size="1.778" layer="27" display="off"/>
 <attribute name="VALUE" x="19.558" y="0.762" size="1.27" layer="27" ratio="10"/>
