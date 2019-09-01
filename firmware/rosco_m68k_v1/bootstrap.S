@@ -53,7 +53,8 @@ VECTORS:
     dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 49: Transmitter error (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 4A: Transmitter empty (Replaced later)
-    dcb.l   2,UNMAPPED_USER_HANDLER     ; 4B-4C: Receiver status (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 4B: Receiver error (Replaced later)
+    dc.l    UNMAPPED_USER_HANDLER       ; 4C: Receiver buffer full (Replaced later)
     dc.l    UNMAPPED_USER_HANDLER       ; 4D: Timer A (Not used)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4E-4F: MFP GPIO #6-7 (Not used)
     dcb.l   176,UNMAPPED_USER_HANDLER   ; 50-FF: Unused user vectors
