@@ -10,7 +10,8 @@ The main driving force behind porting this was as a sanity check while trying to
 I figured if this also didn't work then it would at least eliminate my own code as the reason the receiver
 didn't work.
 
-It didn't (and as of today, doesn't) work. So it seems the problem is most likely a hardware issue.
+~It didn't (and as of today, doesn't) work. So it seems the problem is most likely a hardware issue.~ 
+EDIT: Input is now working. The issue was found to be a faulty MC68901 IC - after replacing that it immediately worked. The monitor itself however does not work, instead it causes an illegal instruction on entry of any valid command. I suspect there is stll something MC68020-specific in here that VASM isn't picking up even with the -m68010 flag.
 
 This code remains the property of it's original author(s) and is subject to the original license.
 The original README is reproduced below in its entirity.
