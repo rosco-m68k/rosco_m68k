@@ -75,7 +75,7 @@ noreturn void kmain() {
   printf("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
   START_HEART();
 
-  printf("Initialisation complete\r\n");
+  printf("Initialisation complete; Entering echo loop...\r\n");
 
   // Just loop receiving characters and echoing them back.
   // Each character also toggles I1.
