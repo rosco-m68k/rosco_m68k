@@ -25,6 +25,7 @@
 
 #include "rosco_m68k.h"
 #include "machine.h"
+#include "critical.h"
 #include "servers/serial.h"
 #include "3rdparty/printf.h"
 
@@ -58,22 +59,21 @@ extern void ENABLE_RECV();
 extern void DISABLE_RECV();
 
 static void SendCharImpl(unsigned char ch) {
-  // TODO race condition here! 
-  //
-  // If transmitter becomes disabled, output may get missed (or at least delayed).
-  // Ideally want a spinlock around this whole thing...
+  CRITICAL_BEGIN();
+
   if (!tx_enabled) {
     // Just enable transmitter and send character
     ENABLE_XMIT();
     *mfp_udr = ch;
   } else {
     // Buffer this character
-    // N.B Order is important here - can't change write_pointer until valid data in buffer!
     uint16_t wp = tx_write_pointer;
     uint16_t nwp = (wp + 1) & BUF_MASK;
     tx_buffer[wp] = ch;
     tx_write_pointer = nwp;
-  } 
+  }
+
+  CRITICAL_END();
 }
 
 static unsigned char BlockingReadCharImpl() {
