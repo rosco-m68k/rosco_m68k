@@ -23,9 +23,8 @@ BUF_MASK      equ       BUF_SIZE-1
 
 ; Exception handler for transmit buffer empty (vector 0x4A).
 TX_EMPTY_HANDLER:
-    move.l  A0,-(A7)              ; Save regs...
-    move.l  D0,-(A7)
-    move.l  D1,-(A7)
+    movem.l D0-D1/A0,-(A7)        ; Save regs
+    bsr.w   CRITICAL_BEGIN        ; This is a critical section
 
     eor.l   D0,D0                 ; Zero D0
     move.w  tx_read_pointer,D0    ; Get read pointer
@@ -47,10 +46,36 @@ TX_EMPTY_HANDLER:
     bsr.s   DISABLE_XMIT          ; Disable the transmitter
 
 .DONE:
-    move.l  (A7)+,D1              ; Restore regs
-    move.l  (A7)+,D0
-    move.l  (A7)+,A0
+    bsr.w   CRITICAL_END          ; End of critical section
+    movem.l (A7)+,D0-D1/A0        ; Restore regs
     rte                           ; We're outta here.
+
+
+; Enable the transmitter and turn on GPIO #2.
+ENABLE_XMIT::
+    bset.b  #0,MFP_TSR
+    move.b  #1,tx_enabled
+    bclr.b  #2,MFP_GPDR                 ; :LED on
+    rts
+
+; Disable the transmitter and turn off GPIO #2.
+DISABLE_XMIT::
+    bclr.b  #0,MFP_TSR
+    move.b  #0,tx_enabled
+    bset.b  #2,MFP_GPDR                 ; :LED off
+    rts
+
+; Enable the receiver and turn on GPIO #3.
+ENABLE_RECV::
+    bset.b  #0,MFP_RSR        
+    bclr.b  #3,MFP_GPDR                 ; :LED on
+    rts
+
+; Disable the receiver and turn off GPIO #3.
+DISABLE_RECV::
+    bclr.b  #0,MFP_RSR
+    bset.b  #3,MFP_GPDR                 ; :LED off
+    rts
 
 
 RX_FULL_HANDLER:
@@ -86,33 +111,6 @@ RX_ERROR_HANDLER:
     jmp     handleRxError
     movem.l (A7)+,D0-D7/A0-A6
     rte
-
-
-; Enable the transmitter and turn on GPIO #2.
-ENABLE_XMIT::
-    bset.b  #0,MFP_TSR
-    move.b  #1,tx_enabled
-    bclr.b  #2,MFP_GPDR                 ; :LED on
-    rts
-
-; Disable the transmitter and turn off GPIO #2.
-DISABLE_XMIT::
-    bclr.b  #0,MFP_TSR
-    move.b  #0,tx_enabled
-    bset.b  #2,MFP_GPDR                 ; :LED off
-    rts
-
-; Enable the receiver and turn on GPIO #3.
-ENABLE_RECV::
-    bset.b  #0,MFP_RSR        
-    bclr.b  #3,MFP_GPDR                 ; :LED on
-    rts
-
-; Disable the receiver and turn off GPIO #3.
-DISABLE_RECV::
-    bclr.b  #0,MFP_RSR
-    bset.b  #3,MFP_GPDR                 ; :LED off
-    rts
 
 
 ; Hook the handlers into the appropriate vectors.
