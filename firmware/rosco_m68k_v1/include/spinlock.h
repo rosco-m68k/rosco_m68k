@@ -19,6 +19,9 @@
 
 typedef uint8_t Spinlock;
 
+#define SPINLOCK_UNLOCKED ((Spinlock)0)
+#define SPINLOCK_LOCKED   ((Spinlock)1)
+
 #define spinlock_acquire(lock) SPINLOCK_ACQUIRE_C(lock)
 #define spinlock_release(lock) SPINLOCK_RELEASE_C(lock)
 
