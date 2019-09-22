@@ -230,9 +230,6 @@ TICK_HANDLER:
     move.l  (A7)+,D0                  ; Restore D0
     rte                               ; We're done
     
-TX_EMPTY_HANDLER:
-    bchg.b  #2,MFP_GPDR               ; toggle LED
-    rte
 
 ; Busywait - expects a delay in D0, returns when D0 gets to 0 
 ;
