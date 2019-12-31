@@ -54,6 +54,9 @@ The last one would make null dereferences generate a bus error.
 
 ## Certification
 
+<p align='center'>
 <img alt='OSHWA Certified' src='/images/oshwa.png?raw=true' title='OSHWA Certification UK000006' width='20%'>
-
-OSHWA Certification: https://certification.oshwa.org/uk000006.html
+</p>
+<p align='center'>
+https://certification.oshwa.org/uk000006.html
+</p>
