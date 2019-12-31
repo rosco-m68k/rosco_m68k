@@ -1,7 +1,5 @@
 # Motorola 68k single-board computer
 
-OSHWA Certification: https://certification.oshwa.org/uk000006.html
-
 This repository holds design files, firmware and software for my m68k 
 single-board computer, AKA the Rosco_m68k.
 
@@ -53,3 +51,8 @@ E.g. in user mode:
 
 The last one would make null dereferences generate a bus error.
 
+## Certification
+
+<img alt='OSHWA Certified' src='/images/oshwa.png?raw=true' title='OSHWA Certification UK000006' width='20%'>
+
+OSHWA Certification: https://certification.oshwa.org/uk000006.html
