@@ -6,9 +6,10 @@ single-board computer, AKA the Rosco_m68k.
 You can find the project along with some logs about its development
 on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
 
-All Software released under the MIT licence. See LICENSE for details.
-All Hardware released under the CERN Open Hardware licence.See LICENCE.hardware.txt.
-All Documentation released under Creative Commons Attribution. See https://creativecommons.org/licenses/by/2.0/uk/
+* All Software released under the MIT licence. See LICENSE for details.
+* All Hardware released under the CERN Open Hardware licence.See LICENCE.hardware.txt.
+* All Documentation released under Creative Commons Attribution. See https://creativecommons.org/licenses/by/2.0/uk/
+
 ## Current design
 
 Currently, the design for the system is:
