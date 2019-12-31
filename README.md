@@ -1,5 +1,7 @@
 # Motorola 68k single-board computer
 
+OSHWA Certification: https://certification.oshwa.org/uk000006.html
+
 This repository holds design files, firmware and software for my m68k 
 single-board computer, AKA the Rosco_m68k.
 
