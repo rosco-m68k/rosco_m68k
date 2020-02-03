@@ -4,11 +4,13 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -I./include \
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror             \
        -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int -mno-strict-align    \
-       -DPRINTF_INCLUDE_CONFIG_H
+       -I./include -I./mbzm/include                                              \
+       -DZEMBEDDED -DPRINTF_INCLUDE_CONFIG_H
+
 LDFLAGS=-T rosco_m68k_rom.ld -Map=rom.map
-ASFLAGS=-Felf -m68010
+ASFLAGS=-Felf -m68010 -quiet
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
@@ -24,7 +26,9 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 OBJECTS=bootstrap.o kmain.o api/api.o rtlsupport.o 3rdparty/printf.o \
 	putchar.o base_servers/serial.o base_servers/serial_isr.o    \
-	critical.o spinlock.o
+	critical.o spinlock.o                                        \
+	mbzm/znumbers.o mbzm/zserial.o mbzm/zheaders.o               \
+      	mbzm/crc32.o mbzm/crcccitt.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
