@@ -176,11 +176,12 @@ static ZRESULT init_hdr_buf(ZHDR *hdr, uint8_t *buf) {
 
 /* Send/Receive impl for mbzm */
 ZRESULT zm_send(uint8_t c) {
+  serial->SendChar(c);
   return OK;
 }
 
 ZRESULT zm_recv() {
-  return CLOSED;
+  return serial->BlockingReadChar();
 }
 
 
