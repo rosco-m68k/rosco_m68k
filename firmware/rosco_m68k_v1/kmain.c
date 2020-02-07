@@ -24,7 +24,7 @@
 #include "3rdparty/printf.h"
 #include "zmodem.h"
 
-#define ZMODEM_LOAD_ADDRESS      0x1000;     /* Load code at 4k mark */
+#define ZMODEM_LOAD_ADDRESS      0x3000;     /* Load code at 12k mark */
 
 typedef void (*LoadFunc)(KernelApi*);
 
