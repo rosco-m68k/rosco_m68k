@@ -20,7 +20,10 @@ Currently, the design for the system is:
 * 16KB ROM (at 0xFC0000, 256KB reserved for ROM up to 0xFFFFFF)
 * 1MB RAM (0x0 - 0xFFFFF)
 * ~TTL-based address decoding~ Decode and glue logic are now handled by ATF16V8BQL PLDs. Only four 7400-series chips remain.
-* The current prototype is breadboard based, but I have a basic PCB design and am hoping to get prototypes made soon!
+* ~The current prototype is breadboard based, but I have a basic PCB design and am hoping to get prototypes made soon!~
+  * Prototypes are now made and verified working (with [a few minor issues](https://github.com/roscopeco/rosco_m68k/projects/1)). Gerbers for this r0 board can be found in https://github.com/roscopeco/rosco_m68k/tree/master/design/CAM/r0/CAMOutputs. The populated prototype looks like this:
+
+![Prototype board](images/first-populated-prototype.jpg)
 
 In terms of software:
 
