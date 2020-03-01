@@ -1,0 +1,24 @@
+{
+    "Header": {
+        "Comment": "All values are metric (mm)",
+        "CreationDate": "2020-02-01T15:55:55Z",
+        "GenerationSoftware": {
+            "Application": "EAGLE",
+            "Vendor": "Autodesk",
+            "Version": "9.5.2"
+        },
+        "Part": "Single"
+    },
+    "Overall": {
+        "BoardThickness": 1.99,
+        "LayerNumber": 4,
+        "Name": {
+            "ProjectId": "rosco_m68k"
+        },
+        "Owner": "roscopeco roscopeco <roscopeco@gmail.com>",
+        "Size": {
+            "X": 160,
+            "Y": 100
+        }
+    }
+}
