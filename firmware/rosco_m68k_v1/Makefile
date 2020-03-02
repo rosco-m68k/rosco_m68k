@@ -53,4 +53,4 @@ dump: $(BINARY)
 	od --endian=big -tx1 $(BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
-	./burn.sh
+	sh ./burn.sh
