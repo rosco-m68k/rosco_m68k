@@ -7,3 +7,7 @@
 *.pro
 *.job
 *.map
+**/.project
+**/.cproject
+**/.settings
+
