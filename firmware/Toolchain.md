@@ -1,6 +1,8 @@
 # Building the toolchain
 
-0. Configure build environment
+0. Configure build environment (Linux only)
+
+> Note: Skip this step on Mac!
 
 - flex
 - libgmp-dev
@@ -24,20 +26,21 @@ $ tar xf binutils-2.28.tar.bz2
 $ mkdir build-binutils-2.28-m68k
 $ cd build-binutils-2.28-m68k
 $ ../binutils-2.28/configure --prefix=$HOME/opt/cross --target=m68k-elf
-$ make -j$(nproc)
+$ make -j$(nproc)       # on Mac, use 'make -j$(sysctl -n hw.physicalcpu)' instead
+
 $ make install
 $ cd ..
 ```
 
-2. Build and install gcc-7.1.0
+2. Build and install gcc-7.5.0
 
 ```bash
-$ wget http://www.mirrorservice.org/sites/ftp.gnu.org/gnu/gcc/gcc-7.1.0/gcc-7.1.0.tar.bz2
-$ tar xf gcc-7.1.0.tar.bz2
-$ mkdir build-gcc-7.1.0-m68k
-$ cd build-gcc-7.1.0-m68k
-$ ../gcc-7.1.0/configure --prefix=$HOME/opt/cross --target=m68k-elf --enable-languages=c,c++
-$ make -j$(nproc) all-gcc all-target-libgcc
+$ wget http://www.mirrorservice.org/sites/ftp.gnu.org/gnu/gcc/gcc-7.5.0/gcc-7.5.0.tar.gz
+$ tar xf gcc-7.5.0.tar.gz
+$ mkdir build-gcc-7.5.0-m68k
+$ cd build-gcc-7.5.0-m68k
+$ ../gcc-7.5.0/configure --prefix=$HOME/opt/cross --target=m68k-elf --enable-languages=c,c++
+$ make -j$(nproc) all-gcc all-target-libgcc        # on Mac, use 'make -j$(sysctl -n hw.physicalcpu) --all-gcc --all-target-libgcc' instead
 $ make install-gcc install-target-libgcc
 $ cd ..
 ```
@@ -57,15 +60,22 @@ $ cd ..
  
 4. Build and install srecord-1.64
 
+> Note: On Mac, you might need `brew install boost` if you don't already have boost installed.
+  This also doesn't work with the standard libtool, so `brew install libtool` too (and change the configure command as below)
+  You may get errors from Make when building documentation, but these are (or appear to be) ignorable.
+
 ```bash
 $ wget http://srecord.sourceforge.net/srecord-1.64.tar.gz
 $ tar xf srecord-1.64.tar.gz
 $ cd srecord-1.64
-$ ./configure --prefix $HOME
+$ ./configure --prefix $HOME/opt/cross     # On Mac: 'LIBTOOL=glibtool ./configure --prefix $HOME/opt/cross'
 $ make
 $ make install
 $ cd ..
 ```
+
+> Note: On Mac, install didn't install the dylib correctly for reasons I didn't have time to investigate.
+  To workaround, I just did `cp srecord/.libs/libsrecord.0.dylib ~/opt/cross/lib` and it worked fine.
 
 5. (Optional - if wanting to use TL866-series EEPROM programmer from Linux)
 
