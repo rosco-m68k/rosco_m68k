@@ -12,7 +12,7 @@
 ; serial driver. Some of this could probably be moved to C 
 ; eventually.
 ;------------------------------------------------------------
-    include "../equates.S"
+    include "../shared/equates.S"
 
     section .text
 
