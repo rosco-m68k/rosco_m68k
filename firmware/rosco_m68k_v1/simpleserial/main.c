@@ -17,27 +17,27 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
-#include "rosco_m68k.h"
 #include "machine.h"
 #include "system.h"
-#include "servers/serial.h"
-#include "3rdparty/printf.h"
 #include "zmodem.h"
 
-#define ZMODEM_LOAD_ADDRESS      0x3000;     /* Load code at 12k mark */
-
-typedef void (*LoadFunc)(KernelApi*);
+#define ZMODEM_LOAD_ADDRESS      0x3000     /* Load code at 12k mark */
 
 // Linker defines
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 
-extern void __initializeKernelApiPtr();
-extern void __initializeSerialServer();
-extern void __initializePrintf(Serial *serial);
-
 static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
+static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 
-static Serial *serial;
+extern void ENABLE_RECV();
+extern void ENABLE_XMIT();
+extern void SENDCHAR(uint8_t chr);
+extern uint8_t RECVCHAR();
+
+typedef void (*LoadFunc)(SystemDataBlock * const);
+
+static char* msg = (char*)ZMODEM_LOAD_ADDRESS;
+//static LoadFunc loadfunc = (LoadFunc)ZMODEM_LOAD_ADDRESS;
 
 ZRESULT receive_kernel();
 
@@ -50,50 +50,38 @@ void kinit() {
 }
 
 noreturn void kmain() {
+  *mfp_gpdr |= 0x80;
+
   if (sdb->magic != 0xB105D47A) {
     EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
     HALT();
   }
 
-  // Set up the rest of the System Data Block
-  EARLY_PRINT_C("Initialising System Data Block...\r\n");
-  // TODO
-  
-  // Set up the KernelAPI pointer (at 0x04)
-  EARLY_PRINT_C("Initialising kernel API...\r\n");
-  __initializeKernelApiPtr();
-
-  // Have the serial server initalize itself
-  EARLY_PRINT_C("Initialising serial server...\r\n");
-  __initializeSerialServer();
-
-  serial = GetKernelApi()->FindLibrary("serial0", ROSCOM68K_SERIAL_MAGIC);
-
-  if (serial == NULL) {
-    EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Serial driver failed to initialise. Halting.\r\n");
-    HALT();
-  }
-
-  // Initialize printf with the new serial
-  __initializePrintf(serial);
-
   // Start the timer tick
-  printf("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
+  EARLY_PRINT_C("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
   START_HEART();
 
-  printf("Initialisation complete; Ready to receive kernel via serial link\r\n");
+  EARLY_PRINT_C("Initialisation complete; Entering echo loop...\r\n");
+
+  ENABLE_XMIT();
+  ENABLE_RECV();
+
+  msg[0] = 0;
 
   ZRESULT result;
   while ((result = receive_kernel()) != OK) {
-    printf("\x1b[1;31mSEVERE\x1b[0m: Receive failed: %0x%04x; Ready for retry...\r\n", ERROR_CODE(result));
+    EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
   }
 
-  printf("\x1b[1;31mSEVERE\x1b: Should not return here; Halting\r\n");
+  EARLY_PRINT_C("Returned OK\n");
+
+  EARLY_PRINT_C(msg);
+
+//  EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b: Should not return here; Halting\r\n");
 
   while (true) {
-    HALT();
+    //HALT();
   }
-
 }
 
 // Spec says a data packet is max 1024 bytes, but add some headroom...
@@ -176,19 +164,17 @@ static ZRESULT init_hdr_buf(ZHDR *hdr, uint8_t *buf) {
 
 /* Send/Receive impl for mbzm */
 ZRESULT zm_send(uint8_t c) {
-  serial->SendChar(c);
+  SENDCHAR(c);
   return OK;
 }
 
 ZRESULT zm_recv() {
-  return serial->BlockingReadChar();
+  return RECVCHAR();
 }
-
 
 ZRESULT receive_kernel() {
   uint8_t rzr_buf[4];
   uint8_t *data_buf = (uint8_t*)ZMODEM_LOAD_ADDRESS;
-  LoadFunc loadfunc = (LoadFunc)ZMODEM_LOAD_ADDRESS;
   uint16_t count;
   uint32_t received_data_size = 0;
   ZHDR hdr;
@@ -214,61 +200,67 @@ ZRESULT receive_kernel() {
   }
 
   if (zm_await("rz\r", (char*)rzr_buf, 4) == OK) {
+
     while (true) {
       uint16_t result = zm_await_header(&hdr);
 
       switch (result) {
+      case TIMEOUT:
+        zm_resend_last_header();
+        continue;
+
       case OK:
         switch (hdr.type) {
         case ZRQINIT:
         case ZEOF:
-          result = zm_send_hex_hdr(zrinit_buf);
+          result = zm_send_hdr(&hdr_zrinit);
 
-          if (result != OK) {
+          if (IS_ERROR(result)) {
             return result;
           }
 
           continue;
 
         case ZFIN:
-          result = zm_send_hex_hdr(zfin_buf);
+          result = zm_send_hdr(&hdr_zfin);
 
-          // Jump to received code
-          loadfunc(GetKernelApi());
+          // TODO just ignoring 'OO' at end of xfer...
+          
+          return OK;
 
         case ZFILE:
-          // TODO Process hdr.flags.f0 to determine if we support the transfer options?
-          //      Currently, just ignore and always use binary...
           count = DATA_BUF_LEN;
           result = zm_read_data_block(data_buf, &count);
 
-          if (!IS_ERROR(result)) {
+          if (!IS_ERROR(result) && result == GOT_CRCW) {
+            
+            result = zm_send_hdr(&hdr_zrpos);
 
-            // TODO any buffer init or whatever...
-
-            result = zm_send_hex_hdr(zrpos_buf);
-
-            if (result != OK) {
+            if (IS_ERROR(result)) {
               return result;
             }
+          } else {
+            zm_send_hdr(&hdr_zrinit);
           }
 
           // TODO care about XON that will follow?
 
           continue;
 
+        case ZNAK:
+          zm_send_hdr_pos32(ZABORT, 0);
+          return CORRUPTED;
+
         case ZDATA:
           while (true) {
             count = DATA_BUF_LEN;
             result = zm_read_data_block(data_buf, &count);
 
-            // count is one more than the actual data length to account for frameend.
-            received_data_size += (count - 1);
-
             if (!IS_ERROR(result)) {
-              // Point data_buf to next free section of memory.
-              data_buf += received_data_size;
 
+              received_data_size += (count - 1);
+              data_buf += (count - 1);
+              
               if (result == GOT_CRCE) {
                 // End of frame, header follows, no ZACK expected.
                 break;
@@ -277,56 +269,58 @@ ZRESULT receive_kernel() {
                 continue;
               } else if (result == GOT_CRCQ) {
                 // Frame continues, ACK required
-                result = zm_send_hex_hdr(zack_buf);
-                
-                if (result != OK) {
+                result = zm_send_hdr_pos32(ZACK, received_data_size);
+
+                if(IS_ERROR(result)) {
                   return result;
                 }
 
                 continue;
+
               } else if (result == GOT_CRCW) {
                 // End of frame, header follows, ZACK expected.
+                result = zm_send_hdr_pos32(ZACK, received_data_size);
 
-                result = zm_send_hex_hdr(zack_buf);
-
-                if (result != OK) {
+                if(IS_ERROR(result)) {
                   return result;
                 }
 
                 break;
+
               }
 
-            } else {
-              // Error receiving block
-              result = zm_send_hex_hdr(znak_buf);
+            } else if (result == CORRUPTED || result == BAD_CRC || result == BAD_ESCAPE) {
+              result = zm_send_hdr_pos32(ZRPOS, received_data_size);
 
-              if (result != OK) {
+              if (IS_ERROR(result)) {
                 return result;
               }
+
+              break;
+
+            } else {
+              // FATAL
+              return result;
             }
           }
 
-          continue;
+          break;
 
         default:
-          // UNKNOWN HEADER - Just ignore
-          continue;
-        }
-
-        break;
-      case BAD_CRC:
-        result = zm_send_hex_hdr(znak_buf);
-
-        if (result != OK) {
+          // FATAL
           return result;
         }
 
-        continue;
-      default:
-        // Other error result - probably noise when receiving
-        result = zm_send_hex_hdr(znak_buf);
+        break;
 
-        if (result != OK) {
+      case CANCELLED:
+        return CANCELLED;
+
+      default:
+        // Just try to send a ZRPOS to attempt recovery...
+        result = zm_send_hdr_pos32(ZRPOS, received_data_size);
+
+        if (IS_ERROR(result)) {
           return result;
         }
 
