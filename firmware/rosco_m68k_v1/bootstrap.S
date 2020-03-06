@@ -182,8 +182,9 @@ INITMFP:
     move.b  #$05,MFP_TSR              ; Set pin state high and enable transmitter
 
     ; Interrupt setup - Enable timer C interrupt for kernel tick
-    move.l  #MFP_VECBASE,D0           ; Set up the base MFP vector...
-    move.b  D0,MFP_VR                 ; ... at 0x40 (first 16 user vectors)
+    move.l  #MFP_VECBASE,D0           ; Set up the base MFP vector at 0x40 (first 16 user vectors)...
+    or.l    #8,D0                     ; ... and set software-end-of-interrupt mode
+    move.b  D0,MFP_VR                 ; ... then write to MFP vector register
     or.b    #$20,MFP_IERB             ; Enable Timer C interrupt, but leave it masked for now
                                       ; (kmain will call START_HEART later)
     
@@ -228,6 +229,7 @@ TICK_HANDLER:
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,$408                   ; ... and write back to SDB
     move.l  (A7)+,D0                  ; Restore D0
+    move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     rte                               ; We're done
     
 

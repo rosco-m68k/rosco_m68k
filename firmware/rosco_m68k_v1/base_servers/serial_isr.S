@@ -48,6 +48,7 @@ TX_EMPTY_HANDLER:
 .DONE:
     bsr.w   CRITICAL_END          ; End of critical section
     movem.l (A7)+,D0-D1/A0        ; Restore regs
+    move.b  #~$4,MFP_ISRA         ; Clear interrupt-in-service
     rte                           ; We're outta here.
 
 
@@ -67,7 +68,7 @@ DISABLE_XMIT::
 
 ; Enable the receiver and turn on GPIO #3.
 ENABLE_RECV::
-    bset.b  #0,MFP_RSR        
+    bset.b  #0,MFP_RSR
     bclr.b  #3,MFP_GPDR                 ; :LED on
     rts
 
@@ -95,6 +96,7 @@ RX_FULL_HANDLER:
 
     add.w   #1,D0                 ; Incremement the write pointer
     and.w   #BUF_MASK,D0          ; Keep it in range
+    move.b  #~$10,MFP_ISRA        ; Clear interrupt-in-service
     move.w  D0,rx_write_pointer   ; And store back to the variable
 
 .DONE:
@@ -110,6 +112,8 @@ RX_ERROR_HANDLER:
     move.b  MFP_UDR,-(A7)
     jmp     handleRxError
     movem.l (A7)+,D0-D7/A0-A6
+    move.b  #~$8,MFP_ISRA         ; Clear interrupt-in-service
+
     rte
 
 
