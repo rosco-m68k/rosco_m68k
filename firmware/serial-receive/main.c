@@ -19,9 +19,12 @@
 #include <stdbool.h>
 #include "machine.h"
 #include "system.h"
-#include "zmodem.h"
+#include "rtlsupport.h"
+#include "kermit/cdefs.h"
+#include "kermit/platform.h"
+#include "kermit/kermit.h"
 
-#define ZMODEM_LOAD_ADDRESS      0x3000     /* Load code at 12k mark */
+#define KERNEL_LOAD_ADDRESS      0x8000     /* Load code at 32k mark */
 
 // Linker defines
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
@@ -36,10 +39,10 @@ extern uint8_t RECVCHAR();
 
 typedef void (*LoadFunc)(SystemDataBlock * const);
 
-static char* msg = (char*)ZMODEM_LOAD_ADDRESS;
+static char* msg = (char*)KERNEL_LOAD_ADDRESS;
 //static LoadFunc loadfunc = (LoadFunc)ZMODEM_LOAD_ADDRESS;
 
-ZRESULT receive_kernel();
+int receive_kernel();
 
 void kinit() {
   // copy .data
@@ -68,8 +71,12 @@ noreturn void kmain() {
 
   msg[0] = 0;
 
-  ZRESULT result;
-  while ((result = receive_kernel()) != OK) {
+//  while (true) {
+//      uint8_t c = RECVCHAR();
+//      SENDCHAR(c);
+//  }
+//
+  while (!receive_kernel()) {
     EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
   }
 
@@ -84,251 +91,144 @@ noreturn void kmain() {
   }
 }
 
-// Spec says a data packet is max 1024 bytes, but add some headroom...
-#define DATA_BUF_LEN    2048
+UCHAR o_buf[OBUFLEN+8];         /* File output buffer */
+UCHAR i_buf[IBUFLEN+8];         /* File input buffer */
 
-static ZHDR hdr_zrinit = {
-  .type = ZRINIT,
-  .flags = {
-      .f0 = CANOVIO | CANFC32,
-      .f1 = 0
-  },
-  .position = {
-      .p0 = 0x00,
-      .p1 = 0x00
-  }
-};
+static struct k_data k;
+static struct k_response response;
+static uint8_t *current_load_ptr = (uint8_t*)KERNEL_LOAD_ADDRESS;
 
-static ZHDR hdr_znak = {
-    .type = ZNAK,
-    .flags = {
-        .f0 = 0,
-        .f1 = 0,
-        .f2 = 0,
-        .f3 = 0
-    }
-};
-
-static ZHDR hdr_zrpos = {
-    .type = ZRPOS,
-    .position = {
-        .p0 = 0,
-        .p1 = 0,
-        .p2 = 0,
-        .p3 = 0
-    }
-};
-
-static ZHDR hdr_zabort = {
-    .type = ZABORT,
-    .position = {
-        .p0 = 0,
-        .p1 = 0,
-        .p2 = 0,
-        .p3 = 0
-    }
-};
-
-static ZHDR hdr_zack = {
-    .type = ZACK,
-    .position = {
-        .p0 = 0,
-        .p1 = 0,
-        .p2 = 0,
-        .p3 = 0
-    }
-};
-
-static ZHDR hdr_zfin = {
-    .type = ZFIN,
-    .position = {
-        .p0 = 0,
-        .p1 = 0,
-        .p2 = 0,
-        .p3 = 0
-    }
-};
-
-static uint8_t zrinit_buf[HEX_HDR_STR_LEN + 1];
-static uint8_t znak_buf[HEX_HDR_STR_LEN + 1];
-static uint8_t zrpos_buf[HEX_HDR_STR_LEN + 1];
-static uint8_t zabort_buf[HEX_HDR_STR_LEN + 1];
-static uint8_t zack_buf[HEX_HDR_STR_LEN + 1];
-static uint8_t zfin_buf[HEX_HDR_STR_LEN + 1];
-
-static ZRESULT init_hdr_buf(ZHDR *hdr, uint8_t *buf) {
-  buf[HEX_HDR_STR_LEN] = 0;
-  zm_calc_hdr_crc(hdr);
-  return zm_to_hex_header(hdr, buf, HEX_HDR_STR_LEN);
+static int inchk(struct k_data * k) {
+    return -1;
 }
 
-/* Send/Receive impl for mbzm */
-ZRESULT zm_send(uint8_t c) {
-  SENDCHAR(c);
-  return OK;
+static int readpkt(struct k_data * k, UCHAR *p, int len) {
+    int x, n;
+    short flag;
+    UCHAR c;
+
+    flag = n = 0;                       /* Init local variables */
+
+    while (1) {
+        x = RECVCHAR();                  /* Replace this with real i/o */
+        c = (k->parity) ? x & 0x7f : x & 0xff; /* Strip parity */
+
+        if (!flag && c != k->r_soh) /* No start of packet yet */
+          continue;                     /* so discard these bytes. */
+        if (c == k->r_soh) {        /* Start of packet */
+            flag = 1;                   /* Remember */
+            continue;                   /* But discard. */
+        } else if (c == k->r_eom    /* Packet terminator */
+           || c == '\012'   /* 1.3: For HyperTerminal */
+           ) {
+            return(n);
+        } else {                        /* Contents of packet */
+            if (n++ > k->r_maxlen)  /* Check length */
+              return(0);
+            else
+              *p++ = x & 0xff;
+        }
+    }
+
+    return(-1);
 }
 
-ZRESULT zm_recv() {
-  return RECVCHAR();
+static int tx_data(struct k_data * k, UCHAR *p, int n) {
+    for (int i = 0; i < n; i++) {
+        SENDCHAR(*p++);
+    }
+
+    return(X_OK);                       /* Success */
 }
 
-ZRESULT receive_kernel() {
-  uint8_t rzr_buf[4];
-  uint8_t *data_buf = (uint8_t*)ZMODEM_LOAD_ADDRESS;
-  uint16_t count;
-  uint32_t received_data_size = 0;
-  ZHDR hdr;
+static int openfile(struct k_data * k, UCHAR * s, int mode) {
+    return X_OK;
+}
 
-  // Set up static header buffers for later use...
-  if (IS_ERROR(init_hdr_buf(&hdr_zrinit, zrinit_buf))) {
-    return OUT_OF_SPACE;
-  }
-  if (IS_ERROR(init_hdr_buf(&hdr_znak, znak_buf))) {
-    return OUT_OF_SPACE;
-  }
-  if (IS_ERROR(init_hdr_buf(&hdr_zrpos, zrpos_buf))) {
-    return OUT_OF_SPACE;
-  }
-  if (IS_ERROR(init_hdr_buf(&hdr_zabort, zabort_buf))) {
-    return OUT_OF_SPACE;
-  }
-  if (IS_ERROR(init_hdr_buf(&hdr_zack, zack_buf))) {
-    return OUT_OF_SPACE;
-  }
-  if (IS_ERROR(init_hdr_buf(&hdr_zfin, zfin_buf))) {
-    return OUT_OF_SPACE;
-  }
+/* Suspect this function isn't needed since we're receive-only... */
+static ULONG fileinfo(struct k_data * k, UCHAR * filename, UCHAR * buf, int buflen, short * type, short mode) {
+    buf[0] = 0;             /* "Cannot determine" file time.. */
+    *type = 1;              /* Always binary... */
+    return X_OK;
+}
 
-  if (zm_await("rz\r", (char*)rzr_buf, 4) == OK) {
+/* Suspect this function isn't needed since we're receive-only... */
+static int readfile(struct k_data * k) {
+    return -1;
+}
 
-    while (true) {
-      uint16_t result = zm_await_header(&hdr);
+static int writefile(struct k_data * k, UCHAR * s, int n) {
+    memcpy(current_load_ptr, s, n);
+    current_load_ptr += n;
+    return X_OK;
+}
 
-      switch (result) {
-      case TIMEOUT:
-        zm_resend_last_header();
-        continue;
+static int closefile(struct k_data * k, UCHAR c, int mode) {
+    return X_OK;
+}
 
-      case OK:
-        switch (hdr.type) {
-        case ZRQINIT:
-        case ZEOF:
-          result = zm_send_hdr(&hdr_zrinit);
+int receive_kernel() {
+    int status, rx_len;
+    uint8_t *inbuf;
+    short r_slot;
 
-          if (IS_ERROR(result)) {
-            return result;
-          }
+    k.xfermode = 1;         /* Manual select  */
+    k.remote = 1;           /* Remote */
+    k.binary = 1;           /* Binary mode */
+    k.parity = 0;           /* No parity */
+    k.bct = 3;              /* Not sure, I think 3 is CRC... */
+    k.ikeep = 1;            /* Keep incompletely received files */
+    k.filelist = 0;         /* List of files to send (if any) */
+    k.cancel = 0;           /* Not canceled yet */
 
-          continue;
+/*  Fill in the i/o pointers  */
 
-        case ZFIN:
-          result = zm_send_hdr(&hdr_zfin);
+    k.zinbuf = i_buf;       /* File input buffer */
+    k.zinlen = IBUFLEN;     /* File input buffer length */
+    k.zincnt = 0;           /* File input buffer position */
+    k.obuf = o_buf;         /* File output buffer */
+    k.obuflen = OBUFLEN;    /* File output buffer length */
+    k.obufpos = 0;          /* File output buffer position */
 
-          // TODO just ignoring 'OO' at end of xfer...
-          
-          return OK;
+/* Fill in function pointers */
 
-        case ZFILE:
-          count = DATA_BUF_LEN;
-          result = zm_read_data_block(data_buf, &count);
+    k.rxd    = readpkt;     /* for reading packets */
+    k.txd    = tx_data;     /* for sending packets */
+    k.ixd    = inchk;       /* for checking connection */
+    k.openf  = openfile;    /* for opening files */
+    k.finfo  = fileinfo;    /* for getting file info */
+    k.readf  = readfile;    /* for reading files */
+    k.writef = writefile;   /* for writing to output file */
+    k.closef = closefile;   /* for closing files */
 
-          if (!IS_ERROR(result) && result == GOT_CRCW) {
-            
-            result = zm_send_hdr(&hdr_zrpos);
+    status = kermit(K_INIT, &k, 0, 0, "", &response);
+    if (status != X_OK) {
+        return 0;
+    }
 
-            if (IS_ERROR(result)) {
-              return result;
-            }
-          } else {
-            zm_send_hdr(&hdr_zrinit);
-          }
+    while (status != X_DONE) {
+        inbuf = getrslot(&k,&r_slot);   /* Allocate a window slot */
+        rx_len = k.rxd(&k,inbuf,P_PKTLEN); /* Try to read a packet */
 
-          // TODO care about XON that will follow?
-
-          continue;
-
-        case ZNAK:
-          zm_send_hdr_pos32(ZABORT, 0);
-          return CORRUPTED;
-
-        case ZDATA:
-          while (true) {
-            count = DATA_BUF_LEN;
-            result = zm_read_data_block(data_buf, &count);
-
-            if (!IS_ERROR(result)) {
-
-              received_data_size += (count - 1);
-              data_buf += (count - 1);
-              
-              if (result == GOT_CRCE) {
-                // End of frame, header follows, no ZACK expected.
-                break;
-              } else if (result == GOT_CRCG) {
-                // Frame continues, non-stop (another data packet follows)
-                continue;
-              } else if (result == GOT_CRCQ) {
-                // Frame continues, ACK required
-                result = zm_send_hdr_pos32(ZACK, received_data_size);
-
-                if(IS_ERROR(result)) {
-                  return result;
-                }
-
-                continue;
-
-              } else if (result == GOT_CRCW) {
-                // End of frame, header follows, ZACK expected.
-                result = zm_send_hdr_pos32(ZACK, received_data_size);
-
-                if(IS_ERROR(result)) {
-                  return result;
-                }
-
-                break;
-
-              }
-
-            } else if (result == CORRUPTED || result == BAD_CRC || result == BAD_ESCAPE) {
-              result = zm_send_hdr_pos32(ZRPOS, received_data_size);
-
-              if (IS_ERROR(result)) {
-                return result;
-              }
-
-              break;
-
-            } else {
-              // FATAL
-              return result;
-            }
-          }
-
-          break;
-
-        default:
-          // FATAL
-          return result;
+        if (rx_len < 1) {               /* No data was read */
+            freerslot(&k,r_slot);   /* So free the window slot */
+            if (rx_len < 0)             /* If there was a fatal error */
+              return 0;          /* give up */
         }
 
-        break;
-
-      case CANCELLED:
-        return CANCELLED;
-
-      default:
-        // Just try to send a ZRPOS to attempt recovery...
-        result = zm_send_hdr_pos32(ZRPOS, received_data_size);
-
-        if (IS_ERROR(result)) {
-          return result;
+        switch (status = kermit(K_RUN, &k, r_slot, rx_len, "", &response)) {
+        case X_OK:
+            continue;           /* Keep looping */
+        case X_DONE:
+            break;          /* Finished */
+        case X_ERROR:
+            return 0;        /* Failed */
         }
-
-        continue;
-      }
     }
-  }
 
-  return OK;
+    return 1;
 }
 
+//int xerror() {
+//    return 0;
+//}
