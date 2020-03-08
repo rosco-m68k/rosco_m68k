@@ -76,7 +76,7 @@ START::
     bra.s   .ISR_COPY_LOOP            ; Next iteration
 
 .ISR_COPY_DONE:
-    bsr.s   INITMFP                   ; Initialise MC68901
+    bsr.w   INITMFP                   ; Initialise MC68901
     bsr.s   INITSDB                   ; Initialise System Data Block
     
     bsr.s   PRINT_BANNER
@@ -174,11 +174,11 @@ INITMFP:
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
     move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
-    move.b  #$18,MFP_TDDR             ; Timer D count is 12 for 19.2KHz
+    move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 153.6KHz, divided to 4800 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
     ; USART setup
-    move.b  #$08,MFP_UCR              ; Fundamental clock, async, 8N1
+    move.b  #$88,MFP_UCR              ; /16 clock, async, 8N1
     move.b  #$05,MFP_TSR              ; Set pin state high and enable transmitter
 
     ; Interrupt setup - Enable timer C interrupt for kernel tick
