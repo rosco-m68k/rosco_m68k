@@ -4,10 +4,10 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -DZEMBEDDED		\
-				-Iinclude -Imbzm/include-mcpu=68010 -march=68010 -mtune=68010 							\
-				-mno-align-int -mno-strict-align -Imbzm/include
-LDFLAGS=-T ../shared/rosco_m68k_rom.ld -Map=rom.map
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -DNODEBUG	\
+				-Iinclude -Imbzm/include-mcpu=68010 -march=68010 -mtune=68010	\
+				-mno-align-int -mno-strict-align -DRECVONLY -DNO_CTRLC -DSTATIC=static
+LDFLAGS=-T ./rosco_m68k_rom.ld -Map=rom.map
 ASFLAGS=-Felf -m68010
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -22,9 +22,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o       \
-	   mbzm/znumbers.o mbzm/zserial.o mbzm/zheaders.o mbzm/crc32.o  \
-		 mbzm/crcccitt.o
+OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o kermit.o main.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
