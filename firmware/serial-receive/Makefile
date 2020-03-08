@@ -5,8 +5,8 @@
 
 EXTRA_CFLAGS?=
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -DZEMBEDDED		\
-				-I../shared/include -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int		\
-				-mno-strict-align -Imbzm/include
+				-Iinclude -Imbzm/include-mcpu=68010 -march=68010 -mtune=68010 							\
+				-mno-align-int -mno-strict-align -Imbzm/include
 LDFLAGS=-T ../shared/rosco_m68k_rom.ld -Map=rom.map
 ASFLAGS=-Felf -m68010
 CC=m68k-elf-gcc
