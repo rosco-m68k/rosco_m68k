@@ -26,6 +26,7 @@ static struct k_data k;
 static struct k_response response;
 
 extern uint8_t *kernel_load_ptr;
+static uint8_t *current_load_ptr;
 
 static int inchk(struct k_data * k) {
     return -1;
@@ -88,8 +89,8 @@ static int readfile(struct k_data * k) {
 }
 
 static int writefile(struct k_data * k, UCHAR * s, int n) {
-    memcpy(kernel_load_ptr, s, n);
-    kernel_load_ptr += n;
+    memcpy(current_load_ptr, s, n);
+    current_load_ptr += n;
     return X_OK;
 }
 
@@ -101,6 +102,8 @@ int receive_kernel() {
     int status, rx_len;
     uint8_t *inbuf;
     short r_slot;
+
+    current_load_ptr = kernel_load_ptr;
 
     k.xfermode = 1;                                 /* Manual select  */
     k.remote = 1;                                   /* Remote */
