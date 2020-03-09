@@ -60,9 +60,9 @@
 
   ************************************
 */
-#include "kermit/cdefs.h"			/* C language defs for all modules */
-#include "kermit/debug.h"			/* Debugging */
-#include "kermit/kermit.h"			/* Kermit protocol definitions */
+#include "cdefs.h"			/* C language defs for all modules */
+#include "debug.h"			/* Debugging */
+#include "kermit.h"			/* Kermit protocol definitions */
 
 #define zgetc() \
 ((--(k->zincnt))>=0)?((int)(*(k->zinptr)++)&0xff):(*(k->readf))(k)

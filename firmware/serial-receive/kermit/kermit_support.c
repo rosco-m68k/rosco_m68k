@@ -13,11 +13,11 @@
  * ------------------------------------------------------------
  */
 
+#include "cdefs.h"
+#include "kermit.h"
+#include "platform.h"
 #include "serial.h"
 #include "rtlsupport.h"
-#include "kermit/cdefs.h"
-#include "kermit/platform.h"
-#include "kermit/kermit.h"
 
 UCHAR o_buf[OBUFLEN+8];         /* File output buffer */
 UCHAR i_buf[IBUFLEN+8];         /* File input buffer */

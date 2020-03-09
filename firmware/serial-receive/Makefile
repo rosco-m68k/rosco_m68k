@@ -24,7 +24,11 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o
 
+ifeq ($(PROTO),kermit)
 include kermit/include.mk
+else
+include zmodem/include.mk
+endif
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
