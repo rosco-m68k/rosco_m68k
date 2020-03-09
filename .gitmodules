@@ -1,0 +1,4 @@
+[submodule "firmware/rosco_m68k_v1/mbzm"]
+	path = firmware/serial-receive/mbzm
+	url = git@github.com:roscopeco/mbzm.git
+	branch = master
