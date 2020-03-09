@@ -47,6 +47,18 @@
   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.
+
+  ************************************
+  rosco_m68k note:
+
+    This file has been lightly modified to remove (conditionally where reasonable)
+    code and variables that are rendered unused by our compile options, but which
+    weren't already excluded.
+
+    This makes the resulting binary (a bit) smaller, and stops GCC erroring
+    due to the pedantic error reporting we have enabled.
+
+  ************************************
 */
 #include "kermit/cdefs.h"			/* C language defs for all modules */
 #include "kermit/debug.h"			/* Debugging */

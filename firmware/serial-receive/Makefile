@@ -4,9 +4,9 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror -DNODEBUG	\
-				-Iinclude -Imbzm/include-mcpu=68010 -march=68010 -mtune=68010	\
-				-mno-align-int -mno-strict-align -DRECVONLY -DNO_CTRLC -DSTATIC=static
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
+				-Iinclude -mcpu=68010 -march=68010 -mtune=68010				\
+				-mno-align-int -mno-strict-align
 LDFLAGS=-T ./rosco_m68k_rom.ld -Map=rom.map
 ASFLAGS=-Felf -m68010
 CC=m68k-elf-gcc
@@ -15,14 +15,16 @@ AS=vasmm68k_mot
 RM=rm -f
 
 # Output config
-BINARY_BASENAME=rom
+BINARY_BASENAME=serial_receive.rom
 BINARY_EXT=bin
 
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o kermit.o main.o
+OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o
+
+include kermit/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -52,3 +54,4 @@ dump: $(BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	./burn.sh
+

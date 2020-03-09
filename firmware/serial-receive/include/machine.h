@@ -9,7 +9,7 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * C prototypes for routines implemented in assembly.
+ * C prototypes for system routines implemented in assembly.
  * ------------------------------------------------------------
  */
 #ifndef _ROSCOM68K_MACHINE_H
