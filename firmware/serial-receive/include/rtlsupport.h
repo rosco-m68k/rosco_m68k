@@ -15,7 +15,9 @@
 #ifndef _ROSCOM68K_RTLSUPPORT_H
 #define _ROSCOM68K_RTLSUPPORT_H
 
+void* memset(void *str, int c, long unsigned int n);
 void *memcpy(const void *from, const void *to, long unsigned int n);
+int strcmp(const char *str1, const char *str2);
 
 #endif
 
