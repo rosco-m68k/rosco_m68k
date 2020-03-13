@@ -9,7 +9,7 @@ then wait for the user to initiate a file transfer from their terminal program.
 This transfer should upload (in binary) the code that is to be run (perhaps a kernel,
 or some other thing).
 
-## Protocols
+## Protocols
 
 Currently, two protocols are supported (for varying values of 'supported'):
 
@@ -72,5 +72,3 @@ The way further arguments are passed depends on the function being called.
 |1              | PRINTLN         | Print a string, followed by CRLF. A0 points to null-terminated string.|
 
 (More will be added in the future)
-
-
