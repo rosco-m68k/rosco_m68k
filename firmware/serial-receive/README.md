@@ -66,9 +66,34 @@ output and basic system control. These can be found at TRAP #14.
 To use these, set D1 to the required 'function code' from the list below.
 The way further arguments are passed depends on the function being called.
 
-| Function (D0) | Name            | Description                                                           |
+| Function (D1) | Name            | Description                                                           |
 |:-------------:|-----------------|-----------------------------------------------------------------------|
 |0              | PRINT           | Print a string via UART. A0 should point to a null-terminated string. |
 |1              | PRINTLN         | Print a string, followed by CRLF. A0 points to null-terminated string.|
 
 (More will be added in the future)
+
+Calling these traps will usually trash at least D0, and obviously you'll
+need to modify D1 for the function code. The println traps also modify A0.
+GCC is mostly fine with this, but it's nice to save and restore stuff in
+case you use a different compiler that isn't and forget about it, for
+example. An example way to call these functions while looking after your
+registers might be (taken from the poc-kernel):
+
+```
+mcPrint::
+    movem.l D0-D1/A0,-(A7)            ; Save regs
+    move.l  (16,A7),A0                ; Get C char* from the stack into A0
+    move.l  #0,D1                     ; Func code is 0
+    trap    #14                       ; TRAP to firmware
+    movem.l (A7)+,D0-D1/A0            ; Restore regs
+    rts                               ; We're done.
+```
+
+As a side-note, the println traps actually leave A0 pointing to the byte
+_after_ the null terminator, so you can make use of that if you have a 
+bunch of lines in adjacent memory locations if you want to.
+
+(Of course, if you're going to do that, you're much better off having them be
+one big string with line endings embedded, and just printing them with 
+one TRAP, but it might come in handy for some reason or another...)
