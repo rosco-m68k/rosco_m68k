@@ -44,7 +44,9 @@ VECTORS:
     dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
     
     dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
-    dcb.l   16,TRAP_HANDLER             ; 20-2F: TRAP Handlers
+    dcb.l   14,TRAP_HANDLER             ; 20-2D: TRAP Handlers (unused)
+    dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
+    dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (unused)
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
     dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Not used)
@@ -339,6 +341,26 @@ TRAP_HANDLER:
     move.l  #$C001C0DE,$404
     rte
 
+; TRAP 14 provides access to some of the basic functionality
+; of the firmware after the bootloader has terminated.
+;
+; D1 is expected to contain the function code. Other arguments
+; depend on the specific function - See README for details.
+TRAP_14_HANDLER:
+  cmp.l     #0,D1                     ; FC == 0?
+  beq.s     .PRINT                    ;   PRINT if so...
+  cmp.l     #1,D1                     ; FC == 0?
+  beq.s     .PRINTLN                  ;   PRINTLN if so...
+  rte                                 ; That's all for now...
+
+.PRINT
+  bsr.w     EARLY_PRINT
+  rte
+
+.PRINTLN
+  bsr.w     EARLY_PRINTLN
+  rte
+    
 
 ;------------------------------------------------------------
 ; Consts 

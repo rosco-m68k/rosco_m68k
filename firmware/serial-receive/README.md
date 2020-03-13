@@ -61,8 +61,16 @@ will have to suffice:
 ## Runtime Support
 
 This loader provides a couple of routines that can be used for e.g. debugging
-output and basic system control. These can be found at TRAP #14. Currently,
-these are:
+output and basic system control. These can be found at TRAP #14. 
 
-* TODO list of TRAPs
+To use these, set D1 to the required 'function code' from the list below.
+The way further arguments are passed depends on the function being called.
+
+| Function (D0) | Name            | Description                                                           |
+|:-------------:|-----------------|-----------------------------------------------------------------------|
+|0              | PRINT           | Print a string via UART. A0 should point to a null-terminated string. |
+|1              | PRINTLN         | Print a string, followed by CRLF. A0 points to null-terminated string.|
+
+(More will be added in the future)
+
 

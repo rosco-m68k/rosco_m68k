@@ -16,18 +16,17 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
+#include "machine.h"
 
-static volatile uint8_t * const mfp_gpdr = (uint8_t * const)0xf80001;
+static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 
 noreturn void kmain() {
-  volatile int j; 
+  mcPrintln("Hello, World from the \"kernel\"!");
 
   while (true) {
     *(mfp_gpdr) ^= 2;
 
-    for (int i = 0; i < 250000; i++) {
-      j += 1;
-    }
+    mcBusyWait(125000);
   }
 }
 
