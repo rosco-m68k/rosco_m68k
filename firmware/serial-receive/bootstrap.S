@@ -12,7 +12,7 @@
 ; It sets up the exception handlers, initializes the hardware
 ; including the UART and system timers, sets up the basic
 ; info in the System Data Block, enables interrupts and 
-; calls kmain (in kmain.c).
+; calls the main loader (in lmain.c).
 ;------------------------------------------------------------
     include "../shared/equates.S"
 
