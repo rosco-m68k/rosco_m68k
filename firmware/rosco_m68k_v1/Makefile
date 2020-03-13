@@ -4,13 +4,14 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
+DEFINES=-DREVISION_0
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror             \
        -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int -mno-strict-align    \
        -I./include -I../shared/include                                           \
-       -DZEMBEDDED -DPRINTF_INCLUDE_CONFIG_H
+       -DPRINTF_INCLUDE_CONFIG_H $(DEFINES)
 
 LDFLAGS=-T ../shared/rosco_m68k_rom.ld -Map=rom.map
-ASFLAGS=-Felf -m68010 -quiet
+ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot

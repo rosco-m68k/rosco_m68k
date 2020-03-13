@@ -236,7 +236,7 @@ TICK_HANDLER:
 ; Call busywait from C code...
 BUSYWAIT_C::
     move.l  (4,A7),D0
-    jmp.s   BUSYWAIT
+    jmp     BUSYWAIT
 
 ; Busywait - expects a delay in D0, returns when D0 gets to 0 
 ;

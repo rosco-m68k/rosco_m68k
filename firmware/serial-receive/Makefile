@@ -4,11 +4,12 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror    \
+DEFINES=-DREVISION_0
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
-       -mno-align-int -mno-strict-align -DLARGE_MESSAGE
+       -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T ./rosco_m68k_kloader.ld -Map=rom.map
-ASFLAGS=-Felf -m68010
+ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
