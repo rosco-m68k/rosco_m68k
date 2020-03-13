@@ -35,9 +35,9 @@ Currently, the design for the system is:
 
 In terms of software:
 
-* Simple code in ROM to do various tests etc.
-* Serial IO via the 68901 with an async serial driver.
-* Built with GCC and VASM
+* A serial bootloader that can load software via the UART (with Kermit protocol)
+* A proof-of-concept "kernel" that demonstrates the serial loader
+* Built with GCC 7.5 and VASM
 
 ## Next steps
 
