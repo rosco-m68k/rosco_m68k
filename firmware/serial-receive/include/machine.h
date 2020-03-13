@@ -9,14 +9,13 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * C prototypes for routines implemented in assembly.
+ * C prototypes for system routines implemented in assembly.
  * ------------------------------------------------------------
  */
 #ifndef _ROSCOM68K_MACHINE_H
 #define _ROSCOM68K_MACHINE_H
 
 #include <stdnoreturn.h>
-#include <stdint.h>
 
 #ifdef REVISION_0
 // DEFINEs for MFP registers on Revision 0 board
@@ -123,6 +122,12 @@ void SET_INTR(uint8_t priority);
  * Don't use this after START_HEART has been called. 
  */
 void EARLY_PRINT_C(char *str);
+
+/*
+ * Busywait for a while. The actual time is wholly dependent
+ * on CPU (i.e. clock) speed!
+ */
+void BUSYWAIT_C(uint32_t ticks);
 
 #endif
 

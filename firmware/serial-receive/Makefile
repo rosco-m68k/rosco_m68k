@@ -5,12 +5,10 @@
 
 EXTRA_CFLAGS?=
 DEFINES=-DREVISION_0
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror             \
-       -mcpu=68010 -march=68010 -mtune=68010 -mno-align-int -mno-strict-align    \
-       -I./include -I../shared/include                                           \
-       -DPRINTF_INCLUDE_CONFIG_H $(DEFINES)
-
-LDFLAGS=-T ../shared/rosco_m68k_rom.ld -Map=rom.map
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
+       -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
+       -mno-align-int -mno-strict-align $(DEFINES)
+LDFLAGS=-T ./rosco_m68k_kloader.ld -Map=rom.map
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -18,16 +16,20 @@ AS=vasmm68k_mot
 RM=rm -f
 
 # Output config
-BINARY_BASENAME=rom
+BINARY_BASENAME=serial_receive.rom
 BINARY_EXT=bin
 
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-OBJECTS=bootstrap.o kmain.o api/api.o rtlsupport.o 3rdparty/printf.o \
-	putchar.o base_servers/serial.o base_servers/serial_isr.o    \
-	critical.o spinlock.o
+OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o
+
+ifeq ($(PROTO),zmodem)
+include zmodem/include.mk
+else
+include kermit/include.mk
+endif
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -50,10 +52,11 @@ $(BINARY_ODD): $(BINARY)
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
 clean: 
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN)
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) rom.map
 
 dump: $(BINARY)
 	od --endian=big -tx1 $(BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
-	sh ./burn.sh
+	./burn.sh
+
