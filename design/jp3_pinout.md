@@ -1,5 +1,8 @@
 # rosco_m68k JP3 (Expansion) Pinout
 
+> **Note** that there is an error in the silkscreen of the revision 0 board than incorrectly
+  labels pin 2 as pin 64 on the physical board!
+
 JP3 (split into JP3 and JP4 in the schematic but joined as a single 2x32 pin header on the PCB)
 provides peripheral access to the full address, data and control buses in the system, plus
 VCC (5V) and GND. These signals are unbuffered, however many of the MC68010 lines are 
