@@ -89,7 +89,7 @@ static int readfile(struct k_data * k) {
 }
 
 static int writefile(struct k_data * k, UCHAR * s, int n) {
-    memcpy(current_load_ptr, s, n);
+    memcpy(s, current_load_ptr, n);
     current_load_ptr += n;
     return X_OK;
 }

@@ -95,5 +95,11 @@ void SET_INTR(uint8_t priority);
  */
 void EARLY_PRINT_C(char *str);
 
+/*
+ * Busywait for a while. The actual time is wholly dependent
+ * on CPU (i.e. clock) speed!
+ */
+void BUSYWAIT_C(uint32_t ticks);
+
 #endif
 

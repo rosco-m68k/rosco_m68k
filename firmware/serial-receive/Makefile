@@ -4,9 +4,9 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-Iinclude -mcpu=68010 -march=68010 -mtune=68010				\
-				-mno-align-int -mno-strict-align
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror    \
+       -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
+       -mno-align-int -mno-strict-align -DLARGE_MESSAGE
 LDFLAGS=-T ./rosco_m68k_kloader.ld -Map=rom.map
 ASFLAGS=-Felf -m68010
 CC=m68k-elf-gcc
@@ -24,10 +24,10 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o
 
-ifeq ($(PROTO),kermit)
-include kermit/include.mk
-else
+ifeq ($(PROTO),zmodem)
 include zmodem/include.mk
+else
+include kermit/include.mk
 endif
 
 %.o : %.c
@@ -51,7 +51,7 @@ $(BINARY_ODD): $(BINARY)
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
 clean: 
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN)
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) rom.map
 
 dump: $(BINARY)
 	od --endian=big -tx1 $(BINARY)

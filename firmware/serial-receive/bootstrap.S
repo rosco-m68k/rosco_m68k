@@ -84,8 +84,8 @@ START::
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
     and.w   #$F0FF,SR                 ; Enable interrupts
 
-    jsr     kinit                     ; Init C land
-    jmp     kmain                     ; Call kmain
+    jsr     linit                     ; Init C land
+    jmp     lmain                     ; Call kmain
 
 ; kmain is noreturn, so That's All, Folks(tm).
 
@@ -231,7 +231,12 @@ TICK_HANDLER:
     move.l  (A7)+,D0                  ; Restore D0
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     rte                               ; We're done
+
     
+; Call busywait from C code...
+BUSYWAIT_C::
+    move.l  (4,A7),D0
+    jmp.s   BUSYWAIT
 
 ; Busywait - expects a delay in D0, returns when D0 gets to 0 
 ;
