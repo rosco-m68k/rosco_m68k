@@ -1,7 +1,7 @@
 # Serial Loader for rosco_m68k
 
 This firmware implements a simple way to load code into the computer from startup,
-enabling quicker iteration (and less dead ROM chips).
+enabling quicker iteration (and fewer dead ROM chips).
 
 The idea with this is to do basic set up of the system (e.g. set up the MFP) and
 then wait for the user to initiate a file transfer from their terminal program.
@@ -53,10 +53,32 @@ will have to suffice:
   life easier later.
 * Obviously your link script will need to take this into account!
 * On entry to your code, you are free to (and probably should) reset the
-  stack, and can trash any registers you wish.
+  stack, and can trash any registers you wish. 
 * The loader **does not** expect to be returned to. It _will_ handle
   such a condition gracefully, however (it will print a message and halt
   the machine).
+  
+On entry to the loaded code, the system will be in the following state:
+
+* CPU will be in supervisor mode
+* PC will be at $28000
+* VBR will point to $0
+* Supervisor stack will be at $100000, SSP could be anywhere and can be reset
+* Registers will be undefined, and can all be trashed.
+* Exception table will be set up (with mostly no-op handlers) from $0 - $3FF 
+* Some (very) basic system data will exist between $400-$4FF. You can trash this if you don't need it
+  * Some of the default exception handlers **do** write to this area, however!
+  * So replace them if you're going to use this area for your own purposes!
+* Interrupts will be enabled 
+* Bus error, address error and illegal instruction will have default handlers (that flash I1 1, 2 or 3 times in a loop)
+* MFP Timer C will be driving a 100Hz system tick
+* System tick will be vectored to CPU vector 0x45, default handler flashes I0.
+* MFP Interrupts other than Timer C will be disabled
+* TRAP#14 will be hooked by the firmware to provide some basic IO (see next section)
+* UART TX and RX will be enabled, but their interrupts won't be 
+  * you'll either have to enable (and handle) them or use polling
+  * If you _do_ enable them, don't use the TRAP#14 IO routines any more or sadness is likely to ensue.
+* CTS (MFP GPIO #7) **will be low** (i.e. asserted). 
 
 ## Runtime Support
 
