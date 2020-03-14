@@ -30,10 +30,11 @@ SECTIONS
   {
     _init = .;
     *(.init)
+    . = ALIGN(2);
     _init_end = .;
   } > INIT
 
-  .text : AT(SIZEOF(.text.init))
+  .text ALIGN(2) : AT(SIZEOF(.text.init))
   {
     _code = .;
     *(.text)
@@ -42,19 +43,19 @@ SECTIONS
     _code_end = .;
   } > KRAM
   
-  .bss :
-  {
-    _bss_start = .;
-    *(.bss)
-    _bss_end = .;
-    . = ALIGN(2);
-  } > KRAM
-
-  .data :
+  .data ALIGN(2) : /*AT(SIZEOF(.text.init) + SIZEOF(.text))*/
   {
     _data_start = .;
     *(.data)
     _data_end = .;
+    . = ALIGN(2);
+  } > KRAM
+
+  .bss ALIGN(2) : /*AT(SIZEOF(.text.init) + SIZEOF(.text) + SIZEOF(.data))*/
+  {
+    _bss_start = .;
+    *(.bss)
+    _bss_end = .;
     . = ALIGN(2);
   } > KRAM
 

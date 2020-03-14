@@ -81,11 +81,14 @@ void mcPrint(char *str);
  */
 void mcPrintln(char *str);
 
+void mcPrintnum(uint32_t num);
+void mcPrintbyte(uint8_t num);
+
 /*
  * Busywait for a while. The actual time is wholly dependent
  * on CPU (i.e. clock) speed!
  */
-void mcBusyWait(uint32_t ticks);
+void mcBusywait(uint32_t ticks);
 
 #endif
 

@@ -6,21 +6,25 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2020 Ross Bamford
+ * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Pre-main initialization for POC kernel.
+ * Some basic 'stdlib'-type routines.
  * ------------------------------------------------------------
  */
+#ifndef _ROSCOM68K_STDLIB_H
+#define _ROSCOM68K_STDLIB_H
 
 #include <stdint.h>
-#include "machine.h"
 
-// Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+void print(char *str);
+void println(char *str);
 
-void kinit() {
-  // zero .bss
-  for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst++ = 0);
-}
+void printuint(uint32_t num);
+void printushort(uint16_t num);
+void printuchar(uint8_t num);
+
+void delay(uint32_t ticks);
+
+#endif
 

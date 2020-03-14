@@ -41,7 +41,7 @@ mcPrintln::
 ; 
 ; Trashes: D0
 ; Modifies: Nothing
-mcBusyWait::
+mcBusywait::
     move.l  (4,A7),D0                 ; Get C char* from the stack into A0
 .BUSYWAIT
     sub.l   #1,D0                     ; Keep decrementing D0...

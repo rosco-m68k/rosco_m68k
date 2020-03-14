@@ -25,7 +25,7 @@ BINARY_EXT=bin
 
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=init.o kinit.o machine.o kmain.o
+OBJECTS=init.o kinit.o machine.o stdlib.o linkcheck.o kmain.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<

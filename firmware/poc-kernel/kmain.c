@@ -17,17 +17,21 @@
 #include <stdnoreturn.h>
 #include <stdbool.h>
 #include "machine.h"
+#include "stdlib.h"
+#include "linkcheck.h"
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 
 noreturn void kmain() {
-  mcPrintln("Hello, World from the \"kernel\"!");
+  print("\033[2J");
+  println("Hello, World from the \"kernel\"!");
+
+  checkLinkage();
 
   while (true) {
     *(mfp_gpdr) ^= 2;
 
-    mcBusyWait(125000);
+    delay(125000);
   }
 }
-
 

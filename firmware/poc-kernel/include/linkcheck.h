@@ -9,18 +9,15 @@
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Pre-main initialization for POC kernel.
+ * C linkage and initialisation sanity checker.
  * ------------------------------------------------------------
  */
 
+#ifndef _ROSCOM68K_LINKCHECK_H
+#define _ROSCOM68K_LINKCHECK_H
+
 #include <stdint.h>
-#include "machine.h"
 
-// Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+bool checkLinkage();
 
-void kinit() {
-  // zero .bss
-  for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst++ = 0);
-}
-
+#endif
