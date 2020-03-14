@@ -49,7 +49,7 @@ VECTORS:
     dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (unused)
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
     dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Interrupt not used)
     dc.l    TICK_HANDLER                ; 45: MFP Timer C (System tick)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 46-47: MFP GPIO #4-5 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
@@ -176,7 +176,7 @@ INITMFP:
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
     move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
-    move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 153.6KHz, divided to 4800 baud
+    move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
     ; USART setup
