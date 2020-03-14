@@ -29,6 +29,29 @@ you should be able to install from your package manager (try `ckermit` or
 and ports probably has it too. On Windows YMMV, but if you're successfully
 building this on Windows then you've probably already done a lot of work to
 get a cross-compiler and so on working, so I'm sure you'll figure it out.
+
+### Kermit Settings
+
+It is **strongly** recommended you use the following settings for your
+c-kermit. These should go in your `~/.kermrc` file (or whatever the 
+Windows equivalent is):
+
+```
+set carrier-watch off ;
+set flow xon/xoff ;
+robust
+```
+
+This instructs c-kermit not to look for a carrier detect signal (which 
+most FTDI chips I've seen don't emulate), to use software flow-control
+(because all FTDI chips I've seen get RTS/CTS just wrong enough to 
+make them useless without a FIFO on the receiving end), and to use 
+the `robust` kermit protocol variant, which is the only one I've been
+able to get to work with the embedded Kermit implementation in the
+bootloader - YMMV of course, feel free to experiment...
+
+You'll need this (at least the carrier detect disable) whether you're
+using c-kermit from the command-line or from minicom (or similar).
  
 ## Code
 
