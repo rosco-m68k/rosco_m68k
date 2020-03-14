@@ -1,0 +1,1145 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr User 23628 11170
+encoding utf-8
+Sheet 5 7
+Title ""
+Date "2020-02-25"
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Wire Bus Line
+	7200 700  7200 1500
+Text Label 7200 1100 0    70   ~ 0
+CONTROL:AS,BERR,BG,BGACK,BR,CLK,DTACK,EVENRAMSEL,EVENROMSEL,EXPSEL,FC0,FC1,FC2,IOSEL,IPL0,IPL1,IPL2,LDS,ODDRAMSEL,ODDROMSEL,RESET,R/W,UDS
+Wire Bus Line
+	14600 6400 14600 7400
+Text Label 14600 6900 0    70   ~ 0
+CONTROL:AS,BERR,BG,BGACK,BR,CLK,DTACK,EVENRAMSEL,EVENROMSEL,EXPSEL,FC0,FC1,FC2,IOSEL,IPL0,IPL1,IPL2,LDS,ODDRAMSEL,ODDROMSEL,RESET,R/W,UDS
+Text Label 2300 8300 0    10   ~ 0
+CONTROL:AS,BERR,BG,BGACK,BR,CLK,DTACK,EVENRAMSEL,EVENROMSEL,EXPSEL,FC0,FC1,FC2,IOSEL,IPL0,IPL1,IPL2,LDS,ODDRAMSEL,ODDROMSEL,RESET,R/W,UDS
+Wire Wire Line
+	2900 1600 3100 1600
+Wire Wire Line
+	3100 1600 3300 1600
+Wire Wire Line
+	2700 900  3100 900 
+Wire Wire Line
+	3100 900  3100 1600
+Connection ~ 3100 1600
+Wire Wire Line
+	3600 1600 3800 1600
+Wire Wire Line
+	3800 1600 4000 1600
+Wire Wire Line
+	4200 900  3800 900 
+Wire Wire Line
+	3800 900  3800 1600
+Connection ~ 3800 1600
+Wire Wire Line
+	4800 1600 5000 1600
+Wire Wire Line
+	5000 1600 5300 1600
+Wire Wire Line
+	4600 900  5000 900 
+Wire Wire Line
+	5000 900  5000 1600
+Wire Wire Line
+	3500 2400 5000 2400
+Wire Wire Line
+	5000 2400 5000 1600
+Wire Wire Line
+	5000 2800 5000 2400
+Connection ~ 5000 1600
+Connection ~ 5000 2400
+Wire Wire Line
+	2100 1600 1900 1600
+Wire Wire Line
+	1900 1600 1900 900 
+Wire Wire Line
+	1900 900  2300 900 
+Wire Wire Line
+	1900 1600 1900 2400
+Wire Wire Line
+	1900 2400 3300 2400
+Wire Wire Line
+	1900 2800 1900 2400
+Connection ~ 1900 1600
+Connection ~ 1900 2400
+Wire Wire Line
+	5000 3100 5000 3400
+Text GLabel 5000 3100 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	1900 3100 1900 3400
+Text GLabel 1900 3100 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	10000 7300 10000 7400
+Text GLabel 10000 7300 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	8700 6800 8700 7400
+Text GLabel 8700 6800 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	9600 8000 9800 8000
+Wire Wire Line
+	9800 8000 9800 8200
+Text GLabel 9600 8000 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	7700 7100 7700 7400
+Text GLabel 7700 7100 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	14700 2300 13800 2300
+Wire Wire Line
+	13800 2300 13800 2400
+Wire Wire Line
+	13800 2400 13300 2400
+Wire Wire Line
+	13300 2400 12800 2400
+Connection ~ 13300 2400
+Connection ~ 12800 2400
+Wire Wire Line
+	6800 8200 6800 7700
+Wire Wire Line
+	6800 7700 6800 7300
+Wire Wire Line
+	6800 7700 6300 7700
+Wire Wire Line
+	6300 7700 6300 7100
+Connection ~ 6800 7700
+Text GLabel 6800 8200 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	5900 7700 5400 7700
+Wire Wire Line
+	5400 7700 5400 7100
+Wire Wire Line
+	5900 7300 5900 7700
+Wire Wire Line
+	5900 7700 5900 8200
+Connection ~ 5900 7700
+Text GLabel 5900 7700 0    10   BiDi ~ 0
+GND
+Wire Wire Line
+	7700 5200 7700 5300
+Text GLabel 7700 5200 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	8100 5400 8100 5200
+Text GLabel 8100 5400 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	9500 6800 9600 6800
+Wire Wire Line
+	9600 6800 9600 5200
+Text GLabel 9500 6800 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	12500 5200 12500 5300
+Wire Wire Line
+	12500 5300 12500 5400
+Wire Wire Line
+	12900 5400 12900 5300
+Wire Wire Line
+	12900 5300 12500 5300
+Wire Wire Line
+	12100 5400 12100 5300
+Wire Wire Line
+	12100 5300 12500 5300
+Connection ~ 12500 5300
+Text GLabel 12500 5200 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	8500 5200 8500 6400
+Wire Wire Line
+	8500 6400 8700 6400
+Text GLabel 8500 5200 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	3400 6500 3400 6700
+Wire Wire Line
+	3400 6700 3200 6700
+Wire Wire Line
+	3200 6700 2800 6700
+Wire Wire Line
+	2800 6700 2400 6700
+Wire Wire Line
+	2400 6700 2400 7000
+Wire Wire Line
+	3400 6700 3600 6700
+Wire Wire Line
+	3600 6700 4000 6700
+Wire Wire Line
+	4000 6700 4400 6700
+Wire Wire Line
+	4400 6700 4400 7000
+Wire Wire Line
+	4000 7000 4000 6700
+Wire Wire Line
+	3600 7000 3600 6700
+Wire Wire Line
+	3200 7000 3200 6700
+Wire Wire Line
+	2800 7000 2800 6700
+Connection ~ 3400 6700
+Connection ~ 4000 6700
+Connection ~ 3600 6700
+Connection ~ 3200 6700
+Connection ~ 2800 6700
+Text GLabel 3400 6500 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	14700 2200 13800 2200
+Wire Wire Line
+	13800 2200 13800 2100
+Wire Wire Line
+	13800 2100 13300 2100
+Wire Wire Line
+	13300 2100 12800 2100
+Connection ~ 13300 2100
+Connection ~ 12800 2100
+Wire Wire Line
+	6300 6800 6300 6200
+Wire Wire Line
+	6300 6200 6300 5700
+Wire Wire Line
+	6800 6700 6800 6200
+Wire Wire Line
+	6800 6200 6300 6200
+Connection ~ 6300 6200
+Text GLabel 6300 6800 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	5400 6800 5400 6200
+Wire Wire Line
+	5400 6200 5400 5700
+Wire Wire Line
+	5900 6200 5400 6200
+Wire Wire Line
+	5900 6200 5900 6700
+Connection ~ 5400 6200
+Text GLabel 5400 6800 0    10   BiDi ~ 0
+VCC
+Wire Wire Line
+	8100 5700 8100 6600
+Wire Wire Line
+	8100 6600 8700 6600
+Wire Wire Line
+	10000 6800 10000 6900
+Wire Wire Line
+	11200 7000 11300 7000
+Wire Wire Line
+	11300 7000 12500 7000
+Wire Wire Line
+	12500 7000 13700 7000
+Wire Wire Line
+	12500 5800 12500 7000
+Wire Wire Line
+	11400 6600 11300 6600
+Wire Wire Line
+	11300 6600 11300 7000
+Wire Wire Line
+	11300 6600 11300 6400
+Wire Wire Line
+	11300 6400 11400 6400
+Connection ~ 12500 7000
+Connection ~ 11300 7000
+Connection ~ 11300 6600
+Text GLabel 13700 7000 2    70   BiDi ~ 0
+/HALT
+Wire Wire Line
+	12000 6500 12100 6500
+Wire Wire Line
+	12100 6500 12100 6300
+Wire Wire Line
+	12100 6000 12100 5800
+Wire Wire Line
+	10300 7000 10500 7000
+Wire Wire Line
+	10500 7000 10500 6900
+Wire Wire Line
+	10500 6900 10600 6900
+Wire Wire Line
+	10500 7000 10500 7100
+Wire Wire Line
+	10500 7100 10600 7100
+Wire Wire Line
+	10300 7000 10300 7500
+Wire Wire Line
+	10300 7500 10500 7500
+Wire Wire Line
+	10500 7500 10500 7400
+Wire Wire Line
+	10500 7400 10600 7400
+Wire Wire Line
+	10500 7500 10500 7600
+Wire Wire Line
+	10500 7600 10600 7600
+Wire Wire Line
+	10300 6200 10300 7000
+Wire Wire Line
+	9500 6200 10000 6200
+Wire Wire Line
+	10000 6200 10300 6200
+Wire Wire Line
+	10000 6500 10000 6200
+Connection ~ 10500 7000
+Connection ~ 10500 7500
+Connection ~ 10300 7000
+Connection ~ 10000 6200
+Wire Wire Line
+	9000 8000 9200 8000
+Wire Wire Line
+	9500 6600 9800 6600
+Wire Wire Line
+	8700 6200 7700 6200
+Wire Wire Line
+	7700 6200 7300 6200
+Wire Wire Line
+	8000 7700 7300 7700
+Wire Wire Line
+	7300 7700 7300 6200
+Wire Wire Line
+	8600 8000 8000 8000
+Wire Wire Line
+	8000 8000 8000 7700
+Wire Wire Line
+	7700 5700 7700 6200
+Wire Wire Line
+	9800 6600 9800 7700
+Wire Wire Line
+	9800 7700 8000 7700
+Wire Wire Line
+	7700 6200 7700 6800
+Connection ~ 7700 6200
+Connection ~ 8000 7700
+Wire Wire Line
+	7100 1600 6100 1600
+Text GLabel 6600 1600 2    70   BiDi ~ 0
+CLK
+Wire Wire Line
+	11200 7500 12900 7500
+Wire Wire Line
+	12900 5800 12900 7500
+Wire Wire Line
+	14500 7500 12900 7500
+Connection ~ 12900 7500
+Text GLabel 14500 7500 2    70   BiDi ~ 0
+RESET
+Wire Wire Line
+	2400 8200 2400 7400
+Text GLabel 2400 8200 2    70   BiDi ~ 0
+IPL2
+Wire Wire Line
+	2800 8200 2800 7400
+Text GLabel 2800 8200 2    70   BiDi ~ 0
+IPL1
+Wire Wire Line
+	3200 8200 3200 7400
+Text GLabel 3200 8200 2    70   BiDi ~ 0
+IPL0
+Wire Wire Line
+	4000 8200 4000 7400
+Text GLabel 4000 8200 2    70   BiDi ~ 0
+BGACK
+Wire Wire Line
+	3600 8200 3600 7400
+Text GLabel 3600 8200 2    70   BiDi ~ 0
+BR
+Wire Wire Line
+	4400 8200 4400 7400
+Text GLabel 4400 8200 2    70   BiDi ~ 0
+BERR
+Entry Wire Line
+	7100 1600 7200 1500
+Entry Wire Line
+	14500 7500 14600 7400
+Entry Wire Line
+	2300 8300 2400 8200
+Entry Wire Line
+	2700 8300 2800 8200
+Entry Wire Line
+	3100 8300 3200 8200
+Entry Wire Line
+	3900 8300 4000 8200
+Entry Wire Line
+	3500 8300 3600 8200
+Entry Wire Line
+	4300 8300 4400 8200
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C20
+U 1 1 88BEBDCA
+P 1900 2900
+AR Path="/88BEBDCA" Ref="C20"  Part="1" 
+AR Path="/5E53B952/88BEBDCA" Ref="C20"  Part="1" 
+F 0 "C20" H 1960 2915 59  0000 L BNN
+F 1 "22pF" H 1960 2715 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 1900 2900 50  0001 C CNN
+F 3 "" H 1900 2900 50  0001 C CNN
+	1    1900 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C22
+U 1 1 F30D3666
+P 5000 2900
+AR Path="/F30D3666" Ref="C22"  Part="1" 
+AR Path="/5E53B952/F30D3666" Ref="C22"  Part="1" 
+F 0 "C22" H 5060 2915 59  0000 L BNN
+F 1 "22pF" H 5060 2715 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 5000 2900 50  0001 C CNN
+F 3 "" H 5000 2900 50  0001 C CNN
+	1    5000 2900
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C21
+U 1 1 16E29A2C
+P 3400 1600
+AR Path="/16E29A2C" Ref="C21"  Part="1" 
+AR Path="/5E53B952/16E29A2C" Ref="C21"  Part="1" 
+F 0 "C21" V 3585 1560 59  0000 L BNN
+F 1 "100nF" V 3285 1560 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 3400 1600 50  0001 C CNN
+F 3 "" H 3400 1600 50  0001 C CNN
+	1    3400 1600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R5
+U 1 1 76E91BB6
+P 2500 900
+AR Path="/76E91BB6" Ref="R5"  Part="1" 
+AR Path="/5E53B952/76E91BB6" Ref="R5"  Part="1" 
+F 0 "R5" H 2350 959 59  0000 L BNN
+F 1 "1K2" H 2350 770 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 2500 900 50  0001 C CNN
+F 3 "" H 2500 900 50  0001 C CNN
+	1    2500 900 
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R10
+U 1 1 7B8B8F0B
+P 4400 900
+AR Path="/7B8B8F0B" Ref="R10"  Part="1" 
+AR Path="/5E53B952/7B8B8F0B" Ref="R10"  Part="1" 
+F 0 "R10" H 4250 959 59  0000 L BNN
+F 1 "1K2" H 4250 770 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 4400 900 50  0001 C CNN
+F 3 "" H 4400 900 50  0001 C CNN
+	1    4400 900 
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:CRYSTALHC49S Q2
+U 1 1 8AC56962
+P 3400 2400
+AR Path="/8AC56962" Ref="Q2"  Part="1" 
+AR Path="/5E53B952/8AC56962" Ref="Q2"  Part="1" 
+F 0 "Q2" H 3500 2440 59  0000 L BNN
+F 1 "8MHz" H 3500 2300 59  0000 L BNN
+F 2 "rosco_m68k:HC49_S" H 3400 2400 50  0001 C CNN
+F 3 "" H 3400 2400 50  0001 C CNN
+	1    3400 2400
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY20
+U 1 1 11576E5E
+P 1900 3500
+AR Path="/11576E5E" Ref="#SUPPLY20"  Part="1" 
+AR Path="/5E53B952/11576E5E" Ref="#SUPPLY020"  Part="1" 
+F 0 "#SUPPLY020" H 1900 3500 50  0001 C CNN
+F 1 "GND" H 1825 3375 59  0000 L BNN
+F 2 "" H 1900 3500 50  0001 C CNN
+F 3 "" H 1900 3500 50  0001 C CNN
+	1    1900 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY21
+U 1 1 BB85E6C7
+P 5000 3500
+AR Path="/BB85E6C7" Ref="#SUPPLY21"  Part="1" 
+AR Path="/5E53B952/BB85E6C7" Ref="#SUPPLY021"  Part="1" 
+F 0 "#SUPPLY021" H 5000 3500 50  0001 C CNN
+F 1 "GND" H 4925 3375 59  0000 L BNN
+F 2 "" H 5000 3500 50  0001 C CNN
+F 3 "" H 5000 3500 50  0001 C CNN
+	1    5000 3500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:A3L-LOC #FRAME4
+U 1 1 16F02BA1
+P 1100 10300
+AR Path="/16F02BA1" Ref="#FRAME4"  Part="1" 
+AR Path="/5E53B952/16F02BA1" Ref="#FRAME4"  Part="1" 
+F 0 "#FRAME4" H 1100 10300 50  0001 C CNN
+F 1 "BOOT line generator" H 1100 10300 50  0001 C CNN
+F 2 "" H 1100 10300 50  0001 C CNN
+F 3 "" H 1100 10300 50  0001 C CNN
+	1    1100 10300
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:555N IC8
+U 1 1 FEE713EA
+P 9100 6500
+AR Path="/FEE713EA" Ref="IC8"  Part="1" 
+AR Path="/5E53B952/FEE713EA" Ref="IC8"  Part="1" 
+F 0 "IC8" H 8800 6930 59  0000 L BNN
+F 1 "555N" H 8800 5995 59  0000 L BNN
+F 2 "rosco_m68k:DIL08" H 9100 6500 50  0001 C CNN
+F 3 "" H 9100 6500 50  0001 C CNN
+	1    9100 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7401N IC9
+U 1 1 F64B6C5C
+P 10900 7000
+AR Path="/F64B6C5C" Ref="IC9"  Part="1" 
+AR Path="/5E53B952/F64B6C5C" Ref="IC9"  Part="1" 
+F 0 "IC9" H 11000 7125 59  0000 L BNN
+F 1 "74LS01N" H 11000 6800 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 10900 7000 50  0001 C CNN
+F 3 "" H 10900 7000 50  0001 C CNN
+	1    10900 7000
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7401N IC9
+U 2 1 F64B6C50
+P 10900 7500
+AR Path="/F64B6C50" Ref="IC9"  Part="2" 
+AR Path="/5E53B952/F64B6C50" Ref="IC9"  Part="2" 
+F 0 "IC9" H 11000 7625 59  0000 L BNN
+F 1 "74LS01N" H 11000 7300 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 10900 7500 50  0001 C CNN
+F 3 "" H 10900 7500 50  0001 C CNN
+	2    10900 7500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7401N IC9
+U 3 1 F64B6C54
+P 11700 6500
+AR Path="/F64B6C54" Ref="IC9"  Part="3" 
+AR Path="/5E53B952/F64B6C54" Ref="IC9"  Part="3" 
+F 0 "IC9" H 11800 6625 59  0000 L BNN
+F 1 "74LS01N" H 11800 6300 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 11700 6500 50  0001 C CNN
+F 3 "" H 11700 6500 50  0001 C CNN
+	3    11700 6500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R12
+U 1 1 F401FE7E
+P 7700 5500
+AR Path="/F401FE7E" Ref="R12"  Part="1" 
+AR Path="/5E53B952/F401FE7E" Ref="R12"  Part="1" 
+F 0 "R12" V 7841 5550 59  0000 L BNN
+F 1 "2K2" V 7730 5550 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 7700 5500 50  0001 C CNN
+F 3 "" H 7700 5500 50  0001 C CNN
+	1    7700 5500
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R13
+U 1 1 BDE9F7DA
+P 9400 8000
+AR Path="/BDE9F7DA" Ref="R13"  Part="1" 
+AR Path="/5E53B952/BDE9F7DA" Ref="R13"  Part="1" 
+F 0 "R13" H 9350 8059 59  0000 L BNN
+F 1 "270R" H 9250 7870 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 9400 8000 50  0001 C CNN
+F 3 "" H 9400 8000 50  0001 C CNN
+	1    9400 8000
+	-1   0    0    1   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R14
+U 1 1 59846CAA
+P 10000 7100
+AR Path="/59846CAA" Ref="R14"  Part="1" 
+AR Path="/5E53B952/59846CAA" Ref="R14"  Part="1" 
+F 0 "R14" V 10141 7150 59  0000 L BNN
+F 1 "330R" V 10030 7150 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 10000 7100 50  0001 C CNN
+F 3 "" H 10000 7100 50  0001 C CNN
+	1    10000 7100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R16
+U 1 1 1CDB656C
+P 12500 5600
+AR Path="/1CDB656C" Ref="R16"  Part="1" 
+AR Path="/5E53B952/1CDB656C" Ref="R16"  Part="1" 
+F 0 "R16" V 12641 5650 59  0000 L BNN
+F 1 "4K7" V 12530 5650 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 12500 5600 50  0001 C CNN
+F 3 "" H 12500 5600 50  0001 C CNN
+	1    12500 5600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R17
+U 1 1 120757BD
+P 12900 5600
+AR Path="/120757BD" Ref="R17"  Part="1" 
+AR Path="/5E53B952/120757BD" Ref="R17"  Part="1" 
+F 0 "R17" V 13041 5650 59  0000 L BNN
+F 1 "4K7" V 12930 5650 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 12900 5600 50  0001 C CNN
+F 3 "" H 12900 5600 50  0001 C CNN
+	1    12900 5600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R15
+U 1 1 FD2CBBBB
+P 12100 5600
+AR Path="/FD2CBBBB" Ref="R15"  Part="1" 
+AR Path="/5E53B952/FD2CBBBB" Ref="R15"  Part="1" 
+F 0 "R15" V 12241 5650 59  0000 L BNN
+F 1 "330R" V 12130 5650 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 12100 5600 50  0001 C CNN
+F 3 "" H 12100 5600 50  0001 C CNN
+	1    12100 5600
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C26
+U 1 1 3410F41C
+P 8100 5500
+AR Path="/3410F41C" Ref="C26"  Part="1" 
+AR Path="/5E53B952/3410F41C" Ref="C26"  Part="1" 
+F 0 "C26" H 8160 5515 59  0000 L BNN
+F 1 "100nF" H 8160 5315 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 8100 5500 50  0001 C CNN
+F 3 "" H 8100 5500 50  0001 C CNN
+	1    8100 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:10-XX S1
+U 1 1 CEBFFD5E
+P 8800 8000
+AR Path="/CEBFFD5E" Ref="S1"  Part="1" 
+AR Path="/5E53B952/CEBFFD5E" Ref="S1"  Part="1" 
+F 0 "S1" V 8550 7900 59  0000 L BNN
+F 1 "10-XX" V 8650 8125 59  0000 L BNN
+F 2 "rosco_m68k:B3F-10XX" H 8800 8000 50  0001 C CNN
+F 3 "" H 8800 8000 50  0001 C CNN
+	1    8800 8000
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+19
+U 1 1 A2BCAE6A
+P 7700 5100
+AR Path="/A2BCAE6A" Ref="#P+19"  Part="1" 
+AR Path="/5E53B952/A2BCAE6A" Ref="#P+019"  Part="1" 
+F 0 "#P+019" H 7700 5100 50  0001 C CNN
+F 1 "VCC" V 7600 5000 59  0000 L BNN
+F 2 "" H 7700 5100 50  0001 C CNN
+F 3 "" H 7700 5100 50  0001 C CNN
+	1    7700 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY24
+U 1 1 6EA68DB5
+P 7700 7500
+AR Path="/6EA68DB5" Ref="#SUPPLY24"  Part="1" 
+AR Path="/5E53B952/6EA68DB5" Ref="#SUPPLY024"  Part="1" 
+F 0 "#SUPPLY024" H 7700 7500 50  0001 C CNN
+F 1 "GND" H 7625 7375 59  0000 L BNN
+F 2 "" H 7700 7500 50  0001 C CNN
+F 3 "" H 7700 7500 50  0001 C CNN
+	1    7700 7500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:LED5MM LED3
+U 1 1 273DB787
+P 10000 6600
+AR Path="/273DB787" Ref="LED3"  Part="1" 
+AR Path="/5E53B952/273DB787" Ref="LED3"  Part="1" 
+F 0 "LED3" V 10280 6640 59  0000 R TNN
+F 1 "RED" V 10280 6525 59  0000 R TNN
+F 2 "rosco_m68k:LED5MM" H 10000 6600 50  0001 C CNN
+F 3 "" H 10000 6600 50  0001 C CNN
+	1    10000 6600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:LED5MM LED4
+U 1 1 E47C4FF9
+P 12100 6100
+AR Path="/E47C4FF9" Ref="LED4"  Part="1" 
+AR Path="/5E53B952/E47C4FF9" Ref="LED4"  Part="1" 
+F 0 "LED4" V 12380 6140 59  0000 R TNN
+F 1 "GREEN" V 12480 6025 59  0000 R TNN
+F 2 "rosco_m68k:LED5MM" H 12100 6100 50  0001 C CNN
+F 3 "" H 12100 6100 50  0001 C CNN
+	1    12100 6100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY27
+U 1 1 25AF8A01
+P 10000 7500
+AR Path="/25AF8A01" Ref="#SUPPLY27"  Part="1" 
+AR Path="/5E53B952/25AF8A01" Ref="#SUPPLY027"  Part="1" 
+F 0 "#SUPPLY027" H 10000 7500 50  0001 C CNN
+F 1 "GND" H 9925 7375 59  0000 L BNN
+F 2 "" H 10000 7500 50  0001 C CNN
+F 3 "" H 10000 7500 50  0001 C CNN
+	1    10000 7500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+23
+U 1 1 3F3FBE72
+P 12500 5100
+AR Path="/3F3FBE72" Ref="#P+23"  Part="1" 
+AR Path="/5E53B952/3F3FBE72" Ref="#P+023"  Part="1" 
+F 0 "#P+023" H 12500 5100 50  0001 C CNN
+F 1 "VCC" V 12400 5000 59  0000 L BNN
+F 2 "" H 12500 5100 50  0001 C CNN
+F 3 "" H 12500 5100 50  0001 C CNN
+	1    12500 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+22
+U 1 1 DE82DA3E
+P 9600 5100
+AR Path="/DE82DA3E" Ref="#P+22"  Part="1" 
+AR Path="/5E53B952/DE82DA3E" Ref="#P+022"  Part="1" 
+F 0 "#P+022" H 9600 5100 50  0001 C CNN
+F 1 "VCC" V 9500 5000 59  0000 L BNN
+F 2 "" H 9600 5100 50  0001 C CNN
+F 3 "" H 9600 5100 50  0001 C CNN
+	1    9600 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+20
+U 1 1 0B44AC3A
+P 8100 5100
+AR Path="/0B44AC3A" Ref="#P+20"  Part="1" 
+AR Path="/5E53B952/0B44AC3A" Ref="#P+020"  Part="1" 
+F 0 "#P+020" H 8100 5100 50  0001 C CNN
+F 1 "VCC" V 8000 5000 59  0000 L BNN
+F 2 "" H 8100 5100 50  0001 C CNN
+F 3 "" H 8100 5100 50  0001 C CNN
+	1    8100 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY26
+U 1 1 D211C7B6
+P 9800 8300
+AR Path="/D211C7B6" Ref="#SUPPLY26"  Part="1" 
+AR Path="/5E53B952/D211C7B6" Ref="#SUPPLY026"  Part="1" 
+F 0 "#SUPPLY026" H 9800 8300 50  0001 C CNN
+F 1 "GND" H 9725 8175 59  0000 L BNN
+F 2 "" H 9800 8300 50  0001 C CNN
+F 3 "" H 9800 8300 50  0001 C CNN
+	1    9800 8300
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY25
+U 1 1 45AA5876
+P 8700 7500
+AR Path="/45AA5876" Ref="#SUPPLY25"  Part="1" 
+AR Path="/5E53B952/45AA5876" Ref="#SUPPLY025"  Part="1" 
+F 0 "#SUPPLY025" H 8700 7500 50  0001 C CNN
+F 1 "GND" H 8625 7375 59  0000 L BNN
+F 2 "" H 8700 7500 50  0001 C CNN
+F 3 "" H 8700 7500 50  0001 C CNN
+	1    8700 7500
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+21
+U 1 1 AF5215F4
+P 8500 5100
+AR Path="/AF5215F4" Ref="#P+21"  Part="1" 
+AR Path="/5E53B952/AF5215F4" Ref="#P+021"  Part="1" 
+F 0 "#P+021" H 8500 5100 50  0001 C CNN
+F 1 "VCC" V 8400 5000 59  0000 L BNN
+F 2 "" H 8500 5100 50  0001 C CNN
+F 3 "" H 8500 5100 50  0001 C CNN
+	1    8500 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R4
+U 1 1 51A2EE5C
+P 2400 7200
+AR Path="/51A2EE5C" Ref="R4"  Part="1" 
+AR Path="/5E53B952/51A2EE5C" Ref="R4"  Part="1" 
+F 0 "R4" V 2250 7259 59  0000 L BNN
+F 1 "4K7" V 2430 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 2400 7200 50  0001 C CNN
+F 3 "" H 2400 7200 50  0001 C CNN
+	1    2400 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R6
+U 1 1 5F990599
+P 2800 7200
+AR Path="/5F990599" Ref="R6"  Part="1" 
+AR Path="/5E53B952/5F990599" Ref="R6"  Part="1" 
+F 0 "R6" V 2650 7259 59  0000 L BNN
+F 1 "4K7" V 2830 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 2800 7200 50  0001 C CNN
+F 3 "" H 2800 7200 50  0001 C CNN
+	1    2800 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R7
+U 1 1 A57FCB1C
+P 3200 7200
+AR Path="/A57FCB1C" Ref="R7"  Part="1" 
+AR Path="/5E53B952/A57FCB1C" Ref="R7"  Part="1" 
+F 0 "R7" V 3050 7259 59  0000 L BNN
+F 1 "4K7" V 3230 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 3200 7200 50  0001 C CNN
+F 3 "" H 3200 7200 50  0001 C CNN
+	1    3200 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R8
+U 1 1 88AE9C44
+P 3600 7200
+AR Path="/88AE9C44" Ref="R8"  Part="1" 
+AR Path="/5E53B952/88AE9C44" Ref="R8"  Part="1" 
+F 0 "R8" V 3450 7259 59  0000 L BNN
+F 1 "4K7" V 3630 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 3600 7200 50  0001 C CNN
+F 3 "" H 3600 7200 50  0001 C CNN
+	1    3600 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R9
+U 1 1 949C8759
+P 4000 7200
+AR Path="/949C8759" Ref="R9"  Part="1" 
+AR Path="/5E53B952/949C8759" Ref="R9"  Part="1" 
+F 0 "R9" V 3850 7259 59  0000 L BNN
+F 1 "4K7" V 4030 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 4000 7200 50  0001 C CNN
+F 3 "" H 4000 7200 50  0001 C CNN
+	1    4000 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R11
+U 1 1 755AD31A
+P 4400 7200
+AR Path="/755AD31A" Ref="R11"  Part="1" 
+AR Path="/5E53B952/755AD31A" Ref="R11"  Part="1" 
+F 0 "R11" V 4250 7259 59  0000 L BNN
+F 1 "4K7" V 4430 7250 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 4400 7200 50  0001 C CNN
+F 3 "" H 4400 7200 50  0001 C CNN
+	1    4400 7200
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+16
+U 1 1 483164F1
+P 3400 6400
+AR Path="/483164F1" Ref="#P+16"  Part="1" 
+AR Path="/5E53B952/483164F1" Ref="#P+016"  Part="1" 
+F 0 "#P+016" H 3400 6400 50  0001 C CNN
+F 1 "VCC" V 3300 6300 59  0000 L BNN
+F 2 "" H 3400 6400 50  0001 C CNN
+F 3 "" H 3400 6400 50  0001 C CNN
+	1    3400 6400
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:CPOL-EUE2.5-5 C25
+U 1 1 3922B072
+P 7700 6900
+AR Path="/3922B072" Ref="C25"  Part="1" 
+AR Path="/5E53B952/3922B072" Ref="C25"  Part="1" 
+F 0 "C25" H 7745 6919 59  0000 L BNN
+F 1 "100uF" H 7745 6719 59  0000 L BNN
+F 2 "rosco_m68k:E2,5-5" H 7700 6900 50  0001 C CNN
+F 3 "" H 7700 6900 50  0001 C CNN
+	1    7700 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7404N IC7
+U 1 1 46D5F863
+P 2500 1600
+AR Path="/46D5F863" Ref="IC7"  Part="1" 
+AR Path="/5E53B952/46D5F863" Ref="IC7"  Part="1" 
+F 0 "IC7" H 2600 1725 59  0000 L BNN
+F 1 "7404N" H 2600 1400 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 2500 1600 50  0001 C CNN
+F 3 "" H 2500 1600 50  0001 C CNN
+	1    2500 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7404N IC7
+U 2 1 46D5F86F
+P 4400 1600
+AR Path="/46D5F86F" Ref="IC7"  Part="2" 
+AR Path="/5E53B952/46D5F86F" Ref="IC7"  Part="2" 
+F 0 "IC7" H 4500 1725 59  0000 L BNN
+F 1 "7404N" H 4500 1400 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 4400 1600 50  0001 C CNN
+F 3 "" H 4400 1600 50  0001 C CNN
+	2    4400 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7404N IC7
+U 3 1 46D5F86B
+P 5700 1600
+AR Path="/46D5F86B" Ref="IC7"  Part="3" 
+AR Path="/5E53B952/46D5F86B" Ref="IC7"  Part="3" 
+F 0 "IC7" H 5800 1725 59  0000 L BNN
+F 1 "7404N" H 5800 1400 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 5700 1600 50  0001 C CNN
+F 3 "" H 5700 1600 50  0001 C CNN
+	3    5700 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:PINHD-1X2 JP2
+U 1 1 3FCB3712
+P 14800 2300
+AR Path="/3FCB3712" Ref="JP2"  Part="1" 
+AR Path="/5E53B952/3FCB3712" Ref="JP2"  Part="1" 
+F 0 "JP2" H 14550 2525 59  0000 L BNN
+F 1 "PWR" H 14550 2100 59  0000 L BNN
+F 2 "rosco_m68k:1X02" H 14800 2300 50  0001 C CNN
+F 3 "" H 14800 2300 50  0001 C CNN
+F 4 "+5V" H 14900 2400 59  0001 L BNN "1"
+F 5 "GND" H 14900 2300 59  0001 L BNN "2"
+	1    14800 2300
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:CPOL-EUE3.5-10 C28
+U 1 1 FBED0E41
+P 13300 2200
+AR Path="/FBED0E41" Ref="C28"  Part="1" 
+AR Path="/5E53B952/FBED0E41" Ref="C28"  Part="1" 
+F 0 "C28" H 13345 2219 59  0000 L BNN
+F 1 "400uF" H 13345 2019 59  0000 L BNN
+F 2 "rosco_m68k:E3,5-10" H 13300 2200 50  0001 C CNN
+F 3 "" H 13300 2200 50  0001 C CNN
+	1    13300 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:CPOL-EUE2.5-5 C27
+U 1 1 0D735E1F
+P 12800 2200
+AR Path="/0D735E1F" Ref="C27"  Part="1" 
+AR Path="/5E53B952/0D735E1F" Ref="C27"  Part="1" 
+F 0 "C27" H 12845 2219 59  0000 L BNN
+F 1 "100uF" H 12845 2019 59  0000 L BNN
+F 2 "rosco_m68k:E2,5-5" H 12800 2200 50  0001 C CNN
+F 3 "" H 12800 2200 50  0001 C CNN
+	1    12800 2200
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7401N IC9
+U 5 1 F64B6C4C
+P 6800 7000
+AR Path="/F64B6C4C" Ref="IC9"  Part="5" 
+AR Path="/5E53B952/F64B6C4C" Ref="IC9"  Part="5" 
+F 0 "IC9" H 6775 6975 59  0000 L BNN
+F 1 "74LS01N" H 6900 6800 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 6800 7000 50  0001 C CNN
+F 3 "" H 6800 7000 50  0001 C CNN
+	5    6800 7000
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C24
+U 1 1 DA218AC8
+P 6300 6900
+AR Path="/DA218AC8" Ref="C24"  Part="1" 
+AR Path="/5E53B952/DA218AC8" Ref="C24"  Part="1" 
+F 0 "C24" H 6360 6915 59  0000 L BNN
+F 1 "100nF" H 6360 6715 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 6300 6900 50  0001 C CNN
+F 3 "" H 6300 6900 50  0001 C CNN
+	1    6300 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+18
+U 1 1 21F8E9C7
+P 6300 5600
+AR Path="/21F8E9C7" Ref="#P+18"  Part="1" 
+AR Path="/5E53B952/21F8E9C7" Ref="#P+018"  Part="1" 
+F 0 "#P+018" H 6300 5600 50  0001 C CNN
+F 1 "VCC" V 6200 5500 59  0000 L BNN
+F 2 "" H 6300 5600 50  0001 C CNN
+F 3 "" H 6300 5600 50  0001 C CNN
+	1    6300 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY23
+U 1 1 B94ED314
+P 6800 8300
+AR Path="/B94ED314" Ref="#SUPPLY23"  Part="1" 
+AR Path="/5E53B952/B94ED314" Ref="#SUPPLY023"  Part="1" 
+F 0 "#SUPPLY023" H 6800 8300 50  0001 C CNN
+F 1 "GND" H 6725 8175 59  0000 L BNN
+F 2 "" H 6800 8300 50  0001 C CNN
+F 3 "" H 6800 8300 50  0001 C CNN
+	1    6800 8300
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:7404N IC7
+U 7 1 46D5F87B
+P 5900 7000
+AR Path="/46D5F87B" Ref="IC7"  Part="7" 
+AR Path="/5E53B952/46D5F87B" Ref="IC7"  Part="7" 
+F 0 "IC7" H 5875 6975 59  0000 L BNN
+F 1 "7404N" H 6000 6800 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 5900 7000 50  0001 C CNN
+F 3 "" H 5900 7000 50  0001 C CNN
+	7    5900 7000
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C23
+U 1 1 6D2DCFB6
+P 5400 6900
+AR Path="/6D2DCFB6" Ref="C23"  Part="1" 
+AR Path="/5E53B952/6D2DCFB6" Ref="C23"  Part="1" 
+F 0 "C23" H 5460 6915 59  0000 L BNN
+F 1 "100nF" H 5460 6715 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 5400 6900 50  0001 C CNN
+F 3 "" H 5400 6900 50  0001 C CNN
+	1    5400 6900
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:VCC #P+17
+U 1 1 E83F5DEA
+P 5400 5600
+AR Path="/E83F5DEA" Ref="#P+17"  Part="1" 
+AR Path="/5E53B952/E83F5DEA" Ref="#P+017"  Part="1" 
+F 0 "#P+017" H 5400 5600 50  0001 C CNN
+F 1 "VCC" V 5300 5500 59  0000 L BNN
+F 2 "" H 5400 5600 50  0001 C CNN
+F 3 "" H 5400 5600 50  0001 C CNN
+	1    5400 5600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:GND #SUPPLY22
+U 1 1 75100347
+P 5900 8300
+AR Path="/75100347" Ref="#SUPPLY22"  Part="1" 
+AR Path="/5E53B952/75100347" Ref="#SUPPLY022"  Part="1" 
+F 0 "#SUPPLY022" H 5900 8300 50  0001 C CNN
+F 1 "GND" H 5825 8175 59  0000 L BNN
+F 2 "" H 5900 8300 50  0001 C CNN
+F 3 "" H 5900 8300 50  0001 C CNN
+	1    5900 8300
+	1    0    0    -1  
+$EndComp
+Text Notes 10100 4600 0    59   ~ 0
+RESET CIRCUIT
+Text Notes 3600 4500 0    59   ~ 0
+SYSTEM CLOCK CIRCUIT
+Text Notes 12900 10000 0    170  ~ 0
+CLOCK\n& RESET
+NoConn ~ 9000 7900
+NoConn ~ 8600 7900
+NoConn ~ 9500 6400
+Wire Bus Line
+	2300 8300 4600 8300
+$Comp
+L power:PWR_FLAG #FLG0101
+U 1 1 5E61E48E
+P 13300 2100
+F 0 "#FLG0101" H 13300 2175 50  0001 C CNN
+F 1 "PWR_FLAG" H 13300 2250 50  0000 C CNN
+F 2 "" H 13300 2100 50  0001 C CNN
+F 3 "~" H 13300 2100 50  0001 C CNN
+	1    13300 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:PWR_FLAG #FLG0102
+U 1 1 5E61E792
+P 13300 2400
+F 0 "#FLG0102" H 13300 2475 50  0001 C CNN
+F 1 "PWR_FLAG" H 13300 2550 50  0000 C CNN
+F 2 "" H 13300 2400 50  0001 C CNN
+F 3 "~" H 13300 2400 50  0001 C CNN
+	1    13300 2400
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:VCC #PWR0101
+U 1 1 5E620E4C
+P 12800 2100
+F 0 "#PWR0101" H 12800 1950 50  0001 C CNN
+F 1 "VCC" H 12800 2250 50  0000 C CNN
+F 2 "" H 12800 2100 50  0001 C CNN
+F 3 "" H 12800 2100 50  0001 C CNN
+	1    12800 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0102
+U 1 1 5E6215F5
+P 12800 2400
+F 0 "#PWR0102" H 12800 2150 50  0001 C CNN
+F 1 "GND" H 12800 2250 50  0000 C CNN
+F 2 "" H 12800 2400 50  0001 C CNN
+F 3 "" H 12800 2400 50  0001 C CNN
+	1    12800 2400
+	1    0    0    -1  
+$EndComp
+Text Notes 5850 2950 0    85   ~ 0
+2020-02-25\nWhat sort of weird oscillator is this?\nNormally there is an inverting amplifier across the Xtal.
+Text Notes 11700 3350 0    75   ~ 0
+2020-02-25\nThese "PWR_FLAG" symbols are to indicate that these wires are "Power" connections.\nIC normally have Power inputs, and ERC will generate errors if any of\n the "power connections" of a component is not connected to these\n "PWR_FLAG" symbols.
+Text Notes 10200 1900 0    50   ~ 0
+2020-02-25\nThese 2 Vcc and GND symbols are from KiCad's own library.\nThese symbols have internal Vcc and GND labels, and\nif you use these throughout your schematic, you can omit the Vcc\nand GND labels generated by the Eagle -> KiCad conversion.
+Text Notes 14950 1800 0    50   ~ 0
+2020-02-25\nPersonally I would add an Inductor or ferrite core right after the power\nconnector. (And use a bigger connector with screw terminals).
+$EndSCHEMATC
