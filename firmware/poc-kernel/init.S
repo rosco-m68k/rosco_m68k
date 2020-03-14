@@ -40,8 +40,9 @@ START::
 .COPY_LOOP:    
     move.l  (A0)+,(A1)+                 ; Copy source to dest, with postincrement.
     cmp.l   #_end,A1                    ; Done?
-    bne.s   .COPY_LOOP                  ; Halt if so, else
-    
+    bhi.s   .COPY_DONE                  ; ... Yep, break
+    bra.s   .COPY_LOOP                  ; ... Nope, loop again...
+   
 .COPY_DONE:
     jmp     _code                       ; Jump to copied code
 
