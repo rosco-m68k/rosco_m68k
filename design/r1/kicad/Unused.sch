@@ -40,19 +40,6 @@ Connection ~ 8300 2100
 Text GLabel 8400 900  0    10   BiDi ~ 0
 GND
 $Comp
-L rosco_m68k-eagle-import:A3L-LOC #FRAME6
-U 1 1 DFBB3BDD
-P -50 6900
-AR Path="/DFBB3BDD" Ref="#FRAME6"  Part="1" 
-AR Path="/5E53BCCF/DFBB3BDD" Ref="#FRAME6"  Part="1" 
-F 0 "#FRAME6" H -50 6900 50  0001 C CNN
-F 1 "BOOT line generator" H -50 6900 50  0001 C CNN
-F 2 "" H -50 6900 50  0001 C CNN
-F 3 "" H -50 6900 50  0001 C CNN
-	1    -50  6900
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:GND #SUPPLY29
 U 1 1 0331A01D
 P 8300 5300
@@ -117,14 +104,10 @@ F 3 "" H 8800 2100 50  0001 C CNN
 	6    8800 2100
 	1    0    0    -1  
 $EndComp
-Text Notes 12900 7900 0    170  ~ 0
-UNUSED\nGATES
 NoConn ~ 9200 900 
 NoConn ~ 9200 1500
 NoConn ~ 9200 2100
 NoConn ~ 9200 2700
-Text Notes 10150 1200 0    50   ~ 0
-In KiCad, unused pins must have the "No Connect" flag.\nIf the do not have this "cross", then ERC will generate errors.
 $Comp
 L Mechanical:MountingHole H1
 U 1 1 5F42C229
@@ -169,6 +152,10 @@ F 3 "~" H 2350 5400 50  0001 C CNN
 	1    2350 5400
 	1    0    0    -1  
 $EndComp
-Text Notes 3150 4450 0    50   ~ 0
-2020-02-25\nI've added some mounting holes here.\nAdd them to the PCB if you like ...
+Text Notes 12300 7750 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
+Text Notes 12650 8300 0    59   ~ 0
+UNUSED GATES & MISC
+Text Notes 15900 8450 0    59   ~ 0
+1
 $EndSCHEMATC

@@ -263,19 +263,6 @@ Entry Wire Line
 Entry Wire Line
 	6600 2000 6700 1900
 $Comp
-L rosco_m68k-eagle-import:A3L-LOC #FRAME3
-U 1 1 578F4FA5
-P 250 9450
-AR Path="/578F4FA5" Ref="#FRAME3"  Part="1" 
-AR Path="/5E53B810/578F4FA5" Ref="#FRAME3"  Part="1" 
-F 0 "#FRAME3" H 250 9450 50  0001 C CNN
-F 1 "BOOT line generator" H 250 9450 50  0001 C CNN
-F 2 "" H 250 9450 50  0001 C CNN
-F 3 "" H 250 9450 50  0001 C CNN
-	1    250  9450
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:74174N IC6
 U 1 1 6A4BA564
 P 5700 6500
@@ -539,12 +526,16 @@ F 3 "" H 3600 3200 50  0001 C CNN
 $EndComp
 Text Notes 5500 7700 0    59   ~ 0
 /BOOT LINE GENERATOR
-Text Notes 13000 10200 0    170  ~ 0
-DTACK\n& BOOT
 NoConn ~ 5300 2900
 NoConn ~ 6200 6200
 NoConn ~ 6200 6500
 NoConn ~ 5300 2200
+Text Notes 12300 10000 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
+Text Notes 12650 10550 0    59   ~ 0
+DTACK & BOOT
+Text Notes 15900 10700 0    59   ~ 0
+1
 Wire Bus Line
 	6700 800  6700 2600
 Wire Bus Line

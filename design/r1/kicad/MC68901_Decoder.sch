@@ -439,19 +439,6 @@ F 3 "" H 11900 4500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L rosco_m68k-eagle-import:A3L-LOC #FRAME2
-U 1 1 70888A22
-P 1100 10300
-AR Path="/70888A22" Ref="#FRAME2"  Part="1" 
-AR Path="/5E53B630/70888A22" Ref="#FRAME2"  Part="1" 
-F 0 "#FRAME2" H 1100 10300 50  0001 C CNN
-F 1 "BOOT line generator" H 1100 10300 50  0001 C CNN
-F 2 "" H 1100 10300 50  0001 C CNN
-F 3 "" H 1100 10300 50  0001 C CNN
-	1    1100 10300
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:CRYSTALHC49S Q1
 U 1 1 55305305
 P 10500 7500
@@ -819,10 +806,6 @@ F 3 "" H 14400 5200 50  0001 C CNN
 	1    14400 5200
 	1    0    0    -1  
 $EndComp
-Text Notes 12900 9700 0    170  ~ 0
-MC68901
-Text Notes 12700 10000 0    170  ~ 0
-& DECODER
 NoConn ~ 11200 5500
 NoConn ~ 11200 5600
 NoConn ~ 11200 5700
@@ -925,6 +908,15 @@ A5
 Wire Bus Line
 	14300 1100 2700 1100
 Wire Bus Line
+	2700 800  2700 1100
+Connection ~ 2700 1100
+Text Notes 18650 9800 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
+Text Notes 22200 10500 0    59   ~ 0
+1
+Text Notes 18950 10350 0    59   ~ 0
+MC68901 & DECODER
+Wire Bus Line
 	8200 3700 8200 4400
 Wire Bus Line
 	14300 1100 14300 3400
@@ -933,12 +925,9 @@ Wire Bus Line
 Wire Bus Line
 	3300 6800 3300 8000
 Wire Bus Line
-	2700 800  2700 1100
+	2700 1100 2700 9300
 Wire Bus Line
 	6500 6900 6500 8300
 Wire Bus Line
 	13000 5100 13000 5900
-Connection ~ 2700 1100
-Wire Bus Line
-	2700 1100 2700 9300
 $EndSCHEMATC

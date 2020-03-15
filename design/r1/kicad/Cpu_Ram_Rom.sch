@@ -569,19 +569,6 @@ F 3 "" H 3800 3700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L rosco_m68k-eagle-import:A3L-LOC #FRAME1
-U 1 1 CBB98AC2
-P 900 10700
-AR Path="/CBB98AC2" Ref="#FRAME1"  Part="1" 
-AR Path="/5E53B4B8/CBB98AC2" Ref="#FRAME1"  Part="1" 
-F 0 "#FRAME1" H 900 10700 50  0001 C CNN
-F 1 "CPU" H 900 10700 50  0001 C CNN
-F 2 "" H 900 10700 50  0001 C CNN
-F 3 "" H 900 10700 50  0001 C CNN
-	1    900  10700
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:MC68000P IC1
 U 2 1 8B1E8DBB
 P 3700 7500
@@ -823,8 +810,6 @@ Text Notes 9200 8600 0    59   ~ 0
 EVEN
 Text Notes 14100 8900 0    59   ~ 0
 EVEN
-Text Notes 12700 10400 0    170  ~ 0
-CPU, RAM\n& ROM
 NoConn ~ 4400 2400
 NoConn ~ 4400 2500
 $Comp
@@ -1557,6 +1542,15 @@ Wire Bus Line
 	11900 550  7500 550 
 Wire Bus Line
 	7500 550  7500 2600
+Connection ~ 7500 550 
+Wire Bus Line
+	7500 550  2500 550 
+Text Notes 19800 10900 0    50   ~ 0
+1
+Text Notes 16550 10750 0    79   ~ 0
+CPU, RAM & ROM
+Text Notes 16200 10200 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
 Wire Bus Line
 	11900 5300 11900 6100
 Wire Bus Line
@@ -1585,7 +1579,4 @@ Wire Bus Line
 	11100 6600 11100 8500
 Wire Bus Line
 	11450 2900 11450 4800
-Connection ~ 7500 550 
-Wire Bus Line
-	7500 550  2500 550 
 $EndSCHEMATC

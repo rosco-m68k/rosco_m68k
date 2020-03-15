@@ -403,19 +403,6 @@ F 3 "" H 8800 4800 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L rosco_m68k-eagle-import:A3L-LOC #FRAME5
-U 1 1 52068B2A
-P 1100 10100
-AR Path="/52068B2A" Ref="#FRAME5"  Part="1" 
-AR Path="/5E53BC83/52068B2A" Ref="#FRAME5"  Part="1" 
-F 0 "#FRAME5" H 1100 10100 50  0001 C CNN
-F 1 "BOOT line generator" H 1100 10100 50  0001 C CNN
-F 2 "" H 1100 10100 50  0001 C CNN
-F 3 "" H 1100 10100 50  0001 C CNN
-	1    1100 10100
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:VCC #P+24
 U 1 1 D14BEB7C
 P 9500 2900
@@ -454,8 +441,6 @@ F 3 "" H 8900 7300 50  0001 C CNN
 	1    8900 7300
 	1    0    0    -1  
 $EndComp
-Text Notes 12700 9600 0    170  ~ 0
-EXPANSION
 Text Label 8250 7200 0    50   ~ 0
 D0
 Text Label 8250 7300 0    50   ~ 0
@@ -572,6 +557,12 @@ Wire Bus Line
 	7400 3050 7500 3050
 Wire Bus Line
 	10100 2400 7000 2400
+Text Notes 14450 9650 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
+Text Notes 18050 10300 0    59   ~ 0
+1
+Text Notes 14800 10150 0    59   ~ 0
+EXPANSION CONNECTOR
 Wire Bus Line
 	8000 6900 8000 7200
 Wire Bus Line

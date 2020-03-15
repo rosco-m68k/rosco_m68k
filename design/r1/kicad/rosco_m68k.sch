@@ -99,12 +99,10 @@ Wire Bus Line
 Wire Bus Line
 	9300 3700 3400 3700
 Connection ~ 3400 3700
-Text Notes 3400 4850 0    50   ~ 0
-2020-02-25\nAddress and data busses are routed through the hierarchical schematic.\nThe Control bus is still routed via global labels, because separately named\nsignals in busses are not implemented yet (Expected in KiCad V6)\n\nBecause the Controll bus still uses global labels, all the blue bus lines of\nthat bus is just eye candy. KiCad just relies on the global labels.\n\n
-Text Notes 2750 5350 0    50   ~ 0
-2020-02-25\nERC in EEschem still generates a bunch of errors.\nThese errors are from faults in symbols, for example 2 ouput pins of different IC's connected together.
-Text Notes 3250 2050 0    50   ~ 0
-2020-02-25\nDouble click to enther a Hierarchical sheet.\n(RMB & select from sub menu to turn back).
-Text Notes 3500 7400 0    50   ~ 0
-2020-02-25\nAfter all the changes I made (and intermediate) I checked the generated \nconnectivity from the schematic with the PCB.\nI have not touched the PCB (after automatic conversion) and DRC does not \ngive errors or unrouted connections, which almost guarantees I did not add\nerrors to the schematic.
+Text Notes 7000 6950 0    59   ~ 0
+Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
+Text Notes 7350 7500 0    59   ~ 0
+ROSCO_M68K GENERAL PURPOSE MC68000 COMPUTER
+Text Notes 10600 7650 0    59   ~ 0
+1
 $EndSCHEMATC
