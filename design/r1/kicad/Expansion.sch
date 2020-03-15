@@ -140,21 +140,11 @@ Wire Wire Line
 Text GLabel 9900 3500 2    47   Output ~ 0
 CLK
 Wire Wire Line
-	9900 3700 9000 3700
-Text GLabel 9900 3700 2    47   Output ~ 0
-EVENRAMSEL
-Wire Wire Line
 	9900 3800 9000 3800
-Text GLabel 9900 3800 2    47   Output ~ 0
-EVENROMSEL
 Wire Wire Line
 	9900 3900 9000 3900
-Text GLabel 9900 3900 2    47   Output ~ 0
-ODDRAMSEL
 Wire Wire Line
 	9900 4000 9000 4000
-Text GLabel 9900 4000 2    47   Output ~ 0
-ODDROMSEL
 Wire Wire Line
 	9900 4100 9000 4100
 Text GLabel 9900 4100 2    47   Output ~ 0
@@ -608,10 +598,174 @@ F 3 "" H 2250 6150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	2250 5100 2250 6150
+$Comp
+L Connector_Generic:Conn_2Rows-15Pins J5
+U 1 1 600521A7
+P 15250 4700
+F 0 "J5" H 15300 5217 50  0000 C CNN
+F 1 "GPIO-PANEL" H 15300 5126 50  0000 C CNN
+F 2 "" H 15250 4700 50  0001 C CNN
+F 3 "~" H 15250 4700 50  0001 C CNN
+	1    15250 4700
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15050 4400 14350 4400
+Wire Wire Line
+	15050 4500 14350 4500
+Wire Wire Line
+	15050 4600 14350 4600
+Wire Wire Line
+	15050 4700 14350 4700
+Wire Wire Line
+	15050 4800 14350 4800
+Wire Wire Line
+	15050 4900 14350 4900
+Wire Wire Line
+	15050 5000 14350 5000
+Wire Wire Line
+	15050 5100 14800 5100
+Wire Wire Line
+	15550 4500 16150 4500
+Wire Wire Line
+	15550 4600 16150 4600
+Wire Wire Line
+	15550 4700 16150 4700
+Wire Wire Line
+	15550 4800 16150 4800
+Wire Wire Line
+	15550 5000 15800 5000
+Text GLabel 14350 4400 0    50   BiDi ~ 0
+GPIO1
+Text GLabel 14350 4500 0    50   BiDi ~ 0
+GPIO2
+Text GLabel 14350 4600 0    50   BiDi ~ 0
+GPIO3
+Text GLabel 14350 4700 0    50   BiDi ~ 0
+GPIO4
+Text GLabel 14350 4800 0    50   BiDi ~ 0
+GPIO5
+Text GLabel 14350 4900 0    50   Output ~ 0
+TAO
+Text GLabel 14350 5000 0    50   Output ~ 0
+TBO
+Text GLabel 9900 4000 2    50   Output ~ 0
+IEO
+Text GLabel 14350 5100 0    50   Input ~ 0
+TAI
+Text GLabel 16150 5000 2    50   Input ~ 0
+TBI
+Text GLabel 10450 3700 2    50   Input ~ 0
+VPA
+Text GLabel 9900 3800 2    50   Output ~ 0
+VMA
+Text GLabel 9900 3900 2    50   Output ~ 0
+E
+$Comp
+L Device:R R18
+U 1 1 6009D68E
+P 14800 5450
+F 0 "R18" H 14870 5496 50  0000 L CNN
+F 1 "4K7" H 14870 5405 50  0000 L CNN
+F 2 "" V 14730 5450 50  0001 C CNN
+F 3 "~" H 14800 5450 50  0001 C CNN
+	1    14800 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R19
+U 1 1 6009E518
+P 15800 5450
+F 0 "R19" H 15870 5496 50  0000 L CNN
+F 1 "4K7" H 15870 5405 50  0000 L CNN
+F 2 "" V 15730 5450 50  0001 C CNN
+F 3 "~" H 15800 5450 50  0001 C CNN
+	1    15800 5450
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0112
+U 1 1 600A0436
+P 15300 6000
+F 0 "#PWR0112" H 15300 5750 50  0001 C CNN
+F 1 "GND" H 15305 5827 50  0000 C CNN
+F 2 "" H 15300 6000 50  0001 C CNN
+F 3 "" H 15300 6000 50  0001 C CNN
+	1    15300 6000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	15800 5300 15800 5000
+Connection ~ 15800 5000
+Wire Wire Line
+	15800 5000 16150 5000
+Wire Wire Line
+	15800 5850 15800 5600
+Wire Wire Line
+	15300 6000 15300 5850
+Connection ~ 15300 5850
+Wire Wire Line
+	15300 5850 15800 5850
+$Comp
+L Device:R R20
+U 1 1 600B8632
+P 10300 3150
+F 0 "R20" H 10370 3196 50  0000 L CNN
+F 1 "10K" H 10370 3105 50  0000 L CNN
+F 2 "" V 10230 3150 50  0001 C CNN
+F 3 "~" H 10300 3150 50  0001 C CNN
+	1    10300 3150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0154
+U 1 1 600B9802
+P 10300 2800
+F 0 "#PWR0154" H 10300 2650 50  0001 C CNN
+F 1 "VCC" H 10317 2973 50  0000 C CNN
+F 2 "" H 10300 2800 50  0001 C CNN
+F 3 "" H 10300 2800 50  0001 C CNN
+	1    10300 2800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9000 3700 10300 3700
+Wire Wire Line
+	15550 4400 16150 4400
+Wire Wire Line
+	10300 2800 10300 3000
+Wire Wire Line
+	10300 3300 10300 3700
+Connection ~ 10300 3700
+Wire Wire Line
+	10300 3700 10450 3700
+Text GLabel 16150 4400 2    50   Output ~ 0
+EVENRAMSEL
+Text GLabel 16150 4500 2    50   Output ~ 0
+ODDRAMSEL
+Text GLabel 16150 4600 2    50   Output ~ 0
+EVENROMSEL
+Text GLabel 16150 4700 2    50   Output ~ 0
+ODDROMSEL
+Wire Wire Line
+	15550 4900 16150 4900
+Wire Wire Line
+	14800 5850 14800 5600
+Wire Wire Line
+	14800 5850 15300 5850
+Wire Wire Line
+	14800 5300 14800 5100
+Connection ~ 14800 5100
+Wire Wire Line
+	14800 5100 14350 5100
 Wire Bus Line
 	8000 6900 8000 7200
 Wire Bus Line
 	10750 5000 10750 7200
 Wire Bus Line
 	7500 3050 7500 5400
+Text GLabel 16150 4800 2    50   Output ~ 0
+IOSEL
+Text GLabel 16150 4900 2    50   Output ~ 0
+EXPSEL
 $EndSCHEMATC
