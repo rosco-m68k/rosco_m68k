@@ -1,0 +1,3 @@
+(sym_lib_table
+  (lib (name rosco_m68k-eagle-import)(type Legacy)(uri ${KIPRJMOD}/rosco_m68k-eagle-import.lib)(options "")(descr ""))
+)
