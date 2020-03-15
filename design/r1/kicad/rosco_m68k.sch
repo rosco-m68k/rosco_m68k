@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 7
+Sheet 1 6
 Title ""
 Date "2020-02-25"
 Rev ""
@@ -48,12 +48,6 @@ F0 "Expansion" 50
 F1 "Expansion.sch" 50
 F2 "D[0..15]" I L 9750 3050 50 
 F3 "A[1..23]" I L 9750 2850 50 
-$EndSheet
-$Sheet
-S 1400 6100 500  150 
-U 5E53BCCF
-F0 "Unused" 50
-F1 "Unused.sch" 50
 $EndSheet
 Text Label 1250 2500 2    50   ~ 0
 D[0..15]
