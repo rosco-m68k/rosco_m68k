@@ -457,8 +457,6 @@ Text Notes 10650 8550 0    59   ~ 0
 EVEN
 Text Notes 18450 8850 0    59   ~ 0
 EVEN
-NoConn ~ 3600 2850
-NoConn ~ 3600 2950
 Text Label 2000 4550 0    50   ~ 0
 D0
 Text Label 2000 4650 0    50   ~ 0
@@ -1061,17 +1059,6 @@ F 3 "" H 7900 1150 50  0001 C CNN
 	1    7900 1150
 	1    0    0    -1  
 $EndComp
-$Comp
-L power:VCC #PWR0105
-U 1 1 5EAC6AC0
-P 1250 1150
-F 0 "#PWR0105" H 1250 1000 50  0001 C CNN
-F 1 "VCC" H 1267 1323 50  0000 C CNN
-F 2 "" H 1250 1150 50  0001 C CNN
-F 3 "" H 1250 1150 50  0001 C CNN
-	1    1250 1150
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	7900 2450 7900 1150
 Wire Wire Line
@@ -1161,25 +1148,6 @@ F 3 "" H 15000 9150 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	8200 4750 8200 2750
-Wire Wire Line
-	1250 2950 2300 2950
-Wire Wire Line
-	1250 1150 1250 1550
-Wire Wire Line
-	1250 1950 1250 2950
-$Comp
-L rosco_m68k-eagle-import:R-EU_0207_10 R1
-U 1 1 4C88E097
-P 1250 1750
-AR Path="/4C88E097" Ref="R1"  Part="1" 
-AR Path="/5E53B4B8/4C88E097" Ref="R1"  Part="1" 
-F 0 "R1" V 1400 1809 59  0000 L BNN
-F 1 "10K" V 1200 1520 59  0000 L BNN
-F 2 "rosco_m68k:0207_10" H 1250 1750 50  0001 C CNN
-F 3 "" H 1250 1750 50  0001 C CNN
-	1    1250 1750
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	2000 2750 2300 2750
 Wire Wire Line
@@ -1386,26 +1354,6 @@ F 3 "" H 18250 7350 50  0001 C CNN
 	1    18250 7350
 	1    0    0    -1  
 $EndComp
-Wire Bus Line
-	19350 5900 19350 6750
-Wire Bus Line
-	19350 2200 19350 3050
-Wire Bus Line
-	11550 5900 11550 6750
-Wire Bus Line
-	11550 2200 11550 3050
-Wire Bus Line
-	8850 5900 8850 7850
-Wire Bus Line
-	8850 2250 8850 4150
-Wire Bus Line
-	1600 4300 1600 5950
-Wire Bus Line
-	15800 2850 15800 4750
-Wire Bus Line
-	4500 3650 4500 5950
-Wire Bus Line
-	15800 6550 15800 8450
 $Comp
 L rosco_m68k-eagle-import:AT28C64B-15PU U1
 U 1 1 5FF11175
@@ -1428,4 +1376,36 @@ F 3 "" H 10450 7150 50  0001 C CNN
 	1    10450 7150
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	3600 2850 3900 2850
+Wire Wire Line
+	3600 2950 3900 2950
+Wire Wire Line
+	2300 2950 2000 2950
+Text GLabel 2000 2950 0    47   Input ~ 0
+VPA
+Text GLabel 3900 2950 2    47   Output ~ 0
+VMA
+Text GLabel 3900 2850 2    47   Output ~ 0
+E
+Wire Bus Line
+	19350 5900 19350 6750
+Wire Bus Line
+	19350 2200 19350 3050
+Wire Bus Line
+	11550 5900 11550 6750
+Wire Bus Line
+	11550 2200 11550 3050
+Wire Bus Line
+	8850 5900 8850 7850
+Wire Bus Line
+	8850 2250 8850 4150
+Wire Bus Line
+	1600 4300 1600 5950
+Wire Bus Line
+	15800 2850 15800 4750
+Wire Bus Line
+	4500 3650 4500 5950
+Wire Bus Line
+	15800 6550 15800 8450
 $EndSCHEMATC
