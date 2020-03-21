@@ -24,6 +24,37 @@ void println(char *str) {
   mcPrintln(str);
 }
 
+char readchar() {
+  return mcReadchar();
+}
+
+int readline(char *buf, int buf_size) {
+  register char c;
+
+  for (int i = 0; i < buf_size - 1; i++) {
+    c = buf[i] = readchar();
+
+    switch (c) {
+    case 0x08:
+      buf[i] = 0;
+      i = i - 1;
+      break;
+    case 0x0D:
+      // return
+      buf[i] = 0;
+      println("");
+      return i;
+    default:
+      buf[i] = c;
+    }
+  
+    mcSendchar(c);
+  }
+
+  buf[buf_size-1] = 0;
+  return buf_size;
+}
+
 void delay(uint32_t ticks) {
   mcBusywait(ticks);
 }

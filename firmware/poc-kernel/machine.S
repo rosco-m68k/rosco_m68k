@@ -37,6 +37,30 @@ mcPrintln::
     movem.l (A7)+,D0-D1/A0            ; Restore regs
     rts                               ; We're done.
 
+; Call the SENDCHAR function of the firmware
+;
+; Trashes: MFP_UDR
+; Modifies: Nothing
+mcSendchar::
+    movem.l  D0-D1,-(A7)              ; Save regs
+    move.l  (12,A7),D0                ; Get C char from the stack into A0
+    move.l  #2,D1                     ; Func code is 2
+    trap    #14                       ; TRAP to firmware
+    movem.l (A7)+,D0-D1               ; Restore regs
+    rts                               ; We're done.
+
+; Call the RECVCHAR function of the firmware
+;
+; Trashes: MFP_UDR
+; Modifies: D0 (return)
+
+mcReadchar::
+    move.l  D1,-(A7)                  ; Save regs
+    move.l  #3,D1                     ; Func code is 2
+    trap    #14                       ; TRAP to firmware
+    move.l (A7)+,D1                   ; Restore regs
+    rts                               ; We're done.
+
 ; Busywait for a while...
 ; 
 ; Trashes: D0

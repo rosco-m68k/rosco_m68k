@@ -24,6 +24,9 @@ void printuint(uint32_t num);
 void printushort(uint16_t num);
 void printuchar(uint8_t num);
 
+char readchar();
+int readline(char *buf, int buf_len);
+
 void delay(uint32_t ticks);
 
 #endif

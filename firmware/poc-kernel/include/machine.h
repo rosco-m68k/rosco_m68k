@@ -84,6 +84,9 @@ void mcPrintln(char *str);
 void mcPrintnum(uint32_t num);
 void mcPrintbyte(uint8_t num);
 
+void mcSendchar(char c);
+char mcReadchar();
+
 /*
  * Busywait for a while. The actual time is wholly dependent
  * on CPU (i.e. clock) speed!

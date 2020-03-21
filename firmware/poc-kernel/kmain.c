@@ -22,6 +22,8 @@
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 
+char readline_buf[1024];
+
 noreturn void kmain() {
   print("\033[2J");
   println("Hello, World from the \"kernel\"!");
@@ -31,7 +33,10 @@ noreturn void kmain() {
   while (true) {
     *(mfp_gpdr) ^= 2;
 
-    delay(125000);
+    if (readline(readline_buf, 1024) > 0) {
+      println(readline_buf);
+    }
+
   }
 }
 
