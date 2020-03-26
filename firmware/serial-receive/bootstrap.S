@@ -127,7 +127,7 @@ EARLY_PRINT_C::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT:
+EARLY_PRINT::
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -148,7 +148,7 @@ EARLY_PRINT:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN:
+EARLY_PRINTLN::
     bsr.s   EARLY_PRINT               ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
