@@ -75295,136 +75295,132 @@ rosco_m68k
 0207_10
 <b>RESISTOR</b><p>
 type 0207, grid 10 mm
-
+0
 0
 2
 2
 rosco_m68k
 B3F-10XX
 <b>OMRON SWITCH</b>
-
+0
 0
 4
 4
 rosco_m68k
 C2.5-3
 <B>MKS2</B>, 5 x 3 mm, grid 2.54 mm
-
+0
 0
 2
 2
 rosco_m68k
 DIL08
 <b>Dual In Line Package</b>
-
+0
 0
 8
 8
 rosco_m68k
 DIL14
 <b>Dual In Line Package</b>
-
+0
 0
 14
 14
 rosco_m68k
 DIL16
 <b>Dual In Line Package</b>
-
+0
 0
 16
 16
 rosco_m68k
 DIL20
 <B>Dual In Line</B>
-
+0
 0
 20
 20
 rosco_m68k
 DIL48
 <b>Dual In Line</b>
-
+0
 0
 48
 48
 rosco_m68k
 DIL64
 <b>Dual In Line</b>
-
+0
 0
 64
 64
 rosco_m68k
 DIP254P1524X393-32
 
-
+0
 0
 32
 32
 rosco_m68k
 DIP254P1524X482-28
 
-
+0
 0
 28
 28
 rosco_m68k
 E2,5-5
 <b>ELECTROLYTIC CAPACITOR</b><p>
-grid 2.54 mm, diameter 5 mm
-
+0
+0
 0
 2
 2
 rosco_m68k
 E3,5-10
-<b>ELECTROLYTIC CAPACITOR</b><p>
-grid 3.5 mm, diameter 10 mm
-
+0
+0
+0
 0
 2
 2
 rosco_m68k
-HC49_S
-<b>CRYSTAL</b>
-
+0
+0
+0
 0
 2
 2
 rosco_m68k
-LED5MM
-<B>LED</B><p>
-5 mm, round
+0
+0
+5
 
 0
 2
 2
-rosco_m68k
-OSHW_8MM
-
-
 0
 0
 0
-rosco_m68k
-OSHW_Mono_0.1_Scale
-
 
 0
 0
 0
-rosco_m68k
-OSHW_Mono_0.25_Scale
-
+0
+0
+0
 
 0
 0
 0
-rosco_m68k
-OSHW_Mono_1.0_Scale
+0
+0
+0
 
-
+0
+0
+0
 0
 0
 0
