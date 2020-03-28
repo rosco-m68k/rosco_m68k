@@ -4,7 +4,6 @@
 **/*.S68
 *.s#*
 *.b#*
-*.pro
 *.job
 *.map
 **/.project
