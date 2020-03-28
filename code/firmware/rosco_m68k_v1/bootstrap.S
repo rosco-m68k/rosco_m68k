@@ -12,7 +12,7 @@
 ; It sets up the exception handlers, initializes the hardware
 ; including the UART and system timers, sets up the basic
 ; info in the System Data Block, enables interrupts and 
-; calls kmain (in kmain.c).
+; calls the main loader (in lmain.c).
 ;------------------------------------------------------------
     include "../../shared/equates.S"
 
@@ -44,10 +44,12 @@ VECTORS:
     dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
     
     dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
-    dcb.l   16,TRAP_HANDLER             ; 20-2F: TRAP Handlers
+    dcb.l   14,TRAP_HANDLER             ; 20-2D: TRAP Handlers (unused)
+    dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
+    dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (replaced later)
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
     dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Not used)
+    dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Interrupt not used)
     dc.l    TICK_HANDLER                ; 45: MFP Timer C (System tick)
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 46-47: MFP GPIO #4-5 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
@@ -76,7 +78,7 @@ START::
     bra.s   .ISR_COPY_LOOP            ; Next iteration
 
 .ISR_COPY_DONE:
-    bsr.s   INITMFP                   ; Initialise MC68901
+    bsr.w   INITMFP                   ; Initialise MC68901
     bsr.s   INITSDB                   ; Initialise System Data Block
     
     bsr.s   PRINT_BANNER
@@ -84,8 +86,8 @@ START::
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
     and.w   #$F0FF,SR                 ; Enable interrupts
 
-    jsr     kinit                     ; Init C land
-    jmp     kmain                     ; Call kmain
+    jsr     linit                     ; Init C land
+    jmp     lmain                     ; Call kmain
 
 ; kmain is noreturn, so That's All, Folks(tm).
 
@@ -125,7 +127,7 @@ EARLY_PRINT_C::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT:
+EARLY_PRINT::
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -146,7 +148,7 @@ EARLY_PRINT:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN:
+EARLY_PRINTLN::
     bsr.s   EARLY_PRINT               ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
@@ -174,11 +176,11 @@ INITMFP:
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
     move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
-    move.b  #$18,MFP_TDDR             ; Timer D count is 24 for (19.2KHz, divided by 2 for 9600 baud)
+    move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
     ; USART setup
-    move.b  #$08,MFP_UCR              ; Fundamental clock, async, 8N1
+    move.b  #$88,MFP_UCR              ; /16 clock, async, 8N1
     move.b  #$05,MFP_TSR              ; Set pin state high and enable transmitter
 
     ; Interrupt setup - Enable timer C interrupt for kernel tick
@@ -231,7 +233,12 @@ TICK_HANDLER:
     move.l  (A7)+,D0                  ; Restore D0
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     rte                               ; We're done
+
     
+; Call busywait from C code...
+BUSYWAIT_C::
+    move.l  (4,A7),D0
+    jmp     BUSYWAIT
 
 ; Busywait - expects a delay in D0, returns when D0 gets to 0 
 ;
@@ -334,6 +341,38 @@ TRAP_HANDLER:
     move.l  #$C001C0DE,$404
     rte
 
+; TRAP 14 provides access to some of the basic functionality
+; of the firmware after the bootloader has terminated.
+;
+; D1 is expected to contain the function code. Other arguments
+; depend on the specific function - See README for details.
+TRAP_14_HANDLER:
+    cmp.l   #0,D1                     ; FC == 0?
+    beq.s   .PRINT                    ;   PRINT if so...
+    cmp.l   #1,D1                     ; FC == 1?
+    beq.s   .PRINTLN                  ;   PRINTLN if so...
+    cmp.l   #2,D1                     ; FC == 2?
+    beq.s   .SENDCHAR                 ;   SENDCHAR if so...
+    cmp.l   #3,D1                     ; FC == 3?
+    beq.s   .RECVCHAR                 ;   RECVCHAR if so...
+    rte                               ; That's all for now...
+
+.PRINT
+    bsr.w   EARLY_PRINT
+    rte
+
+.PRINTLN
+    bsr.w   EARLY_PRINTLN
+    rte
+
+.SENDCHAR
+    bsr.w   SENDCHAR
+    rte
+
+.RECVCHAR
+    bsr.w   RECVCHAR
+    rte
+    
 
 ;------------------------------------------------------------
 ; Consts 
