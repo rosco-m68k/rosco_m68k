@@ -16,16 +16,27 @@
 
     section .text
 
-
+; Send a single character via UART
+;
+; Trashes: MFP_UDR
+; Modifies: Nothing
 SENDCHAR::
+    move.l  D1,-(A7)              ; Save D1
 .BEGIN
+    bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
     move.b  MFP_TSR,D1            ; Get TSR
     btst    #7,D1                 ; Is buffer empty bit set?
     beq.s   .BEGIN                ; No - loop until it is
 
     move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  (A7)+,D1              ; Restore D1
     rts
 
+; Receive a single character via UART.
+; Ignores overrun errors.
+;
+; Trashes: MFP_UDR
+; Modifies: D0 (return)
 RECVCHAR::
     bclr.b  #7,MFP_GPDR           ; Lower RTS
 .BEGIN
@@ -43,32 +54,26 @@ RECVCHAR::
     bra.s   .BEGIN                ; And continue testing...
     
 .GOTCHR
-    bset.b  #7,MFP_GPDR           ; Raise RTS
-    eor     D0,D0                 ; Clear D0
     move.b  MFP_UDR,D0            ; Get the data
     rts
 
-; Enable the transmitter and turn on GPIO #2.
+; Enable the transmitter
 ENABLE_XMIT::
     bset.b  #0,MFP_TSR
-    bclr.b  #2,MFP_GPDR                 ; :LED on
     rts
 
-; Disable the transmitter and turn off GPIO #2.
+; Disable the transmitter
 DISABLE_XMIT::
     bclr.b  #0,MFP_TSR
-    bset.b  #2,MFP_GPDR                 ; :LED off
     rts
 
-; Enable the receiver and turn on GPIO #3.
+; Enable the receiver
 ENABLE_RECV::
     bset.b  #0,MFP_RSR        
-    bclr.b  #3,MFP_GPDR                 ; :LED on
     rts
 
-; Disable the receiver and turn off GPIO #3.
+; Disable the receiver
 DISABLE_RECV::
     bclr.b  #0,MFP_RSR
-    bset.b  #3,MFP_GPDR                 ; :LED off
     rts
 

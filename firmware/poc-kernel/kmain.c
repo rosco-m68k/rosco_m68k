@@ -18,17 +18,31 @@
 #include <stdbool.h>
 #include "machine.h"
 #include "stdlib.h"
+
+#ifdef PERFORM_LINKAGE_CHECK
 #include "linkcheck.h"
+#endif
+
+#ifdef EASY68K_COMPATIBLE
+#include "easy68k/easy68k.h"
+extern void easy68k_example();
+#endif
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
-
-char readline_buf[1024];
+static char readline_buf[1024];
 
 noreturn void kmain() {
   print("\033[2J");
   println("Hello, World from the \"kernel\"!");
 
+#ifdef PERFORM_LINKAGE_CHECK
   checkLinkage();
+#endif
+#ifdef EASY68K_COMPATIBLE
+  easy68k_example();
+#endif
+
+  println("Now going into readline/echo loop");
 
   while (true) {
     *(mfp_gpdr) ^= 2;
@@ -36,7 +50,6 @@ noreturn void kmain() {
     if (readline(readline_buf, 1024) > 0) {
       println(readline_buf);
     }
-
   }
 }
 

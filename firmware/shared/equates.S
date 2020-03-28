@@ -88,7 +88,7 @@ MFP_SCR     equ     MFPBASE+$27
 MFP_UCR     equ     MFPBASE+$29
 MFP_RSR     equ     MFPBASE+$2B
 MFP_TSR     equ     MFPBASE+$2D
-MFP_UDR     equ     MFPBASE+$3F
+MFP_UDR     equ     MFPBASE+$2F
 
   endif
 
