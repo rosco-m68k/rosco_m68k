@@ -14,7 +14,7 @@
 ; info in the System Data Block, enables interrupts and 
 ; calls kmain (in kmain.c).
 ;------------------------------------------------------------
-    include "../shared/equates.S"
+    include "../../shared/equates.S"
 
     section .text
     
