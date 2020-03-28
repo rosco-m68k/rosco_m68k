@@ -14,7 +14,7 @@
 ; info in the System Data Block, enables interrupts and 
 ; calls the main loader (in lmain.c).
 ;------------------------------------------------------------
-    include "../shared/equates.S"
+    include "../../shared/equates.S"
 
     section .text
     

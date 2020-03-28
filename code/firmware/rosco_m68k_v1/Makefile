@@ -10,7 +10,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror            
        -I./include -I../shared/include                                           \
        -DPRINTF_INCLUDE_CONFIG_H $(DEFINES)
 
-LDFLAGS=-T ../shared/rosco_m68k_rom.ld -Map=rom.map
+LDFLAGS=-T ./rosco_m68k_rom.ld -Map=rom.map
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld

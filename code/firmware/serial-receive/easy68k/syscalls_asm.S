@@ -13,7 +13,7 @@
 ; Note that when compiled in this code reserves an SDB
 ; DWORD for configuration at 0x410.
 ;------------------------------------------------------------
-    include "../shared/equates.S"
+    include "../../shared/equates.S"
 
     section .text
 
