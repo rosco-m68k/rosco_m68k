@@ -11,5 +11,6 @@ See the README.md files in the subdirectories for details.
 | shared              | Shared code for both firmware and software     |
 | firmware            | Firmware for the board (ROM code)              |
 | software            | Software (system code & libraries, examples)   |
+| pld                 | Code for the PLDs used in the system           |
 
 
