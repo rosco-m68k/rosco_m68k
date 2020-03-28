@@ -1,13 +1,5 @@
 # Motorola 68k single-board computer
 
-> **Note** As a temporary fix for issue #7 all firmware is currently
-  built with the `-DREVISION_0` symbol defined. This changes the 
-  MFP register addressing to work around an issue with the r0 board.
-  While this will stop being the default once fixed boards are available,
-  you should ensure you undefine it (in the Makefiles) if you're building
-  for a board that does not have this issue before the 'official' fix
-  is available!
-
 This repository holds design files, firmware and software for my m68k 
 single-board computer, AKA the Rosco_m68k.
 
