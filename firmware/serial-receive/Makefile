@@ -31,7 +31,9 @@ else
 include kermit/include.mk
 endif
 
+ifneq ($(NOEASY),true)
 include easy68k/include.mk
+endif
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<

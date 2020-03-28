@@ -142,3 +142,24 @@ bunch of lines in adjacent memory locations if you want to.
 (Of course, if you're going to do that, you're much better off having them be
 one big string with line endings embedded, and just printing them with 
 one TRAP, but it might come in handy for some reason or another...)
+
+## Easy68K Compatibility
+
+By default, the loader will build with an Easy68K-compatible (mostly) 
+TRAP #15 handler. If you need to save space for something else, you can 
+disable this by passing `NOEASY=true` on the `make` commandline, or 
+by editing the Makefile (and removing the `include easy68k/include.mk`
+line).
+
+For documentation of the specific TRAP tasks that are supported by the
+Easy68K compatibility handler, see the README.md in the `easy68k` 
+directory.
+
+For complete(ish) documentation of the various tasks, see
+http://www.easy68k.com/QuickStart/TrapTasks.htm .
+
+Please note that I don't have Easy68K, so these functions have been
+implemented purely from the docs. If you find something I've missed
+or that doesn't work the way it does on Easy68K, please raise an 
+issue so I can fix it.
+

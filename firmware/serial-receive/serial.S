@@ -16,8 +16,12 @@
 
     section .text
 
-
+; Send a single character via UART
+;
+; Trashes: MFP_UDR
+; Modifies: Nothing
 SENDCHAR::
+    move.l  D1,-(A7)              ; Save D1
 .BEGIN
     bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
     move.b  MFP_TSR,D1            ; Get TSR
@@ -25,8 +29,14 @@ SENDCHAR::
     beq.s   .BEGIN                ; No - loop until it is
 
     move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  (A7)+,D1              ; Restore D1
     rts
 
+; Receive a single character via UART.
+; Ignores overrun errors.
+;
+; Trashes: MFP_UDR
+; Modifies: D0 (return)
 RECVCHAR::
     bclr.b  #7,MFP_GPDR           ; Lower RTS
 .BEGIN
