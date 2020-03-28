@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=-DREVISION_0
+DEFINES=
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
 				-Iinclude -mcpu=68010 -march=68010 -mtune=68010									\
 				-mno-align-int -mno-strict-align $(DEFINES)
@@ -25,7 +25,14 @@ BINARY_EXT=bin
 
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=init.o kinit.o machine.o stdlib.o linkcheck.o kmain.o
+OBJECTS=init.o kinit.o machine.o stdlib.o kmain.o
+
+ifeq ($(EASY68K),true)
+include easy68k/include.mk
+endif
+ifeq ($(LINKCHECK),true)
+include linkcheck/include.mk
+endif
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<

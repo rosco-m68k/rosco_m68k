@@ -46,7 +46,7 @@ VECTORS:
     dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
     dcb.l   14,TRAP_HANDLER             ; 20-2D: TRAP Handlers (unused)
     dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
-    dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (unused)
+    dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (replaced later)
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
     dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
     dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Interrupt not used)
@@ -127,7 +127,7 @@ EARLY_PRINT_C::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT:
+EARLY_PRINT::
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -148,7 +148,7 @@ EARLY_PRINT:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN:
+EARLY_PRINTLN::
     bsr.s   EARLY_PRINT               ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
@@ -347,19 +347,31 @@ TRAP_HANDLER:
 ; D1 is expected to contain the function code. Other arguments
 ; depend on the specific function - See README for details.
 TRAP_14_HANDLER:
-  cmp.l     #0,D1                     ; FC == 0?
-  beq.s     .PRINT                    ;   PRINT if so...
-  cmp.l     #1,D1                     ; FC == 0?
-  beq.s     .PRINTLN                  ;   PRINTLN if so...
-  rte                                 ; That's all for now...
+    cmp.l   #0,D1                     ; FC == 0?
+    beq.s   .PRINT                    ;   PRINT if so...
+    cmp.l   #1,D1                     ; FC == 1?
+    beq.s   .PRINTLN                  ;   PRINTLN if so...
+    cmp.l   #2,D1                     ; FC == 2?
+    beq.s   .SENDCHAR                 ;   SENDCHAR if so...
+    cmp.l   #3,D1                     ; FC == 3?
+    beq.s   .RECVCHAR                 ;   RECVCHAR if so...
+    rte                               ; That's all for now...
 
 .PRINT
-  bsr.w     EARLY_PRINT
-  rte
+    bsr.w   EARLY_PRINT
+    rte
 
 .PRINTLN
-  bsr.w     EARLY_PRINTLN
-  rte
+    bsr.w   EARLY_PRINTLN
+    rte
+
+.SENDCHAR
+    bsr.w   SENDCHAR
+    rte
+
+.RECVCHAR
+    bsr.w   RECVCHAR
+    rte
     
 
 ;------------------------------------------------------------

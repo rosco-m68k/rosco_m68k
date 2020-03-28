@@ -22,6 +22,10 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
+#ifdef EASY68K_TRAP
+extern void INSTALL_EASY68K_TRAP_HANDLERS();
+#endif
+
 /*
  * This is what a Kernel entry point should look like.
  */
@@ -57,6 +61,10 @@ noreturn void lmain() {
         EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
         HALT();
     }
+
+#ifdef EASY68K_TRAP
+    INSTALL_EASY68K_TRAP_HANDLERS();
+#endif
 
     // Start the timer tick
     EARLY_PRINT_C("Software initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");

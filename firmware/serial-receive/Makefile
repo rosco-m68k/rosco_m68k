@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=-DREVISION_0
+DEFINES=
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
        -mno-align-int -mno-strict-align $(DEFINES)
@@ -29,6 +29,10 @@ ifeq ($(PROTO),zmodem)
 include zmodem/include.mk
 else
 include kermit/include.mk
+endif
+
+ifneq ($(NOEASY),true)
+include easy68k/include.mk
 endif
 
 %.o : %.c

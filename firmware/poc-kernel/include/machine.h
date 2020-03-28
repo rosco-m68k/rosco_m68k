@@ -15,8 +15,6 @@
 #ifndef _ROSCOM68K_MACHINE_H
 #define _ROSCOM68K_MACHINE_H
 
-#include <stdnoreturn.h>
-
 #ifdef REVISION_0
 // DEFINEs for MFP registers on Revision 0 board
 #define MFP_GPDR      0xf80001
