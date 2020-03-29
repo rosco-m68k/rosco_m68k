@@ -23,7 +23,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-OBJECTS=bootstrap.o rtlsupport.o serial.o critical.o main.o
+OBJECTS=bootstrap.o rtlsupport.o serial.o main.o
 
 ifeq ($(PROTO),zmodem)
 include zmodem/include.mk
