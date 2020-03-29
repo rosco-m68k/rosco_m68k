@@ -4,14 +4,14 @@ EELAYER END
 $Descr User 20914 11524
 encoding utf-8
 Sheet 2 6
-Title ""
+Title "CPU, RAM & ROM"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	2300 6050 1700 6050
@@ -1031,12 +1031,6 @@ Wire Wire Line
 	8950 4150 9750 4150
 Wire Wire Line
 	8950 4250 9750 4250
-Text Notes 19800 10900 0    50   ~ 0
-1
-Text Notes 16550 10750 0    79   ~ 0
-CPU, RAM & ROM
-Text Notes 16200 10200 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
 $Comp
 L power:VCC #PWR0103
 U 1 1 5E933FE2
@@ -1338,7 +1332,7 @@ U 1 1 5FE46869
 P 18250 3650
 F 0 "U3" H 18250 5258 69  0000 C CNN
 F 1 "AS6C4008-55PCN" H 18250 5138 69  0000 C CNN
-F 2 "" H 18250 3650 50  0001 C CNN
+F 2 "rosco_m68k:DIP254P1524X393-32" H 18250 3650 50  0001 C CNN
 F 3 "" H 18250 3650 50  0001 C CNN
 	1    18250 3650
 	1    0    0    -1  
@@ -1349,7 +1343,7 @@ U 1 1 5FE4AB28
 P 18250 7350
 F 0 "U4" H 18250 8958 69  0000 C CNN
 F 1 "AS6C4008-55PCN" H 18250 8838 69  0000 C CNN
-F 2 "" H 18250 7350 50  0001 C CNN
+F 2 "rosco_m68k:DIP254P1524X393-32" H 18250 7350 50  0001 C CNN
 F 3 "" H 18250 7350 50  0001 C CNN
 	1    18250 7350
 	1    0    0    -1  
@@ -1360,7 +1354,7 @@ U 1 1 5FF11175
 P 10450 3450
 F 0 "U1" H 10450 4858 69  0000 C CNN
 F 1 "AT28C64B-15PU" H 10450 4738 69  0000 C CNN
-F 2 "" H 10450 3450 50  0001 C CNN
+F 2 "rosco_m68k:DIP254P1524X482-28" H 10450 3450 50  0001 C CNN
 F 3 "" H 10450 3450 50  0001 C CNN
 	1    10450 3450
 	1    0    0    -1  
@@ -1371,7 +1365,7 @@ U 1 1 5FF13753
 P 10450 7150
 F 0 "U2" H 10450 8558 69  0000 C CNN
 F 1 "AT28C64B-15PU" H 10450 8438 69  0000 C CNN
-F 2 "" H 10450 7150 50  0001 C CNN
+F 2 "rosco_m68k:DIP254P1524X482-28" H 10450 7150 50  0001 C CNN
 F 3 "" H 10450 7150 50  0001 C CNN
 	1    10450 7150
 	1    0    0    -1  

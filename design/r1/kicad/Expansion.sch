@@ -4,14 +4,14 @@ EELAYER END
 $Descr User 19128 10939
 encoding utf-8
 Sheet 6 6
-Title ""
+Title "EXPANSION AND IO"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	7600 3300 7700 3400
@@ -385,10 +385,6 @@ Text HLabel 7400 3050 0    50   Input ~ 0
 A[1..23]
 Wire Bus Line
 	7400 3050 7500 3050
-Text Notes 14450 9650 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
-Text Notes 18050 10300 0    59   ~ 0
-1
 Wire Wire Line
 	9000 5200 10650 5200
 Wire Wire Line
@@ -447,8 +443,6 @@ F 3 "" H 11600 6400 50  0001 C CNN
 	1    11600 6400
 	1    0    0    -1  
 $EndComp
-Text Notes 14800 10150 0    59   ~ 0
-EXPANSION CONNECTOR
 Wire Wire Line
 	2350 3200 2250 3200
 Wire Wire Line

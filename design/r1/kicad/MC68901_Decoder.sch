@@ -4,14 +4,14 @@ EELAYER END
 $Descr User 23328 11139
 encoding utf-8
 Sheet 3 6
-Title ""
+Title "MC68901 & DECODER"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	12550 2800 11450 2800
@@ -576,12 +576,6 @@ Text Label 11000 3200 0    50   ~ 0
 A2
 Text Label 11000 3100 0    50   ~ 0
 A1
-Text Notes 18650 9800 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
-Text Notes 22200 10500 0    59   ~ 0
-1
-Text Notes 18950 10350 0    59   ~ 0
-MC68901 & DECODER
 Text Notes 12850 5650 0    98   ~ 0
 MC68901
 Wire Wire Line
@@ -749,7 +743,7 @@ U 1 1 5FE9651B
 P 4900 8000
 F 0 "IC2" H 4900 8886 59  0000 C CNN
 F 1 "ATF16V8BQL-15PU" H 4900 8781 59  0000 C CNN
-F 2 "" H 4900 8000 50  0001 C CNN
+F 2 "rosco_m68k:DIL20" H 4900 8000 50  0001 C CNN
 F 3 "" H 4900 8000 50  0001 C CNN
 	1    4900 8000
 	1    0    0    -1  

@@ -4,14 +4,14 @@ EELAYER END
 $Descr User 16992 11339
 encoding utf-8
 Sheet 4 6
-Title ""
+Title "DTACK & BOOT"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	3400 7350 4200 7350
@@ -257,12 +257,6 @@ NoConn ~ 5300 2900
 NoConn ~ 5200 7450
 NoConn ~ 5200 7750
 NoConn ~ 5300 2200
-Text Notes 12300 10000 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
-Text Notes 12650 10550 0    59   ~ 0
-DTACK & BOOT
-Text Notes 15900 10700 0    59   ~ 0
-1
 $Comp
 L power:GND #PWR0125
 U 1 1 5FBDB2E9
@@ -425,7 +419,7 @@ U 1 1 5FE89F94
 P 4900 2500
 F 0 "IC5" H 4900 3386 59  0000 C CNN
 F 1 "ATF16V8BQL" H 4900 3281 59  0000 C CNN
-F 2 "" H 4900 2500 50  0001 C CNN
+F 2 "rosco_m68k:DIL20" H 4900 2500 50  0001 C CNN
 F 3 "" H 4900 2500 50  0001 C CNN
 	1    4900 2500
 	1    0    0    -1  
