@@ -4,14 +4,14 @@ EELAYER END
 $Descr User 23628 11170
 encoding utf-8
 Sheet 5 6
-Title ""
+Title "SYSTEM CLOCK AND RESET"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	4250 2700 4450 2700
@@ -846,12 +846,6 @@ F 3 "" H 14900 2500 50  0001 C CNN
 	1    14900 2500
 	1    0    0    -1  
 $EndComp
-Text Notes 19300 10400 0    59   ~ 0
-CLOCK & RESET
-Text Notes 22550 10550 0    59   ~ 0
-1
-Text Notes 18950 9850 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
 $Comp
 L power:GND #PWR0137
 U 1 1 5FC049C4

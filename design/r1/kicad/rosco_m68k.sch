@@ -4,14 +4,14 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 6
-Title ""
+Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
 Date "2020-02-25"
-Rev ""
+Rev "1"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 $Sheet
 S 1750 2200 600  1000
@@ -93,10 +93,4 @@ Wire Bus Line
 Wire Bus Line
 	9300 3700 3400 3700
 Connection ~ 3400 3700
-Text Notes 7000 6950 0    59   ~ 0
-Copyright ©2019-2020 Ross Bamford and Contributors.\nOpen Source Hardware licenced under CERN Open Hardware Licence. \nSee https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt\nOSHWA UK000006 (https://certification.oshwa.org/uk000006.html)\n
-Text Notes 7350 7500 0    59   ~ 0
-ROSCO_M68K GENERAL PURPOSE MC68000 COMPUTER
-Text Notes 10600 7650 0    59   ~ 0
-1
 $EndSCHEMATC
