@@ -129,6 +129,7 @@ READLN_STR:
     dbra    D1,.RECV                    ; Go again?
 
 .DONE:
+    move.b  #0,(A1)+                    ; Null-terminate
     move.b  LF_DISPLAY,D2               ; Get LF_DISPLAY flag
     tst.b   D2                          ; Is it non-zero?
     beq.s   .RETURN                     ; Nope, skip CRLF...
