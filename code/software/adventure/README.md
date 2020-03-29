@@ -5,6 +5,8 @@ the game (`adventure.c`) has not been changed - rather, just enough
 support code has been built around it to allow it to run on the
 rosco_m68k.
 
+You can find the original code here: https://github.com/jefftranter/6502/tree/master/c/adventure
+
 Jeff's README from the original:
 
 ```
