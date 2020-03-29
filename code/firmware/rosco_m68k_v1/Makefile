@@ -25,11 +25,7 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 OBJECTS=bootstrap.o rtlsupport.o serial.o main.o
 
-ifeq ($(PROTO),zmodem)
-include zmodem/include.mk
-else
 include kermit/include.mk
-endif
 
 ifneq ($(NOEASY),true)
 include easy68k/include.mk

@@ -1,3 +1,0 @@
-[submodule "code/firmware/rosco_m68k_v1/mbzm"]
-	path = code/firmware/rosco_m68k_v1/mbzm
-	url = https://github.com/roscopeco/mbzm
