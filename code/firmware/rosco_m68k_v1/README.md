@@ -11,16 +11,9 @@ or some other thing).
 
 ## Protocols
 
-Currently, two protocols are supported (for varying values of 'supported'):
-
-* Kermit - The standard, embedded Kermit. Should be pretty robust, but may
-  be a bit slow (Recommend using `robust` mode on the sender!)
-  
-* ZMODEM -  A fairly limited subset and not especially robust, but should be
-  good enough to get some code uploaded.
- 
-Note that, at present, Kermit is the only *supported* protocol - the ZMODEM
-code is experimental, and known to not work almost all of the time. 
+Currently, only Kermit is supported, and only in the `robust` mode. To support
+cautious or fast mode would probably need hardware flow control, for which
+most FTDI adapters implement inadequate support.
 
 This is mildly annoying as it requires one to install additional software 
 to get Kermit support from the command line, or in minicom. On most Unices
@@ -42,16 +35,18 @@ set flow xon/xoff ;
 robust
 ```
 
-This instructs c-kermit not to look for a carrier detect signal (which 
-most FTDI chips I've seen don't emulate), to use software flow-control
-(because all FTDI chips I've seen get RTS/CTS just wrong enough to 
-make them useless without a FIFO on the receiving end), and to use 
-the `robust` kermit protocol variant, which is the only one I've been
-able to get to work with the embedded Kermit implementation in the
-bootloader - YMMV of course, feel free to experiment...
+This instructs c-kermit not to look for a carrier detect signal, to use
+software flow-control (because all FTDI chips I've seen get RTS/CTS 
+just wrong enough to make them useless without a FIFO on the receiving 
+end), and to use the `robust` kermit protocol variant, which is the only 
+one I've been able to get to work with the embedded Kermit implementation 
+in the bootloader - YMMV of course, feel free to experiment...
 
 You'll need this (at least the carrier detect disable) whether you're
 using c-kermit from the command-line or from minicom (or similar).
+
+Of course if your FTDI adapter has a CD pin and you tie this low, you
+can skip the carrier-detect setting...
  
 ## Code
 
