@@ -168,6 +168,15 @@ INITSDB:
 
 ; Initialise MFP
 ;
+; Notes on MFP_TDDR value and baud-rate:
+; 
+; Setting 1 will give 921.6KHZ, which divides to 28800 baud
+; Setting 2 will give 460.8KHz, which divides to 14400 baud
+;
+; However, those baud rates are non-standard (i.e. non-POSIX) and support is patchy.
+; Whether they work will depend on your USB<->Serial converter and OS.
+; Minicom doesn't support them, Picocom does. C-Kermit doesn't.
+;
 ; Trashes: D0
 ; Modifies: MFP Regs
 INITMFP:
