@@ -21,6 +21,10 @@ For full details, refer to the MC68901 Users Manual. When programming the GPIO p
 it should be noted that the GPIOs are connected to MFP GPIPs #2-6. GPIOs 0, 1 and 7
 are used internally by the system.
 
+> **Note**: The GPIO pins are intented for interfacing with other ICs and are **not** 
+  suitable for directly driving LEDs or other such devices. If you want to drive LEDs
+  from these pins please use transistors!
+
 ### Legacy peripheral support
 
 While the MC68010's built-in legacy peripheral support lines are available on
@@ -69,15 +73,15 @@ MC68901 or, for the decoder signals, the ATF16V8BQL) for the absolute maximum ra
 
 | Pin | Signal | Description                                  | Active | I/O |
 |-----|--------|----------------------------------------------|--------|-----|
-| 1   | GPIO1  | GPIO #1 (MFP GPIP #2)                        | H/L    | I/O |
+| 1   | GPIO1  | GPIO #1 (MFP GPIP #2) (*4)                   | H/L    | I/O |
 | 2   | ERAM   | EVENRAMSEL line from decoder (*1)            | Low    | O   |
-| 3   | GPIO2  | GPIO #2 (MFP GPIP #3)                        | H/L    | I/O |
+| 3   | GPIO2  | GPIO #2 (MFP GPIP #3) (*4)                   | H/L    | I/O |
 | 4   | ORAM   | ODDRAMSEL line from decoder (*1)             | Low    | O   |
-| 5   | GPIO3  | GPIO #3 (MFP GPIP #4)                        | H/L    | I/O |
+| 5   | GPIO3  | GPIO #3 (MFP GPIP #4) (*4)                   | H/L    | I/O |
 | 6   | EROM   | EVENROMSEL line from decoder (*1)            | Low    | O   |
-| 7   | GPIO4  | GPIO #4 (MFP GPIP #5)                        | H/L    | I/O |
+| 7   | GPIO4  | GPIO #4 (MFP GPIP #5) (*4)                   | H/L    | I/O |
 | 8   | OROM   | ODDROMSEL line from decoder (*1)             | Low    | O   |
-| 9   | GPIO5  | GPIO #5 (MFP GPIP #6)                        | H/L    | I/O |
+| 9   | GPIO5  | GPIO #5 (MFP GPIP #6) (*4)                   | H/L    | I/O |
 | 10  | IOS    | IOSEL line from decoder (*1)                 | Low    | O   |
 | 11  | TAO    | Timer A output                               | --     | O   |
 | 12  | EXPS   | EXPSEL line from decoder (*1)                | Low    | O   |
@@ -91,4 +95,4 @@ MC68901 or, for the decoder signals, the ATF16V8BQL) for the absolute maximum ra
  1. If used to drive LEDs, the circuit should be configured such that these pins sink current.
  2. These pins have an on-board 4K7 pull-up to VCC
  3. This pin can (via additional soldering) be used as either a GND or VCC to suit the configuration of the other pin connections. In the future an on-board jumper may be provided to accomplish this.
-
+ 4. If driving LEDs, it is **strongly** recommended that transistors be used as these pins have very low current ratings for both source and sink. Refer to the MC68901 datasheet for specific values.
