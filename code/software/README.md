@@ -9,5 +9,6 @@ Specifically:
 |:-------------------:|------------------------------------------------|
 | poc-kernel          | POC "kernel", compatible with `serial-receive` |
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
+| gpiodemo            | Stupid-simple GPIO example                     |
 
 
