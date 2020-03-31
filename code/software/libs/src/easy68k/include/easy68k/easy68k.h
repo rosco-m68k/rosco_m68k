@@ -15,7 +15,6 @@
 
 #ifndef _ROSCOM68K_EASY68K_H
 #define _ROSCOM68K_EASY68K_H
-#ifdef EASY68K_COMPATIBLE
 
 // Options for e68SetDisplayOpt
 #define E68K_DISPLAY_PROMPT_OFF   0
@@ -155,6 +154,5 @@ uint32_t e68PrintStrReadNumSigned(char *str);
  */ 
 void e68PrintNumSignedWidth(uint32_t num, uint8_t width);
 
-#endif
 #endif
 

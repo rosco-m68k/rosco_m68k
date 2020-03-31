@@ -26,7 +26,7 @@ MEMORY
 
 SECTIONS
 {
-  .init : AT(0)
+  .text.init : AT(0)
   {
     _init = .;
     *(.init)
@@ -34,7 +34,7 @@ SECTIONS
     _init_end = .;
   } > INIT
 
-  .text ALIGN(2) : AT(SIZEOF(.init))
+  .text ALIGN(2) : AT(SIZEOF(.text.init))
   {
     _code = .;
     *(.text)

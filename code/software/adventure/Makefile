@@ -4,11 +4,14 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
+SYSINCDIR?=../libs/build/include
+SYSLIBDIR?=../libs/build/lib
+LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-Iinclude -mcpu=68010 -march=68010 -mtune=68010									\
+				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T ./rosco_m68k_program.ld -Map=$(MAP)
+LDFLAGS=-T $(SYSLIBDIR)/rosco_m68k_program.ld -L $(SYSLIBDIR) -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -28,11 +31,6 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=init.o kinit.o kmain.o adventure.o
 
-include rtlsupport/include.mk
-include easy68k/include.mk
-include printf/include.mk
-include stdlib/include.mk
-
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
@@ -40,7 +38,7 @@ include stdlib/include.mk
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	chmod a-x $@
 
 .PHONY: all clean dump
