@@ -30,6 +30,7 @@ include src/cstdlib/include.mk
 include src/printf/include.mk
 include src/easy68k/include.mk
 include src/rtlsupport/include.mk
+include src/start_serial/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -44,9 +45,10 @@ all: $(LIBS)
 install: $(LIBS)
 	$(MKDIR_P) $(INSTALL_INC)
 	$(MKDIR_P) $(INSTALL_LIB)
+	$(MKDIR_P) $(INSTALL_LIB)/ld/serial
 	$(CP_R) $(INCLUDES) $(INSTALL_INC)
 	$(CP_R) $(LIBS) $(INSTALL_LIB)
-	$(CP_R) src/link_scripts/* $(INSTALL_LIB)
+	$(CP_R) src/start_serial/link_scripts/* $(INSTALL_LIB)/ld/serial
 
 clean: 
 	$(RM_F) $(OBJECTS) $(LIBS)

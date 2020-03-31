@@ -18,9 +18,6 @@
 extern void main(void);
 
 void kmain() {
-  // Disable standard input prompt, adventure provides its own!
-//  e68SetDisplayOpt(E68K_DISPLAY_PROMPT_OFF);
-
   // Run adventure!
   main();
 

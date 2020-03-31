@@ -7,11 +7,12 @@ EXTRA_CFLAGS?=
 DEFINES=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lgpio
+LIBS=-lgpio -lmachine -lstart_serial
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror									\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T $(SYSLIBDIR)/rosco_m68k_program.ld -L $(SYSLIBDIR) -Map=$(MAP)
+LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
+				-Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -28,7 +29,7 @@ BINARY_EXT=bin
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 MAP=$(BINARY_BASENAME).map
 
-OBJECTS=init.o kinit.o machine.o stdlib.o kmain.o
+OBJECTS=kmain.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
