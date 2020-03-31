@@ -38,6 +38,10 @@ bool checkLinkage() {
     printuint(aloc);
     println("\033[0m");
   } else {
+    print("\033[1;32mPASS:\033[0m a is located as expected; at 0x");
+    printuint(aloc);
+    println("\033[0m");
+    
     result = d == 0x12345678;
 
     if (!result) {

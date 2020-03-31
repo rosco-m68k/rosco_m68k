@@ -34,7 +34,7 @@ SECTIONS
     _init_end = .;
   } > INIT
 
-  .text ALIGN(2) : AT(SIZEOF(.text.init))
+  .text 0x1000 : AT(SIZEOF(.text.init))
   {
     _code = .;
     *(.text)
@@ -43,7 +43,7 @@ SECTIONS
     _code_end = .;
   } > KRAM
   
-  .data ALIGN(2) : /*AT(SIZEOF(.text.init) + SIZEOF(.text))*/
+  .data ALIGN(2) :
   {
     _data_start = .;
     *(.data)
@@ -51,7 +51,7 @@ SECTIONS
     . = ALIGN(2);
   } > KRAM
 
-  .bss ALIGN(2) : /*AT(SIZEOF(.text.init) + SIZEOF(.text) + SIZEOF(.data))*/
+  .bss ALIGN(2) :
   {
     _bss_start = .;
     *(.bss)
