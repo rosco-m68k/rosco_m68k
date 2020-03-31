@@ -16,9 +16,9 @@
 ; loaded code to $1000, and then jumps to it.
 ;
 ; The second section (after RELOCATED_START) is executed
-; next, based at $1000. This just calls out to kinit to 
+; next, based at $1000. This just calls out to __cinit to 
 ; initialize .data and .bss, and then does a jump straight
-; into kmain (see kmain.c).
+; into main.
 ;
 ; All of this is depending on a bit of linker magic - see 
 ; rosco_m68k_kernel.ld to see how that works. 
@@ -35,7 +35,7 @@ START::
 
     move.l  #RAMLIMIT,A7                ; Reset stack 
     move.l  #_init_end,A0               ; End of init into A0 (source)
-    move.l  #_code,A1                   ; target into A1 (destination)
+    move.l  #_postinit,A1               ; target into A1 (destination)
 
 .COPY_LOOP:    
     move.l  (A0)+,(A1)+                 ; Copy source to dest, with postincrement.
@@ -43,14 +43,13 @@ START::
     bls.s   .COPY_LOOP                  ; Nope - loop again...
   
 .COPY_DONE:
-    jmp     _code                       ; Jump to copied code
+    jmp     _postinit                   ; Jump to copied code
 
 RELOCATED_START:
 
-    section .text
+    section .postinit
     org $1000
 
 PREMAIN:
-    bsr.w   kinit
+    bsr.w   __kinit
     jmp     kmain
-
