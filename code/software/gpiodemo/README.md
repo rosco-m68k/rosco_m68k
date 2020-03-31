@@ -6,7 +6,8 @@ In order to actually see this do anything, you'll need to hook up
 a circuit with some LEDs or something connected to the GPIO lines.
 
 **Note** If you're going to do that, use transistors - the GPIO's
-can't directly drive LEDs!
+can't directly drive LEDs! See `example-circuit/circuit.pdf` for an
+example circuit schematic (in KiCad). 
 
 ## Building
 
