@@ -15,6 +15,8 @@
 #ifndef _ROSCOM68K_MACHINE_H
 #define _ROSCOM68K_MACHINE_H
 
+#include <stdint.h>
+
 #ifdef REVISION_0
 // DEFINEs for MFP registers on Revision 0 board
 #define MFP_GPDR      0xf80001
@@ -78,9 +80,6 @@ void mcPrint(char *str);
  * Early print null-terminated string.
  */
 void mcPrintln(char *str);
-
-void mcPrintnum(uint32_t num);
-void mcPrintbyte(uint8_t num);
 
 void mcSendchar(char c);
 char mcReadchar();

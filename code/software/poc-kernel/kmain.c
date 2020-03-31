@@ -16,17 +16,14 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
-#include "machine.h"
-#include "stdlib.h"
+#include <machine.h>
+#include <basicio.h>
 
 #ifdef PERFORM_LINKAGE_CHECK
 #include "linkcheck.h"
 #endif
 
-#ifdef EASY68K_COMPATIBLE
-#include "easy68k/easy68k.h"
 extern void easy68k_example();
-#endif
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 static char readline_buf[1024];
@@ -38,9 +35,8 @@ noreturn void kmain() {
 #ifdef PERFORM_LINKAGE_CHECK
   checkLinkage();
 #endif
-#ifdef EASY68K_COMPATIBLE
+
   easy68k_example();
-#endif
 
   println("Now going into readline/echo loop");
 

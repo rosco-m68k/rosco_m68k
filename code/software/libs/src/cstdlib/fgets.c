@@ -9,25 +9,21 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Some basic 'stdlib'-type routines.
+ * Stupid 'fgets' replacement that ignores the stream
  * ------------------------------------------------------------
  */
-#ifndef _ROSCOM68K_STDLIB_H
-#define _ROSCOM68K_STDLIB_H
 
-#include <stdint.h>
+#include <stdio.h>
+#include <basicio.h>
 
-void print(char *str);
-void println(char *str);
+char* fgets(char *buf, int n, FILE *stream) {
+  int len = readline(buf, n);
 
-void printuint(uint32_t num);
-void printushort(uint16_t num);
-void printuchar(uint8_t num);
+  if (len > 0 && len < (n - 1)) {
+    buf[len] = '\n';
+    buf[len+1] = 0;
+  }
 
-char readchar();
-int readline(char *buf, int buf_len);
-
-void delay(uint32_t ticks);
-
-#endif
+  return buf;
+}
 

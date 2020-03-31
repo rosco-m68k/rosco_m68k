@@ -5,10 +5,13 @@
 
 EXTRA_CFLAGS?=
 DEFINES=
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-Iinclude -mcpu=68010 -march=68010 -mtune=68010									\
+SYSINCDIR?=../libs/build/include
+SYSLIBDIR?=../libs/build/lib
+LIBS=-lgpio
+CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror									\
+				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T ./rosco_m68k_program.ld -Map=$(MAP)
+LDFLAGS=-T $(SYSLIBDIR)/rosco_m68k_program.ld -L $(SYSLIBDIR) -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -27,8 +30,6 @@ MAP=$(BINARY_BASENAME).map
 
 OBJECTS=init.o kinit.o machine.o stdlib.o kmain.o
 
-include gpio/include.mk
-
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
@@ -36,7 +37,7 @@ include gpio/include.mk
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	chmod a-x $@
 
 .PHONY: all clean dump

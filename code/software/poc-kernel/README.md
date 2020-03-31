@@ -3,9 +3,12 @@
 This is an extremely simple proof-of-concept "kernel" that can be
 loaded by the serial bootloader (see ../serial-receive).
 
-This code essentially does nothing - it exists mainly to prove the
-bootloader works, and also to exemplify how one might build and
-link a real kernel to be loaded by the serial loader.
+The code just does a small demonstration / proof of the Easy68K
+compatibility code, and then goes into a readline loop.
+
+It can optionally do a linkage check, see "Optional extras", 
+below. This just checks that the code has been linked as 
+expected.
 
 ## Building
 
@@ -31,16 +34,6 @@ must obviously be connected and waiting for the upload).
 There are two optional things that can be built into the POC kernel,
 a C-compatible library that exposes the Easy68K IO functions, and
 a (naive) linkage checker which can be useful when debugging.
-
-### Easy68K compatibility test
-
-To include the Easy68K compatibility layer (and build examples of
-it into your `kmain`), pass `EASY68K=true` to `make`, e.g:
-
-  `make EASY68K=true`
-
-(Note that this requires that the firmware is built with the 
-Easy68K trap handler, which by default it is).
 
 ### Linkage check
 

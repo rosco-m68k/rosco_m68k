@@ -9,23 +9,20 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Fake 'fgets' replacement for adventure
+ * Simple, incomplete "stdio" for simple programs that need it
  * ------------------------------------------------------------
  */
 
-#ifndef _ROSCOM68K_CTYPE_H
-#define _ROSCOM68K_CTYPE_H
+#ifndef _ROSCOM68K_STDIO_H
+#define _ROSCOM68K_STDIO_H
 
-#include <easy68k/easy68k.h>
+#include <stdarg.h>
+#include "printf.h"
 
-void __adventure_readln(char *buf) {
-  // No overrun protection here, but Readln is limited to 80 chars...
-  int len = e68ReadlnStr(buf);
+typedef void    FILE;
+#define stdin   (FILE*)0
 
-  if (len > 0) {
-    buf[len] = '\n';
-    buf[len+1] = 0;
-  }
-}
+char *fgets(char *buf, int len, FILE *ignored);
+
 #endif
 

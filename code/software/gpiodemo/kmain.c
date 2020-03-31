@@ -15,7 +15,7 @@
 
 #include <stdnoreturn.h>
 #include <stdbool.h>
-#include <stdlib.h>
+#include <basicio.h>
 #include <gpio.h>
 
 static void initGPIOs() {

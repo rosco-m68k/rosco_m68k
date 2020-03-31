@@ -4,11 +4,14 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=
+SYSINCDIR?=../libs/build/include
+SYSLIBDIR?=../libs/build/lib
+LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport -leasy68k
+DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-Iinclude -mcpu=68010 -march=68010 -mtune=68010									\
+				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T ./rosco_m68k_kernel.ld -Map=kernel.map
+LDFLAGS=-T $(SYSLIBDIR)/rosco_m68k_kernel.ld -L $(SYSLIBDIR) -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -22,14 +25,11 @@ BAUD?=9600
 # Output config
 BINARY_BASENAME=kernel
 BINARY_EXT=bin
-
+MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=init.o kinit.o machine.o stdlib.o kmain.o
+OBJECTS=init.o kinit.o easy68k.o kmain.o
 
-ifeq ($(EASY68K),true)
-include easy68k/include.mk
-endif
 ifeq ($(LINKCHECK),true)
 include linkcheck/include.mk
 endif
@@ -41,7 +41,7 @@ endif
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	chmod a-x $@
 
 .PHONY: all clean dump
@@ -49,7 +49,7 @@ $(BINARY) : $(OBJECTS)
 all: $(BINARY)
 
 clean: 
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) kernel.map
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP)
 
 dump: $(BINARY)
 	od --endian=big -tx1 $(BINARY)
