@@ -11,6 +11,8 @@ Specifically:
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
 | gpiodemo            | Stupid-simple GPIO example                     |
 | libs                | All shared functions are built as libraries.   |
+| starter_c           | A blank C project you can start from           |
+| starter_asm         | A blank assembler project you can start from   |
 
 ## Getting Started
 
