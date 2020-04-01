@@ -40,7 +40,7 @@ $ tar xf gcc-7.5.0.tar.gz
 $ mkdir build-gcc-7.5.0-m68k
 $ cd build-gcc-7.5.0-m68k
 $ ../gcc-7.5.0/configure --prefix=$HOME/opt/cross --target=m68k-elf --enable-languages=c,c++
-$ make -j$(nproc) all-gcc all-target-libgcc        # on Mac, use 'make -j$(sysctl -n hw.physicalcpu) --all-gcc --all-target-libgcc' instead
+$ make -j$(nproc) all-gcc all-target-libgcc        # on Mac, use 'make -j$(sysctl -n hw.physicalcpu) all-gcc all-target-libgcc' instead
 $ make install-gcc install-target-libgcc
 $ cd ..
 ```
