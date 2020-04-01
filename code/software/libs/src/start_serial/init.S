@@ -16,9 +16,9 @@
 ; loaded code to $1000, and then jumps to it.
 ;
 ; The second section (after RELOCATED_START) is executed
-; next, based at $1000. This just calls out to __cinit to 
+; next, based at $1000. This just calls out to __kinit to 
 ; initialize .data and .bss, and then does a jump straight
-; into main.
+; into kmain (the user program).
 ;
 ; All of this is depending on a bit of linker magic - see 
 ; rosco_m68k_kernel.ld to see how that works. 
@@ -51,5 +51,6 @@ RELOCATED_START:
     org $1000
 
 PREMAIN:
-    bsr.w   __kinit
-    jmp     kmain
+    move.l  $FC0004,-(A7)               ; Push reset vector in case kmain returns
+    bsr.w   __kinit                     ; Initialize C land
+    jmp     kmain                       ; Fly user program, Fly!
