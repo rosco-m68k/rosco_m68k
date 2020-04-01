@@ -24,7 +24,7 @@ You'll need to have that toolchain somewhere in your path (`~/opt/cross`
 is recommended and assumed by the documentation, though of course you
 can place it wherever suits you).
 
-### Shared Libraries
+### Shared Libraries
 
 The `libs` directory contains code that the other programs depend on. 
 At a minimum, most (if not all) programs depend on the `start_serial`
