@@ -19,8 +19,9 @@ It'll take a few minutes, as it builds binutils and GCC from source. Once it's d
 
 0. Configure build environment (Linux only)
 
-> Note: You may be able to skip this step, as the GCC we're building doesn't actually need these 
-> dependencies. Verified that this can definitely be skipped on Mac.
+> Note: You may be able to skip this step, as the GCC we're building doesn't actually need 
+> all of these dependencies and some may be pre-installed on your system. 
+> Verified that this can definitely be skipped on Mac Catalina.
 
 - flex
 - libgmp-dev
