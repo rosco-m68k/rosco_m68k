@@ -1,8 +1,26 @@
-# Building the toolchain
+# Installing the toolchain
+
+Before you can build any software for the rosco_m68k, you'll need a toolchain. There are two options for this: the easy way, and the slightly-less easy way.
+
+## The Easy Way - Install with Homebrew
+
+If you have Homebrew (https://brew.sh) installed, you can install the toolchain with the following commands:
+
+```
+brew tap rosco-m68k/toolchain
+brew install gcc-cross-m68k@7 vasm-all srecord minipro
+```
+
+This will automatically download, build and install all the dependencies that you _would have_ built if you'd followed the instructions in part two. 
+
+It'll take a few minutes, as it builds binutils and GCC from source. Once it's done, you're ready to rock.
+
+## The Slightly-Less Easy Way - Building the Toolchain
 
 0. Configure build environment (Linux only)
 
-> Note: Skip this step on Mac!
+> Note: You may be able to skip this step, as the GCC we're building doesn't actually need these 
+> dependencies. Verified that this can definitely be skipped on Mac.
 
 - flex
 - libgmp-dev
