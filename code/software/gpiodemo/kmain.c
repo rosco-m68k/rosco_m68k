@@ -41,21 +41,27 @@ noreturn void kmain() {
   initGPIOs();
 
   while (true) {
+    print("💡 ");
     setGPIOs(true, false, false, false, false);
     delay(50000);
 
+    print("💡 ");
     setGPIOs(true, true, false, false, false);
     delay(50000);
 
+    print("💡 ");
     setGPIOs(true, true, true, false, false);
     delay(50000);
 
+    print("💡 ");
     setGPIOs(true, true, true, true, false);
     delay(50000);
 
+    print("💡");
     setGPIOs(true, true, true, true, true);
     delay(50000);
-
+    
+    print("\033[80D\033[K");
     setGPIOs(false, false, false, false, false);
     delay(50000);
   }
