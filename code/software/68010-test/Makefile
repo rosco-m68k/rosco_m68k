@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=-DREVISION_0
+DEFINES=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lgpio -lmachine -lstart_serial
