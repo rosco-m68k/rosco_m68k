@@ -1,4 +1,4 @@
-"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref";
+"Id";"Designator";"Package";"Quantity";"Designation";"Supplier and ref"
 1;"REF**";"KiCad-Logo2_5mm_SilkScreen";1;"KiCad-Logo2_5mm_SilkScreen";;;
 2;"OSHW_Mono_0.25_Scale";"OSHW_Mono_0.25_Scale";1;"UK000006";;;
 3;"J5";"PinHeader_2x08_P2.54mm_Vertical";1;"GPIO-PANEL";;;
