@@ -1,0 +1,41 @@
+GAL16V8
+DECODER
+
+A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    GND
+/OE   EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VCC
+
+/EVENRAM.T    = IACK * BOOT * /UDS * /A23 * /A22 * /A21 * /A20
+/ODDRAM.T     = IACK * BOOT * /LDS * /A23 * /A22 * /A21 * /A20
+
+/EVENROM.T    = IACK 
+              * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT
+              * /UDS
+
+/ODDROM.T     = IACK 
+              * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT 
+              * /LDS
+
+/IOSEL.T      = IACK * /A18 * A19 * A20 * A21 * A22 * A23
+
+/EXPSEL.T     = IACK 
+              * /A20 * A23
+                + /A20 * A22 
+                + A21 * /A22 
+                + A21 * /A23 
+                + A20 * /A21 
+                + A18 * /A19 * A20;
+
+
+EVENRAM.E     = OE;
+ODDRAM.E      = OE;
+EVENROM.E     = OE;
+ODDROM.E      = OE;
+IOSEL.E       = OE;
+EXPSEL.E      = OE;
+
+DESCRIPTION
+
+IC2 (Address Decoder) for rosco_m68k
+
+Copyright (c)2020 Ross Bamford. See LICENSE.
+
