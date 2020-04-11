@@ -1,6 +1,8 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
+<a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
+
 This repository holds design files, firmware and software for the Really Old-School Computer 
 (M68k) single-board computer, AKA the rosco_m68k. This is a fully-featured, programmable,
 extensible and capable 16/32-bit retro computer that is completely open source and is
