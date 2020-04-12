@@ -92,7 +92,7 @@ filtering.
 | 61  | D0     | MC68010 Data line 0                          | High   | I/O |
 | 62  | D3     | MC68010 Data line 3                          | High   | I/O |
 | 63  | D1     | MC68010 Data line 1                          | High   | I/O |
-| 64  | D4     | MC68010 Data line 4                          | High   | I/O |
+| 64  | D4     | MC68010 Data line 2                          | High   | I/O |
  
  ## Notes:
  
