@@ -11,12 +11,14 @@ With the standard address decoder (IC2), the machine has the following memory ma
 | 04         | 0x00f80000 | 0x00fbffff | IO (See note 2, below)      |
 | 05         | 0x00fc0000 | 0x00ffffff | Onboard ROM (See note 3)    |
 
-## Note 1 - Onboard RAM layout with standard firmware
+## Note 1 - RAM layout with standard firmware
 
+```
 00: 0x00000000-0x000003ff - Exception vectors
 01: 0x00000400-0x000004ff - System data area
 02: 0x00000500-0x00000fff - Reserved for Kernel, can be re-used 
 03: 0x00001000-0x000fffff - User
+```
 
 When using the serial firmware, the firmware loads code at 0x28000. On
 entry to that code:
@@ -33,6 +35,17 @@ this library will take care of linking your program correctly and relocating
 it to 0x1000 before passing control to your `kmain` function.
 For a complete description of the environment on entry, 
 see https://github.com/rosco-m68k/rosco_m68k/tree/master/code/software/libs/src/start_serial
+
+### RAM Expansion
+
+Where the roscram_68k RAM expansion board (https://github.com/rosco-m68k/hardware-projects/tree/master/ram-expansion) is fitted, the base address of the RAM provided will be as set by JP1-JP3 on the expansion board, but always
+at or above the 1MB mark.
+
+The RAM will extend between 1 and 4 megabytes beyond the base, depending how much RAM is
+fitted to the expansion board.
+
+Where the expansion is mapped high (at 13MB) only two megabytes are supported - additional
+RAM fitted to the board will not be addressable.
 
 ## Note 2 - IO Space
 
