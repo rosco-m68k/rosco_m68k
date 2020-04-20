@@ -47,6 +47,8 @@ fitted to the expansion board.
 Where the expansion is mapped high (at 13MB) only two megabytes are supported - additional
 RAM fitted to the board will not be addressable.
 
+> For more detail on the mapping used by the expansion board and the jumper settings, see comments in https://github.com/rosco-m68k/hardware-projects/blob/master/ram-expansion/code/pld/ic1_address_decoder.pld
+
 ## Note 2 - IO Space
 
 As standard, the MFP is mapped to all odd addresses in IO space (IC5 handles
