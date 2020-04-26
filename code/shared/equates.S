@@ -5,11 +5,19 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v1                 
 ;------------------------------------------------------------
-; Copyright (c)2019 Ross Bamford
+; Copyright (c)2019-2020 Ross Bamford
 ; See top-level LICENSE.md for licence information.
 ;
 ; EQUates for Rosco_m68k
 ;------------------------------------------------------------
+
+; Version (embedded into firmware at 0xFC0400)
+; MSW is flags, LSW is split into major (MSB) and minor (LSB)
+;
+; Flags:
+; bit 0 - 14: Reserved
+; bit 15    : Snapshot version
+RELEASE_VER equ     $80000101
 
 ; Memory layout
 RAMBASE     equ     $0
@@ -21,7 +29,6 @@ ROMBASE     equ     $FC0000
 
 ; Initialisation
 INIT_SSP    equ     RAMLIMIT
-INIT_PC     equ     ROMBASE+$400
 
 ; MFP Location
 MFPBASE     equ     IOBASE
