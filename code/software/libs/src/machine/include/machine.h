@@ -16,6 +16,7 @@
 #define _ROSCOM68K_MACHINE_H
 
 #include <stdint.h>
+#include <stdnoreturn.h>
 
 #ifdef REVISION_0
 // DEFINEs for MFP registers on Revision 0 board
@@ -89,6 +90,22 @@ char mcReadchar();
  * on CPU (i.e. clock) speed!
  */
 void mcBusywait(uint32_t ticks);
+
+/*
+ * Disable all interrupts (except NMI).
+ */
+void mcDisableInterrupts();
+
+/*
+ * Enable all interrupts.
+ */
+void mcEnableInterrupts();
+
+/*
+ * Disable interrupts and halt the machine. The only way to
+ * recover from this is via wetware intervention.
+ */
+noreturn void mcHalt();
 
 #endif
 

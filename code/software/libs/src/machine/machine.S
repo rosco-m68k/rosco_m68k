@@ -74,3 +74,28 @@ mcBusywait::
     
     rts
 
+; Disable interrupts
+;
+; Trashes: Nothing
+; Modifies: SR
+mcDisableInterrupts::
+    or.w    #$0700,SR    
+    rts
+
+; Enable interrupts
+;
+; Trashes: Nothing
+; Modifies: SR
+mcEnableInterrupts::
+    and.w   #$F0FF,SR
+    rts
+
+; Disable interrupts and halt the machine
+;
+; Trashes: Nothing
+; Modifies: Nothing
+; Notes: No return
+mcHalt::
+    stop    #$2700
+    bra.s   mcHalt
+
