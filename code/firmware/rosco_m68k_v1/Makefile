@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=
+DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
        -mno-align-int -mno-strict-align $(DEFINES)
