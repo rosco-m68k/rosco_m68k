@@ -23,6 +23,8 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
+ROMDEVICE?=AT28C64B
+
 OBJECTS=bootstrap.o rtlsupport.o serial.o main.o
 
 include kermit/include.mk
@@ -58,5 +60,5 @@ dump: $(BINARY)
 	od --endian=big -tx1 $(BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
-	./burn.sh
+	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
