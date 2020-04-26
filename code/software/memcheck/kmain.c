@@ -1,10 +1,23 @@
 /*
- * Copyright (c) 2020 You (you@youremail.com)
+ *------------------------------------------------------------
+ *                                  ___ ___ _   
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ * |  _| . |_ -|  _| . |     |     | . | . | '_|
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
+ *                     |_____|       firmware v1                 
+ * ------------------------------------------------------------
+ * Copyright (c)2019 Ross Bamford
+ * See top-level LICENSE.md for licence information.
+ *
+ * Memory checker / mapper for rosco_m68k
+ * ------------------------------------------------------------
  */
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdnoreturn.h>
+#include <machine.h>
 
 #define RAMBLOCK_FLAG_ONBOARD     0x1
 #define RAMBLOCK_FLAG_EXPANSION   0x2
@@ -13,6 +26,7 @@
 #define RAMBLOCK_FLAG_MAPPEDIO    0x10
 #define RAMBLOCK_FLAG_SYSTEM      0x20
 #define RAMBLOCK_FLAG_KERNEL      0x40
+#define RAMBLOCK_FLAG_SHADOW      0x80
 
 #define MAX_RAMBLOCKS             32 
 
@@ -44,6 +58,33 @@ static void zeromeminfo(MEMINFO *header) {
   }
 }
 
+static uint32_t count_rom_size() {
+  uint32_t* rom_start = (uint32_t*)0xFC0000;
+  uint32_t* current = rom_start + 4;
+  uint8_t compare_idx = 0;
+
+  while (((uint32_t)current) < 0x1000000) {
+    if (*current++ == rom_start[compare_idx]) {
+      if (compare_idx == 3) {
+        // we have a match - current -  16 (the match) bytes of ROM
+        return (uint32_t)current - 0xFC0010;
+      }
+
+      if (((uint32_t)current) % 4096 == 0) {
+        printf("\033[20DROM: %dK %s", 
+            ((uint32_t)current) / 1024, "[\033[1;32m✔\033[0m]");
+      }
+
+      compare_idx++;
+    } else {
+      compare_idx = 0;
+    }
+  }
+  
+  // Wow, 256KB of ROM!
+  return 256 << 10;
+}
+
 static KRESULT build_memory_map(MEMINFO *header) {
   MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
   bool block_started = false;
@@ -58,7 +99,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
   blocks[0].block_size = 0x500;
   blocks[0].flags = RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_SYSTEM;
 
-  // Kernel bss, data and stack - 0x00000500 - 0x00001FFF
+  // Kernel bss, data and (old) stack - 0x00000500 - 0x00001FFF
   blocks[1].block_start = 0x500;
   blocks[1].block_size = 0x1B00;
   blocks[1].flags = RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_KERNEL;
@@ -78,16 +119,17 @@ static KRESULT build_memory_map(MEMINFO *header) {
     if (current_addr >= 0xF80000) {
       // Reached IO space, end of RAM. Are we in a block?
       if (block_started) {
-        blocks[current_block].block_size = current_addr - blocks[current_block].block_start;
+        blocks[current_block].block_size = 
+            current_addr - blocks[current_block].block_start;
+
         header->ram_total += blocks[current_block].block_size;
         current_block++;
         
         if (current_block == MAX_RAMBLOCKS) {
+          printf("\033[20D");
           return KFAILURE_NORESOURCE;
         }
       }
-
-      printf("\033[20D");
 
       // Quit loop
       break;
@@ -100,35 +142,44 @@ static KRESULT build_memory_map(MEMINFO *header) {
     header->ram_free = 0xaaaaaaaa;
 
     if (*current != (uint32_t)current) {
-      // Write failed; No usable RAM here. Are we currently in a block?
+      // Write failed; No usable RAM here. If we're currently in a block...
       if (block_started) {
-        // yes - finish it and get ready to start next one.
-        blocks[current_block].block_size = current_addr - blocks[current_block].block_start;
+        // ... then finish it and get ready to start next one.
+        blocks[current_block].block_size = 
+            current_addr - blocks[current_block].block_start;
+
         block_started = false;
         header->ram_total += blocks[current_block].block_size;
         current_block++;
-  
+    
         if (current_block == MAX_RAMBLOCKS) {
+          // Uh-oh, no more blocks :(
+          printf("\033[20D");
           return KFAILURE_NORESOURCE;
         }
       }
-    } else {
-      // There is RAM here - are we currently in a block?
-      if (!block_started) {
-        // No - start one
-        blocks[current_block].block_start = (uint32_t)current;
-        blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
-        block_started = true;
-      }
+    } else if (!block_started) {
+      // There is RAM here and we don't have a current block - start one
+      blocks[current_block].block_start = (uint32_t)current;
+      blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
+      block_started = true;
     }
 
     current++;
 
     if (current_addr % 65536 == 0) {
-      printf("\033[20D%dK %s", current_addr / 1024, block_started ? "[\033[1;32m✔\033[0m]" : "[\033[1;31m✗\033[0m]");
+      printf("\033[20DRAM: %dK %s", 
+          current_addr / 1024, 
+          block_started ? "[\033[1;32m✔\033[0m]" : "[\033[1;31m✗\033[0m]");
     }
   }
 
+  if (current_block == MAX_RAMBLOCKS - 1) {  // We need at least two more blocks
+    printf("\033[20D");
+    return KFAILURE_NORESOURCE;
+  }
+
+  // MAP IO - Just create a block for this...
   // Create a block for IO space
   blocks[current_block].block_start = 0xF80000;
   blocks[current_block].block_size = 0x40000;
@@ -136,15 +187,35 @@ static KRESULT build_memory_map(MEMINFO *header) {
 
   current_block++;
 
-  if (current_block == MAX_RAMBLOCKS) {
-    return KFAILURE_NORESOURCE;
-  }
+  // MAP ROM
+  uint32_t rom_size = count_rom_size();
 
-  // Create a block for ROM space
   blocks[current_block].block_start = 0xFC0000;
-  blocks[current_block].block_size = 0x40000;
-  blocks[current_block].flags = RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_READONLY | RAMBLOCK_FLAG_SYSTEM;
+  blocks[current_block].block_size = rom_size;
+  blocks[current_block].flags = 
+      RAMBLOCK_FLAG_ONBOARD   | 
+      RAMBLOCK_FLAG_READONLY  | 
+      RAMBLOCK_FLAG_SYSTEM;
+
+  if (rom_size < (256 << 10)) {
+    // We have some shadow ROM, need a block for that..
+    if (current_block == MAX_RAMBLOCKS - 1) {  // We need to create 2 at least more blocks
+      printf("\033[20D");
+      return KFAILURE_NORESOURCE;
+    }
+
+    current_block++;
+
+    blocks[current_block].block_start = 0xFC0000 + rom_size;
+    blocks[current_block].block_size = (256 << 10) - rom_size;
+    blocks[current_block].flags = 
+        RAMBLOCK_FLAG_ONBOARD   | 
+        RAMBLOCK_FLAG_READONLY  | 
+        RAMBLOCK_FLAG_SYSTEM    | 
+        RAMBLOCK_FLAG_SHADOW;
+  }
   
+  printf("\033[20D");
   return KRESULT_SUCCESS;
 }
 
@@ -152,7 +223,6 @@ static void print_flags(uint32_t flags) {
   if ((flags & RAMBLOCK_FLAG_ONBOARD) != 0) {
     printf("[Onboard]");
   }
-
   if ((flags & RAMBLOCK_FLAG_EXPANSION) != 0) {
     printf("[Expansion]");
   }
@@ -171,14 +241,29 @@ static void print_flags(uint32_t flags) {
   if ((flags & RAMBLOCK_FLAG_KERNEL) != 0) {
     printf("[Kernel]");
   }
+  if ((flags & RAMBLOCK_FLAG_SHADOW) != 0) {
+    printf("[Shadow]");
+  }
 }
 
 static void print_block(uint8_t i, MEMBLOCK *block) {
+  
   if (block->block_size >= 65536) {
-    printf("%02d: 0x%08x - 0x%08x (%5d KiB  ) ", i, block->block_start, block->block_start + block->block_size - 1, block->block_size / 1024);
+  
+    printf("%02d: 0x%08x - 0x%08x (%5d KiB  ) ", 
+        i, 
+        block->block_start, 
+        block->block_start + block->block_size - 1, 
+        block->block_size / 1024);
   } else {
-    printf("%02d: 0x%08x - 0x%08x (%5d bytes) ", i, block->block_start, block->block_start + block->block_size - 1, block->block_size);
+  
+    printf("%02d: 0x%08x - 0x%08x (%5d bytes) ", 
+        i, 
+        block->block_start, 
+        block->block_start + block->block_size - 1, 
+        block->block_size);
   }
+
   print_flags(block->flags);
   printf("\r\n");
 }
@@ -194,18 +279,10 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  */
 MEMINFO * volatile header = (MEMINFO*)0x410;
 
-void kmain() {
+noreturn void kmain() {
   MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
-//  __asm__ __volatile__ ("or.w   #0x2700,%sr");
 
   printf("Building memory map...\r\n");
-//  uint32_t result;
-
-//  while (true) {
-//    *direct = 0xaaaaaaaa;
-//    result = *direct;
-//  }
-
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
@@ -223,8 +300,6 @@ void kmain() {
     printf("Complete; Found a total of %d bytes of writeable RAM\r\n\r\n", header->ram_total);
   }
 
-  while (true) {
-    // nothing
-  }
+  mcHalt();
 }
 
