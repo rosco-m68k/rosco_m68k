@@ -4,7 +4,7 @@
 # See LICENSE
 
 EXTRA_CFLAGS?=
-DEFINES=-DROSCO_M68K_SYSLIBS
+DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
 				-mcpu=68010 -march=68010 -mtune=68010														\
 				-mno-align-int -mno-strict-align $(DEFINES)
