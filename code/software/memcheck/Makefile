@@ -7,7 +7,7 @@ EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lprintf -lcstdlib -lrtlsupport -lmachine -lstart_serial
-DEFINES=-DROSCO_M68K
+DEFINES:=$(DEFINES) -DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mcpu=68010 -march=68010 -mtune=68010														\
 			 -mno-align-int -mno-strict-align $(DEFINES)
