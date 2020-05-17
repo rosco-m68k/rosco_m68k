@@ -6,7 +6,7 @@
 EXTRA_CFLAGS?=
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
-       -Iinclude -mcpu=68010 -march=68010 -mtune=68010                  \
+       -Iinclude -mcpu=68010 -march=68010 -mtune=68010 -O9              \
        -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T ./rosco_m68k_kloader.ld -Map=rom.map
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)

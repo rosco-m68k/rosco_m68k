@@ -52,5 +52,8 @@ RELOCATED_START:
 
 PREMAIN:
     move.l  $FC0004,-(A7)               ; Push reset vector in case kmain returns
-    bsr.w   __kinit                     ; Initialize C land
-    jmp     kmain                       ; Fly user program, Fly!
+    lea.l   __kinit,A0
+    jsr.w   (A0)
+;    bsr.w   __kinit                     ; Initialize C land
+    lea.l   kmain,A0
+    jmp     (A0)                        ; Fly user program, Fly!

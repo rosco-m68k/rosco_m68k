@@ -29,7 +29,7 @@ SECTIONS
   .text phys :
   {
     _code = .;
-    *(.text*)
+    *(.text)
     *(.rodata*)
     . = ALIGN(2);
     _code_end = .;

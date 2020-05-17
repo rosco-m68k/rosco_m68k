@@ -15,6 +15,34 @@
  */
 
 #include <stdint.h>
+#include "rtlsupport.h"
+
+void* memset(void *str, int c, long unsigned int n) {
+    // totally naive implementation, will do for now...
+    uint8_t *buf = (uint8_t*) str;
+
+    for (uint8_t *end = buf + n; buf < end; *buf++ = c)
+        ;
+
+    return str;
+}
+
+void* memcpy(const void *dest, const void *src, long unsigned int n) {
+    // totally naive implementation, will do for now...
+    uint8_t *fbuf = (uint8_t*) src;
+    uint8_t *tbuf = (uint8_t*) dest;
+
+    for (uint8_t *end = fbuf + n; fbuf < end; *tbuf++ = *fbuf++)
+        ;
+
+    return tbuf;
+}
+
+size_t strlen(const char *s) {
+    size_t i;
+    for (i = 0; s[i] != '\0'; i++) ;
+    return i;
+}
 
 unsigned long divmod(unsigned long num, unsigned long den, int mod) {
     unsigned long bit = 1;
