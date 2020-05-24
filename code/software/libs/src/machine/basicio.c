@@ -18,16 +18,23 @@
 
 int readline(char *buf, int buf_size) {
   register char c;
+  register uint8_t i = 0;
 
-  for (int i = 0; i < buf_size - 1; i++) {
+  while (i < buf_size - 1) {
     c = buf[i] = mcReadchar();
 
     switch (c) {
     case 0x08:
-      buf[i] = 0;
-      i = i - 1;
-      mcSendchar(0x08);
-      mcSendchar(0x20);
+      if (i > 0) {
+        buf[i-1] = 0;
+        i = i - 1;
+        mcSendchar(0x08);
+        mcSendchar(0x20);
+        mcSendchar(0x08);
+      }
+      break;
+    case 0x0A:
+      // throw this away...
       break;
     case 0x0D:
       // return
@@ -35,10 +42,9 @@ int readline(char *buf, int buf_size) {
       mcPrintln("");
       return i;
     default:
-      buf[i] = c;
+      buf[i++] = c;
+      mcSendchar(c);
     }
-  
-    mcSendchar(c);
   }
 
   buf[buf_size-1] = 0;
