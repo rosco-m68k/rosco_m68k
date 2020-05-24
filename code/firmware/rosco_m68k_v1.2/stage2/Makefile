@@ -4,10 +4,13 @@
 # See LICENSE
 
 DEFINES=
-CFLAGS=-std=c11 -ffreestanding -Ifat_io_lib -Wno-unused-parameter     \
-       -Wall -Werror -Wpedantic -Wno-unused-function              \
-			 -Iinclude -I../include -mcpu=68010 -march=68010 -mtune=68010   \
+BASE_CFLAGS=-std=c11 -ffreestanding -Ifat_io_lib -Wno-unused-parameter     \
+       -Wall -Werror -Wpedantic -Wno-unused-function              				 \
+			 -Iinclude -I../include -mcpu=68010 -march=68010 -mtune=68010   		 \
 			 -mno-align-int -mno-strict-align $(DEFINES)
+EXTRA_CFLAGS=
+CFLAGS=$(BASE_CFLAGS) -O9
+SIZE_CFLAGS=$(BASE_CFLAGS) -Os
 LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -21,14 +24,25 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_ZIP=$(BINARY).zip
+BINARY_ZIP_OBJ=$(BINARY_ZIP).o
 
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS=start.o serial.o machine.o rtlsupport.o main.o
+OBJECTS=init2.o common.o serial.o machine.o stage1.o main2.o
 
-#include kermit/include.mk
+include kermit/include.mk
 include sdfat/include.mk
+
+ifneq ($(NOEASY),true)
+include easy68k/include.mk
+endif
+
+main2.o: main2.c
+	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
+
+common.o: common.c
+	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -43,13 +57,16 @@ $(BINARY) : $(OBJECTS)
 $(BINARY_ZIP): $(BINARY) $(LZG)
 	$(LZG) -9 $< $@
 
+$(BINARY_ZIP_OBJ): $(BINARY_ZIP)
+	m68k-elf-objcopy -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
+
 $(LZG): $(LZG_SRC)
 	make -C $^
 
 .PHONY: all clean
 
-all: $(BINARY_ZIP)
+all: $(BINARY_ZIP_OBJ)
 
 clean: 
-	$(RM) $(OBJECTS) $(BINARY) $(MAP)
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)
 

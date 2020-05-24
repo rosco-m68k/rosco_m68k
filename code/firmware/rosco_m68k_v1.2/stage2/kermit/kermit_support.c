@@ -9,7 +9,7 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Glue code for the Kermit kernel loader
+ * Stage 2 Kermit loader
  * ------------------------------------------------------------
  */
 
@@ -89,7 +89,7 @@ static int readfile(struct k_data * k) {
 }
 
 static int writefile(struct k_data * k, UCHAR * s, int n) {
-    memcpy(s, current_load_ptr, n);
+    memcpy(current_load_ptr, s, n);
     current_load_ptr += n;
     return X_OK;
 }

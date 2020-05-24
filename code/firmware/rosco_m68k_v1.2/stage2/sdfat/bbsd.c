@@ -20,6 +20,9 @@
 #include "bbsd.h"
 #include "device/block.h"
 
+// Will try to idle the SD this many times before giving up
+#define MAX_IDLE_TRIES    5
+
 static bool wait_for_card(BBSPI*, uint32_t);
 static void reset_card(BBSPI*);
 static bool wait_for_block_start(BBSPI*, uint32_t);
@@ -349,7 +352,7 @@ static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
 }
 
 static bool send_idle(BBSPI *spi) {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < MAX_IDLE_TRIES; i++) {
         if (raw_sd_command(spi, 0, 0) == R1_IDLE_STATE) {
             return true;
         }

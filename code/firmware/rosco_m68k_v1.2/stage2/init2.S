@@ -15,13 +15,9 @@
     section .text.init
     org     $2000
 
-; Stack and all registers can be trashed at this point,
-; the machine is your own...
 START::
-    bset.b  #1,MFP_GPDR                 ; Turn off red LED
-    
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0
-    jsr     (A0)                        ; Stage 2 is go
+    jmp     (A0)                        ; Stage 2 is go
 

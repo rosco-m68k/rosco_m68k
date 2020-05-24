@@ -11,7 +11,7 @@
 ; This is the initialization code. The loader jumps into this
 ; code after the "kernel" is received via serial.
 ;
-; The first section is linked to be run at $28000, where the
+; The first section is linked to be run at $40000, where the
 ; loader loads the code. This section copies the rest of the
 ; loaded code to $1000, and then jumps to it.
 ;
@@ -26,7 +26,7 @@
     include "../../shared/equates.S"
 
     section .init
-    org     $28000
+    org     $40000
 
 ; Stack and all registers can be trashed at this point,
 ; the machine is your own...
@@ -53,7 +53,6 @@ RELOCATED_START:
 PREMAIN:
     move.l  $FC0004,-(A7)               ; Push reset vector in case kmain returns
     lea.l   __kinit,A0
-    jsr.w   (A0)
-;    bsr.w   __kinit                     ; Initialize C land
+    jsr    (A0)
     lea.l   kmain,A0
     jmp     (A0)                        ; Fly user program, Fly!

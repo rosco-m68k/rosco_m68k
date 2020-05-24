@@ -90,9 +90,9 @@ START::
     and.w   #$F0FF,SR                 ; Enable interrupts
 
     jsr     linit                     ; Init C land
-    jmp     lmain                     ; Call kmain
+    jmp     main1                     ; Call stage 1 main
 
-; kmain is noreturn, so That's All, Folks(tm).
+; main1 is noreturn, so That's All, Folks(tm).
 
 ;------------------------------------------------------------
 ; Subroutines
@@ -167,6 +167,19 @@ INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
     move.w  #100,$408                 ; Heartbeat flash counter at 100 (1 per second)
+    move.l  #0,$40C                   ; Zero upticks
+
+    ; Undocumented - EARLY_PRINT and co for stage 2 only!
+    lea     EARLY_PRINT,A0
+    movea.l A0,$410
+    lea     EARLY_PRINTLN,A0
+    movea.l A0,$414
+    lea     HALT,A0
+    movea.l A0,$418
+    lea     SENDCHAR,A0
+    movea.l A0,$41C
+    lea     RECVCHAR,A0
+    movea.l A0,$420 
     rts
 
 ; Initialise MFP
@@ -231,7 +244,14 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER:
     move.l  D0,-(A7)                  ; Save D0
-    move.w  $408,D0                   ; Read SDB byte 8
+    
+    ; Increment upticks
+    move.l  $40C,D0                   ; Read SDB dword at 12
+    add.l   #1,D0                     ; Increment
+    move.l  D0,$40C                   ; And write back
+    
+    ; Heartbeat
+    move.w  $408,D0                   ; Read SDB word at 8
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
     

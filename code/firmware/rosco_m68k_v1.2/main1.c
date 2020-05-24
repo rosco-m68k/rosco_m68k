@@ -21,18 +21,19 @@
 #include "system.h"
 #include "serial.h"
 
-extern uint32_t decompress_stage2(uint32_t src_addr);
+extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern void print_unsigned(unsigned int num, unsigned char base);
 
 /*
  * This is what a Stage 2 entry point should look like.
  */
-typedef void (*Stage2)(SystemDataBlock * const);
+typedef void (*Stage2)();
 
 // Linker defines
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end, _end;
+extern uint32_t _zip_start, _zip_end;
 
-static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
+static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
 // Stage 2 loads at 0x2000
 uint8_t *stage2_load_ptr = (uint8_t*) 0x2000;
@@ -47,12 +48,12 @@ void linit() {
   for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 }
 
-uint32_t get_zip_phys() {
-  uint32_t data_len = (uint32_t)&_data_end - (uint32_t)&_data_start;
-  return (uint32_t)&_code_end + data_len;
+uint32_t get_zip_size() {
+  return (uint32_t)&_zip_end - (uint32_t)&_zip_start;
 }
 
-noreturn void lmain() {
+/* Main stage 1 entry point */
+noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
         EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
         HALT();
@@ -62,8 +63,7 @@ noreturn void lmain() {
     EARLY_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
     START_HEART();
 
-    uint32_t decomp_size = decompress_stage2(get_zip_phys());
-    if (!decomp_size) {
+    if (!decompress_stage2((uint32_t)&_zip_start, get_zip_size())) {
         EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
         
         while (true) {
@@ -72,7 +72,7 @@ noreturn void lmain() {
     }
 
     // Call into stage 2
-    stage2(sdb);
+    stage2();
 
     EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
 
@@ -82,6 +82,9 @@ noreturn void lmain() {
 }
 
 // TODO these are duplicated in stage2, find a way not to do that...
+// (Can't do the same way as for the EASY_ stuff as they're GCC 
+// intrinsics so have to be available at link time. Could stub them 
+// and call back the same way, but probably not worth the few bytes...)
 unsigned long divmod(unsigned long num, unsigned long den, int mod) {
     unsigned long bit = 1;
     unsigned long res = 0;

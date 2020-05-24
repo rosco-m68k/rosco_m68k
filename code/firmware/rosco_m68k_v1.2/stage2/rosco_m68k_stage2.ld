@@ -15,25 +15,24 @@ SECTIONS
     *(.text)
     *(.text.unlikely)
     *(.rodata*)
-    . = ALIGN(2);
     _code_end = .;
   } > RAM
 
-  .data : 
+  .data : ALIGN(2) 
   {
     _data_start = .;
     *(.data*)
     _data_end = .;
   } > RAM
   
-  .bss :
-  { 
+  .bss : ALIGN(2)
+  {
     _bss_start = .;
     *(.bss*)
     _bss_end = .;
   } > RAM
-  
   _end = .;
+  
 }
 
 

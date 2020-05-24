@@ -23,32 +23,7 @@ extern void EARLY_PRINT_C(char *str);
 
 static uint8_t buf[BUF_LEN];
 
-static uint8_t digit(unsigned char digit) {
-  if (digit < 10) {
-    return (char)(digit + '0');
-  } else {
-    return (char)(digit - 10 + 'A');
-  }
-}
-
-void print_unsigned(unsigned int num, unsigned char base) {
-  if (base < 2 || base > 36) {
-    return;
-  }
-
-  unsigned char bp = BUF_MAX;
-
-  if (num == 0) {
-    buf[bp--] = '0';
-  } else {
-    while (num > 0) {
-      buf[bp--] = digit(num % base);
-      num /= base;
-    }
-  }
-
-  EARLY_PRINT_C((char*)&buf[bp+1]);
-}
+extern uint8_t digit(unsigned char digit);
 
 static unsigned char* print_signed_impl(int32_t value, unsigned char *bp) {
   bool neg = false;

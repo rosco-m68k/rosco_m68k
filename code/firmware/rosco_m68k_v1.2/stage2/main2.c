@@ -22,11 +22,6 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
-#define BUF_LEN 82
-#define BUF_MAX BUF_LEN - 2
-
-static uint8_t buf[BUF_LEN];
-
 extern void mcPrint(char *str);
 extern void mcBusywait(uint32_t nops);
 extern void mcHalt();
@@ -39,16 +34,16 @@ extern void INSTALL_EASY68K_TRAP_HANDLERS();
 /*
  * This is what a Kernel entry point should look like.
  */
-typedef void (*KMain)(SystemDataBlock * const);
+typedef void (*KMain)(volatile SystemDataBlock * const);
 
 // Linker defines
 extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 
-static SystemDataBlock * const sdb = (SystemDataBlock * const)0x400;
+static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
-// Kernels are loaded at $28000 regardless of _how_ they're loaded
-uint8_t *kernel_load_ptr = (uint8_t*) 0x28000;
-static KMain kmain = (KMain) 0x28000;
+// Kernels are loaded at the same address regardless of _how_ they're loaded
+uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
+static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
 
 // This is provided by the SD/FAT loader
 int load_kernel();
@@ -56,50 +51,12 @@ int load_kernel();
 // This is provided by Kermit
 int receive_kernel();
 
-static uint8_t digit(unsigned char digit) {
-  if (digit < 10) {
-    return (char)(digit + '0');
-  } else {
-    return (char)(digit - 10 + 'A');
-  }
-}
-
-void print_unsigned(uint32_t num, uint8_t base) {
-  if (base < 2 || base > 36) {
-    return;
-  }
-
-unsigned char bp = BUF_MAX;
-
-  if (num == 0) {
-    buf[bp--] = '0';
-  } else {
-    while (num > 0) {
-      buf[bp--] = digit(num % base);
-      num /= base;
-    }
-  }
-
-  mcPrint((char*)&buf[bp+1]);
-}
-
 void linit() {
-    // copy .data
-    //for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
-
     // zero .bss
     for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 }
 
 noreturn void lmain() {
-    if (kernel_load_ptr != (uint8_t*)0x28000) {
-        mcPrint("BAD LINKAGE (DATA)!!! (load_ptr is 0x");
-        print_unsigned((uint32_t)kernel_load_ptr, 16);
-        mcPrint(")\r\n");
-    } else {
-        mcPrint("Linkage seems okay...\r\n");
-    }
-
     // Always do this for backwards compatibility
     ENABLE_RECV();
 
@@ -113,11 +70,7 @@ noreturn void lmain() {
         goto have_kernel;
     }
 
-    mcPrint("No SD card, or no kernel found on SD Card, giving up...\r\n");
-
-    while (true) {
-      mcHalt();
-    }
+    mcPrint("No SD card, or no kernel found on SD Card, ready for Kermit upload...\r\n");
 
     while (!receive_kernel()) {
         mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");

@@ -15,9 +15,9 @@
 
 
 #ifndef IBUFLEN
-#define IBUFLEN  4096			/* File input buffer size */
+#define IBUFLEN  8192			/* File input buffer size */
 #endif /* IBUFLEN */
 
 #ifndef OBUFLEN
-#define OBUFLEN  8192           /* File output buffer size */
+#define OBUFLEN  4096           /* File output buffer size */
 #endif /* OBUFLEN */

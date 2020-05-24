@@ -17,39 +17,8 @@
 
 #include <stdint.h>
 
-/*
- * The MemoryRegion structure describes a region of memory,
- * allocated or unallocated (depending on which list it appears in).
- */
-typedef struct _MemoryRegion {
-  void                  *start;
-  uint32_t              size;
-  uint32_t              flags;
-  struct _MemoryRegion  *next;
-} __attribute__ ((packed)) MemoryRegion;
-
-/*
- * The Registers structure is the format in which the MC68010 pushes
- * registers onto the stack.
- */
-typedef struct {
-  uint32_t      sr;
-  uint32_t      pc;
-} __attribute__ ((packed)) Registers;
-
-/*
- * The Task structure describes a task in the system.
- */
-typedef struct _Task {
-  uint32_t      tid;
-  uint16_t      flags;
-  uint8_t       priority;
-  uint8_t       status;
-  Registers     *regs;
-  MemoryRegion  *region_list;
-  struct _Task  *next;
-  uint32_t      reserved[2];
-} __attribute__ ((packed)) Task;
+// This is the address kernels should be loaded at
+#define KERNEL_LOAD_ADDRESS   0x40000
 
 /*
  * The SystemDataBlock is a global reserved structure at $400-$500 (256 bytes).
@@ -60,11 +29,7 @@ typedef struct {
   uint16_t      heartbeat_counter;    /* Counter used to flash I0 */
   uint16_t      heartbeat_frequency;  /* Value used to reset heartbeat counter (100 = ~1 beat per second) */
   uint32_t      upticks;              /* Running counter of the number of ticks the system has been up */
-  MemoryRegion  *free_list;           /* List of free memory blocks */
-  Task          *next_runnable_task;  /* Next runnable task (circular list, doubly linked) */
-  Task          *suspended_tasks;     /* Tasks waiting on some condition */
-  Task          *current_task;        /* Currently-running task */
-  uint32_t      reserved[56];         /* Reserved */
+  uint32_t      reserved[72];         /* Reserved for system use */
 
 } __attribute__ ((packed)) SystemDataBlock;
 

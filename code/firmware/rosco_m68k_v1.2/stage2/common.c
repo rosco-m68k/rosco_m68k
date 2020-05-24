@@ -97,3 +97,37 @@ unsigned int __mulsi3(unsigned int a, unsigned int b) {
 
     return r;
 }
+
+#define BUF_LEN 82
+#define BUF_MAX BUF_LEN - 2
+
+static uint8_t buf[BUF_LEN];
+
+extern void mcPrint(char *str);
+uint8_t digit(unsigned char digit) {
+  if (digit < 10) {
+    return (char)(digit + '0');
+  } else {
+    return (char)(digit - 10 + 'A');
+  }
+}
+
+void print_unsigned(uint32_t num, uint8_t base) {
+  if (base < 2 || base > 36) {
+    return;
+  }
+
+  unsigned char bp = BUF_MAX;
+
+  if (num == 0) {
+    buf[bp--] = '0';
+  } else {
+    while (num > 0) {
+      buf[bp--] = digit(num % base);
+      num /= base;
+    }
+  }
+
+  mcPrint((char*)&buf[bp+1]);
+}
+

@@ -31,6 +31,9 @@ SECTIONS
     _code = .;
     *(.text)
     *(.rodata*)
+    _zip_start = .;
+    *(.zipdata)
+    _zip_end = .;
     . = ALIGN(2);
     _code_end = .;
   } > ROM

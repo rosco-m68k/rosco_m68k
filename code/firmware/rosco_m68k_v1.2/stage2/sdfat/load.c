@@ -42,6 +42,9 @@ static BBSPI spi;
 static BBSDCard sd;
 static BlockDevice block_device;
 
+// TODO use SDB properly, this address might change in future!
+static volatile uint32_t * const upticks = (volatile uint32_t * const)0x40C;
+
 int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     if (!block_device.initialized) {
         return 0;
@@ -64,27 +67,14 @@ int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
 bool load_kernel() {
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
         if (BBSD_initialize(&sd, &spi)) {
-
-            switch (sd.type) {
-            case BBSD_CARD_TYPE_V1:
-                mcPrint("Found SD v1 card\r\n");
-                break;
-            case BBSD_CARD_TYPE_V2:
-                mcPrint("Found SD v2 card\r\n");
-                break;
-            case BBSD_CARD_TYPE_SDHC:
-                mcPrint("Found SDHC card\r\n");
-                break;
-            default:
-                mcPrint("Found unknown card type\r\n");
-            }
-
             if (BBSD_make_device(&sd, &block_device)) {
                 fl_attach_media(media_read, media_write);
 
                 void *file = fl_fopen("/ROSCODE1.BIN", "r");
 
                 if (file != NULL) {
+                    uint32_t start = *upticks;
+
                     mcPrint("Loading");
 
                     int c;
@@ -97,7 +87,10 @@ bool load_kernel() {
                         }
                     }
 
-                    mcPrint(" Complete\r\n");
+                    uint32_t total_ticks = *upticks - start;
+                    mcPrint(" Completed in ~");
+                    print_unsigned(total_ticks / 200, 10);
+                    mcPrint(" seconds\r\n");
 
                     fl_fclose(file);
 
