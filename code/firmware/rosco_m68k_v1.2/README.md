@@ -1,5 +1,8 @@
 # SD Card + Serial Loader for rosco_m68k
 
+NOTE: It would be nice to use a better-compressing implementation of 
+DEFLATE/INFLATE - e.g. https://github.com/keirf/Amiga-Stuff/tree/master/inflate
+
 This firmware implements a simple way to load code into the computer from startup,
 enabling quicker iteration (and fewer dead ROM chips).
 
