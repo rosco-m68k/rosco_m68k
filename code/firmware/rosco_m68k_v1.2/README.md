@@ -1,10 +1,11 @@
-# Serial Loader for rosco_m68k
+# SD Card + Serial Loader for rosco_m68k
 
 This firmware implements a simple way to load code into the computer from startup,
 enabling quicker iteration (and fewer dead ROM chips).
 
 The idea with this is to do basic set up of the system (e.g. set up the MFP) and
-then wait for the user to initiate a file transfer from their terminal program.
+then either load code from the SD card (if connected) or  wait for the user to 
+initiate a file transfer from their terminal program.
 
 This transfer should upload (in binary) the code that is to be run (perhaps a kernel,
 or some other thing).
@@ -56,7 +57,7 @@ will have to suffice:
 
 * **There is a very simple POC "kernel" at ../poc-kernel** - This shows how to
   e.g. relocate your code (down to $1000) and how to link for that etc.
-* Code is loaded at $28000 (somewhat arbitrarily). The loader will jump
+* Code is loaded at $40000 (somewhat arbitrarily). The loader will jump
   directly to that location after the code is received.
 * This means you are limited to ~860KB with the standard memory configuration.
 * (It's actually slightly more, but the stack is at the top of RAM!)
@@ -79,7 +80,7 @@ will have to suffice:
 On entry to the loaded code, the system will be in the following state:
 
 * CPU will be in supervisor mode
-* PC will be at $28000
+* PC will be at $40000
 * VBR will point to $0
 * Supervisor stack will be at $100000, SSP could be anywhere and can be reset
 * Registers will be undefined, and can all be trashed.
