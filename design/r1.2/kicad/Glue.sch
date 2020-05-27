@@ -591,8 +591,6 @@ Text GLabel 6300 3750 2    50   Output ~ 0
 MFPCLK
 Text GLabel 4450 3750 2    50   Output ~ 0
 CLK
-NoConn ~ 5500 3750
-NoConn ~ 3650 3750
 Wire Wire Line
 	3950 3050 4850 3050
 Wire Wire Line
@@ -631,7 +629,7 @@ Wire Wire Line
 	4850 2550 4850 3050
 Connection ~ 4850 3050
 Wire Wire Line
-	4850 3050 5800 3050
+	4850 3050 5350 3050
 Wire Wire Line
 	4850 4700 4850 4400
 Connection ~ 4850 4400
@@ -670,7 +668,7 @@ $EndComp
 Wire Wire Line
 	3200 3600 3200 3050
 Wire Wire Line
-	3200 3050 3950 3050
+	3200 3050 3550 3050
 Connection ~ 3950 3050
 Wire Wire Line
 	3200 3900 3200 4400
@@ -1079,6 +1077,46 @@ Wire Wire Line
 	8600 2900 8600 3500
 Wire Wire Line
 	8600 3800 8600 4600
+$Comp
+L Device:R R18
+U 1 1 5ECFB250
+P 3550 3300
+F 0 "R18" H 3620 3346 50  0000 L CNN
+F 1 "4K7" H 3620 3255 50  0000 L CNN
+F 2 "" V 3480 3300 50  0001 C CNN
+F 3 "~" H 3550 3300 50  0001 C CNN
+	1    3550 3300
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R19
+U 1 1 5ECFC0DF
+P 5350 3300
+F 0 "R19" H 5420 3346 50  0000 L CNN
+F 1 "4K7" H 5420 3255 50  0000 L CNN
+F 2 "" V 5280 3300 50  0001 C CNN
+F 3 "~" H 5350 3300 50  0001 C CNN
+	1    5350 3300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 3450 5350 3750
+Wire Wire Line
+	5350 3750 5500 3750
+Wire Wire Line
+	5350 3150 5350 3050
+Connection ~ 5350 3050
+Wire Wire Line
+	5350 3050 5800 3050
+Wire Wire Line
+	3550 3150 3550 3050
+Connection ~ 3550 3050
+Wire Wire Line
+	3550 3050 3950 3050
+Wire Wire Line
+	3550 3450 3550 3750
+Wire Wire Line
+	3550 3750 3650 3750
 Wire Bus Line
 	12850 2600 12850 3800
 $EndSCHEMATC
