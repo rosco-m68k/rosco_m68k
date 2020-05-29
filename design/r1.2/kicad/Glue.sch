@@ -1117,6 +1117,169 @@ Wire Wire Line
 	3550 3450 3550 3750
 Wire Wire Line
 	3550 3750 3650 3750
+$Comp
+L rosco_m68k-eagle-import:ATF16V8BP3 IC?
+U 1 1 5EF2F381
+P 20100 7200
+AR Path="/5E53B810/5EF2F381" Ref="IC?"  Part="1" 
+AR Path="/5E53B952/5EF2F381" Ref="IC6"  Part="1" 
+F 0 "IC6" H 20100 8086 59  0000 C CNN
+F 1 "ATF16V8BQL" H 20100 7981 59  0000 C CNN
+F 2 "rosco_m68k:DIL20" H 20100 7200 50  0001 C CNN
+F 3 "" H 20100 7200 50  0001 C CNN
+	1    20100 7200
+	1    0    0    -1  
+$EndComp
+Text Notes 19800 8050 0    50   ~ 0
+MFPSEL.PLD
+Text GLabel 20500 7200 2    50   Input ~ 0
+LDS
+Text GLabel 20500 7100 2    50   Input ~ 0
+IOSEL
+Text GLabel 20500 7000 2    50   Output ~ 0
+MFPSEL
+NoConn ~ 20500 6900
+NoConn ~ 20500 7600
+Wire Bus Line
+	19400 6050 19250 6050
+Text HLabel 19250 6050 0    50   Input ~ 0
+A[1..23]
+Entry Wire Line
+	19400 6600 19500 6700
+Entry Wire Line
+	19400 6800 19500 6900
+Entry Wire Line
+	19400 6900 19500 7000
+Entry Wire Line
+	19400 7000 19500 7100
+Entry Wire Line
+	19400 7100 19500 7200
+Entry Wire Line
+	19400 7200 19500 7300
+Entry Wire Line
+	19400 7300 19500 7400
+Entry Wire Line
+	19400 7400 19500 7500
+Entry Wire Line
+	19400 7500 19500 7600
+Wire Bus Line
+	21150 6050 21350 6050
+Text HLabel 21350 6050 2    50   Input ~ 0
+A[1..23]
+Entry Wire Line
+	21050 7500 21150 7400
+Wire Wire Line
+	20500 7500 21050 7500
+Wire Wire Line
+	20500 7300 21050 7300
+Wire Wire Line
+	20500 7400 21050 7400
+Entry Wire Line
+	21050 7300 21150 7200
+Entry Wire Line
+	21050 7400 21150 7300
+Text Label 19500 6700 0    50   ~ 0
+A6
+Text Label 19500 6900 0    50   ~ 0
+A7
+Text Label 19500 7000 0    50   ~ 0
+A8
+Text Label 19500 7100 0    50   ~ 0
+A9
+Text Label 19500 7200 0    50   ~ 0
+A10
+Text Label 19500 7300 0    50   ~ 0
+A11
+Text Label 19500 7400 0    50   ~ 0
+A12
+Text Label 19500 7500 0    50   ~ 0
+A13
+Text Label 19500 7600 0    50   ~ 0
+A14
+Entry Wire Line
+	21050 6700 21150 6600
+Wire Wire Line
+	21050 6700 20500 6700
+Text Label 21050 6700 2    50   ~ 0
+A15
+Text Label 21050 7500 2    50   ~ 0
+A16
+Text Label 21050 7400 2    50   ~ 0
+A17
+Text Label 21050 7300 2    50   ~ 0
+A18
+$Comp
+L power:VCC #PWR?
+U 1 1 5F056E21
+P 18700 5950
+F 0 "#PWR?" H 18700 5800 50  0001 C CNN
+F 1 "VCC" H 18717 6123 50  0000 C CNN
+F 2 "" H 18700 5950 50  0001 C CNN
+F 3 "" H 18700 5950 50  0001 C CNN
+	1    18700 5950
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR?
+U 1 1 5F057711
+P 18700 7950
+F 0 "#PWR?" H 18700 7700 50  0001 C CNN
+F 1 "GND" H 18705 7777 50  0000 C CNN
+F 2 "" H 18700 7950 50  0001 C CNN
+F 3 "" H 18700 7950 50  0001 C CNN
+	1    18700 7950
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C?
+U 1 1 5F060B7D
+P 18700 6950
+AR Path="/5F060B7D" Ref="C?"  Part="1" 
+AR Path="/5E53B630/5F060B7D" Ref="C?"  Part="1" 
+AR Path="/5E53B952/5F060B7D" Ref="C?"  Part="1" 
+F 0 "C?" H 18760 6965 59  0000 L BNN
+F 1 "100nF" H 18760 6765 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 18700 6950 50  0001 C CNN
+F 3 "" H 18700 6950 50  0001 C CNN
+	1    18700 6950
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	19500 6700 19700 6700
+Wire Wire Line
+	19500 6900 19700 6900
+Wire Wire Line
+	19500 7000 19700 7000
+Wire Wire Line
+	19500 7100 19700 7100
+Wire Wire Line
+	19500 7200 19700 7200
+Wire Wire Line
+	19500 7300 19700 7300
+Wire Wire Line
+	19500 7400 19700 7400
+Wire Wire Line
+	19500 7500 19700 7500
+Wire Wire Line
+	19500 7600 19700 7600
+Wire Wire Line
+	18700 5950 18700 6600
+Connection ~ 18700 6600
+Wire Wire Line
+	18700 6600 18700 6850
+Wire Wire Line
+	19700 7800 18700 7800
+Wire Wire Line
+	18700 7150 18700 7800
+Wire Wire Line
+	18700 6600 19650 6600
+Wire Bus Line
+	21150 6050 21150 7400
 Wire Bus Line
 	12850 2600 12850 3800
+Wire Bus Line
+	19400 6050 19400 7500
+Connection ~ 18700 7800
+Wire Wire Line
+	18700 7800 18700 7950
 $EndSCHEMATC

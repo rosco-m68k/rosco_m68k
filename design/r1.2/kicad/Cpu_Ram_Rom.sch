@@ -1211,8 +1211,8 @@ Text GLabel 4000 7750 0    47   Input ~ 0
 IPL2
 Text GLabel 4000 7550 0    47   Input ~ 0
 RESET
-Text GLabel 5300 6550 2    47   BiDi ~ 0
-IOSEL
+Text GLabel 5300 6550 2    47   Input ~ 0
+MFPSEL
 Wire Wire Line
 	1000 9100 1400 9100
 Wire Wire Line
