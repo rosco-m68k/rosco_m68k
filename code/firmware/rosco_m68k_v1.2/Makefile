@@ -7,7 +7,7 @@ EXTRA_CFLAGS?=
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=68010 -march=68010 -mtune=68010 -Os              \
-       -mno-align-int -mno-strict-align $(DEFINES)
+       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T ./rosco_m68k_firmware.ld -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
