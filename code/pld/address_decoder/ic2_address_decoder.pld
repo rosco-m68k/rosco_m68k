@@ -2,28 +2,36 @@ GAL16V8
 DECODER
 
 A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    GND
-AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VCC
+/OE   EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VCC
 
-/EVENRAM      = /AS * IACK * BOOT * /UDS * /A23 * /A22 * /A21 * /A20
-/ODDRAM       = /AS * IACK * BOOT * /LDS * /A23 * /A22 * /A21 * /A20
+/EVENRAM.T    = IACK * BOOT * /UDS * /A23 * /A22 * /A21 * /A20
+/ODDRAM.T     = IACK * BOOT * /LDS * /A23 * /A22 * /A21 * /A20
 
-/EVENROM      = IACK 
-              * /AS * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT
+/EVENROM.T    = IACK 
+              * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT
               * /UDS
 
-/ODDROM       = IACK 
-              * /AS * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT 
+/ODDROM.T     = IACK 
+              * A18 * A19 * A20 * A21 * A22 * A23 + /BOOT 
               * /LDS
 
-/IOSEL        = IACK * /AS * /A18 * A19 * A20 * A21 * A22 * A23
+/IOSEL.T      = IACK * /A18 * A19 * A20 * A21 * A22 * A23
 
-/EXPSEL       = /AS * IACK 
+/EXPSEL.T     = IACK 
               * /A20 * A23
                 + /A20 * A22 
                 + A21 * /A22 
                 + A21 * /A23 
                 + A20 * /A21 
                 + A18 * /A19 * A20;
+
+
+EVENRAM.E     = OE;
+ODDRAM.E      = OE;
+EVENROM.E     = OE;
+ODDROM.E      = OE;
+IOSEL.E       = OE;
+EXPSEL.E      = OE;
 
 DESCRIPTION
 

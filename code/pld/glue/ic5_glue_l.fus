@@ -43,7 +43,7 @@ Pin 16 = RAMOE        XOR = 0   AC1 = 1
 Pin 15 = MFPDS        XOR = 0   AC1 = 1
  32  ---- ---- ---- ---- ---- ---- ---- ----
  33  ---- ---x ---- ---- ---- ---- ---- ----
- 34  ---- ---- ---- ---- ---- ---- ---x ----
+ 34  ---- ---- ---- ---- ---- ---- --x- ----
  35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
