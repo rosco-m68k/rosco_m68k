@@ -11,12 +11,13 @@ Last updated 06/06/2020 by Xark
  * -            8086-8Mhz       RMX86 V6        Intel C-86 V2.0  287     304 ??
  * Fortune 32:16 68000-6Mhz     V7+sys3+4.1BSD  cc               360     346
  * PDP-11/34A   w/FP-11C        UNIX V7m        cc               406     449
- * rosco_m68k   68010-8.0Mhz    ROM				gcc-7.5.0 		  -      555 <=== NEW (no -O)
  * Macintosh512 68000-7.7Mhz    Mac ROM O/S     DeSmet(C ware)   625     625
  * VAX-11/750   w/FPA           UNIX 4.2BSD     cc               831     852
+ * rosco_m68k   68010-8.0Mhz    ROM             gcc-7.5.0        -       862 (-O1)
  * DataMedia 932 68000-10Mhz    UNIX sysV       cc               837     888
  * Plexus P35   68000-12.5Mhz   UNIX sysIII     cc               835     894
  * ATT PC7300   68010-10Mhz     UNIX 5.0.3      cc               973    1034
+ * rosco_m68k   68010-10Mhz     ROM             gcc-7.5.0        -      1086 (-O1)
  * Compaq II    80286-8Mhz      MSDOS 3.1       MS C 3.0        1086    1140 LM
  * IBM PC/AT    80286-7.5Mhz    Venix/286 SVR2  cc              1159    1254 *15
  * Compaq II    80286-8Mhz      MSDOS 3.1       MS C 3.0        1190    1282 MM
