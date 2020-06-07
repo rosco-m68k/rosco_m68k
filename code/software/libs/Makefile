@@ -24,6 +24,10 @@ INSTALL_DIR=./build
 INSTALL_LIB=$(INSTALL_DIR)/lib
 INSTALL_INC=$(INSTALL_DIR)/include
 
+# Avoid plain "make" building only the first target encountered, causing confusion
+decoy:
+	@echo Please use \"make all\" to build all the libraries.
+
 include src/machine/include.mk
 include src/gpio/include.mk
 include src/cstdlib/include.mk

@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-void* memset(void *str, int c, long unsigned int n) {
+void* memset(void *str, int c, size_t n) {
     // totally naive implementation, will do for now...
     uint8_t *buf = (uint8_t*) str;
 
@@ -27,7 +27,7 @@ void* memset(void *str, int c, long unsigned int n) {
     return str;
 }
 
-void* memcpy(const void *to, const void *from, long unsigned int n) {
+void* memcpy(const void *to, const void *from, size_t n) {
     // totally naive implementation, will do for now...
     uint8_t *fbuf = (uint8_t*) from;
     uint8_t *tbuf = (uint8_t*) to;
@@ -75,11 +75,11 @@ int strcmp(const char *str1, const char *str2) {
     }
 }
 
-int isupper(char c) {
+int isupper(int c) {
   return (c > 'A' && c < 'Z');
 }
 
-int tolower(char c) {
+int tolower(int c) {
   return isupper(c) ? (c) - 'A' + 'a' : c;
 }
 
@@ -138,13 +138,22 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     return 0;
 }
 
-char* strncpy(char *s1, const char *s2, size_t n) {
-  size_t size = strnlen (s2, n);
+char* strncpy(char *to, const char *from, size_t n) {
+  size_t size = strnlen (from, n);
   if (size != n) {
-    memset (s1 + size, '\0', n - size);
+    memset (to + size, '\0', n - size);
   }
 
-  return memcpy (s1, s2, size);
+  return memcpy (to, from, size);
+}
+
+char *strcpy(char *to, const char *from) {
+	register char *d = to;
+
+    while ((*d++ = *from++) != 0)
+		;
+
+	return to;
 }
 
 
