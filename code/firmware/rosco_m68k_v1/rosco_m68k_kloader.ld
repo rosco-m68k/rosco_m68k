@@ -29,8 +29,8 @@ SECTIONS
   .text phys :
   {
     _code = .;
-    *(.text)
-    *(.rodata)
+    *(.text*)
+    *(.rodata*)
     . = ALIGN(2);
     _code_end = .;
   } > ROM

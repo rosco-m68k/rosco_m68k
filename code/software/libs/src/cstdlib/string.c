@@ -27,7 +27,7 @@ void* memset(void *str, int c, long unsigned int n) {
     return str;
 }
 
-void* memcpy(const void *from, const void *to, long unsigned int n) {
+void* memcpy(const void *to, const void *from, long unsigned int n) {
     // totally naive implementation, will do for now...
     uint8_t *fbuf = (uint8_t*) from;
     uint8_t *tbuf = (uint8_t*) to;
@@ -36,6 +36,18 @@ void* memcpy(const void *from, const void *to, long unsigned int n) {
         ;
 
     return tbuf;
+}
+
+char* memchr(register const char* src_void, int c, size_t length) {
+  const unsigned char *src = (const unsigned char *)src_void;
+
+  while (length-- > 0) {
+      if (*src == c) {
+          return (char*)src;
+      }
+      src++;
+  }
+  return NULL;
 }
 
 size_t strlen(const char *s) {
@@ -107,4 +119,32 @@ char *strrchr(const char *s, int c) {
     } while(*s++);
     return (char*)ret;
 }
+
+size_t strnlen(const char* str, size_t maxlen) {
+    char*  p = memchr(str, 0, maxlen);
+    if (p == NULL) {
+        return maxlen;
+    } else {
+        return (p - str);
+    }
+}
+
+int strncmp(const char* s1, const char* s2, size_t n) {
+    while(n--) {
+        if(*s1++!=*s2++) {
+            return *(unsigned char*)(s1 - 1) - *(unsigned char*)(s2 - 1);
+        }
+    }
+    return 0;
+}
+
+char* strncpy(char *s1, const char *s2, size_t n) {
+  size_t size = strnlen (s2, n);
+  if (size != n) {
+    memset (s1 + size, '\0', n - size);
+  }
+
+  return memcpy (s1, s2, size);
+}
+
 
