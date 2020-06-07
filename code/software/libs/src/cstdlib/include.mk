@@ -1,10 +1,10 @@
 LIB=cstdlib
-LIBOBJECTS=$(DIR)/string.o $(DIR)/fgets.o
+LIBOBJECTS=$(DIR)/string.o $(DIR)/fgets.o $(DIR)/malloc.o $(DIR)/stdlib.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---
 DIR := $(shell dirname $(lastword $(MAKEFILE_LIST)))
-UPPERLIB := $(shell tr '[:lower:]' '[:upper:]' <<< $(LIB))
+UPPERLIB := $(shell echo $(LIB) | tr '[:lower:]' '[:upper:]')
 BINARY := lib$(LIB).a
 CFLAGS  := $(CFLAGS) -I$(LIBINCLUDES) -DBUILD_ROSCOM68K_$(UPPERLIB)_LIB
 OBJECTS := $(OBJECTS) $(LIBOBJECTS)

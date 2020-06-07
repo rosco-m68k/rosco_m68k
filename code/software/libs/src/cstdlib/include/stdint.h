@@ -9,25 +9,26 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Stub "stdlib" for simple programs that need it
+ * Super-basic "stdint.h" just the main types for programs that need them
  * ------------------------------------------------------------
  */
 
-#ifndef _ROSCOM68K_STDLIB_H
-#define _ROSCOM68K_STDLIB_H
-
-#ifndef NULL
-#define NULL ((void*) 0)
-#endif
+#ifndef _ROSCOM68K_STDINT_H
+#define _ROSCOM68K_STDINT_H
 
 #include <stddef.h>
 
-void exit(int status);
-void abort(void);
-void *malloc(size_t size);
-void free(void *ptr);
-void *realloc(void *ptr, size_t size);
-void *calloc(size_t nitems, size_t size);
+typedef signed char			int8_t;
+typedef short				int16_t;
+typedef long				int32_t;
+typedef long long			int64_t;
+typedef unsigned char		uint8_t;
+typedef	unsigned short		uint16_t;
+typedef long unsigned int	uint32_t;
+typedef unsigned long long	uint64_t;
+typedef int					intptr_t;
+typedef unsigned int		uintptr_t;
+typedef long long			intmax_t;
+typedef unsigned long long	uintmax_t;
 
-#endif
-
+#endif /* _ROSCOM68K_STDINT_H */

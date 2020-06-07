@@ -18,19 +18,20 @@
 
 #include <stddef.h>
 
-void* memset(void *str, int c, long unsigned int n);
-void *memcpy(const void *to, const void *from, long unsigned int n);
+void* memset(void *str, int c, size_t n);
+void *memcpy(const void *to, const void *from, size_t n);
 char* memchr(register const char* src_void, int c, size_t length);
 size_t strlen(const char *s);
 int strcmp(const char *str1, const char *str2);
 int strcasecmp (const char *s1, const char *s2);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
-int isupper(char c);
-int tolower(char c);
+int isupper(int c);
+int tolower(int c);
 size_t strnlen(const char* str, size_t maxlen);
 int strncmp(const char* s1, const char* s2, size_t n);
-char *strncpy(char *s1, const char *s2, size_t n);
+char *strncpy(char *to, const char *from, size_t n);
+char *strcpy(char *to, const char *from);
 
 #endif
 

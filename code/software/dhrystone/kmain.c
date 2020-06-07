@@ -6,28 +6,29 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2019 Ross Bamford
+ * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Stub "stdlib" for simple programs that need it
+ * This is the entry point for dhrystone benchmark.
  * ------------------------------------------------------------
  */
 
-#ifndef _ROSCOM68K_STDLIB_H
-#define _ROSCOM68K_STDLIB_H
+#include <stdio.h>
+#include <basicio.h>
 
-#ifndef NULL
-#define NULL ((void*) 0)
-#endif
+extern void main(void);
 
-#include <stddef.h>
+void kmain() {
+  // Run dhrystone benchmark!
+  printf("dhrystone benchmark\n");
+  printf("Get your stopwatch ready...");
+  delay(1000000);
+  main();
 
-void exit(int status);
-void abort(void);
-void *malloc(size_t size);
-void free(void *ptr);
-void *realloc(void *ptr, size_t size);
-void *calloc(size_t nitems, size_t size);
-
-#endif
+  // Warm-reboot machine when quit
+  __asm__ __volatile__ (
+      "moveal 0xfc0004.l, %a0\n\t"
+      "jmp %a0@\n\t"
+  );
+}
 
