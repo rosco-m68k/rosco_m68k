@@ -12,7 +12,7 @@ SYSLIBDIR?=../libs/build/lib
 #       Until then, workaround is to point to libgcc.a on your system below. -Xark
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010 -O1				\
+				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align -Wno-pedantic -Wno-maybe-uninitialized $(DEFINES)
 LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport -lstart_serial \
 	-L $(shell dirname `m68k-elf-gcc $(CFLAGS) -print-libgcc-file-name`)
