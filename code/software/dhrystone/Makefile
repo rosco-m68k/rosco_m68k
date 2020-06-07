@@ -10,12 +10,12 @@ SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 # TODO: Figure out why -lgcc causes: m68k-elf-ld: cannot find -lgcc
 #       Until then, workaround is to point to libgcc.a on your system below. -Xark
-LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport -lstart_serial \
-	/home/linuxbrew/.linuxbrew/Cellar/gcc-cross-m68k@7/7.5.0/lib/gcc/m68k-elf/7.5.0/m68000/libgcc.a
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
 				-mno-align-int -mno-strict-align -Wno-pedantic -Wno-maybe-uninitialized $(DEFINES)
+LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport -lstart_serial \
+	-L $(shell dirname `m68k-elf-gcc $(CFLAGS) -print-libgcc-file-name`)
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
