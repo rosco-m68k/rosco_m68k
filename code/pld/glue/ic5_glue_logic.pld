@@ -12,7 +12,7 @@ NC    NC    IACK  DTACK     MFPDS     RAMOE     RW        LDS     NC        VCC
         + IACK * /ODDRAM
         + IACK * ODDROM * EVENROM * ODDRAM * EVENRAM * IOSEL
 
-/MFPDS  = /LDS + IACK
+/MFPDS  = /LDS + /IACK
 /RAMOE  = RW
 
 DESCRIPTION
