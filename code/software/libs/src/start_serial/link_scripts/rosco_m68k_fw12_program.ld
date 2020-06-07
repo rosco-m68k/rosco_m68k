@@ -17,7 +17,7 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 kram = 0x00001000;
-phys = 0x00028000;
+phys = 0x00040000;
 MEMORY
 {
   INIT : org = phys, l = 0xBEFFF   /* init -> top of ram (767KB) */ 
@@ -32,7 +32,7 @@ SECTIONS
     *(.init)
     _init_end = .;
   } > INIT
-
+  
   .text.postinit : AT(SIZEOF(.text.init))
   {
     _postinit = .;
