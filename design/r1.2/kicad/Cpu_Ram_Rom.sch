@@ -1190,10 +1190,6 @@ F 3 "" H 11250 7250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	3000 9300 2700 9300
-Wire Wire Line
-	3200 9300 3500 9300
-Wire Wire Line
 	3650 7950 3650 8150
 Wire Wire Line
 	4000 7350 1700 7350
@@ -1302,20 +1298,6 @@ F 1 "MC68901P" H 4200 6050 59  0001 L BNN
 F 2 "rosco_m68k:DIL48" H 4700 7750 50  0001 C CNN
 F 3 "" H 4700 7750 50  0001 C CNN
 	1    4700 7750
-	1    0    0    -1  
-$EndComp
-$Comp
-L rosco_m68k-eagle-import:CRYSTALHC49S Q?
-U 1 1 5F15ED89
-P 3100 9300
-AR Path="/5F15ED89" Ref="Q?"  Part="1" 
-AR Path="/5E53B630/5F15ED89" Ref="Q?"  Part="1" 
-AR Path="/5E53B4B8/5F15ED89" Ref="Q1"  Part="1" 
-F 0 "Q1" H 3050 9450 59  0000 L BNN
-F 1 "3.6864MHz" H 2900 9100 59  0000 L BNN
-F 2 "rosco_m68k:HC49_S" H 3100 9300 50  0001 C CNN
-F 3 "" H 3100 9300 50  0001 C CNN
-	1    3100 9300
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -1582,43 +1564,33 @@ $EndComp
 $Comp
 L rosco_m68k-eagle-import:C2,5-3 C?
 U 1 1 5F15ED95
-P 3500 9700
+P 2700 9700
 AR Path="/5F15ED95" Ref="C?"  Part="1" 
 AR Path="/5E53B630/5F15ED95" Ref="C?"  Part="1" 
 AR Path="/5E53B4B8/5F15ED95" Ref="C2"  Part="1" 
-F 0 "C2" H 3560 9715 59  0000 L BNN
-F 1 "33pF" H 3560 9515 59  0000 L BNN
-F 2 "rosco_m68k:C2.5-3" H 3500 9700 50  0001 C CNN
-F 3 "" H 3500 9700 50  0001 C CNN
-	1    3500 9700
-	1    0    0    -1  
-$EndComp
-$Comp
-L rosco_m68k-eagle-import:C2,5-3 C?
-U 1 1 5F15ED8F
-P 2700 9700
-AR Path="/5F15ED8F" Ref="C?"  Part="1" 
-AR Path="/5E53B630/5F15ED8F" Ref="C?"  Part="1" 
-AR Path="/5E53B4B8/5F15ED8F" Ref="C1"  Part="1" 
-F 0 "C1" H 2760 9715 59  0000 L BNN
+F 0 "C2" H 2760 9715 59  0000 L BNN
 F 1 "33pF" H 2760 9515 59  0000 L BNN
 F 2 "rosco_m68k:C2.5-3" H 2700 9700 50  0001 C CNN
 F 3 "" H 2700 9700 50  0001 C CNN
 	1    2700 9700
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	2700 9300 2700 9600
-Wire Wire Line
-	3500 9300 3500 9600
-Wire Wire Line
-	3500 9300 3500 6750
-Connection ~ 3500 9300
-Wire Wire Line
-	2700 9300 2700 6650
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C?
+U 1 1 5F15ED8F
+P 3500 9700
+AR Path="/5F15ED8F" Ref="C?"  Part="1" 
+AR Path="/5E53B630/5F15ED8F" Ref="C?"  Part="1" 
+AR Path="/5E53B4B8/5F15ED8F" Ref="C1"  Part="1" 
+F 0 "C1" H 3560 9715 59  0000 L BNN
+F 1 "33pF" H 3560 9515 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 3500 9700 50  0001 C CNN
+F 3 "" H 3500 9700 50  0001 C CNN
+	1    3500 9700
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
 	2700 6650 4000 6650
-Connection ~ 2700 9300
 Text GLabel 4000 6450 0    50   Input ~ 0
 MFPCLK
 Text Notes 4250 5700 0    98   ~ 0
@@ -1627,6 +1599,31 @@ Text Notes 10800 5500 0    50   ~ 0
 AT28C64B or AT28C256
 Wire Wire Line
 	15000 8750 15000 9250
+Wire Wire Line
+	2700 6650 2700 9300
+Wire Wire Line
+	3500 6750 3500 9300
+$Comp
+L rosco_m68k-eagle-import:CRYSTALHC49S Q?
+U 1 1 5F15ED89
+P 3100 9300
+AR Path="/5F15ED89" Ref="Q?"  Part="1" 
+AR Path="/5E53B630/5F15ED89" Ref="Q?"  Part="1" 
+AR Path="/5E53B4B8/5F15ED89" Ref="Q1"  Part="1" 
+F 0 "Q1" H 3050 9450 59  0000 L BNN
+F 1 "3.6864MHz" H 2900 9100 59  0000 L BNN
+F 2 "rosco_m68k:HC49_S" H 3100 9300 50  0001 C CNN
+F 3 "" H 3100 9300 50  0001 C CNN
+	1    3100 9300
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3000 9300 2700 9300
+Connection ~ 2700 9300
+Wire Wire Line
+	2700 9300 2700 9600
+Wire Wire Line
+	3200 9300 3500 9300
 Wire Bus Line
 	1600 6750 1600 7250
 Wire Bus Line
@@ -1651,4 +1648,7 @@ Wire Bus Line
 	6250 3000 6250 5300
 Wire Bus Line
 	15800 6550 15800 8450
+Connection ~ 3500 9300
+Wire Wire Line
+	3500 9300 3500 9600
 $EndSCHEMATC
