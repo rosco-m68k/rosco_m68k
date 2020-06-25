@@ -522,19 +522,6 @@ Wire Wire Line
 	4750 6600 4750 7000
 Text GLabel 3750 8500 3    70   UnSpc ~ 0
 IPL2
-$Comp
-L rosco_m68k-eagle-import:7401N IC?
-U 4 1 5ED1F8C3
-P 14000 8000
-AR Path="/5ED1F8C3" Ref="IC?"  Part="3" 
-AR Path="/5E53B952/5ED1F8C3" Ref="IC9"  Part="4" 
-F 0 "IC9" H 14100 8125 59  0000 L BNN
-F 1 "74LS01N" H 14100 7800 59  0001 L BNN
-F 2 "rosco_m68k:DIL14" H 14000 8000 50  0001 C CNN
-F 3 "" H 14000 8000 50  0001 C CNN
-	4    14000 8000
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	12900 7500 12900 8500
 Wire Wire Line
@@ -558,27 +545,9 @@ Wire Wire Line
 Wire Wire Line
 	12900 8500 15200 8500
 Connection ~ 12900 8500
-Wire Wire Line
-	12800 9000 13200 9000
-Wire Wire Line
-	13200 7900 13200 8100
-Connection ~ 13200 9000
-Connection ~ 13200 8100
-Wire Wire Line
-	13200 8100 13200 9000
-Wire Wire Line
-	14750 7200 14750 8000
-Wire Wire Line
-	13200 7900 13700 7900
-Wire Wire Line
-	13200 8100 13700 8100
-Wire Wire Line
-	14300 8000 14750 8000
 Connection ~ 15850 9000
 Wire Wire Line
 	15850 9000 16350 9000
-Wire Wire Line
-	13200 9000 15850 9000
 Wire Wire Line
 	15200 6200 15850 6200
 Wire Wire Line
@@ -1269,6 +1238,10 @@ NoConn ~ 10300 3200
 Text GLabel 10300 3000 2    50   Input ~ 0
 A17
 Wire Wire Line
+	12800 9000 14750 9000
+Wire Wire Line
+	14750 7200 14750 9000
+Wire Wire Line
 	18700 6600 19700 6600
 Wire Bus Line
 	21150 6050 21150 7400
@@ -1276,4 +1249,7 @@ Wire Bus Line
 	12850 2600 12850 3800
 Wire Bus Line
 	19400 6050 19400 7500
+Connection ~ 14750 9000
+Wire Wire Line
+	14750 9000 15850 9000
 $EndSCHEMATC

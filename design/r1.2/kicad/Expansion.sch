@@ -1082,11 +1082,46 @@ Wire Wire Line
 	10750 7550 10550 7550
 Wire Wire Line
 	10750 7300 10850 7300
+Connection ~ 10750 7300
+Text GLabel 10850 7300 2    50   Input ~ 0
+TBI
+$Comp
+L rosco_m68k-eagle-import:7401N IC?
+U 4 1 5F01DA9B
+P 3550 2950
+AR Path="/5F01DA9B" Ref="IC?"  Part="3" 
+AR Path="/5E53B952/5F01DA9B" Ref="IC?"  Part="4" 
+AR Path="/5E53BC83/5F01DA9B" Ref="IC9"  Part="4" 
+F 0 "IC9" H 3650 3075 59  0000 L BNN
+F 1 "74LS01N" H 3650 2750 59  0001 L BNN
+F 2 "rosco_m68k:DIL14" H 3550 2950 50  0001 C CNN
+F 3 "" H 3550 2950 50  0001 C CNN
+	4    3550 2950
+	1    0    0    -1  
+$EndComp
+NoConn ~ 3850 2950
+Wire Wire Line
+	2900 2400 2900 2850
+Wire Wire Line
+	2900 3050 3250 3050
+Wire Wire Line
+	3250 2850 2900 2850
 Wire Bus Line
 	11150 4100 11150 5700
 Wire Bus Line
 	9450 2150 9450 4500
-Connection ~ 10750 7300
-Text GLabel 10850 7300 2    50   Input ~ 0
-TBI
+Connection ~ 2900 2850
+Wire Wire Line
+	2900 2850 2900 3050
+$Comp
+L power:VCC #PWR?
+U 1 1 5F03938E
+P 2900 2400
+F 0 "#PWR?" H 2900 2250 50  0001 C CNN
+F 1 "VCC" H 2917 2573 50  0000 C CNN
+F 2 "" H 2900 2400 50  0001 C CNN
+F 3 "" H 2900 2400 50  0001 C CNN
+	1    2900 2400
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
