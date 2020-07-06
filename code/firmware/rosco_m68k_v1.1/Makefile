@@ -31,6 +31,14 @@ ROMDEVICE?=AT28C64B
 
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o main1.o 
 
+ifneq ($(NOEASY),true)
+include easy68k/include.mk
+endif
+
+ifneq ($(NOVDP),true)
+include video9958/include.mk
+endif
+
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 

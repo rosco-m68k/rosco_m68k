@@ -424,6 +424,9 @@ RECVCHAR::
 ;
 ; D1 is expected to contain the function code. Other arguments
 ; depend on the specific function - See README for details.
+;
+; This TRAP depends on the SDB "undocumented" functions being
+; intact. TODO Make them not "undocumented" any more!
 TRAP_14_HANDLER:
     cmp.l   #0,D1                     ; FC == 0?
     beq.s   .PRINT                    ;   PRINT if so...
@@ -436,11 +439,17 @@ TRAP_14_HANDLER:
     rte                               ; That's all for now...
 
 .PRINT
-    bsr.w   EARLY_PRINT
+    move.l  A1,-(A7)
+    move.l  $414,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
     rte
 
 .PRINTLN
-    bsr.w   EARLY_PRINTLN
+    move.l  A1,-(A7)
+    move.l  $418,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
     rte
 
 .SENDCHAR

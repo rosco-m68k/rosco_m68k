@@ -26,18 +26,14 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_ZIP=$(BINARY).zip
 BINARY_ZIP_OBJ=$(BINARY_ZIP).o
 
+ifeq ($(MAME),true)
+DEFINES:=$(DEFINES) -DMAME_FIRMWARE
+endif
+
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o stage1.o syscalls.o main2.o
-
-ifneq ($(NOEASY),true)
-include easy68k/include.mk
-endif
-
-ifneq ($(NOVDP),true)
-include video9958/include.mk
-endif
 
 include kermit/include.mk
 

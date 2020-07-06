@@ -39,19 +39,16 @@ SYSCALL_HANDLER:
 
 .PRINT
     move.l  A1,-(A7)
-    move.l  PRINT_FUNC,A1
+    move.l  $414,A1
     jsr     (A1)
     move.l  (A7)+,A1
-
-    ;bsr.w   EARLY_PRINT
     rte
 
 .PRINTLN
     move.l  A1,-(A7)
-    move.l  PRINTLN_FUNC,A1
+    move.l  $418,A1
     jsr     (A1)
     move.l  (A7)+,A1
-    ; bsr.w   EARLY_PRINTLN
     rte
 
 .SENDCHAR
@@ -61,10 +58,3 @@ SYSCALL_HANDLER:
 .RECVCHAR
     bsr.w   RECVCHAR
     rte
-
-PRINT_FUNC::
-    dc.l    EARLY_PRINT
-
-PRINTLN_FUNC::
-    dc.l    EARLY_PRINTLN
-

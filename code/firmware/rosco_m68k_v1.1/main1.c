@@ -21,6 +21,14 @@
 #include "system.h"
 #include "serial.h"
 
+#ifdef VIDEO9958_CON
+#include "video9958.h"
+#endif
+
+#ifdef EASY68K_TRAP
+extern void INSTALL_EASY68K_TRAP_HANDLERS();
+#endif
+
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern void print_unsigned(unsigned int num, unsigned char base);
 
@@ -55,26 +63,38 @@ uint32_t get_zip_size() {
 /* Main stage 1 entry point */
 noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
-        EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
         HALT();
     }
 
     // Start the timer tick
-    EARLY_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
+    FW_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
     START_HEART();
 
+#ifdef EASY68K_TRAP
+    INSTALL_EASY68K_TRAP_HANDLERS();
+#endif
+
+#ifdef VIDEO9958_CON
+    if (HAVE_V9958()) {
+        V9958_CON_INIT();
+        V9958_CON_INSTALLHANDLERS();
+    }
+#endif
+
     if (!decompress_stage2((uint32_t)&_zip_start, get_zip_size())) {
-        EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
         
         while (true) {
-            HALT();
+            BUSYWAIT_C(10000);
+            //HALT();
         }
     }
 
     // Call into stage 2
     stage2();
 
-    EARLY_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
+    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
 
     while (true) {
         HALT();
@@ -123,4 +143,3 @@ uint32_t __udivsi3(uint32_t dividend, uint32_t divisor) {
 uint32_t __umodsi3(uint32_t dividend, uint32_t divisor) {
     return divmod(dividend, divisor, 1);
 }
-

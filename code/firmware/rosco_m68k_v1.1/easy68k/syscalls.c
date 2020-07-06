@@ -19,7 +19,7 @@
 #define BUF_LEN 82
 #define BUF_MAX BUF_LEN - 2
 
-extern void EARLY_PRINT_C(char *str);
+extern void FW_PRINT_C(char *str);
 
 static uint8_t buf[BUF_LEN];
 
@@ -47,7 +47,7 @@ static unsigned char* print_signed_impl(int32_t value, unsigned char *bp) {
 
 void print_signed(int32_t value) {
   unsigned char *ptr = print_signed_impl(value, &buf[BUF_MAX]);
-  EARLY_PRINT_C((char*)ptr);
+  FW_PRINT_C((char*)ptr);
 }
 
 void print_signed_width(int32_t value, uint8_t width) {
@@ -70,6 +70,32 @@ void print_signed_width(int32_t value, uint8_t width) {
     len++;
   }
 
-  EARLY_PRINT_C((char*)start);
+  FW_PRINT_C((char*)start);
 }
 
+uint8_t digit(unsigned char digit) {
+  if (digit < 10) {
+    return (char)(digit + '0');
+  } else {
+    return (char)(digit - 10 + 'A');
+  }
+}
+
+void print_unsigned(uint32_t num, uint8_t base) {
+  if (base < 2 || base > 36) {
+    return;
+  }
+
+  unsigned char bp = BUF_MAX;
+
+  if (num == 0) {
+    buf[bp--] = '0';
+  } else {
+    while (num > 0) {
+      buf[bp--] = digit(num % base);
+      num /= base;
+    }
+  }
+
+  FW_PRINT_C((char*)&buf[bp+1]);
+}

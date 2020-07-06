@@ -61,6 +61,9 @@ CURSORDELAY2      equ   CURSORDELAY*2
 DM_PAL            equ   2
 DM_NTSC           equ   0
 
+FW_PRINT_FUNC     equ   $414
+FW_PRINTLN_FUNC   equ   $418
+
 ; Constants for addressing video RAM
 VDP_REG2_PAGE0    equ   $3           ; Page 0 at 0x0
 VDP_REG2_PAGE1    equ   $B           ; Page 1 at 0x2000
@@ -110,22 +113,21 @@ HAVE_V9958::
     rts
 
 
-
 ; Initialize the console
 V9958_CON_INIT::
     movem.l D0-D1/A0,-(A7)
 
     ori.w   #$0200,SR                     ; No interrupts during init...
 
-    ; Disable *all* MFP interrupts from here on out, they cannot
-    ; work with other interrupts due to an IACK bug. We won't need
-    ; them any more anyway...
-    ;
-    ; Also light up I0 in a nice reassuring fashion...
-;    move.b  #0,MFP_IERA
-;    move.b  #0,MFP_IERB
-;    move.b  #$FF,MFP_GPDR
-;    move.b  #$FE,MFP_GPDR
+    ; Clear console data area (Comment this out if not in ROM)
+.CLEARDATA:
+    move.l  #CURPOS,A0
+    move.w  #$1E2,D1
+    bra.s   .CLEARSTART
+.CLEARLOOP
+    move.l  #0,(A0)+
+.CLEARSTART
+    dbra.w	D1,.CLEARLOOP
 
     move.l  #VBLANK_HANDLER,IRQ2_HANDLER  ; Install ISR
 
@@ -275,8 +277,8 @@ V9958_CON_PRINTLN:
     rts
 
 V9958_CON_INSTALLHANDLERS::
-    move.l  #V9958_CON_PRINT,PRINT_FUNC
-    move.l  #V9958_CON_PRINTLN,PRINTLN_FUNC
+    move.l  #V9958_CON_PRINT,FW_PRINT_FUNC
+    move.l  #V9958_CON_PRINTLN,FW_PRINTLN_FUNC
     rts
 
 ; Show the cursor
@@ -628,16 +630,27 @@ VBLANK_HANDLER::
     nop
     nop
     
-    movem.l  (A7)+,D0-D2/A0
+    movem.l (A7)+,D0-D2/A0
     rte
 
-CURPOS        dc.w      0
-DISPLAYSTART  dc.w      0
-BUFFER        dcb.b     1920,0
-CURSORCOUNT   dc.w      0
-CURRENTPAGE   dc.b      0
-SHOWCURSOR    dc.b      0
+; TODO this should be in .bss but for some reason that screws up Kermits
+; .bss load address and bloats the binary, figure out why...
+;CURPOS        dc.w      0
+;DISPLAYSTART  dc.w      0
+;BUFFER        dcb.b     1920,0
+;CURSORCOUNT   dc.w      0
+;CURRENTPAGE   dc.b      0
+;SHOWCURSOR    dc.b      0
 
+; ROM code has its own data block at 0x500 - 0xC8A (0x78A bytes, 0x1E2 longs)!
+CURPOS        equ       $500
+DISPLAYSTART  equ       $502
+CURSORCOUNT   equ       $504
+CURRENTPAGE   equ       $506
+SHOWCURSOR    equ       $508
+BUFFER        equ       $50A
+
+; TODO this should be in .rodata, but same issue as above.
 SZID          dc.b    "Video board identified: V9958", 10, 13, 0
 SZNOID        dc.b    "No video output found", 10, 13, 0
 ;                      123456789^123456789^123456789^123456789^123456789^123456789^123456789^123456789^
@@ -645,7 +658,7 @@ SZHEADER      dc.b    "                                ___ ___ _                
               dc.b    " ___ ___ ___ __ ___       _____|  _| . | |_                                     "
               dc.b    "|  _| . |_ -| _| . |     |     | . | . | '_|                                    "
               dc.b    "|_| |___|___|__|___|_____|_|_|_|___|___|_,_|                                    "
-              dc.b    "                   |_____|      Firmware 1.1                                    "
+              dc.b    "                   |_____|Firmware 1.1ALPHA1                                    "
               dc.b    "                                                                                "
               dc.b    13, 0
 SZ_CR         dc.b    $D, 0

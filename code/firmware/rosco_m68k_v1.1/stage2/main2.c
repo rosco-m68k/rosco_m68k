@@ -22,19 +22,11 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
-#ifdef VIDEO9958_CON
-#include "video9958.h"
-#endif
-
 extern void mcPrint(char *str);
 extern void mcBusywait(uint32_t nops);
 extern void mcHalt();
-//extern void ENABLE_RECV();
-extern void INIT_SYSCALLS();
-
-#ifdef EASY68K_TRAP
-extern void INSTALL_EASY68K_TRAP_HANDLERS();
-#endif
+extern void ENABLE_RECV();
+//extern void INIT_SYSCALLS();
 
 /*
  * This is what a Kernel entry point should look like.
@@ -60,30 +52,21 @@ void linit() {
 
 noreturn void lmain() {
     // Take over from stage one's syscalls...
-    INIT_SYSCALLS();
+    //INIT_SYSCALLS();
 
     // Always do this for backwards compatibility
     ENABLE_RECV();
 
-#ifdef EASY68K_TRAP
-//    INSTALL_EASY68K_TRAP_HANDLERS();
-#endif
-
-#ifdef VIDEO9958_CON
-    if (HAVE_V9958()) {
-        V9958_CON_INIT();
-        V9958_CON_INSTALLHANDLERS();
-    }
-#endif
-
     mcPrint("Ready for Kermit receive...\r\n");
 
+#ifndef MAME_FIRMWARE
     while (!receive_kernel()) {
         mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
     }
 
     // Wait a short while for the user's terminal to come back...
     mcBusywait(100000);
+#endif
 
     mcPrint("Kernel received okay; Starting...\r\n");
 

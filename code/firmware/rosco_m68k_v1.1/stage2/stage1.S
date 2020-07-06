@@ -26,9 +26,7 @@ EARLY_PRINT_C::
     rts                               ; We're done.
 
 ; PRINT null-terminated string pointed to by A0
-;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Uses PRINT function pointed to by address $414
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
@@ -40,9 +38,7 @@ EARLY_PRINT::
     rts
     
 ; PRINT null-terminated string pointed to by A0 followed by CRLF.
-;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Uses PRINTLN function pointed to by address $418
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)

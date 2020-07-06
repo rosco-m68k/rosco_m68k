@@ -26,6 +26,50 @@ PROMPT_ON           equ     $411
 LF_DISPLAY          equ     $412
 RESERVED            equ     $413
 
+; Wraps FW_PRINT so it can be called from C-land
+;
+; Trashes: D0, MFP_UDR
+; Modifies: A0 (Will point to address after null terminator)
+;
+; It's cheaper size-wise to just duplicate this here...
+FW_PRINT_C::
+    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
+    bra.s   FW_PRINT                  ; Call EARLY_PRINT
+
+; Wraps FW_PRINTLN so it can be called from C-land
+;
+; Trashes: D0, MFP_UDR
+; Modifies: A0 (Will point to address after null terminator)
+;
+; It's cheaper size-wise to just duplicate this here...
+FW_PRINTLN_C::
+    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
+    bra.s   FW_PRINTLN                ; Call EARLY_PRINT
+
+; Firmware PRINT null-terminated string pointed to by A0
+; Uses PRINT function pointed to by address $414
+;
+; Trashes: D0, MFP_UDR
+; Modifies: A0 (Will point to address after null terminator)
+FW_PRINT::
+    move.l  A1,-(A7)
+    move.l  $414,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+    
+; PRINT null-terminated string pointed to by A0 followed by CRLF.
+; Uses PRINTLN function pointed to by address $418
+;
+; Trashes: D0, MFP_UDR
+; Modifies: A0 (Will point to address after null terminator)
+FW_PRINTLN::
+    move.l  A1,-(A7)
+    move.l  $418,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+
 ; TRAP 15 provides access to Easy68K-compatible tasks
 ;
 ; D0 is expected to contain the task number (function code). Other arguments

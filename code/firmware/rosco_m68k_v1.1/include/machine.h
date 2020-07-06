@@ -124,6 +124,16 @@ void SET_INTR(uint8_t priority);
 void EARLY_PRINT_C(char *str);
 
 /*
+ * Firmware PRINT function (uses pointer at $414)
+ */
+void FW_PRINT_C(char *str);
+
+/*
+ * Firmware PRINTLN function (uses pointer at $418)
+ */
+void FW_PRINTLN_C(char *str);
+
+/*
  * Busywait for a while. The actual time is wholly dependent
  * on CPU (i.e. clock) speed!
  */
