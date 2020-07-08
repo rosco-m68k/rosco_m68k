@@ -26,7 +26,6 @@ extern void mcPrint(char *str);
 extern void mcBusywait(uint32_t nops);
 extern void mcHalt();
 extern void ENABLE_RECV();
-//extern void INIT_SYSCALLS();
 
 /*
  * This is what a Kernel entry point should look like.
@@ -51,9 +50,6 @@ void linit() {
 }
 
 noreturn void lmain() {
-    // Take over from stage one's syscalls...
-    //INIT_SYSCALLS();
-
     // Always do this for backwards compatibility
     ENABLE_RECV();
 

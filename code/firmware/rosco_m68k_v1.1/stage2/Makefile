@@ -33,7 +33,7 @@ endif
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS=init2.o common.o serial.o machine.o stage1.o syscalls.o main2.o
+OBJECTS=init2.o common.o serial.o machine.o stage1.o main2.o
 
 include kermit/include.mk
 
