@@ -40,12 +40,9 @@ FOREGROUND2       equ   %00000100         ; FG: 0 0  0  0  0 G2 G1 G0
 ; Addresses and other constants, don't change unless you know what
 ; you're doing...
 PORT_RWDATA       equ   $F80000
-PORT_WREG_SETUP   equ   $F80002
-PORT_WPALETTE     equ   $F80004
-PORT_WREG_DATA    equ   $F80006
-MFP_GPDR          equ   $f80001
-MFP_IERA          equ   $f80007
-MFP_IERB          equ   $f80009
+PORT_WREG_SETUP   equ   $2
+PORT_WPALETTE     equ   $4
+PORT_WREG_DATA    equ   $6
 IRQ2_HANDLER      equ   $68
 BSET              equ   $08f9
 BCLR              equ   $08b9
@@ -85,11 +82,13 @@ VRAM_MID_PAGE1_W  equ   $60          ; VRAM A8-A13 for page 1 (Write)
 ;   D0.B    Return (1 - installed, 0 - not installed)
 ;
 HAVE_V9958::
-    movem.l D1/A1,-(A7)
-    move.b  #1,PORT_WREG_SETUP        ; Write 1 (SR#1)...
-    move.b  #$8F,PORT_WREG_SETUP      ; ... to register 15 (with high bit set)
+    movem.l D1/A0-A1,-(A7)
+    move.l  #PORT_RWDATA,A0           ; Use A0 as port base register
+
+    move.b  #1,(PORT_WREG_SETUP,A0)   ; Write 1 (SR#1)...
+    move.b  #$8F,(PORT_WREG_SETUP,A0) ; ... to register 15 (with high bit set)
     eor.l   D1,D1                     ; Zero D1
-    move.b  PORT_WREG_SETUP,D1        ; And read status into it
+    move.b  (PORT_WREG_SETUP,A0),D1   ; And read status into it
     and.b   #$3E,D1                   ; We only want ID number
     ror.b   #1,D1                     ; Shift right by 1 (for correct display)
 
@@ -109,73 +108,74 @@ HAVE_V9958::
     trap    #15
 
     move.b  D1,D0                     ; Result in D0.B
-    movem.l (A7)+,D1/A1
+    movem.l (A7)+,D1/A0-A1
     rts
 
 
 ; Initialize the console
 V9958_CON_INIT::
-    movem.l D0-D1/A0,-(A7)
+    movem.l D0-D1/A0-A1,-(A7)
+    move.l  #PORT_RWDATA,A0                   ; Use A0 as port base register
 
-    ori.w   #$0200,SR                     ; No interrupts during init...
+    ori.w   #$0200,SR                         ; No interrupts during init...
 
     ; Clear console data area (Comment this out if not in ROM)
 .CLEARDATA:
-    move.l  #CURPOS,A0
+    move.l  #CURPOS,A1
     move.w  #$1E2,D1
     bra.s   .CLEARSTART
 .CLEARLOOP
-    move.l  #0,(A0)+
+    move.l  #0,(A1)+
 .CLEARSTART
     dbra.w	D1,.CLEARLOOP
 
-    move.l  #VBLANK_HANDLER,IRQ2_HANDLER  ; Install ISR
+    move.l  #VBLANK_HANDLER,IRQ2_HANDLER      ; Install ISR
 
     ; Setup Palette
-    move.b  #%00000000,PORT_WREG_SETUP    ; Start at palette register 0
-    move.b  #$90,PORT_WREG_SETUP          ; .. in VDP register 16
-    move.b  #BACKGROUND1,PORT_WPALETTE    ; 0 R2 R1 R0 0 B2 B1 B0 
-    move.b  #BACKGROUND2,PORT_WPALETTE    ; 0 0  0  0  0 G2 G1 G0
-    move.b  #FOREGROUND1,PORT_WPALETTE    ; 0 R2 R1 R0 0 B2 B1 B0 
-    move.b  #FOREGROUND2,PORT_WPALETTE    ; 0 0  0  0  0 G2 G1 G0
+    move.b  #%00000000,(PORT_WREG_SETUP,A0)   ; Start at palette register 0
+    move.b  #$90,(PORT_WREG_SETUP,A0)         ; .. in VDP register 16
+    move.b  #BACKGROUND1,(PORT_WPALETTE,A0)   ; 0 R2 R1 R0 0 B2 B1 B0 
+    move.b  #BACKGROUND2,(PORT_WPALETTE,A0)   ; 0 0  0  0  0 G2 G1 G0
+    move.b  #FOREGROUND1,(PORT_WPALETTE,A0)   ; 0 R2 R1 R0 0 B2 B1 B0 
+    move.b  #FOREGROUND2,(PORT_WPALETTE,A0)   ; 0 0  0  0  0 G2 G1 G0
     
-    move.b  #%00010000,PORT_WREG_SETUP    ; Select FG1, BG 0
-    move.b  #$87,PORT_WREG_SETUP          ; .. In VDP register 7
+    move.b  #%00010000,(PORT_WREG_SETUP,A0)   ; Select FG1, BG 0
+    move.b  #$87,(PORT_WREG_SETUP,A0)         ; .. In VDP register 7
 
-    move.b  #%00001010,PORT_WREG_SETUP    ; Select 64K DRAM, disable sprites
-    move.b  #$88,PORT_WREG_SETUP          ; .. In VDP register 8
+    move.b  #%00001010,(PORT_WREG_SETUP,A0)   ; Select 64K DRAM, disable sprites
+    move.b  #$88,(PORT_WREG_SETUP,A0)         ; .. In VDP register 8
     
     ; Set pattern generator table to 0x1000
-    move.b  #2,PORT_WREG_SETUP            ; bits 16-11 of 0x1000
-    move.b  #$84,PORT_WREG_SETUP          ; .. to register 4
+    move.b  #2,(PORT_WREG_SETUP,A0)           ; bits 16-11 of 0x1000
+    move.b  #$84,(PORT_WREG_SETUP,A0)         ; .. to register 4
 
     ; Set pattern layout table to page 0
-    move.b  #VDP_REG2_PAGE0,PORT_WREG_SETUP
-    move.b  #$82,PORT_WREG_SETUP          ; .. to register 2
+    move.b  #VDP_REG2_PAGE0,(PORT_WREG_SETUP,A0)
+    move.b  #$82,(PORT_WREG_SETUP,A0)         ; .. to register 2
 
     ; Set PAL/NTSC mode (TODO should be runtime configurable...)
-    move.b  #DISPMODE,PORT_WREG_SETUP     ; Write PAL/NTSC mode
-    move.b  #$89,PORT_WREG_SETUP          ; .. to register 9
+    move.b  #DISPMODE,(PORT_WREG_SETUP,A0)    ; Write PAL/NTSC mode
+    move.b  #$89,(PORT_WREG_SETUP,A0)         ; .. to register 9
     
     ; Set up to write VRAM at 0x1000
     ; 0x1000 equates to 00001000000000000, which is split across the writes as:
     ; Write 1: bits 16-14 = (00000)000  = 0
     ; Write 2: bits 7-0   = 00000000    = 0
     ; Write 3: bits 13-8  = (01)010000  = $50 ($40 is write-enable)
-    move.b  #0,PORT_WREG_SETUP            ; VRAM Base at 0
-    move.b  #$8E,PORT_WREG_SETUP          ; > register 14
-    move.b  #0,PORT_WREG_SETUP            ; Set VRAM A0-A7
-    move.b  #$50,PORT_WREG_SETUP          ; Set VRAM A8-A13, and write enable
+    move.b  #0,(PORT_WREG_SETUP,A0)           ; VRAM Base at 0
+    move.b  #$8E,(PORT_WREG_SETUP,A0)         ; > register 14
+    move.b  #0,(PORT_WREG_SETUP,A0)           ; Set VRAM A0-A7
+    move.b  #$50,(PORT_WREG_SETUP,A0)         ; Set VRAM A8-A13, and write enable
 
     ; Load font to pattern table 
-    lea     __FONT_BEGIN,A0
+    lea     __FONT_BEGIN,A1
     move.l  #__FONT_END,D0
-    sub.l   A0,D0
+    sub.l   A1,D0
     bra.s   .PATTERN_FILL
 
 .PATTERN_FILL_LOOP
-    move.b  (A0)+,PORT_RWDATA             ; Copy data
-    nop                                   ; Small slow-down needed here..
+    move.b  (A1)+,(A0)                        ; Copy data
+    nop                                       ; Small slow-down needed here..
     nop
     nop
     nop
@@ -185,42 +185,41 @@ V9958_CON_INIT::
    
     ; Clear the main memory buffer and copy to the VRAM 
     bsr.s   CLEARBUFFER
-    lea     BUFFER,A0
+    lea     BUFFER,A1
     clr.b   D0
     bsr.w   BUFFERFLIP
 
     ; Set text mode 1, enable interrupts and turn display on
-    move.b  #%00000100,PORT_WREG_SETUP    ; Write DG=0,IE2=0,IE1=0,M5=0,M4=0,M3=0
-    move.b  #$80,PORT_WREG_SETUP          ; To register 0
+    move.b  #%00000100,(PORT_WREG_SETUP,A0)   ; Write DG=0,IE2=0,IE1=0,M5=0,M4=0,M3=0
+    move.b  #$80,(PORT_WREG_SETUP,A0)         ; To register 0
 
-    move.b  #%01110000,PORT_WREG_SETUP    ; Write BL=1,IE0=1,M1=1,M2=0,SI=0,MAG=0
-    move.b  #$81,PORT_WREG_SETUP          ; To register 1
+    move.b  #%01110000,(PORT_WREG_SETUP,A0)   ; Write BL=1,IE0=1,M1=1,M2=0,SI=0,MAG=0
+    move.b  #$81,(PORT_WREG_SETUP,A0)         ; To register 1
 
-    andi.w   #~$0200,SR                   ; Enable interrupts...
+    andi.w   #~$0200,SR                       ; Enable interrupts...
 
-    move.l  #SZHEADER,A0
+    move.l  #SZHEADER,A1
 .PRINTLOOP
-    move.b  (A0)+,D0
-    tst.b   D0
+    move.b  (A1)+,D0
     beq.s   .PRINTDONE
      
     bsr.w   V9958_CON_PUTCHAR
     bra.s   .PRINTLOOP
 .PRINTDONE
 
-    movem.l (A7)+,D0-D1/A0
+    movem.l (A7)+,D0-D1/A0-A1
     rts
 
 
 ; Clear buffer (private)
 ;
-; Modifies: D1, A0
+; Modifies: D1, A1
 CLEARBUFFER:
     move.w  #DWDISPLAYSIZE,D1             ; Display size in longwords
-    move.l  #BUFFER,A0
+    move.l  #BUFFER,A1
     bra.s   .ZEROBUF_START
 .ZEROBUF_LOOP:
-    move.l  #0,(A0)+                      ; Clear 4 characters
+    move.l  #0,(A1)+                      ; Clear 4 characters
 .ZEROBUF_START:
     dbra.w  D1,.ZEROBUF_LOOP
     rts
@@ -256,7 +255,6 @@ V9958_CON_PRINT:
 
 .PRINTLOOP
     move.b  (A0)+,D0
-    tst.b   D0
     beq.s   .PRINTDONE
      
     bsr.w   V9958_CON_PUTCHAR
@@ -313,33 +311,31 @@ V9958_CON_HIDECURSOR::
 ;
 ; Arguments:
 ;   D0.B  Page to flip to (0 for 0, nonzero for 1)
-;   A0    Main memory buffer
+;   A0    VDP Port Base  
+;   A1    Main memory buffer
 ;
 ; Trashes:
-;   D1
+;   Nothing
+;
 BUFFERFLIP:
     move.l  D1,-(A7)
+    ori.w   #$0200,SR                         ; Cannot be interrupted for a bit...
 
-    ori.w   #$0200,SR                     ; Cannot be interrupted for a bit...
+    ; Set up to write VRAM at 0x0
+    move.b  #VRAM_HIGH,(PORT_WREG_SETUP,A0)   ; VRAM Base at 0
+    move.b  #$8E,(PORT_WREG_SETUP,A0)         ; > register 14
+    move.b  #VRAM_LOW,(PORT_WREG_SETUP,A0)    ; Set VRAM A0-A7
 
     ; Set CURRENTPAGE to the destination page
     move.b  D0,CURRENTPAGE
-
-    ; Now copy the screen...
-    ; Set up to write VRAM at 0x0
-    move.b  #VRAM_HIGH,PORT_WREG_SETUP    ; VRAM Base at 0
-    move.b  #$8E,PORT_WREG_SETUP          ; > register 14
-    move.b  #VRAM_LOW,PORT_WREG_SETUP     ; Set VRAM A0-A7
-
-    tst.b   D0
     beq.s   .PAGEZERO
 
     ; Page 1
-    move.b  #VRAM_MID_PAGE1_W,PORT_WREG_SETUP
+    move.b  #VRAM_MID_PAGE1_W,(PORT_WREG_SETUP,A0)
     bra.s   .GOGOGO
 
 .PAGEZERO:
-    move.b  #VRAM_MID_PAGE0_W,PORT_WREG_SETUP
+    move.b  #VRAM_MID_PAGE0_W,(PORT_WREG_SETUP,A0)
     
 .GOGOGO    
     move.w  DISPLAYSTART,D0
@@ -347,19 +343,23 @@ BUFFERFLIP:
 
     bra.s   .COPY
 .COPYLOOP
-    move.b  (A0,D0),PORT_RWDATA           ; Must slow down here.
+    move.b  (A1,D0),(A0)                      ; Must slow down here.
+    nop
+    nop
+    nop
+    nop
     nop
     addq.w  #1,D0
     cmpi.w  #DISPLAYSIZE,D0
     bne.s   .COPY
 
-    move.w  #0,D0
+    moveq.l #0,D0
   
 .COPY
     dbra.w  D1,.COPYLOOP  
 
-    andi.w  #~$0200,SR                    ; Go for interrupts again...
-    move.l  (A7)+,D1                      ; ... and we're done.  
+    andi.w  #~$0200,SR                        ; Go for interrupts again...
+    move.l  (A7)+,D1                          ; ... and we're done.  
     rts
 
 
@@ -371,6 +371,7 @@ BUFFERFLIP:
 ; Interrupts should be disabled while this happens!
 ;
 ; Arguments:
+;   A0      VDP Port base address
 ;   D1.W    Buffer position (CURPOS)
 ;   D2.W    Display start position (DISPLAYSTART)
 ;
@@ -393,9 +394,9 @@ SETUP_VRAM_WRITE:
     ; LOW is D3.B
     ; MID is ((D3.W & 0x3F00) >> 8) | 0x40 for page zero
     ; MID is ((D3.W & 0x3F00) >> 8) | 0x60 for page one
-    move.b  #0,PORT_WREG_SETUP            ; High is zero
-    move.b  #$8E,PORT_WREG_SETUP          ; > register 14
-    move.b  D3,PORT_WREG_SETUP            ; Low is D2.B
+    move.b  #0,(PORT_WREG_SETUP,A0)       ; High is zero
+    move.b  #$8E,(PORT_WREG_SETUP,A0)     ; > register 14
+    move.b  D3,(PORT_WREG_SETUP,A0)       ; Low is D2.B
 
     ; Calculate middle bits
     andi.w  #$3F00,D3                     ; Mask bits...
@@ -412,7 +413,7 @@ SETUP_VRAM_WRITE:
     ori.b   #$40,D3                       ; Just set write bit
    
 .DOIT 
-    move.b  D3,PORT_WREG_SETUP            ; Set VRAM A8-A13...
+    move.b  D3,(PORT_WREG_SETUP,A0)       ; Set VRAM A8-A13...
     move.w  (A7)+,D3
     rts
 
@@ -426,7 +427,7 @@ SETUP_VRAM_WRITE:
 ;   D0.B  Possibly trashed
 ;
 ; Register alloc in function:
-;   A0.L  Buffer
+;   A1    Buffer
 ;   D1.W  CURPOS (buffer pointer)
 ;   D2.W  DISPLAYSTART (start pointer)
 ; 
@@ -438,12 +439,10 @@ V9958_CON_PUTCHAR::
     rts
 
 .NOTIGNORED
-    move.l  A0,-(A7)
-    move.w  D1,-(A7)
-    move.w  D2,-(A7)
- 
+    movem.l D1-D2/A0-A1,-(A7)
+    
+    move.l  #PORT_RWDATA,A0               ; Use A0 as port base register
     move.w  CURPOS,D1                     ; Load current pointer
-   
  
     ; Is this a carriage-return?
     cmp.b   #13,D0
@@ -471,7 +470,7 @@ V9958_CON_PUTCHAR::
     bne.s   .NOTBS
 
     ; Yes - handle backspace
-    lea.l   BUFFER,A0                     ; Get buffer
+    lea.l   BUFFER,A1                     ; Get buffer
     move.w  DISPLAYSTART,D2               ; Load start of display pointer
     cmp.w   D1,D2                         ; Are we at display start?
     beq.w   .DONE                         ; Yes - Ignore BS
@@ -480,24 +479,24 @@ V9958_CON_PUTCHAR::
     subq.w  #1,D1                         ; Back a space
 
     bsr.w   SETUP_VRAM_WRITE              ; Clear from VRAM
-    move.b  #0,PORT_RWDATA                ; Overwrite character
+    move.b  #0,(A0)                       ; Overwrite character
     nop                                   ;   but not too fast!
     nop  
     nop  
     nop  
-    move.b  #0,PORT_RWDATA                ; Overwrite possible cursors
+    move.b  #0,(A0)                       ; Overwrite possible cursors
     nop  
     nop  
     nop  
     nop  
-    move.b  #0,PORT_RWDATA                ; This can go one byte out-of-bounds in
+    move.b  #0,(A0)                       ; This can go one byte out-of-bounds in
     nop                                   ; VRAM, but the display doesn't extend
     nop                                   ; for the whole page anyway...
     nop  
     nop  
 
     andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
-    move.b  #0,(A0,D1)                    ; Clear from buffer
+    move.b  #0,(A1,D1)                    ; Clear from buffer
     move.w  D1,CURPOS                     ; Store new position
 
     andi.w  #~$0200,SR
@@ -505,15 +504,15 @@ V9958_CON_PUTCHAR::
 
 .NOTBS
     ; No - Just print
-    lea.l   BUFFER,A0                     ; Get buffer
+    lea.l   BUFFER,A1                     ; Get buffer
     move.w  DISPLAYSTART,D2               ; And current DISPLAYSTART
     
-    move.b  D0,(A0,D1)                    ; Buffer this character
+    move.b  D0,(A1,D1)                    ; Buffer this character
 
 .WRITEVRAM
     ori.w   #$0200,SR                     ; No interrupts for a sec...
     bsr.w   SETUP_VRAM_WRITE              ; Setup to write to correct position for D2
-    move.b  D0,PORT_RWDATA                ; And write,
+    move.b  D0,(A0)                       ; And write,
     nop                                   ;   but not too fast!
     nop  
     andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
@@ -542,24 +541,22 @@ V9958_CON_PUTCHAR::
     move.w  D2,DISPLAYSTART               ; Save new start so we can reuse D2
 
     ; Clear the line...
-    adda.l  D1,A0                         ; Point to start of line
+    adda.l  D1,A1                         ; Point to start of line
     move.w  #DWLINELENGTH,D2              ; Counter is line length
     bra.s   .CLEARLINE
 .CLEARLINE_LOOP
-    move.l  #0,(A0)+                      ; Clear four characters
+    move.l  #0,(A1)+                      ; Clear four characters
 .CLEARLINE
     dbra.w  D2,.CLEARLINE_LOOP
 
     ; Now we've scrolled, we need to copy the whole buffer and flip
-    lea.l   BUFFER,A0
+    lea.l   BUFFER,A1
     move.b  CURRENTPAGE,D0
     not.b   D0
     bsr.w   BUFFERFLIP
 
 .DONE
-    move.w  (A7)+,D2
-    move.w  (A7)+,D1
-    move.l  (A7)+,A0
+    movem.l (A7)+,D1-D2/A0-A1
     rts
 
 
@@ -571,9 +568,9 @@ V9958_CON_PUTCHAR::
 ;
 VBLANK_HANDLER::
     movem.l  D0-D2/A0,-(A7)
+    move.l  #PORT_RWDATA,A0               ; Use A0 as port base register
 
     move.b  SHOWCURSOR,D0                 ; Skip cursor if not displayed
-    tst.b   D0
     beq.s   .SETPAGE
 
     ; Sort out the cursor first...
@@ -585,7 +582,7 @@ VBLANK_HANDLER::
     move.w  CURPOS,D1                     ; Time to show the low cursor!
     move.w  DISPLAYSTART,D2
     bsr.w   SETUP_VRAM_WRITE
-    move.b  #CURSORLOW,PORT_RWDATA
+    move.b  #CURSORLOW,(A0)
     nop
 
     bra.s   .CURSORDONE 
@@ -597,7 +594,7 @@ VBLANK_HANDLER::
     move.w  CURPOS,D1                     ; Time to show the high cursor!
     move.w  DISPLAYSTART,D2
     bsr.w   SETUP_VRAM_WRITE
-    move.b  #CURSORHIGH,PORT_RWDATA
+    move.b  #CURSORHIGH,(A0)
     nop
 
     move.b  #0,D0
@@ -611,21 +608,21 @@ VBLANK_HANDLER::
     beq.s   .PAGEZERO
 
     ; Is page one
-    move.b  #VDP_REG2_PAGE1,PORT_WREG_SETUP
-    move.b  #$82,PORT_WREG_SETUP          ; .. to register 2
+    move.b  #VDP_REG2_PAGE1,(PORT_WREG_SETUP,A0)
+    move.b  #$82,(PORT_WREG_SETUP,A0)     ; .. to register 2
 
     bra.s   .DONE
 
 .PAGEZERO
     ; Is page zero
-    move.b  #VDP_REG2_PAGE0,PORT_WREG_SETUP
-    move.b  #$82,PORT_WREG_SETUP          ; .. to register 2
+    move.b  #VDP_REG2_PAGE0,(PORT_WREG_SETUP,A0)
+    move.b  #$82,(PORT_WREG_SETUP,A0)     ; .. to register 2
   
 .DONE 
     ; Ack interrupt
-    move.b  #0,PORT_WREG_SETUP            ; Write 0 (SR#0)...
-    move.b  #143,PORT_WREG_SETUP          ; ... to register 15 (with high bit set)
-    move.b  PORT_WREG_SETUP,D0            ; And read status into it (clear interrupt flag)
+    move.b  #0,(PORT_WREG_SETUP,A0)       ; Write 0 (SR#0)...
+    move.b  #143,(PORT_WREG_SETUP,A0)     ; ... to register 15 (with high bit set)
+    move.b  (PORT_WREG_SETUP,A0),D0       ; And read status into it (clear interrupt flag)
     nop
     nop
     nop
