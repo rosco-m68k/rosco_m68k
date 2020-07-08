@@ -203,7 +203,6 @@ INITMFP:
     move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
-    move.b  #$01,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
     ; USART setup
     move.b  #$88,MFP_UCR              ; /16 clock, async, 8N1
