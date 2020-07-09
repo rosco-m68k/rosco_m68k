@@ -678,21 +678,92 @@ Display signed number in D1.L in decimal in field D2.B columns wide.
 
 #2. System Data Area memory map
 
-This section is under construction.
+As standard, the first 4KB of RAM is reserved for system use. This section
+details the layout of this memory area.
+
+It is worth noting that if memory is in high demand and the program
+being run intends to take full control of the system (i.e. not make
+use of any of the firmware TRAP routines or default exception
+handlers) then some of this are may be reused. As this is advanced
+usage, it is assumed that you know what you need to keep in 
+order for the basic machine to function.
+
+All addresses listed in this section are physical addresses. If you
+are programming for a system that has an MMU, you may need
+to take virtual addressing into account and translate accordingly.
 
 ## 2.1. Exception vectors
 
-TODO ($0 - $3FF)
+**Start Address**: 0x0
+**End Address**: 0x3FF
+**Size**: 0x400 (1024 bytes, 1KB)
+
+This area contains the exception vectors for use by the CPU. 
+See the MC68010 manual for the layout of this area.
+
+In order to use custom exception handlers, you will want to
+replace the appropriate vector with the address of your 
+handler function. Writing exception handlers is beyond the
+scope of this document.
+
+It should be noted that this can be moved if a 68010 or higher
+is in use. To achieve this, place the starting address of the
+exception table in the VBR (Vector Base Register).
 
 ## 2.2. Basic System Data Block (SDB)
 
-TODO ($400 - $41F)
+**Start Address**: 0x400
+**End Address**: 0x41F
+**Size**: 0x20 (32 bytes, 8 longwords)
+
+This area contains the basic system data block, which is reserved
+by the system for variable storage and data used by the standard
+exception handlers and TRAP routines.
+
+TODO Document specific layout! For now, see `bootstrap.S` and 
+the Easy68k `syscalls_asm.S`.
 
 ## 2.3. Extension Function Pointer Table (EFPT)
 
-TODO ($420 - ???)
+**Start Address**: 0x420
+**End Address**: 0x4FF
+**Size**: 0xE0 (224 bytes, 56 pointers)
+
+This area contains pointers to functions which are called by the
+firmware and TRAP handlers to achieve various things. 
+
+The purpose of this pointer table is to allow these functions
+to be replaced by driver software. For example, the V9958 driver
+replaces some of these functions in order to redirect output 
+to the video console.
+
+Driver writers can replace functions here in order to hook into
+the firmware. The general rules are:
+
+* The pointers can point anywhere, but the function that is pointed to **must** remain at that address!
+* On entry to the function, the CPU will be in supervisor mode
+* On entry to the function, the SP will reference the supervisor stack
+
+TODO Further documentation of the functions contained here is needed!
+
+Not all of these functions will be used by the firmware - some are 
+designated as for program use (for example, a kernel may use them
+to provide its own hooks).
+
+User code **must not** call these functions directly - they 
+must be accessed through the public TRAP functions!
+
 
 ## 2.4. Video IO Data Area (VDA)
 
-TODO ($500 - $FFF, 2816 bytes reserved)
+**Start Address**: 0x500
+**End Address**: 0xFFF
+**Size**: 0xB00 (2816 bytes)
 
+This area is reserved for use by video subsystems. The specific layout
+is dependent on the video subsystem in use.
+
+For example, this area may contain a framebuffer along with
+variables and data required by a video driver.
+
+TODO document layout when video is V9958!
