@@ -18,6 +18,14 @@
 
     section .text
     
+; Version (embedded into firmware at 0xFC0400)
+; MSW is flags, LSW is split into major (MSB) and minor (LSB)
+;
+; Flags:
+; bit 0 - 14: Reserved
+; bit 15    : Snapshot version
+RELEASE_VER equ     $80000101
+
     org     ROMBASE
 RESET:
     dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
