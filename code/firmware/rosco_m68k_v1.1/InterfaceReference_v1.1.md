@@ -40,8 +40,8 @@ as possible, and will be kept updated as firmware 1.1 is developed.
       * 1.2.2.15 PRINT_UNSIGNED (Function #15)
       * 1.2.2.16 SETDISPLAY (Function #16)
       * 1.2.2.17 PRINTSZ_NUM (Function #17)
-      * 1.2.2.18 PRINTSZ_NUM (Function #18)
-      * 1.2.2.19 PRINTSZ_NUM (Function #20)
+      * 1.2.2.18 PRINTSZ_READ_NUM (Function #18)
+      * 1.2.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
 * 2. System Data Area memory map
   * 2.1. Exception vectors
   * 2.2. Basic System Data Block (SDB)
@@ -691,7 +691,7 @@ Combination of functions 14 & 3.
 * Display the NULL terminated string at (A1) without CR, LF then
 * Display the number in D1.L, in base 10
 
-#### 1.2.2.18 PRINTSZ_NUM (Function #18)
+#### 1.2.2.18 PRINTSZ_READ_NUM (Function #18)
 
 **Arguments**
 
@@ -712,7 +712,7 @@ Combination of functions 14 & 4.
 * Display the NULL terminated string at (A1) without CR, LF then
 * Read a number from the keyboard into D1.L.
 
-#### 1.2.2.19 PRINTSZ_NUM (Function #20)
+#### 1.2.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
 
 **Arguments**
 
