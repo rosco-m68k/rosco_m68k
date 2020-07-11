@@ -85,13 +85,8 @@ nobrk		EQU	0				* null response to INPUT causes a break
 
 VEC_OUT:
     move.l  D1,-(A7)              ; Save D1
-.BEGIN
-    bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
-    move.b  MFP_TSR,D1            ; Get TSR
-    btst    #7,D1                 ; Is buffer empty bit set?
-    beq.s   .BEGIN                ; No - loop until it is
-
-    move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  #4,D1                 ; Trap function code 4... 
+    trap    #14                   ; .. and go
     move.l  (A7)+,D1              ; Restore D1
     rts
 
@@ -108,16 +103,16 @@ VEC_IN:
     btst    #6,D0                 ; Else, do we have an overrun error?
     bne.s   .GOTERR               ; .. Yes - handle that
 
-	  andi.b	#$FE,CCR	            ; Else clear the carry flag, no character available
+    andi.b  #$FE,CCR              ; Else clear the carry flag, no character available
     rts                           ; And return
 
 .GOTERR
     move.b  MFP_UDR,D0            ; Empty buffer
     bra.s   VEC_IN                ; And continue testing...
-    
+
 .GOTCHR
     move.b  MFP_UDR,D0            ; Get the data
-	  ori.b	  #1,CCR	              ; Set the carry to flag we got a char
+    ori.b   #1,CCR                ; Set the carry to flag we got a char
     rts
 
 *************************************************************************************
@@ -142,6 +137,11 @@ VEC_SV
 
 code_start
 kmain::
+
+* Display cursor
+  move.l  #5,D1
+  move.l  #1,D0
+  trap    #14
 
 * to tell EhBASIC where and how much RAM it has pass the address in a0 and the size
 * in d0. these values are at the end of the .inc file
