@@ -422,11 +422,11 @@ RECVCHAR::
 ; Consts 
     section .rodata
 
-SZ_BANNER0      dc.b    $1B, "[1;33m                                 ___ ___ _   ", 0
+SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _   ", 0
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", 0
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", 0
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", 0 
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37mfirmware v1.1ALPHA", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37mfirmware v1.1BETA1", $D, $A, 0
 SZ_INITDONE     dc.b    $1B, "[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...", 0
 
 SZ_CRLF         dc.b    $D, $A, 0
