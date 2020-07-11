@@ -25,6 +25,7 @@
 ;
 ;------------------------------------------------------------
 ;
+    include "../equates.S"
 
 ; Options - Change these to suit your tastes...
 DISPMODE          equ   DM_NTSC           ; DM_PAL or DM_NTSC
@@ -57,9 +58,6 @@ CURSORDELAY2      equ   CURSORDELAY*2
 
 DM_PAL            equ   2
 DM_NTSC           equ   0
-
-FW_PRINT_FUNC     equ   $414
-FW_PRINTLN_FUNC   equ   $418
 
 ; Constants for addressing video RAM
 VDP_REG2_PAGE0    equ   $3           ; Page 0 at 0x0
@@ -237,17 +235,24 @@ CLEARBUFFER:
 ; the register sizing therein). If that func changes, 
 ; this needs to be updated!
 ;
-; N.B. This currently won't work! It needs to buffer flip!
-;V9958_CON_CLRSCR::
-;   move.w  D1,-(A7)
-;    move.l  A0,-(A7)
-;    ori.w   #$0200,SR                      ; Disable interrupts
-;    bsr.s   CLEARBUFFER                    ; Clear
-;    andi.w  #~$200,SR                      ; And re-enable...
-;    move.w  #0,CURPOS
-;    move.l  (A7)+,A0
-;    move.w  (A7)+,D1
-;    rts
+; TODO Maybe there's a more efficient way to do this
+; (rather than doing the whole copy/flip). Look into that.
+V9958_CON_CLRSCR::
+    move.w  D1,-(A7)
+    move.l  A0,-(A7)
+    ori.w   #$0200,SR                      ; Disable interrupts
+    bsr.s   CLEARBUFFER                    ; Clear
+    andi.w  #~$200,SR                      ; And re-enable...
+    move.w  #0,CURPOS
+    move.l  (A7)+,A0
+    move.w  (A7)+,D1
+    
+    ; Now we've cleared, we need to copy the whole buffer and flip
+    lea.l   BUFFER,A1
+    move.b  CURRENTPAGE,D0
+    not.b   D0
+    bsr.w   BUFFERFLIP
+    rts
 
 
 V9958_CON_PRINT:
@@ -275,8 +280,10 @@ V9958_CON_PRINTLN:
     rts
 
 V9958_CON_INSTALLHANDLERS::
-    move.l  #V9958_CON_PRINT,FW_PRINT_FUNC
-    move.l  #V9958_CON_PRINTLN,FW_PRINTLN_FUNC
+    move.l  #V9958_CON_PRINT,EFP_PRINT
+    move.l  #V9958_CON_PRINTLN,EFP_PRINTLN
+    move.l  #V9958_CON_PUTCHAR,EFP_PRINTCHAR
+    move.l  #V9958_CON_CLRSCR,EFP_CLRSCR
     rts
 
 ; Show the cursor

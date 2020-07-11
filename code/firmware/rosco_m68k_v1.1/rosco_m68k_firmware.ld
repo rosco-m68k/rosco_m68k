@@ -1,6 +1,6 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
-kram = 0x00000500;
+kram = 0x00000FA0;
 phys = 0x00FC0000;
 MEMORY
 {

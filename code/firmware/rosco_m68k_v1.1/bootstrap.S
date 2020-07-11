@@ -12,12 +12,13 @@
 ; It sets up the exception handlers, initializes the hardware
 ; including the UART and system timers, sets up the basic
 ; info in the System Data Block, enables interrupts and 
-; calls the main loader (in lmain.c).
+; calls the main stage1 loader (in main1.c).
 ;------------------------------------------------------------
     include "../../shared/equates.S"
+    include "equates.S"
 
     section .text
-    
+
     org     ROMBASE
 RESET:
     dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
@@ -113,24 +114,14 @@ PRINT_BANNER:
     
     rts                               ; We're done
 
-; Wraps EARLY_PRINT so it can be called from C-land
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT_C::
-    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bsr.s   EARLY_PRINT               ; Call EARLY_PRINT
-
-    rts                               ; We're done.
-
 ; PRINT null-terminated string pointed to by A0
 ;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Only used directly during early init; Becomes the default implementation
+; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT::
+EARLY_PRINT:
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -146,12 +137,12 @@ EARLY_PRINT::
     
 ; PRINT null-terminated string pointed to by A0 followed by CRLF.
 ;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Only used directly during early init; Becomes the default implementation
+; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN::
+EARLY_PRINTLN:
     bsr.s   EARLY_PRINT               ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
@@ -169,17 +160,23 @@ INITSDB:
     move.w  #100,$408                 ; Heartbeat flash counter at 100 (1 per second)
     move.l  #0,$40C                   ; Zero upticks
 
-    ; Undocumented - EARLY_PRINT and co for stage 2 only!
+    ; Setup default implementations in EFP table.
     lea     EARLY_PRINT,A0
-    movea.l A0,$414
+    move.l  A0,EFP_PRINT
     lea     EARLY_PRINTLN,A0
-    movea.l A0,$418
-    lea     HALT,A0
-    movea.l A0,$41C
+    move.l  A0,EFP_PRINTLN
     lea     SENDCHAR,A0
-    movea.l A0,$420
+    move.l  A0,EFP_PRINTCHAR
+    lea     HALT,A0
+    move.l  A0,EFP_HALT
+    lea     SENDCHAR,A0
+    move.l  A0,EFP_SENDCHAR
     lea     RECVCHAR,A0
-    movea.l A0,$424 
+    move.l  A0,EFP_RECVCHAR
+    lea     ANSI_MOVEXY,A0
+    move.l  A0,EFP_MOVEXY
+    lea     ANSI_CLRSCR,A0
+    move.l  A0,EFP_CLRSCR
     rts
 
 ; Initialise MFP
@@ -373,9 +370,6 @@ TRAP_HANDLER:
     move.l  #$C001C0DE,$404
     rte
 
-; TODO these functions are duplicated from sx/serial.S, find a way
-; to not do that (maybe dynamic link to ROM addresses...)
-
 ; Send a single character via UART
 ;
 ; Trashes: MFP_UDR
@@ -418,47 +412,6 @@ RECVCHAR::
     move.b  MFP_UDR,D0            ; Get the data
     rts
 
-; TRAP 14 provides access to some of the basic functionality
-; of the firmware after the bootloader has terminated.
-;
-; D1 is expected to contain the function code. Other arguments
-; depend on the specific function - See README for details.
-;
-; This TRAP depends on the SDB "undocumented" functions being
-; intact. TODO Make them not "undocumented" any more!
-TRAP_14_HANDLER:
-    cmp.l   #0,D1                     ; FC == 0?
-    beq.s   .PRINT                    ;   PRINT if so...
-    cmp.l   #1,D1                     ; FC == 1?
-    beq.s   .PRINTLN                  ;   PRINTLN if so...
-    cmp.l   #2,D1                     ; FC == 2?
-    beq.s   .SENDCHAR                 ;   SENDCHAR if so...
-    cmp.l   #3,D1                     ; FC == 3?
-    beq.s   .RECVCHAR                 ;   RECVCHAR if so...
-    rte                               ; That's all for now...
-
-.PRINT
-    move.l  A1,-(A7)
-    move.l  $414,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rte
-
-.PRINTLN
-    move.l  A1,-(A7)
-    move.l  $418,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rte
-
-.SENDCHAR
-    bsr.w   SENDCHAR
-    rte
-
-.RECVCHAR
-    bsr.w   RECVCHAR
-    rte
-    
 
 ;------------------------------------------------------------
 ; Consts 

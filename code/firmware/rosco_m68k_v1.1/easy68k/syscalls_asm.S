@@ -26,49 +26,6 @@ PROMPT_ON           equ     $411
 LF_DISPLAY          equ     $412
 RESERVED            equ     $413
 
-; Wraps FW_PRINT so it can be called from C-land
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-;
-; It's cheaper size-wise to just duplicate this here...
-FW_PRINT_C::
-    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINT                  ; Call EARLY_PRINT
-
-; Wraps FW_PRINTLN so it can be called from C-land
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-;
-; It's cheaper size-wise to just duplicate this here...
-FW_PRINTLN_C::
-    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINTLN                ; Call EARLY_PRINT
-
-; Firmware PRINT null-terminated string pointed to by A0
-; Uses PRINT function pointed to by address $414
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-FW_PRINT::
-    move.l  A1,-(A7)
-    move.l  $414,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rts
-    
-; PRINT null-terminated string pointed to by A0 followed by CRLF.
-; Uses PRINTLN function pointed to by address $418
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-FW_PRINTLN::
-    move.l  A1,-(A7)
-    move.l  $418,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rts
 
 ; TRAP 15 provides access to Easy68K-compatible tasks
 ;
@@ -120,7 +77,7 @@ JUMPTABLE:
 PRINTLN_LEN:
     bsr.s   PRINT_LEN_IMPL              ; Print the string...
     lea     SZ_CRLF,A0                  ; Load CRLF...
-    bsr.w   EARLY_PRINT                 ; ... and print it
+    bsr.w   FW_PRINT                    ; ... and print it
     rte
 
 
@@ -136,7 +93,7 @@ PRINT_LEN_IMPL:
 
 .SEND:
     move.b  (A1)+,D0                    ; Get next char and increment A1
-    bsr.w   SENDCHAR                    ; Do send...
+    bsr.w   FW_PRINTCHAR                ; Do send...
 
 .LOOP:
     dbra    D1,.SEND                    ; Go again?
@@ -152,7 +109,7 @@ READLN_STR:
     beq.s   .READ                       ; Nope, skip prompt display
 
     lea.l   READLN_PROMPT,A0            ; Get prompt into A0...
-    bsr.w   EARLY_PRINT                 ; ... and print it
+    bsr.w   FW_PRINT                    ; ... and print it
 
 .READ
     move.b  ECHO_ON,D2                  ; Get echo flag into D2
@@ -167,7 +124,7 @@ READLN_STR:
 
     tst.b   D2                          ; Is echo flag non-zero?
     beq.s   .LOOP                       ; Nope, just loop...
-    bsr.w   SENDCHAR                    ; else, echo
+    bsr.w   FW_PRINTCHAR                ; else, echo
 
 .LOOP:
     dbra    D1,.RECV                    ; Go again?
@@ -179,9 +136,9 @@ READLN_STR:
     beq.s   .RETURN                     ; Nope, skip CRLF...
 
     move.b  #$0D,D0                     ; Finish with CR...
-    bsr.w   SENDCHAR
+    bsr.w   FW_PRINTCHAR
     move.b  #$0A,D0                     ; .. and LF
-    bsr.w   SENDCHAR
+    bsr.w   FW_PRINTCHAR
 
 .RETURN
     move.w  #80,D0                      ; Compute length...
@@ -211,7 +168,7 @@ READLN_NUM_IMPL:
     beq.s   .READ                       ; Nope, skip prompt display
 
     lea.l   READNUM_PROMPT,A0           ; Get prompt into A0...
-    bsr.w   EARLY_PRINT                 ; ... and print it
+    bsr.w   FW_PRINT                    ; ... and print it
 
 .READ
     eor.l   D1,D1                       ; Zero D1 (result)
@@ -233,7 +190,7 @@ READLN_NUM_IMPL:
 
     tst.b   D2                          ; Is echo flag non-zero?
     beq.s   .ADD                        ; Nope, go to add digit
-    bsr.w   SENDCHAR                    ; else, echo
+    bsr.w   FW_PRINTCHAR                ; else, echo
 
 .ADD
     sub.l   #'0',D0                     ; Get actual digit value
@@ -252,9 +209,9 @@ READLN_NUM_IMPL:
     beq.s   .RETURN                     ; Nope, skip CRLF...
 
     move.b  #$0D,D0                     ; Finish with CR...
-    bsr.w   SENDCHAR
+    bsr.w   FW_PRINTCHAR
     move.b  #$0A,D0                     ; .. and LF
-    bsr.w   SENDCHAR
+    bsr.w   FW_PRINTCHAR
 
 .RETURN
     rts
@@ -274,6 +231,8 @@ SEND_CHAR:
 
 
 * ************************************************************************** *
+; TODO This is directly interfacing the the MFP - It should go through to the
+; default UART instead...
 CHECK_RECV:
     move.b  MFP_RSR,D0                  ; Get RSR
     btst    #7,D0                       ; Is buffer_full bit set?
@@ -294,44 +253,16 @@ GET_TICKS:
 
 
 * ************************************************************************** *
-; TODO this could do with cleaning up!
 MOVE_X_Y:
     cmp.w   #$FF00,D1                   ; Is this a clear screen?
     beq.s   .CLRSCR                     ; Yep, go there
 
 .MOVEXY
-    move.w  D1,D2                       ; Use D2 for coords..
-
-    lea.l   ANSI_START,A0               ; Load ANSI initiator...
-    bsr.w   EARLY_PRINT                 ; ... and print it
-
-    eor.l   D0,D0                       ; Zero D0
-
-    move.b  D2,D0                       ; Get Y from D1 into D0
-    move.l  #10,-(A7)                   ; Stack base (10)...
-    move.l  D0,-(A7)                    ; ... and Y coord
-    bsr.w   print_unsigned              ; ... and print
-
-    lea.l   ANSI_SEP,A0                 ; Load separator...
-    bsr.w   EARLY_PRINT                 ; ... and print it
-
-    eor.l   D0,D0                       ; Zero D0 again
-
-    move.w  D2,D0                       ; Get coords into D0
-    lsr.w   #8,D0                       ; Shift right to get X
-    move.l  D0,(A7)                     ; Replace Y on stack with X...
-    bsr.w   print_unsigned              ; ... and print
-
-    addq    #8,A7                       ; Cleanup stack
-
-    lea.l   ANSI_XYEND,A0               ; Load XY end command
-    bsr.w   EARLY_PRINT                 ; ... and print it
-
+    bsr.w   FW_MOVEXY
     rte                                 ; and done!
 
 .CLRSCR
-    lea.l   ANSI_CLR,A0                 ; Load ANSI Clear Screen...
-    bsr.w   EARLY_PRINT                 ; ... and print it
+    bsr.w   FW_CLRSCR
     rte
 
 
@@ -344,14 +275,14 @@ SET_ECHO:
 * ************************************************************************** *
 PRINTLN_SZ:
     movea.l A1,A0
-    bsr.w   EARLY_PRINTLN
+    bsr.w   FW_PRINTLN
     rte
 
 
 * ************************************************************************** *
 PRINT_SZ:
     movea.l A1,A0
-    bsr.w   EARLY_PRINT
+    bsr.w   FW_PRINT
     rte
 
 
@@ -395,8 +326,8 @@ SET_DISPLAY_OPTS:
 
 * ************************************************************************** *
 PRINT_SZ_PRINT_NUM:
-    movea.l A1,A0                       ; Move arg for EARLY_PRINT...
-    bsr.w   EARLY_PRINT                 ; ... and call it
+    movea.l A1,A0                       ; Move arg for FW_PRINT...
+    bsr.w   FW_PRINT                    ; ... and call it
 
     move.l  D1,-(A7)                    ; Stack number argument...
     bsr.w   print_signed                ; ... and call
@@ -406,8 +337,8 @@ PRINT_SZ_PRINT_NUM:
 
 * ************************************************************************** *
 PRINT_SZ_READ_NUM:
-    movea.l A1,A0                       ; Move arg for EARLY_PRINT...
-    bsr.w   EARLY_PRINT                 ; ... and call it
+    movea.l A1,A0                       ; Move arg for FW_PRINT...
+    bsr.w   FW_PRINT                    ; ... and call it
 
     bsr.w   READLN_NUM_IMPL             ; Then read a number into D1
     rte

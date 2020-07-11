@@ -29,7 +29,7 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=AT28C64B
 
-OBJECTS=bootstrap.o lzgmini_68k.o decompress.o main1.o 
+OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o main1.o 
 
 ifneq ($(NOEASY),true)
 include easy68k/include.mk

@@ -720,8 +720,20 @@ This area contains the basic system data block, which is reserved
 by the system for variable storage and data used by the standard
 exception handlers and TRAP routines.
 
-TODO Document specific layout! For now, see `bootstrap.S` and 
-the Easy68k `syscalls_asm.S`.
+| Address | Size | Description                                               |
+|---------|------|-----------------------------------------------------------|
+| 0x400   | 4    | SDB Magic (0xB105D47A)                                    |
+| 0x404   | 4    | Status code (set by exception handlers)                   |
+| 0x408   | 2    | Internal counter used by timer tick handler               |
+| 0x40A   | 2    | Reserved                                                  |
+| 0x40C   | 4    | Upticks counter, updated by timer tick handler            |
+| 0x410   | 1    | Easy68k 'echo on' flag                                    |
+| 0x411   | 1    | Easy68k 'prompt on' flag                                  |
+| 0x412   | 1    | Easy68k 'LF display' flag                                 |
+| 0x413   | 1    | Easy68k Reserved                                          |
+| 0x414   | 12   | System Reserved                                           |
+
+For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`.
 
 ## 2.3. Extension Function Pointer Table (EFPT)
 
@@ -744,8 +756,6 @@ the firmware. The general rules are:
 * On entry to the function, the CPU will be in supervisor mode
 * On entry to the function, the SP will reference the supervisor stack
 
-TODO Further documentation of the functions contained here is needed!
-
 Not all of these functions will be used by the firmware - some are 
 designated as for program use (for example, a kernel may use them
 to provide its own hooks).
@@ -753,12 +763,32 @@ to provide its own hooks).
 User code **must not** call these functions directly - they 
 must be accessed through the public TRAP functions!
 
+| Address | Function                                                         |
+|---------|------------------------------------------------------------------|
+| 0x420   | FW_PRINT - Print SZ to the default console.                      |
+| 0x424   | FW_PRINTLN - Print SZ to the default console, followed by CRLF   |
+| 0x428   | FW_PRINTCHAR - Print a character to the default console          |
+| 0x42C   | FW_HALT - Disable interrupts and halt                            |
+| 0x430   | FW_SENDCHAR - Send a character via the default UART              |
+| 0x434   | FW_RECVCHAR - Receive a character via the default UART           |
+| 0x438   | FW_CLRSCR - Clear the default console (where supported)          |
+| 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                    |
+
+**Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
+byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
+
+Arguments, modifies and other information for these functions are the same
+as for the TRAP functions they implement. If replacing them, you **must**
+adhere to the same interface. The reference implementations can be found in
+`bootstrap.S` and `trap14.S`.
+
+**Note** that all of these are allowed to block! 
 
 ## 2.4. Video IO Data Area (VDA)
 
 **Start Address**: 0x500
-**End Address**: 0xFFF
-**Size**: 0xB00 (2816 bytes)
+**End Address**: 0xF9F
+**Size**: 0xAA0 (2720 bytes)
 
 This area is reserved for use by video subsystems. The specific layout
 is dependent on the video subsystem in use.
@@ -767,3 +797,12 @@ For example, this area may contain a framebuffer along with
 variables and data required by a video driver.
 
 TODO document layout when video is V9958!
+
+## 2.5. Firmware Reserved Area (BSS)
+
+**Start Address**: 0xFA0
+**End Address**: 0xFFF
+**Size**: 0x60 (96 bytes)
+
+This area is reserved for the firmware's BSS section. The content
+and layout of this area may change without notice.

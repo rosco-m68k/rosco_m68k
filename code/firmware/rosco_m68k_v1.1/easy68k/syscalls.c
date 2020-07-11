@@ -42,6 +42,8 @@ static unsigned char* print_signed_impl(int32_t value, unsigned char *bp) {
     *bp-- = '-';
   }
 
+  *bp = 0;
+
   return bp + 1;
 }
 
