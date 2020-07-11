@@ -26,7 +26,7 @@
     include "../../shared/equates.S"
 
     section .init
-    org     $40000
+    org     $28000
 
 ; Stack and all registers can be trashed at this point,
 ; the machine is your own...
@@ -48,7 +48,7 @@ START::
 RELOCATED_START:
 
     section .postinit
-    org $1000
+    org $4000
 
 PREMAIN:
     move.l  $FC0004,-(A7)               ; Push reset vector in case kmain returns

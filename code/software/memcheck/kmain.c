@@ -268,7 +268,7 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   printf("\r\n");
 }
 
-/* System-wide memory map. Stored in SDB at 0x410.
+/* System-wide memory map. Stored in SDB at 0x430.
  *
  * This map always consists of one MEMINFO header,
  * followed by MAX_RAMBLOCKS blocks.
@@ -277,7 +277,7 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  * address. Blocks with zero start and size are 
  * unused.
  */
-MEMINFO * volatile header = (MEMINFO*)0x410;
+MEMINFO * volatile header = (MEMINFO*)0x430;
 
 noreturn void kmain() {
   MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));

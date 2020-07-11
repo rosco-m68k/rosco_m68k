@@ -9,24 +9,16 @@
  * Copyright (c)2019 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Configures printf. 
+ * Stub "stdlib" for simple programs that need it
  * ------------------------------------------------------------
  */
-#include <machine.h>
 
-static char buf[2];
-static char crbuf[2] = { '\r', 0 };
+#ifndef _ROSCOM68K_STDLIB_H
+#define _ROSCOM68K_STDLIB_H
 
-/*
- * This is used by printf.
- */
-void _putchar(char chr) {
-  if (chr == '\n') {
-    // is LF, print CR too
-    mcPrint(crbuf);
-  }
+#ifndef NULL
+#define NULL ((void*) 0)
+#endif
 
-  buf[0] = chr;
-  mcPrint(buf);
-}
+#endif
 

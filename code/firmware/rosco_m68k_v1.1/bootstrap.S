@@ -12,19 +12,12 @@
 ; It sets up the exception handlers, initializes the hardware
 ; including the UART and system timers, sets up the basic
 ; info in the System Data Block, enables interrupts and 
-; calls the main loader (in lmain.c).
+; calls the main stage1 loader (in main1.c).
 ;------------------------------------------------------------
     include "../../shared/equates.S"
+    include "equates.S"
 
     section .text
-    
-; Version (embedded into firmware at 0xFC0400)
-; MSW is flags, LSW is split into major (MSB) and minor (LSB)
-;
-; Flags:
-; bit 0 - 14: Reserved
-; bit 15    : Snapshot version
-RELEASE_VER equ     $80000101
 
     org     ROMBASE
 RESET:
@@ -98,9 +91,9 @@ START::
     and.w   #$F0FF,SR                 ; Enable interrupts
 
     jsr     linit                     ; Init C land
-    jmp     lmain                     ; Call kmain
+    jmp     main1                     ; Call stage 1 main
 
-; kmain is noreturn, so That's All, Folks(tm).
+; main1 is noreturn, so That's All, Folks(tm).
 
 ;------------------------------------------------------------
 ; Subroutines
@@ -121,24 +114,14 @@ PRINT_BANNER:
     
     rts                               ; We're done
 
-; Wraps EARLY_PRINT so it can be called from C-land
-;
-; Trashes: D0, MFP_UDR
-; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT_C::
-    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bsr.s   EARLY_PRINT               ; Call EARLY_PRINT
-
-    rts                               ; We're done.
-
 ; PRINT null-terminated string pointed to by A0
 ;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Only used directly during early init; Becomes the default implementation
+; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT::
+EARLY_PRINT:
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -154,12 +137,12 @@ EARLY_PRINT::
     
 ; PRINT null-terminated string pointed to by A0 followed by CRLF.
 ;
-; Only used during early init; Buffered serial driver will take
-; over the UART later on...
+; Only used directly during early init; Becomes the default implementation
+; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN::
+EARLY_PRINTLN:
     bsr.s   EARLY_PRINT               ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
@@ -175,7 +158,31 @@ INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
     move.w  #100,$408                 ; Heartbeat flash counter at 100 (1 per second)
+    move.l  #0,$40C                   ; Zero upticks
+
+    ; Setup default implementations in EFP table.
+    lea     EARLY_PRINT,A0
+    move.l  A0,EFP_PRINT
+    lea     EARLY_PRINTLN,A0
+    move.l  A0,EFP_PRINTLN
+    lea     SENDCHAR,A0
+    move.l  A0,EFP_PRINTCHAR
+    lea     HALT,A0
+    move.l  A0,EFP_HALT
+    lea     SENDCHAR,A0
+    move.l  A0,EFP_SENDCHAR
+    lea     RECVCHAR,A0
+    move.l  A0,EFP_RECVCHAR
+    lea     ANSI_MOVEXY,A0
+    move.l  A0,EFP_MOVEXY
+    lea     ANSI_CLRSCR,A0
+    move.l  A0,EFP_CLRSCR
+    lea     .RETURN,A0               ; No-op for default SET CURSOR
+    move.l  A0,EFP_SETCURSOR
+.RETURN
     rts
+
+
 
 ; Initialise MFP
 ;
@@ -239,7 +246,14 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER:
     move.l  D0,-(A7)                  ; Save D0
-    move.w  $408,D0                   ; Read SDB byte 8
+    
+    ; Increment upticks
+    move.l  $40C,D0                   ; Read SDB dword at 12
+    add.l   #1,D0                     ; Increment
+    move.l  D0,$40C                   ; And write back
+    
+    ; Heartbeat
+    move.w  $408,D0                   ; Read SDB word at 8
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
     
@@ -361,48 +375,58 @@ TRAP_HANDLER:
     move.l  #$C001C0DE,$404
     rte
 
-; TRAP 14 provides access to some of the basic functionality
-; of the firmware after the bootloader has terminated.
+; Send a single character via UART
 ;
-; D1 is expected to contain the function code. Other arguments
-; depend on the specific function - See README for details.
-TRAP_14_HANDLER:
-    cmp.l   #0,D1                     ; FC == 0?
-    beq.s   .PRINT                    ;   PRINT if so...
-    cmp.l   #1,D1                     ; FC == 1?
-    beq.s   .PRINTLN                  ;   PRINTLN if so...
-    cmp.l   #2,D1                     ; FC == 2?
-    beq.s   .SENDCHAR                 ;   SENDCHAR if so...
-    cmp.l   #3,D1                     ; FC == 3?
-    beq.s   .RECVCHAR                 ;   RECVCHAR if so...
-    rte                               ; That's all for now...
+; Trashes: MFP_UDR
+; Modifies: Nothing
+SENDCHAR::
+    move.l  D1,-(A7)              ; Save D1
+.BEGIN
+    bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
+    move.b  MFP_TSR,D1            ; Get TSR
+    btst    #7,D1                 ; Is buffer empty bit set?
+    beq.s   .BEGIN                ; No - loop until it is
 
-.PRINT
-    bsr.w   EARLY_PRINT
-    rte
+    move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  (A7)+,D1              ; Restore D1
+    rts
 
-.PRINTLN
-    bsr.w   EARLY_PRINTLN
-    rte
 
-.SENDCHAR
-    bsr.w   SENDCHAR
-    rte
+; Receive a single character via UART.
+; Ignores overrun errors.
+;
+; Trashes: MFP_UDR
+; Modifies: D0 (return)
+RECVCHAR::
+    bclr.b  #7,MFP_GPDR           ; Lower RTS
+.BEGIN
+    move.b  MFP_RSR,D0            ; Get RSR
+    btst    #7,D0                 ; Is buffer_full bit set?
+    bne.s   .GOTCHR               ; Yes - Go to receive character
 
-.RECVCHAR
-    bsr.w   RECVCHAR
-    rte
+    btst    #6,D0                 ; Else, do we have an overrun error?
+    bne.s   .GOTERR               ; .. Yes - handle that
+    bra.s   .BEGIN                ; .. No - Just loop
+
+.GOTERR
+    move.b  MFP_UDR,D0            ; Empty buffer
+    bchg.b  #1,MFP_GPDR           ; And toggle I1
+    bra.s   .BEGIN                ; And continue testing...
     
+.GOTCHR
+    move.b  MFP_UDR,D0            ; Get the data
+    rts
+
 
 ;------------------------------------------------------------
 ; Consts 
     section .rodata
 
-SZ_BANNER0      dc.b    $1B, "[1;33m                                 ___ ___ _   ", 0
+SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _   ", 0
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", 0
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", 0
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", 0 
-SZ_BANNER4      dc.b    "                    |_____|       ", $1B, "[1;37mfirmware v1", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37mfirmware v1.1BETA1", $D, $A, 0
 SZ_INITDONE     dc.b    $1B, "[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...", 0
 
 SZ_CRLF         dc.b    $D, $A, 0

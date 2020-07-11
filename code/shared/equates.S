@@ -11,14 +11,6 @@
 ; EQUates for Rosco_m68k
 ;------------------------------------------------------------
 
-; Version (embedded into firmware at 0xFC0400)
-; MSW is flags, LSW is split into major (MSB) and minor (LSB)
-;
-; Flags:
-; bit 0 - 14: Reserved
-; bit 15    : Snapshot version
-RELEASE_VER equ     $80000101
-
 ; Memory layout
 RAMBASE     equ     $0
 RAMLIMIT    equ     $100000

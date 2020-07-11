@@ -16,6 +16,9 @@
 #include <stdint.h>
 #include "machine.h"
 
+static char backspace[4] = { 0x08, 0x20, 0x08, 0x00 };
+static char sendbuf[2] = { 0x00, 0x00 };
+
 int readline(char *buf, int buf_size) {
   register char c;
   register uint8_t i = 0;
@@ -28,9 +31,7 @@ int readline(char *buf, int buf_size) {
       if (i > 0) {
         buf[i-1] = 0;
         i = i - 1;
-        mcSendchar(0x08);
-        mcSendchar(0x20);
-        mcSendchar(0x08);
+        mcPrint(backspace);
       }
       break;
     case 0x0A:
@@ -43,7 +44,8 @@ int readline(char *buf, int buf_size) {
       return i;
     default:
       buf[i++] = c;
-      mcSendchar(c);
+      sendbuf[0] = c;
+      mcPrint(sendbuf);
     }
   }
 
