@@ -1,4 +1,4 @@
-# SD Card + Serial Loader for rosco_m68k
+# Serial Loader for rosco_m68k
 
 NOTE: It would be nice to use a better-compressing implementation of 
 DEFLATE/INFLATE - e.g. https://github.com/keirf/Amiga-Stuff/tree/master/inflate
@@ -7,8 +7,7 @@ This firmware implements a simple way to load code into the computer from startu
 enabling quicker iteration (and fewer dead ROM chips).
 
 The idea with this is to do basic set up of the system (e.g. set up the MFP) and
-then either load code from the SD card (if connected) or  wait for the user to 
-initiate a file transfer from their terminal program.
+then wait for the user to initiate a file transfer from their terminal program.
 
 This transfer should upload (in binary) the code that is to be run (perhaps a kernel,
 or some other thing).
