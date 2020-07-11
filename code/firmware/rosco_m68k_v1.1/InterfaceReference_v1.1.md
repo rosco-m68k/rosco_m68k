@@ -18,6 +18,8 @@ as possible, and will be kept updated as firmware 1.1 is developed.
       * 1.1.2.2 PRINTLN (Function #1)
       * 1.1.2.3 SENDCHAR (Function #2)
       * 1.1.2.4 RECVCHAR (Function #3)
+      * 1.1.2.5 PRINTCHAR (Function #4)
+      * 1.1.2.6 SETCURSOR (Function #5)
   * 1.2. Easy68k compatibility layer (TRAP 15)
     * 1.2.1 Example Usage
     * 1.2.2 Functions
@@ -200,11 +202,11 @@ System integrators and third-party hardware developers may also override
 the default UART (for example to utilise third-party hardware). 
 See section 2.3 for details.
 
-#### 1.1.2.4 SENDCHAR (Function #3)
+#### 1.1.2.4 RECVCHAR (Function #3)
 
 **Arguments**
 
-* `D1.L` - 2 (Function code)
+* `D1.L` - 3 (Function code)
 
 **Modifies**
 
@@ -225,6 +227,58 @@ System integrators and third-party hardware developers may also override
 the default UART (for example to utilise third-party hardware). 
 See section 2.3 for details.
 
+#### 1.1.2.5 PRINTCHAR (Function #4)
+
+**Arguments**
+
+* `D1.L` - 4 (Function code)
+* `D0.B` - Character to print
+
+**Modifies**
+
+Nothing
+
+**Description**
+
+Print the character in `D0.B` to by `A0` to the system's *default console*.
+
+Where the default console is a serial terminal, this routine may block until
+there is space in the UART's transmit buffer for the character - as such, 
+it is not suitable for use in time- or latency-critical code (e.g. interrupt 
+handlers).
+
+The default console is initialized at boot-time by the firmware, and 
+may be the V9958 console (where available), or the *default serial UART*.
+For details on the default UART, see the `SENDCHAR` function.
+
+System integrators and third-party hardware developers may also override
+the default console (for example to output to third-party video 
+hardware). See section 2.3 for details.
+
+#### 1.1.2.6 SETCURSOR (Function #5)
+
+**Arguments**
+
+* `D1.L` - 5 (Function code)
+* `D0.B` - 0 to hide cursor, non-zero to show
+
+**Modifies**
+
+Nothing
+
+**Description**
+
+Show or hide the cursor on the *default console*. Where this is not possible]
+(e.g. where the default console is a serial terminal) this routine does
+nothing.
+
+The default console is initialized at boot-time by the firmware, and 
+may be the V9958 console (where available), or the *default serial UART*.
+For details on the default UART, see the `SENDCHAR` function.
+
+System integrators and third-party hardware developers may also override
+the default console (for example to output to third-party video 
+hardware). See section 2.3 for details.
 
 ## 1.2. Easy68k compatibility layer (TRAP 15)
 
@@ -773,6 +827,7 @@ must be accessed through the public TRAP functions!
 | 0x434   | FW_RECVCHAR - Receive a character via the default UART           |
 | 0x438   | FW_CLRSCR - Clear the default console (where supported)          |
 | 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                    |
+| 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor    |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).

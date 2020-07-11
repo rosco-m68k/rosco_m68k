@@ -177,7 +177,12 @@ INITSDB:
     move.l  A0,EFP_MOVEXY
     lea     ANSI_CLRSCR,A0
     move.l  A0,EFP_CLRSCR
+    lea     .RETURN,A0               ; No-op for default SET CURSOR
+    move.l  A0,EFP_SETCURSOR
+.RETURN
     rts
+
+
 
 ; Initialise MFP
 ;

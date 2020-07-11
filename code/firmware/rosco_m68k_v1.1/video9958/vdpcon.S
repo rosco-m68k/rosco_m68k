@@ -279,11 +279,17 @@ V9958_CON_PRINTLN:
     move.l  (A7)+,A0                        ; Restore A0
     rts
 
+V9958_CON_SETCURSOR:
+    tst.b   D0
+    beq.s   V9958_CON_HIDECURSOR
+    bra.s   V9958_CON_SHOWCURSOR
+
 V9958_CON_INSTALLHANDLERS::
     move.l  #V9958_CON_PRINT,EFP_PRINT
     move.l  #V9958_CON_PRINTLN,EFP_PRINTLN
     move.l  #V9958_CON_PUTCHAR,EFP_PRINTCHAR
     move.l  #V9958_CON_CLRSCR,EFP_CLRSCR
+    move.l  #V9958_CON_SETCURSOR,EFP_SETCURSOR
     rts
 
 ; Show the cursor

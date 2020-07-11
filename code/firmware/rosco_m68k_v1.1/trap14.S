@@ -31,6 +31,10 @@ TRAP_14_HANDLER::
     beq.s   .SENDCHAR                 ;   SENDCHAR if so...
     cmp.l   #3,D1                     ; FC == 3?
     beq.s   .RECVCHAR                 ;   RECVCHAR if so...
+    cmp.l   #4,D1                     ; FC == 4?
+    beq.s   .PRINTCHAR                ;   PRINTCHAR if so...
+    cmp.l   #5,D1                     ; FC == 5?
+    beq.s   .SETCURSOR                ;   SETCURSOR if so...
     rte                               ; That's all for now...
 
 .PRINT
@@ -61,6 +65,21 @@ TRAP_14_HANDLER::
     move.l  (A7)+,A1
     rte
     
+.PRINTCHAR
+    move.l  A1,-(A7)
+    move.l  EFP_PRINTCHAR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rte
+
+.SETCURSOR
+    move.l  A1,-(A7)
+    move.l  EFP_SETCURSOR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rte
+
+
 ; Wraps FW_PRINT so it can be called from C-land
 ;
 ; Modifies: A0 (Will point to address after null terminator)

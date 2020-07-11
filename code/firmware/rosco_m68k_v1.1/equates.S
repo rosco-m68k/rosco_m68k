@@ -28,3 +28,4 @@ EFP_SENDCHAR    equ    $430
 EFP_RECVCHAR    equ    $434
 EFP_CLRSCR      equ    $438
 EFP_MOVEXY      equ    $43C
+EFP_SETCURSOR   equ    $440
