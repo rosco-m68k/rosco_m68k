@@ -12,6 +12,8 @@
 ; usage of the reseved SDB bytes. Not guaranteed to work once
 ; stage 2 is done!
 ;------------------------------------------------------------
+    include "../equates.S"
+
     section .text
 
 ; Wraps EARLY_PRINT so it can be called from C-land
@@ -20,9 +22,9 @@
 ; Modifies: A0 (Will point to address after null terminator)
 ;
 ; It's cheaper size-wise to just duplicate this here...
-EARLY_PRINT_C::
+FW_PRINT_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bsr.s   EARLY_PRINT               ; Call EARLY_PRINT
+    bsr.s   FW_PRINT                  ; Call FW_PRINT
     rts                               ; We're done.
 
 ; PRINT null-terminated string pointed to by A0
@@ -30,9 +32,9 @@ EARLY_PRINT_C::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT::
+FW_PRINT::
     move.l  A1,-(A7)
-    move.l  $414,A1
+    move.l  EFP_PRINT,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
@@ -42,16 +44,16 @@ EARLY_PRINT::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN::
+FW_PRINTLN::
     move.l  A1,-(A7)
-    move.l  $418,A1
+    move.l  EFP_PRINTLN,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
      
-HALT::
+FW_HALT::
     move.l  A1,-(A7)
-    move.l  $41C,A1
+    move.l  EFP_HALT,A1
     jmp     (A1)
     move.l  (A7)+,A1
     rts
