@@ -5,15 +5,15 @@
                           -------\___/-------
                       FC0 |  1           20 | VCC
                           |                 |
-                      FC1 |  2           19 | CPUCYC
+                      FC1 |  2           19 | NC
                           |                 |
                       FC2 |  3           18 | LDS
                           |                 |
                    ODDROM |  4           17 | RW
                           |                 |
-                  EVENROM |  5           16 | RAMOE
+                   ODDRAM |  5           16 | RAMOE
                           |                 |
-                   ODDRAM |  6           15 | MFPDS
+                  EVENROM |  6           15 | MFPDS
                           |                 |
                   EVENRAM |  7           14 | DTACK
                           |                 |
@@ -21,5 +21,5 @@
                           |                 |
                   IODTACK |  9           12 | NC
                           |                 |
-                      GND | 10           11 | A17
+                      GND | 10           11 | NC
                           -------------------

@@ -1,8 +1,8 @@
 
 
-Pin 19 = CPUCYC       XOR = 0   AC1 = 1
-  0  ---- ---- ---- ---- ---- ---- ---- ----
-  1  x-x- x--- ---- ---- ---- ---- ---- --x-
+Pin 19 = NC           XOR = 0   AC1 = 0
+  0  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   4  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -51,13 +51,13 @@ Pin 15 = MFPDS        XOR = 0   AC1 = 1
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
 Pin 14 = DTACK        XOR = 0   AC1 = 1
- 40  ---- ---- ---- ---- ---- --x- ---- ----
- 41  ---- ---- ---- ---- ---- ---- -x-- -x--
+ 40  ---- ---- ---- ---- ---- ---- ---- ----
+ 41  ---- ---- ---- ---- ---- ---- -x-- ----
  42  ---- ---- ---- ---- ---- ---- ---x -x--
- 43  ---- ---- ---- -x-- ---- ---- --x- ----
+ 43  ---- ---- ---- ---- -x-- ---- --x- ----
  44  ---- ---- -x-- ---- ---- ---- --x- ----
  45  ---- ---- ---- ---- ---- -x-- --x- ----
- 46  ---- ---- ---- ---- -x-- ---- --x- ----
+ 46  ---- ---- ---- -x-- ---- ---- --x- ----
  47  ---- ---- x--- x--- x--- x--- x-x- ----
 
 Pin 13 = IACK         XOR = 0   AC1 = 1
