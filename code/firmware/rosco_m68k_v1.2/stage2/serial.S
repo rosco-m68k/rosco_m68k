@@ -13,6 +13,7 @@
 ; eventually.
 ;------------------------------------------------------------
     include "../../../shared/equates.S"
+    include "../equates.S"
 
     section .text
 
@@ -22,7 +23,7 @@
 ; Modifies: Nothing
 SENDCHAR::
     move.l  A1,-(A7)
-    move.l  $41C,A1
+    move.l  EFP_SENDCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
@@ -34,7 +35,7 @@ SENDCHAR::
 ; Modifies: D0 (return)
 RECVCHAR::
     move.l  A1,-(A7)
-    move.l  $420,A1
+    move.l  EFP_RECVCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
