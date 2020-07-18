@@ -1,7 +1,7 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the **develop** branch, where the latest development files live. It is not guaranteed to contain stable code or working designs at any given point. If you are looking for code to use with you board or stable designs, these can be found on the [current release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01). Code built or PCBs manufactured from the develop branch are likely to contain development and pre-production bugs, be incomplete, or just plain not work. Code and designs here are liable to change in utterly-incompatible ways without notice!
+> **Note**: This is the **release** branch for Revision 1 boards with firmware 1.1. If you have a revision 1 and are running firmware 1.1, this is the branch to use for example code and standard libraries.
 
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
@@ -40,10 +40,10 @@ The hardware specifications for the rosco_m68k are:
 ### Software
 
 * A serial bootloader that can load software via the UART (with Kermit protocol)
-* Basic I/O library using Serial (FTDI cable or Serial-USB converter required)
+* Basic I/O library using Serial (FTDI cable or Serial-USB converter required) or V9958 video (where fitted)
 * Firmware features an (optional) Easy68K-compatible* TRAP 15 (IO) handler
-* A proof-of-concept "kernel" that demonstrates the serial loader
-* A growing collection of system libraries and utility code
+* A variety of example and "proof-of-concept" programs in `code/software`
+* Standard libraries providing basic IO and support code in `code/libs`
 * Assembly build with VASM. C/C++ built with GCC 7.5.
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
