@@ -9,15 +9,28 @@
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * rosco_m68k platform for Kermit
+ * V9958 console low-level primitives
  * ------------------------------------------------------------
  */
 
+#ifndef __ROSCO_M68K_V9958_CON_H
+#define __ROSCO_M68K_V9958_CON_H
 
-#ifndef IBUFLEN
-#define IBUFLEN  2048			/* File input buffer size */
-#endif /* IBUFLEN */
+#include <stdbool.h>
 
-#ifndef OBUFLEN
-#define OBUFLEN  512           /* File output buffer size */
-#endif /* OBUFLEN */
+/**
+ * Returns true if a V9958 is installed, false otherwise.
+ */
+bool HAVE_V9958();
+
+/**
+ * Initialize the V9958 console.
+ */
+void V9958_CON_INIT();
+
+/**
+ * Install handlers for syscall PRINT/PRINTLN
+ */
+void V9958_CON_INSTALLHANDLERS();
+
+#endif  //  __ROSCO_M68K_V9958_CON_H

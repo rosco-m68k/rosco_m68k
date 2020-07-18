@@ -1,19 +1,90 @@
-# SD Card + Serial Loader for rosco_m68k
+# rosco_m68k Firmware v1.2
+## For all Revision 1.2 rosco_m68k main boards
 
-NOTE: It would be nice to use a better-compressing implementation of 
-DEFLATE/INFLATE - e.g. https://github.com/keirf/Amiga-Stuff/tree/master/inflate
+This is the official firmware for the revision 1.2 rosco_m68k. It provides
+a means of loading code at boot time via Kermit or from SD card. 
 
-This firmware implements a simple way to load code into the computer from startup,
-enabling quicker iteration (and fewer dead ROM chips).
+This firmware performs basic initialization of the machine, including
+the MFP and V9958 video board (where fitted). Additionally, it provides a 
+variety of basic input/output routines and runtime support via standard 
+TRAP function interfaces (See InterfaceReference_v1.2.md for details).
 
-The idea with this is to do basic set up of the system (e.g. set up the MFP) and
-then either load code from the SD card (if connected) or  wait for the user to 
-initiate a file transfer from their terminal program.
+## Building
 
-This transfer should upload (in binary) the code that is to be run (perhaps a kernel,
-or some other thing).
+The build supports building 16KB ROMs with **either** Kermit or SD Card
+support - there isn't space to support both. The basic configuration
+includes Kermit only (for backward compatibility).
 
-## Protocols
+Regardless of ROM size, the basic (TRAP 14) runtime support and Easy68k
+compatibility will always be available. VDP support will be available
+by default, but can be omitted.
+
+### 16KB ROMs
+
+To build the basic firmware:
+
+```
+make clean all
+```
+
+This will build a 16K-targeted ROM (plus odd/even pair) with VDP support,
+Kermit loading and runtime support.
+
+To enable SD Card support (experimental), pass `WITH_SDFAT=true`. In a 
+16KB ROM, this will fail unless you also omit either Kermit or VDP 
+support as there is insufficient space in the ROM.
+
+For example:
+
+```
+WITH_SDFAT=true WITH_KERMIT=false make clean all
+```
+
+Will build a 16KB ROM with SD Card load and VDP support, but no kermit, or:
+
+```
+WITH_SDFAT=true WITH_VDP=false make clean all
+```
+
+Will build a 16KB ROM with SD Card and Kermit load, but no VDP support.
+
+### 64KB ROMs
+
+To build 64KB ROMs with all options included, set `BIGROM=true`, e.g:
+
+```
+BIGROM=true make clean all
+```
+
+When building a 64KB ROM you can still optionally include and exclude 
+things with the options listed above.
+
+### Burning
+
+If you are using a TL866II+ programmer, you can burn your ROMs 
+directly from the Makefile with:
+
+```
+make clean burn
+```
+
+This will automatically set the device based on the BIGROM setting to
+either AT28C64B or AT28C256. This can be overriden by passing 
+`ROMDEVICE` on the command line, e.g:
+
+```
+ROMDEVICE=<SOMEDEVICE> make clean burn
+``` 
+
+Where `<SOMEDEVICE>` is a Minipro-recognised device string.
+
+## SD Card 
+
+Documentation TODO
+
+## Serial Loader (Kermit)
+
+### Protocols
 
 Currently, only Kermit is supported, and only in the `robust` mode. To support
 cautious or fast mode would probably need hardware flow control, for which
@@ -104,61 +175,7 @@ On entry to the loaded code, the system will be in the following state:
 
 ## Runtime Support
 
-This loader provides a couple of routines that can be used for e.g. debugging
-output and basic system control. These can be found at TRAP #14. 
-
-To use these, set D1 to the required 'function code' from the list below.
-The way further arguments are passed depends on the function being called.
-
-| Function (D1) | Name            | Description                                                           |
-|:-------------:|-----------------|-----------------------------------------------------------------------|
-|0              | PRINT           | Print a string via UART. A0 should point to a null-terminated string. |
-|1              | PRINTLN         | Print a string, followed by CRLF. A0 points to null-terminated string.|
-
-(More will be added in the future)
-
-Calling these traps will usually trash at least D0, and obviously you'll
-need to modify D1 for the function code. The println traps also modify A0.
-GCC is mostly fine with this, but it's nice to save and restore stuff in
-case you use a different compiler that isn't and forget about it, for
-example. An example way to call these functions while looking after your
-registers might be (taken from the poc-kernel):
-
-```
-mcPrint::
-    movem.l D0-D1/A0,-(A7)            ; Save regs
-    move.l  (16,A7),A0                ; Get C char* from the stack into A0
-    move.l  #0,D1                     ; Func code is 0
-    trap    #14                       ; TRAP to firmware
-    movem.l (A7)+,D0-D1/A0            ; Restore regs
-    rts                               ; We're done.
-```
-
-As a side-note, the println traps actually leave A0 pointing to the byte
-_after_ the null terminator, so you can make use of that if you have a 
-bunch of lines in adjacent memory locations if you want to.
-
-(Of course, if you're going to do that, you're much better off having them be
-one big string with line endings embedded, and just printing them with 
-one TRAP, but it might come in handy for some reason or another...)
-
-## Easy68K Compatibility
-
-By default, the loader will build with an Easy68K-compatible (mostly) 
-TRAP #15 handler. If you need to save space for something else, you can 
-disable this by passing `NOEASY=true` on the `make` commandline, or 
-by editing the Makefile (and removing the `include easy68k/include.mk`
-line).
-
-For documentation of the specific TRAP tasks that are supported by the
-Easy68K compatibility handler, see the README.md in the `easy68k` 
-directory.
-
-For complete(ish) documentation of the various tasks, see
-http://www.easy68k.com/QuickStart/TrapTasks.htm .
-
-Please note that I don't have Easy68K, so these functions have been
-implemented purely from the docs. If you find something I've missed
-or that doesn't work the way it does on Easy68K, please raise an 
-issue so I can fix it.
+See InterfaceReference_v1.2.md for full details of the runtime interfaces,
+TRAPs and memory layout supported by this firmware, including the 
+Easy68k compatibility layer.
 

@@ -4,8 +4,8 @@ kram = 0x00000FA0;
 phys = 0x00FC0000;
 MEMORY
 {
-  KRAM : org = kram, l = 96
-  ROM : org = phys, l = 16K
+  KRAM : org = kram, l = 0xFFAFF   /* Allow loader to use all of RAM */
+  ROM : org = phys, l = 64K
 }
 
 SECTIONS

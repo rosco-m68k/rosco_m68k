@@ -8,7 +8,11 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=68010 -march=68010 -mtune=68010 -Os              \
        -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
+ifeq ($(BIGROM),true)
+LDFLAGS=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
+else
 LDFLAGS=-T ./rosco_m68k_firmware.ld -Map=$(MAP)
+endif
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -27,9 +31,32 @@ STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
+ifeq ($(BIGROM),true)
+ROMDEVICE?=AT28C256
+else
 ROMDEVICE?=AT28C64B
+endif
 
-OBJECTS=bootstrap.o lzgmini_68k.o decompress.o main1.o 
+OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o main1.o 
+
+# Big ROM configuration (enable everything)
+ifeq ($(BIGROM),true)
+WITH_SDFAT=true
+WITH_KERMIT=true
+else
+# Kermit enabled by default in non-big ROM, pass WITH_KERMIT=false to disable...
+WITH_SDFAT?=false
+WITH_KERMIT?=true
+endif
+
+include easy68k/include.mk
+
+ifneq ($(WITH_VDP),false)
+include video9958/include.mk
+endif
+
+export WITH_SDFAT
+export WITH_KERMIT
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<

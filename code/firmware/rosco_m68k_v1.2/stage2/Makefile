@@ -26,16 +26,20 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_ZIP=$(BINARY).zip
 BINARY_ZIP_OBJ=$(BINARY_ZIP).o
 
+ifeq ($(MAME),true)
+DEFINES:=$(DEFINES) -DMAME_FIRMWARE
+endif
+
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS=init2.o common.o serial.o machine.o stage1.o main2.o
+OBJECTS=init2.o common.o serial.o machine.o main2.o
 
+ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
+endif
+ifeq ($(WITH_SDFAT),true)
 include sdfat/include.mk
-
-ifneq ($(NOEASY),true)
-include easy68k/include.mk
 endif
 
 main2.o: main2.c

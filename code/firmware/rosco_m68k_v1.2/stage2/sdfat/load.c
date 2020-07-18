@@ -28,16 +28,14 @@
 #define MOSI    GPIO3
 #define MISO    GPIO4
 
-#ifdef _PRINTF_H_
-#include <basicio.h>
-#define printf_(stuff)   mcPrint(stuff)
-#endif
+#define BUF_LEN 82
+#define BUF_MAX BUF_LEN - 2
 
 extern void mcPrint(char *str);
-extern void print_unsigned(uint32_t num, uint8_t base);
 
 extern uint8_t *kernel_load_ptr;
 
+static uint8_t buf[BUF_LEN];
 static BBSPI spi;
 static BBSDCard sd;
 static BlockDevice block_device;
@@ -62,6 +60,33 @@ int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
 
 int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     return 0;
+}
+
+static uint8_t digit(unsigned char digit) {
+  if (digit < 10) {
+    return (char)(digit + '0');
+  } else {
+    return (char)(digit - 10 + 'A');
+  }
+}
+
+static void print_unsigned(uint32_t num, uint8_t base) {
+  if (base < 2 || base > 36) {
+    return;
+  }
+
+  unsigned char bp = BUF_MAX;
+
+  if (num == 0) {
+    buf[bp--] = '0';
+  } else {
+    while (num > 0) {
+      buf[bp--] = digit(num % base);
+      num /= base;
+    }
+  }
+
+  mcPrint((char*)&buf[bp+1]);
 }
 
 bool load_kernel() {
