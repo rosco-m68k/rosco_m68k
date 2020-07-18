@@ -1,7 +1,7 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the **release** branch for Revision 1 boards with firmware 1.1. If you have a revision 1 and are running firmware 1.1, this is the branch to use for example code and standard libraries.
+> **Note**: This is the **release** branch for Revision 1 boards with firmware 1.1. If you have a revision 1 and are running firmware 1.1, this is the branch to use for example code and standard libraries. If you have firmware 1.01 you should switch to the `release/revision-1.01` branch instead (https://github.com/rosco-m68k/rosco_m68k/blob/release/revision-1.01/README.md)
 
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
