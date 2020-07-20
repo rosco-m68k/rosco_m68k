@@ -20,10 +20,10 @@ With the standard address decoder (IC2), the machine has the following memory ma
 03: 0x00001000-0x000fffff - User
 ```
 
-When using the serial firmware, the firmware loads code at 0x28000. On
+When using the serial firmware, the firmware loads code at 0x40000. On
 entry to that code:
 
-* PC will be at 0x28000
+* PC will be at 0x40000
 * VBR will point to 0x0
 * Supervisor stack will be at 0x100000, SSP could be anywhere and can be reset
 
