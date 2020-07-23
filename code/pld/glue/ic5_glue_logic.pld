@@ -2,7 +2,7 @@ GAL16V8
 GLUE
 
 FC0   FC1   FC2   ODDROM    ODDRAM    EVENROM   EVENRAM   IOSEL   IODTACK   GND
-NC    NC    IACK  DTACK     MFPDS     RAMOE     RW        LDS     NC        VCC
+A17   NC    IACK  DTACK     MFPDS     RAMOE     RW        LDS     NC        VCC
 
 /IACK     = A17 * FC0 * FC1 * FC2
 /DTACK.T  = /IOSEL * /IODTACK 

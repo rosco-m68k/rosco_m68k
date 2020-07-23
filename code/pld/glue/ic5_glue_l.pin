@@ -6,8 +6,8 @@
    2   | FC1      | Input
    3   | FC2      | Input
    4   | ODDROM   | Input
-   5   | EVENROM  | Input
-   6   | ODDRAM   | Input
+   5   | ODDRAM   | Input
+   6   | EVENROM  | Input
    7   | EVENRAM  | Input
    8   | IOSEL    | Input
    9   | IODTACK  | Input
@@ -20,6 +20,6 @@
   16   | RAMOE    | Output
   17   | RW       | Input
   18   | LDS      | Input
-  19   | CPUCYC   | Output
+  19   | NC       | NC
   20   | VCC      | VCC
 
