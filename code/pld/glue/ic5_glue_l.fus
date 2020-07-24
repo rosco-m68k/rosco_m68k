@@ -51,8 +51,8 @@ Pin 15 = MFPDS        XOR = 0   AC1 = 1
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
 Pin 14 = DTACK        XOR = 0   AC1 = 1
- 40  ---- ---- ---- ---- ---- ---- ---- ----
- 41  ---- ---- ---- ---- ---- ---- -x-- ----
+ 40  ---- ---- ---- ---- ---- --x- ---- ----
+ 41  ---- ---- ---- ---- ---- ---- -x-- -x--
  42  ---- ---- ---- ---- ---- ---- ---x -x--
  43  ---- ---- ---- ---- -x-- ---- --x- ----
  44  ---- ---- -x-- ---- ---- ---- --x- ----
@@ -62,7 +62,7 @@ Pin 14 = DTACK        XOR = 0   AC1 = 1
 
 Pin 13 = IACK         XOR = 0   AC1 = 1
  48  ---- ---- ---- ---- ---- ---- ---- ----
- 49  x-x- x--- ---- ---- ---- ---- ---- ----
+ 49  x-x- x--- ---- ---- ---- ---- ---- --x-
  50  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  51  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  52  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

@@ -20,7 +20,7 @@ kram = 0x00001000;
 phys = 0x00028000;
 MEMORY
 {
-  INIT : org = phys, l = 0xd7fff   /* init -> top of ram (863KB) */ 
+  INIT : org = phys, l = 0xBEFFF   /* init -> top of ram (767KB) */ 
   KRAM : org = kram, l = 0xFEFFF   /* Allow located code to use all of RAM > 4k */
 }
 

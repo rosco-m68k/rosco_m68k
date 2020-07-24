@@ -1,0 +1,38 @@
+Last updated 06/06/2020 by Xark
+*----------------DHRYSTONE VERSION 1.1 RESULTS BEGIN--------------------------
+ *
+ * MACHINE      MICROPROCESSOR  OPERATING       COMPILER        DHRYSTONES/SEC.
+ * TYPE                         SYSTEM                          NO REG  REGS
+ * --------------------------   ------------    -----------     ---------------
+ * Apple IIe    65C02-1.02Mhz   DOS 3.3         Aztec CII v1.05i  37      37
+ * -            Z80-2.5Mhz      CPM-80 v2.2     Aztec CII v1.05g  91      91
+ * -            8086-8Mhz       RMX86 V6        Intel C-86 V2.0  197     203LM??
+ * IBM PC/XT    8088-4.77Mhz    COHERENT 2.3.43 Mark Wiiliams    259     275
+ * -            8086-8Mhz       RMX86 V6        Intel C-86 V2.0  287     304 ??
+ * Fortune 32:16 68000-6Mhz     V7+sys3+4.1BSD  cc               360     346
+ * PDP-11/34A   w/FP-11C        UNIX V7m        cc               406     449
+ * Macintosh512 68000-7.7Mhz    Mac ROM O/S     DeSmet(C ware)   625     625
+ * VAX-11/750   w/FPA           UNIX 4.2BSD     cc               831     852
+ * rosco_m68k   68010-8.0Mhz    ROM             gcc-7.5.0        -       862 (-O1)
+ * DataMedia 932 68000-10Mhz    UNIX sysV       cc               837     888
+ * Plexus P35   68000-12.5Mhz   UNIX sysIII     cc               835     894
+ * ATT PC7300   68010-10Mhz     UNIX 5.0.3      cc               973    1034
+ * rosco_m68k   68010-10Mhz     ROM             gcc-7.5.0        -      1086 (-O1)
+ * Compaq II    80286-8Mhz      MSDOS 3.1       MS C 3.0        1086    1140 LM
+ * IBM PC/AT    80286-7.5Mhz    Venix/286 SVR2  cc              1159    1254 *15
+ * Compaq II    80286-8Mhz      MSDOS 3.1       MS C 3.0        1190    1282 MM
+ * MicroVAX II  -               Mach/4.3        cc              1361    1385
+ * DEC uVAX II  -               Ultrix-32m v1.1 cc              1385    1399
+ * Compaq II    80286-8Mhz      MSDOS 3.1       MS C 3.0        1351    1428
+ * VAX 11/780   -               UNIX 4.2BSD     cc              1417    1441
+ * VAX-780/MA780                Mach/4.3        cc              1428    1470
+ * VAX 11/780   -               UNIX 5.0.1      cc 4.1.1.31     1650    1640
+ * Ridge 32C V1 -               ROS 3.3         Ridge C (older) 1628    1695
+ * Gould PN6005 -               UTX 1.1c+ (4.2) cc              1732    1884
+ * Gould PN9080 custom ECL      UTX-32 1.1C     cc              4745    4992
+ * VAX-784      -               Mach/4.3        cc              5263    5555 &4
+ * VAX 8600     -               4.3 BSD         cc              6329    6423
+ * Amdahl 5860  -               UTS sysV        cc 1.22        28735   28846
+ * IBM3090/200  -               ?               ?              31250   31250
+ *
+ 

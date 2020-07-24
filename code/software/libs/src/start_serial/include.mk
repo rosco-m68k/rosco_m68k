@@ -3,7 +3,7 @@ LIBOBJECTS=$(DIR)/init.o $(DIR)/kinit.o
 
 # ---===---
 DIR := $(shell dirname $(lastword $(MAKEFILE_LIST)))
-UPPERLIB := $(shell tr '[:lower:]' '[:upper:]' <<< $(LIB))
+UPPERLIB := $(shell echo $(LIB) | tr '[:lower:]' '[:upper:]')
 BINARY := lib$(LIB).a
 CFLAGS  := $(CFLAGS) -DBUILD_ROSCOM68K_$(UPPERLIB)_LIB
 OBJECTS := $(OBJECTS) $(LIBOBJECTS)
