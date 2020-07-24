@@ -157,7 +157,7 @@ EARLY_PRINTLN:
 INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
-    move.w  #100,$408                 ; Heartbeat flash counter at 100 (1 per second)
+    move.w  #50,$408                  ; Heartbeat flash counter at 100 (1 per second)
     move.l  #0,$40C                   ; Zero upticks
 
     ; Setup default implementations in EFP table.
@@ -202,7 +202,7 @@ INITMFP:
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
-    move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
+    move.b  #$B8,MFP_TCDR             ; Timer C count is 184 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
@@ -259,7 +259,7 @@ TICK_HANDLER:
     
     ; counted to zero, so toggle indicator 0 and reset counter
     bchg.b  #0,MFP_GPDR             
-    move.w  #100,D0
+    move.w  #50,D0
     
 .TICK_HANDLER_DONE:
     sub.w   #$1,D0                    ; Decrement counter...
