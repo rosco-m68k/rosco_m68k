@@ -18,11 +18,23 @@
 
 extern void main(void);
 
+static long *upticks = (long*)0x40C;
+
+long time() {
+  return *upticks / 100;
+}
+
 void kmain() {
-  // Run dhrystone benchmark!
   printf("dhrystone benchmark\n");
+#ifndef TIME
+#ifndef TIMES
+  // Run dhrystone benchmark!
+
   printf("Get your stopwatch ready...");
   delay(1000000);
+#endif
+#endif
+
   main();
 
   // Warm-reboot machine when quit

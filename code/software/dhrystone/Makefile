@@ -37,6 +37,10 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 OBJECTS=kmain.o dhrystone.o
 
+ifeq ($(HAVE_TIMER),true)
+DEFINES:=$(DEFINES) -DTIME
+endif
+
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 

@@ -553,7 +553,11 @@ void Proc0()
 /*****************
 -- Start Timer --
 *****************/
+#ifndef TIME
+#ifndef TIMES
 	printf("Start stopwatch!\a\n");
+#endif
+#endif
 #ifdef TIME
 	starttime = time( (long *) 0);
 #endif
@@ -591,7 +595,12 @@ void Proc0()
 /*****************
 -- Stop Timer --
 *****************/
+#ifndef TIME
+#ifndef TIMES
 	printf("\aStop stopwatch!\n\n");
+	printf("This machine benchmarks at: %d / <stopwatch time in seconds>\n\n", LOOPS);
+#endif
+#endif
 
 #ifdef TIME
 	benchtime = time( (long *) 0) - starttime - nulltime;
@@ -610,7 +619,6 @@ void Proc0()
 	printf("This machine benchmarks at %ld dhrystones/second\n",
 		((long) LOOPS) * HZ / benchtime);
 #endif
-	printf("This machine benchmarks at: %d / <stopwatch time in seconds>\n\n", LOOPS);
 }
 
 void Proc1(REG RecordPtr PtrParIn)
