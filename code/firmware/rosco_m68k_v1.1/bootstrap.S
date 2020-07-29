@@ -157,7 +157,7 @@ EARLY_PRINTLN:
 INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
-    move.w  #100,$408                 ; Heartbeat flash counter at 100 (1 per second)
+    move.w  #50,$408                  ; Heartbeat flash counter at 50 (1 per second)
     move.l  #0,$40C                   ; Zero upticks
 
     ; Setup default implementations in EFP table.
@@ -202,7 +202,7 @@ INITMFP:
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
     
     ; Timer setup - Timer D controls serial clock, C is kernel tick
-    move.b  #$5C,MFP_TCDR             ; Timer C count is 92 for 50Hz (interrupt on rise and fall so 100Hz)
+    move.b  #$B8,MFP_TCDR             ; Timer C count is 184 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     
@@ -259,7 +259,7 @@ TICK_HANDLER:
     
     ; counted to zero, so toggle indicator 0 and reset counter
     bchg.b  #0,MFP_GPDR             
-    move.w  #100,D0
+    move.w  #50,D0
     
 .TICK_HANDLER_DONE:
     sub.w   #$1,D0                    ; Decrement counter...
@@ -426,7 +426,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", 0
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", 0
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", 0 
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37mfirmware v1.1BETA2", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m     firmware v1.1", $D, $A, 0
 SZ_INITDONE     dc.b    $1B, "[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...", 0
 
 SZ_CRLF         dc.b    $D, $A, 0
