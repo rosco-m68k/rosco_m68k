@@ -240,18 +240,21 @@ CLEARBUFFER:
 V9958_CON_CLRSCR::
     move.w  D1,-(A7)
     move.l  A0,-(A7)
-    ori.w   #$0200,SR                      ; Disable interrupts
-    bsr.s   CLEARBUFFER                    ; Clear
-    andi.w  #~$200,SR                      ; And re-enable...
+    
+    ori.w   #$0200,SR                         ; Disable interrupts
+    bsr.s   CLEARBUFFER                       ; Clear
+    andi.w  #~$200,SR                         ; And re-enable...
     move.w  #0,CURPOS
-    move.l  (A7)+,A0
-    move.w  (A7)+,D1
     
     ; Now we've cleared, we need to copy the whole buffer and flip
+    move.l  #PORT_RWDATA,A0                   ; Use A0 as port base register
     lea.l   BUFFER,A1
     move.b  CURRENTPAGE,D0
     not.b   D0
     bsr.w   BUFFERFLIP
+    
+    move.l  (A7)+,A0
+    move.w  (A7)+,D1
     rts
 
 
