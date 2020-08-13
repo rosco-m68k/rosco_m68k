@@ -5,7 +5,7 @@ LOCAL_DEFINES=-DPRINTF_INCLUDE_CONFIG_H
 
 # ---===---
 DIR := $(shell dirname $(lastword $(MAKEFILE_LIST)))
-UPPERLIB := $(shell tr '[:lower:]' '[:upper:]' <<< $(LIB))
+UPPERLIB := $(shell echo $(LIB) | tr '[:lower:]' '[:upper:]')
 BINARY := lib$(LIB).a
 CFLAGS  := $(CFLAGS) -I$(LIBINCLUDES) -DBUILD_ROSCOM68K_$(UPPERLIB)_LIB $(LOCAL_DEFINES)
 OBJECTS := $(OBJECTS) $(LIBOBJECTS)

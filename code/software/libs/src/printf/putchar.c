@@ -14,15 +14,19 @@
  */
 #include <machine.h>
 
+static char buf[2];
+static char crbuf[2] = { '\r', 0 };
+
 /*
  * This is used by printf.
  */
 void _putchar(char chr) {
   if (chr == '\n') {
     // is LF, print CR too
-    mcSendchar('\r');
+    mcPrint(crbuf);
   }
 
-  mcSendchar(chr);
+  buf[0] = chr;
+  mcPrint(buf);
 }
 

@@ -20,5 +20,14 @@
 #define NULL ((void*) 0)
 #endif
 
+#include <stddef.h>
+
+void exit(int status);
+void abort(void);
+void *malloc(size_t size);
+void free(void *ptr);
+void *realloc(void *ptr, size_t size);
+void *calloc(size_t nitems, size_t size);
+
 #endif
 
