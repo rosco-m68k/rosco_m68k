@@ -16,8 +16,8 @@
 
 OUTPUT_FORMAT("binary")
 ENTRY(START)
-kram = 0x00004000;
-phys = 0x00028000;
+kram = 0x00001000;
+phys = 0x00040000;
 MEMORY
 {
   INIT : org = phys, l = 0xBEFFF   /* init -> top of ram (767KB) */ 
