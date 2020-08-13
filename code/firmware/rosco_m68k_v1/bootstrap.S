@@ -18,10 +18,18 @@
 
     section .text
     
+; Version (embedded into firmware at 0xFC0400)
+; MSW is flags, LSW is split into major (MSB) and minor (LSB)
+;
+; Flags:
+; bit 0 - 14: Reserved
+; bit 15    : Snapshot version
+RELEASE_VER equ     $80000101
+
     org     ROMBASE
 RESET:
     dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
-    dc.l    INIT_PC                     ; 01: Initial PC (start of ROM)
+    dc.l    START                       ; 01: Initial PC (start of ROM code)
     
 VECTORS:
     dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error
@@ -61,12 +69,15 @@ VECTORS:
     dcb.l   2,UNMAPPED_USER_HANDLER     ; 4E-4F: MFP GPIO #6-7 (Not used)
     dcb.l   176,UNMAPPED_USER_HANDLER   ; 50-FF: Unused user vectors
     
+VEC_END:
+VERSION:
+    dc.l    RELEASE_VER                 ; Embed the release version in ROM
 
 ; First of all, copy the exception table to RAM at 0x0.
 ; 68010 VBR defaults to that location anyway for 68000 compatibility.
 START::
     or.w    #$0700,SR                 ; Disable interrupts for now    
-    move.l  #START,A0                 ; Start into A0 (source)
+    move.l  #VEC_END,A0               ; Start into A0 (source)
     move.l  #$400,A1                  ; 0x400 into A1 (destination)
 
 .ISR_COPY_LOOP:    

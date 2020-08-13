@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v1                 
 ;------------------------------------------------------------
-; Copyright (c)2019 Ross Bamford
+; Copyright (c)2019-2020 Ross Bamford
 ; See top-level LICENSE.md for licence information.
 ;
 ; EQUates for Rosco_m68k
@@ -21,7 +21,6 @@ ROMBASE     equ     $FC0000
 
 ; Initialisation
 INIT_SSP    equ     RAMLIMIT
-INIT_PC     equ     ROMBASE+$400
 
 ; MFP Location
 MFPBASE     equ     IOBASE

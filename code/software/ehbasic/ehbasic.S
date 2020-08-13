@@ -85,13 +85,8 @@ nobrk		EQU	0				* null response to INPUT causes a break
 
 VEC_OUT:
     move.l  D1,-(A7)              ; Save D1
-.BEGIN
-    bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
-    move.b  MFP_TSR,D1            ; Get TSR
-    btst    #7,D1                 ; Is buffer empty bit set?
-    beq.s   .BEGIN                ; No - loop until it is
-
-    move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  #4,D1                 ; Trap function code 4... 
+    trap    #14                   ; .. and go
     move.l  (A7)+,D1              ; Restore D1
     rts
 

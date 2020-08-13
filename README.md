@@ -1,6 +1,8 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
+> **Note**: This is the **develop** branch, where the latest development files live. It is not guaranteed to contain stable code or working designs at any given point. If you are looking for code to use with your board or stable designs, these can be found on the [current 1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)). Code built or PCBs manufactured from the develop branch are likely to contain development and pre-production bugs, be incomplete, or just plain not work. Code and designs here are liable to change in utterly-incompatible ways without notice!
+
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
 This repository holds design files, firmware and software for the Really Old-School Computer 
