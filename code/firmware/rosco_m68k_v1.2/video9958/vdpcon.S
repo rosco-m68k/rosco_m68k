@@ -390,6 +390,11 @@ BUFFERFLIP:
     nop
     nop
     nop
+    nop
+    nop
+    nop
+    nop
+    nop
     addq.w  #1,D0
     cmpi.w  #DISPLAYSIZE,D0
     bne.s   .COPY
@@ -711,7 +716,7 @@ SZHEADER      dc.b    "                                ___ ___ _                
               dc.b    " ___ ___ ___ __ ___       _____|  _| . | |_                                     "
               dc.b    "|  _| . |_ -| _| . |     |     | . | . | '_|                                    "
               dc.b    "|_| |___|___|__|___|_____|_|_|_|___|___|_,_|                                    "
-              dc.b    "                   |_____| Firmware 1.2ALPHA                                    "
+              dc.b    "                   |_____|      Firmware 1.2                                    "
               dc.b    "                                                                                "
               dc.b    13, 0
 SZ_CR         dc.b    $D, 0
