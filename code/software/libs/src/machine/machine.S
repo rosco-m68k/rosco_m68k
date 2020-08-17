@@ -99,3 +99,12 @@ mcHalt::
     stop    #$2700
     bra.s   mcHalt
 
+; Call ROM reset vector to "soft reset" the machine
+; 
+; Trashes: A0
+; Modifies: Nothing
+; Notes: No return
+mcReset::
+    move.l  $FC0004,A0
+    jmp     (A0)
+
