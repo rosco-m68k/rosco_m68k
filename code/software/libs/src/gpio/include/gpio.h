@@ -16,6 +16,8 @@
 #ifndef ROSCO_M68K_GPIO_H
 #define ROSCO_M68K_GPIO_H
 
+#include <stdbool.h>
+
 typedef enum GPIOMask {
   pin_gpio1 = 0x04,
   pin_gpio2 = 0x08,
