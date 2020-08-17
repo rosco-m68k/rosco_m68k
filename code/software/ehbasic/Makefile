@@ -19,7 +19,7 @@ LST=$(BINARY_BASENAME).lst
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 $(BINARY) : ehbasic.S ehdefs.S
-	vasmm68k_mot -Fbin -m68010 -L $(LST) -o $(BINARY) ehbasic.S
+	vasmm68k_mot -Fbin -m68010 -nowarn=2028 -L $(LST) -o $(BINARY) ehbasic.S
 	chmod a-x $@
 
 .PHONY: all clean load
