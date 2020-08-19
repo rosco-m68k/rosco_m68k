@@ -59,6 +59,7 @@ SECTIONS
   {
     _bss_start = .;
     *(.bss)
+    *(COMMON)
     _bss_end = .;
   } > KRAM
 
