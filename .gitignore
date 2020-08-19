@@ -16,3 +16,6 @@
 **/*.kicad_pcb-bak
 **/fp-info-cache
 **/*.lst
+**/*.dis
+**/*.sym
+**/*.elf
