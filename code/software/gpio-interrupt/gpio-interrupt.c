@@ -27,6 +27,9 @@ volatile uint32_t *tick_100Hz = (uint32_t *)0x40C;
 // See page 3-4 in 1984 MC68901 MFP pdf
 #define MFP_GPIP4_BIT 0x40
 
+void *prev_handler;               // save old handler
+uint8_t prev_gpdr;
+  
 volatile int gpio3_interrupts;    // counter for number of GPIO3 interrupts
 
 // GPIO3 interrupt handler.  The "interrupt" attribute "tells the compiler to save
@@ -42,16 +45,8 @@ void gpio3_handler(void)
   MFP(ISRB) = ~MFP_GPIP4_BIT;   // clear interrupt in-service bit
 }
 
-noreturn void kmain()
+void kmain()
 {
-  // clear BSS segment as C standard requires (so bss variables start zero'd)
-  // Needed since rosco kmain is not quite like normal C main.
-  {
-    extern int _bss_start[], _bss_end[];
-    for (int *bss = _bss_start; bss <= _bss_end; bss++)
-      *bss = 0;
-  }
-
   println("");
   println("*** MFP GPIO Interrupt Test ***");
   println("          by Xark");
@@ -86,7 +81,7 @@ noreturn void kmain()
   MFP(IERB) |= MFP_GPIP4_BIT; // set MFP GPIP4 interrupt enable
   MFP(IPRB) = ~MFP_GPIP4_BIT; // clear MFP GPIP4 interrupt pending
   MFP(ISRB) = ~MFP_GPIP4_BIT; // clear interrupt in-service bit
-  MFP(IMRB) |= MFP_GPIP4_BIT; // clear interrupt mask bit
+  MFP(IMRB) |= MFP_GPIP4_BIT; // set interrupt enable mask bit
 
   // Set vector #70 (MFP GPIP4 interrupt) to our interrupt handler.
   // GPIP4 is MFP interrupt source #6 (see page 3-1 in 1984 MC68901 MFP pdf)
@@ -97,7 +92,13 @@ noreturn void kmain()
   // This _could_ be done in C, but since it would need an ugly cast along with
   // the "pedantic" compiler options restrictons making it more difficult, one
   // line of inline asm seemed prefereable.
-  __asm__ __volatile__ ("move.l #%[fn],0x100+6*4\n" : : [fn] "m" (gpio3_handler) : );
+  __asm__ __volatile__ (
+    " move.l 0x100+6*4,%[old_hdlr]\n"   // move current vector into old_hdlr
+    " move.l #%[new_hdlr],0x100+6*4\n"  // write address of new_hdlr to vector
+    : [old_hdlr] "=m" (prev_handler)    // output
+    : [new_hdlr] "m"  (gpio3_handler)   // input
+    :                                   // clobbers
+  );
 
   mcEnableInterrupts();   // re-enable interrupts
 
@@ -127,9 +128,18 @@ noreturn void kmain()
 
   } while (!(MFP(RSR)&0x80)); // loop until a char is waiting in UART buffer
 
+  // disable GPIO interrupts
+  MFP(IERB) &= ~MFP_GPIP4_BIT; // clear MFP GPIP4 interrupt enable
+  MFP(IMRB) &= ~MFP_GPIP4_BIT; // clear interrupt enable mask bit
+
+  // restore old handler
+  __asm__ __volatile__ (
+    " move.l %[old_hdlr],0x100+6*4\n"   // move contents of old_hdlr back to vector
+    :                                   // output
+    : [old_hdlr] "m" (prev_handler)     // input
+    :                                   // clobbers
+  );
+
   println("");
   println("Glad to be of service!");  // invoke Genuine Rosco Personality(TM) module
-  println("Resetting...");
-
-  mcReset();  // soft-reset back to loader
 }

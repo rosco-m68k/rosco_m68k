@@ -110,13 +110,5 @@ void mcEnableInterrupts();
  */
 noreturn void mcHalt();
 
-/*
- * Call ROM reset vector and "soft reset" the machine. This is
- * very similar to pressing the reset button, but the hardware
- * does not actually receive a reset signal.
- */
-noreturn void mcReset();
-
-
 #endif
 
