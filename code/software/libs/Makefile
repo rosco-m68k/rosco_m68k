@@ -3,7 +3,7 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
-EXTRA_CFLAGS?=
+EXTRA_CFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
 				-mcpu=68010 -march=68010 -mtune=68010														\
