@@ -88,6 +88,9 @@ char mcReadchar();
 /*
  * Busywait for a while. The actual time is wholly dependent
  * on CPU (i.e. clock) speed!
+ * About 18 CPU cycles per "tick" (plus small overhead per call)
+ *   ~2.25 usec per-tick with  8MHz CPU
+ *   ~1.80 usec per tick with 10Mhz CPU
  */
 void mcBusywait(uint32_t ticks);
 
