@@ -8,12 +8,12 @@ DEFINES=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lmachine -lstart_serial
-CFLAGS=-std=c11 -ffreestanding -Wall -Wextra -pedantic -Werror									\
-				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010						\
-				$(DEFINES)
+CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
+				-Wall -Wextra -Werror -pedantic -I$(SYSINCDIR) \
+				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
 ASFLAGS=-mcpu=68010 -march=68010
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-				-Map=$(MAP) --oformat=elf32-m68k
+				-Map=$(MAP)  --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf -showopt $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as
