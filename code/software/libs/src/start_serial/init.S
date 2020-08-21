@@ -26,20 +26,20 @@
     include "../../shared/equates.S"
 
     section .init
-    org     $28000
+; NOTE: Loaded at $28000, but copy oop has been made position-independent.
 
 ; Stack and all registers can be trashed at this point,
 ; the machine is your own...
 START::
     bset.b  #1,MFP_GPDR                 ; Turn off red LED
 
-    move.l  #RAMLIMIT,A7                ; Reset stack 
-    move.l  #_init_end,A0               ; End of init into A0 (source)
+    move.l  #_STACK_TOP,A7              ; Reset stack (from linker script)
+    lea.l   RELOCATED_START(pc),A0      ; End of init into A0 PC-rel (source)
     move.l  #_postinit,A1               ; target into A1 (destination)
 
 .COPY_LOOP:    
-    move.l  (A0)+,(A1)+                 ; Copy source to dest, with postincrement.
-    cmp.l   #_end,A1                    ; Done?
+    move.l  (A0)+,(A1)+                 ; Copy source to dest, with post-increment.
+    cmp.l   #_data_end,A1               ; Done?
     bls.s   .COPY_LOOP                  ; Nope - loop again...
   
 .COPY_DONE:

@@ -17,13 +17,15 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 kram = 0x00001000;
-phys = 0x00040000;
+phys = 0x00F00000;      /* "high" address for pos-ind. init   */
 MEMORY
 {
   INIT : org = phys, l = 0xBEFFF   /* init -> top of ram (767KB) */ 
   KRAM : org = kram, l = 0xFEFFF   /* Allow located code to use all of RAM > 4k */
 }
 
+PROVIDE(_STACK_TOP   = 0x00100000);  /* default stack at 1MB base RAM top */
+PROVIDE(_MFP_VECBASE = 0x00000040);  /* handy vector base, useable from C */
 SECTIONS
 {
   .text.init : AT(0)
@@ -36,34 +38,32 @@ SECTIONS
   .text.postinit : AT(SIZEOF(.text.init))
   {
     _postinit = .;
-    *(.postinit)
+    KEEP(*(.postinit))  /* KEEP() needed to "anchor" kmain reference for gc-sections */
     _postinit_end = .;
   } > KRAM
 
-  .text ALIGN(2) :
+  .text ALIGN(4) :
   {
     _code = .;
-    *(.text)
-    *(.rodata)
+    *(.text*)
+    *(.rodata*)
     _code_end = .;
   } > KRAM
   
-  .data ALIGN(2) :
+  .data ALIGN(4) :
   {
     _data_start = .;
-    *(.data)
+    *(.data*)
     _data_end = .;
   } > KRAM
 
-  .bss ALIGN(2) :
+  .bss ALIGN(4) :
   {
     _bss_start = .;
-    *(.bss)
+    *(.bss*)
     *(COMMON)
     _bss_end = .;
   } > KRAM
 
   _end = .;
 }
-
-
