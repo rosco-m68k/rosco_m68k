@@ -3,12 +3,12 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
-SOFTWARE := $(filter-out libs,$(wildcard */.))
+SOFTWARE := $(filter-out libs/.,$(wildcard */.))
 
 all: libs $(SOFTWARE)
 
 libs:
-				@echo === Rebuilding and installing rosco_m68 libraries
+				@echo === Rebuilding and installing rosco_m68k libraries
 				$(MAKE) -C libs clean all install
 
 software: $(SOFTWARE)
