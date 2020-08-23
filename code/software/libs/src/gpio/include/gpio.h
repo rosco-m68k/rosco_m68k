@@ -49,17 +49,28 @@ typedef enum GPIOMode {
 } PINMODE; 
 
 #ifndef ROSCOM68K_QUIET_INCLUDES
-#define LED_GREEN led_green
-#define LED_RED   led_red
-#define GPIO1     pin_gpio1
-#define GPIO2     pin_gpio2
-#define GPIO3     pin_gpio3
-#define GPIO4     pin_gpio4
-#define GPIO5     pin_gpio5
-#define UART_CTS  pin_cts
+
+#define LED_GREEN   led_green
+#define LED_RED     led_red
+#define GPIO1       pin_gpio1
+#define GPIO2       pin_gpio2
+#define GPIO3       pin_gpio3
+#define GPIO4       pin_gpio4
+#define GPIO5       pin_gpio5
+#define UART_CTS    pin_cts
+
+#define LED_GREEN_B led_green_b
+#define LED_RED_B   led_red_b
+#define GPIO1_B     pin_gpio1_b
+#define GPIO2_B     pin_gpio2_b
+#define GPIO3_B     pin_gpio3_b
+#define GPIO4_B     pin_gpio4_b
+#define GPIO5_B     pin_gpio5_b
+#define UART_CTS_B  pin_cts_b
 
 #define INPUT     pin_mode_input
 #define OUTPUT    pin_mode_output
+
 #endif
 
 void pinMode(GPIO pin, PINMODE mode);
