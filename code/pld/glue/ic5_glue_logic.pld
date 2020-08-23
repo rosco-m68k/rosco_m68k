@@ -5,12 +5,10 @@ FC0   FC1   FC2   ODDROM    ODDRAM    EVENROM   EVENRAM   IOSEL   IODTACK   GND
 NC    NC    IACK  DTACK     MFPDS     RAMOE     RW        LDS     NC        VCC
 
 /IACK   = FC0 * FC1 * FC2
-/DTACK  = /IOSEL + /IACK * /IODTACK
-        + IACK * /EVENROM
-        + IACK * /ODDROM
-        + IACK * /EVENRAM
-        + IACK * /ODDRAM
-        + IACK * ODDROM * EVENROM * ODDRAM * EVENRAM * IOSEL
+
+
+DTACK   = /IOSEL * /LDS * IODTACK
+        + /IACK * IODTACK 
 
 /MFPDS  = /LDS + /IACK
 /RAMOE  = RW
