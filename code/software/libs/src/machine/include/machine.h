@@ -73,6 +73,16 @@
 #endif
 
 /*
+ * Absolute symbols defined in linker script
+ */
+extern volatile uint32_t  _TIMER_100HZ;         // 100Hz timer counter
+extern void             (*_MFP_VECTORS[16])();  // MFP interrupt vectors
+extern uint32_t           _FIRMWARE_REV;        // rosco ROM firmware rev.
+
+extern char _STACK_TOP[];     /* default stack at top of RAM  */
+extern char _HEAP_END[];      /* heap end at stack */
+
+/*
  * Early print null-terminated string.
  */
 void mcPrint(char *str);
@@ -93,6 +103,11 @@ char mcReadchar();
  *   ~1.80 usec per tick with 10Mhz CPU
  */
 void mcBusywait(uint32_t ticks);
+
+/*
+ * Delay for n 10ms ticks (using 100Hz timer interrupt)
+ */
+void mcDelaymsec10(uint32_t ticks10ms);
 
 /*
  * Disable all interrupts (except NMI).
