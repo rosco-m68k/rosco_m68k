@@ -1,10 +1,10 @@
 /*
  *------------------------------------------------------------
- *                                  ___ ___ _   
- *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ *                                  ___ ___ _
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
- * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+ *                     |_____|     firmware v1.2
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
@@ -18,11 +18,9 @@ OUTPUT_FORMAT("binary")
 ENTRY(START)
 
 ram  = 0x00001000;          /* start of user memory                     */
-init = 0x01028000;          /* "pretend" high address for pos-ind. init */
 
 MEMORY
 {
-  INIT : org = init, l = 0x00010000     /* 64K for init (reused)        */ 
   RAM  : org = ram,  l = 0x00FFEFFF     /* program can use all RAM > 4K */
 }
 
@@ -40,6 +38,7 @@ PROVIDE(_EASY68K_ECHOON = 0x00000410);  /* Easy68k 'echo on' flag       */
 PROVIDE(_EASY68K_PROMPT = 0x00000411);  /* Easy68k 'prompt on' flag     */
 PROVIDE(_EASY68K_SHOWLF = 0x00000412);  /* Easy68k 'LF display' flag    */
 
+/* NOTE: These need to be kept in sync with firmware equates.S! */
 PROVIDE(_EFP_TABLE      = 0x00000420);  /* Extension function ptr table */
 
 PROVIDE(_EFP_PRINT      = 0x00000420);  /* Print string to console      */
@@ -55,16 +54,20 @@ PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
 /* ROM absolute addresses */
 PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
 
+/* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
+PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
+PROVIDE(_RUN_ADDRESS    = ORIGIN(RAM)); /* start of user memory         */
+
 SECTIONS
 {
-  .text.init : AT(0)
+  .text.init :
   {
     _init = .;
-    *(.init)
+    KEEP(*(.init))  /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
-  } > INIT
+  } > RAM
 
-  .text.postinit : AT(SIZEOF(.text.init))
+  .text.postinit :
   {
     _postinit = .;
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
@@ -78,11 +81,12 @@ SECTIONS
     *(.rodata*)
     _code_end = .;
   } > RAM
-  
+
   .data ALIGN(4) :
   {
     _data_start = .;
     *(.data*)
+    . = ALIGN(4);   /* align for init.S longword copy */
     _data_end = .;
   } > RAM
 
