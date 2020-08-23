@@ -38,5 +38,4 @@ References:
  For more information on EhBASIC68, other versions of EhBASIC and other projects
  please visit my site at ..
 
-	 http://mycorner.no-ip.org/index.html
-
+  http://mycorner.no-ip.org/index.html

@@ -85,7 +85,7 @@ mcBusywait::
     section .text.mcDelaymsec10
 mcDelaymsec10::
     move.l  (4,A7),D0                 ; Get 10ms delay count from the stack into D0
-		add.l		_TIMER_100HZ.w,D0         ; add to current timer counter for time finished
+    add.l   _TIMER_100HZ.w,D0         ; add to current timer counter for time finished
 .DELAYWAIT
     cmp.l   _TIMER_100HZ.w,D0         ; compare current time with time finished
     bcc.s   .DELAYWAIT                ;  ... while it's < (unsigned)

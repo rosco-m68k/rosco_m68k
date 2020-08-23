@@ -18,7 +18,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(START)
 
 ram  = 0x00001000;          /* start of user memory                     */
-init = 0x01028000;          /* "pretend" high address for pos-ind. init	*/
+init = 0x01028000;          /* "pretend" high address for pos-ind. init */
 
 MEMORY
 {
