@@ -3,7 +3,7 @@
 # Copyright (c)2020 Xark
 # MIT LICENSE
 
-EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer -fverbose-asm
+EXTRA_CFLAGS?=-g -Os -fomit-frame-pointer
 DEFINES=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
@@ -13,7 +13,7 @@ CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
 ASFLAGS=-mcpu=68010 -march=68010
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-				-Map=$(MAP)  --gc-sections --oformat=elf32-m68k
+				-Map=$(MAP) --gc-sections --oformat=elf32-m68k --defsym=_RAM_SIZE=1M
 VASMFLAGS=-Felf -m68010 -quiet -Lnf -showopt $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as
