@@ -11,8 +11,8 @@
 ; This is the initialization code. The loader jumps into this
 ; code after the "kernel" is received via serial.
 ;
-; The first section is linked to be run at $40000, where the
-; loader loads the code. This section copies the rest of the
+; The first section is position independent, but will be loaded
+; by the loader at $28000. This section copies the rest of the
 ; loaded code to $1000, and then jumps to it.
 ;
 ; The second section (after RELOCATED_START) is executed
@@ -26,7 +26,7 @@
     include "../../shared/equates.S"
 
     section .init
-; NOTE: Loaded at $28000, but copy oop has been made position-independent.
+; NOTE: Loaded at $28000, but copy loop has been made position-independent.
 
 ; Stack and all registers can be trashed at this point,
 ; the machine is your own...
@@ -34,7 +34,7 @@ START::
     bset.b  #1,MFP_GPDR                 ; Turn off red LED
 
     move.l  #_STACK_TOP,A7              ; Reset stack (from linker script)
-    lea.l   RELOCATED_START(pc),A0      ; End of init into A0 PC-rel (source)
+    lea.l   RELOCATED_START(pc),A0      ; End of init PC-rel into A0 (source)
     move.l  #_postinit,A1               ; target into A1 (destination)
 
 .COPY_LOOP:    
