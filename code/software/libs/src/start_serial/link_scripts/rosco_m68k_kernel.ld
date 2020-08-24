@@ -1,10 +1,10 @@
 /*
  *------------------------------------------------------------
- *                                  ___ ___ _   
- *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ *                                  ___ ___ _
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
- * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+ *                     |_____|     firmware v1.2
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
@@ -16,31 +16,63 @@
 
 OUTPUT_FORMAT("binary")
 ENTRY(START)
-kram = 0x00001000;
-phys = 0x00F00000;      /* "high" address for pos-ind. init   */
+
+ram  = 0x00001000;          /* start of user memory                     */
+
 MEMORY
 {
-  INIT : org = phys, l = 0xBEFFF   /* init -> top of ram (767KB) */ 
-  KRAM : org = kram, l = 0xFEFFF   /* Allow located code to use all of RAM > 4k */
+  RAM  : org = ram,  l = 0x00FFEFFF     /* program can use all RAM > 4K */
 }
 
-PROVIDE(_STACK_TOP   = 0x00100000);   /* default stack at 1MB base RAM top  */
-PROVIDE(_MFP_VECBASE = 0x00000040);   /* handy vector base, useable from C  */
+/* program configuration symbols that may be useful to override */
+/* using linker option: --defsym=<symbol_name>=<value>          */
+PROVIDE(_RAM_SIZE     = 1M);            /* default to 1MB of RAM        */
+PROVIDE(_STACK_TOP    = _RAM_SIZE);     /* default stack at top of RAM  */
+PROVIDE(_STACK_SIZE   = 0x00004000);    /* 16KB default stack size      */
+PROVIDE(_HEAP_END     = _STACK_TOP - _STACK_SIZE); /* heap end at stack */
+
+/* firware absolute addresses (generally not useful to override)  */
+PROVIDE(_MFP_VECTORS    = 0x00000100);  /* MFP interrupt vector base    */
+PROVIDE(_TIMER_100HZ    = 0x0000040C);  /* firmware 100Hz timer counter */
+PROVIDE(_EASY68K_ECHOON = 0x00000410);  /* Easy68k 'echo on' flag       */
+PROVIDE(_EASY68K_PROMPT = 0x00000411);  /* Easy68k 'prompt on' flag     */
+PROVIDE(_EASY68K_SHOWLF = 0x00000412);  /* Easy68k 'LF display' flag    */
+
+/* NOTE: These need to be kept in sync with firmware equates.S! */
+PROVIDE(_EFP_TABLE      = 0x00000420);  /* Extension function ptr table */
+
+PROVIDE(_EFP_PRINT      = 0x00000420);  /* Print string to console      */
+PROVIDE(_EFP_PRINTLN    = 0x00000424);  /* Print string with CR+LF      */
+PROVIDE(_EFP_PRINTCHAR  = 0x00000428);  /* Print a character            */
+PROVIDE(_EFP_HALT       = 0x0000042C);  /* Disable interrupts and halt  */
+PROVIDE(_EFP_SENDCHAR   = 0x00000430);  /* Send a character via UART    */
+PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
+PROVIDE(_EFP_CLRSCR     = 0x00000438);  /* Clear screen (optional)      */
+PROVIDE(_EFP_MOVEXY     = 0x0000043C);  /* Set cursor position (opt.)   */
+PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+
+/* ROM absolute addresses */
+PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
+
+/* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
+PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
+PROVIDE(_RUN_ADDRESS    = ORIGIN(RAM)); /* start of user memory         */
+
 SECTIONS
 {
-  .text.init : AT(0)
+  .text.init :
   {
     _init = .;
-    *(.init)
+    KEEP(*(.init))  /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
-  } > INIT
+  } > RAM
 
-  .text.postinit : AT(SIZEOF(.text.init))
+  .text.postinit :
   {
     _postinit = .;
-    KEEP(*(.postinit))  /* KEEP() needed to "anchor" kmain reference for gc-sections */
+    KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
     _postinit_end = .;
-  } > KRAM
+  } > RAM
 
   .text ALIGN(4) :
   {
@@ -48,14 +80,15 @@ SECTIONS
     *(.text*)
     *(.rodata*)
     _code_end = .;
-  } > KRAM
-  
+  } > RAM
+
   .data ALIGN(4) :
   {
     _data_start = .;
     *(.data*)
+    . = ALIGN(4);   /* align for init.S longword copy */
     _data_end = .;
-  } > KRAM
+  } > RAM
 
   .bss ALIGN(4) :
   {
@@ -63,7 +96,7 @@ SECTIONS
     *(.bss*)
     *(COMMON)
     _bss_end = .;
-  } > KRAM
+  } > RAM
 
   _end = .;
 }

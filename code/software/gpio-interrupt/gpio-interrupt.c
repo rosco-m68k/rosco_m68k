@@ -19,23 +19,18 @@
 // macro for easier MFP register access (read or write)
 #define MFP(reg) (*(volatile uint8_t *)MFP_ ## reg)
 
-// rosco_m68k 100Hz loop_counter.  The MFP "timer C" interrupt handler
-// in rosco's firmware increments this every 100th of a second.
-volatile uint32_t *tick_100Hz = (uint32_t *)0x40C;
-
 // Bit 6 in IREB, IPRB and ISRB corresponds to rosco GPIO3
 // See page 3-4 in 1984 MC68901 MFP pdf
 #define MFP_GPIP4_BIT 0x40
 
-void *prev_handler;               // save old handler
-uint8_t prev_gpdr;
-  
+void (*prev_handler)();           // previous interupt handler address
 volatile int gpio3_interrupts;    // counter for number of GPIO3 interrupts
 
-// GPIO3 interrupt handler.  The "interrupt" attribute "tells the compiler to save
-// all the registers in this function and use the "rte" return from exception
-// instruction at the end instead of the normal "rts" return from subroutine instruction.
-// This allows the interrupt handler to be written in C.
+// GPIO3 interrupt handler.  The "interrupt" attribute "tells the compiler to
+// save all the registers in this function and use the "rte" return from
+// exception instruction at the end instead of the normal "rts" return from
+// subroutine instruction.  This allows the interrupt handler to be written in
+// C.
 void gpio3_handler(void) __attribute__ ((interrupt));
 void gpio3_handler(void)
 {
@@ -53,22 +48,29 @@ void kmain()
   println("(built on " __DATE__ " at " __TIME__ ")");
   println("");
   print("rosco_m68k firmware version: ");
-  printushort(*(uint16_t *)0xFC0400);
+  printushort(_FIRMWARE_REV>>16);
   print(".");
-  printuchar(*(uint8_t *)0xFC0402);
+  printuchar(_FIRMWARE_REV>>8);
   print(".");
-  printuchar(*(uint8_t *)0xFC0403);
+  printuchar(_FIRMWARE_REV);
   println("");
   println("This will test interrupt generation on a negative");
   println("edge on rosco GPIO3 (J5-pin 5 aka MFP GPIP4).");
+
+  print("stack bottom=");
+  printuint((uint32_t)_HEAP_END);
+  print(" top=");
+  printuint((uint32_t)_STACK_TOP);
+  println("");
 
   println("Initializing MFP for GPIP4 interrupt...");
 
   // It is documented that if you are "unlucky" and touch the MFP interrupt
   // registers at "just the wrong time" (as another interrupt happens etc.)
   // the MFP can generate a "spurious interrupt" (which will lead to red LED
-  // blinking, and sadness).  So we disable all interrupts for the short period
-  // while we set the MFP interrupt registers (and re-enable them right after).
+  // blinking, and sadness).  So we disable all interrupts for the short
+  // period while we set the MFP interrupt registers (and re-enable them right
+  // after).
   mcDisableInterrupts();
 
   // NOTE: These use the normal GPIO bit values (from gpio.h)
@@ -83,22 +85,14 @@ void kmain()
   MFP(ISRB) = ~MFP_GPIP4_BIT; // clear interrupt in-service bit
   MFP(IMRB) |= MFP_GPIP4_BIT; // set interrupt enable mask bit
 
-  // Set vector #70 (MFP GPIP4 interrupt) to our interrupt handler.
-  // GPIP4 is MFP interrupt source #6 (see page 3-1 in 1984 MC68901 MFP pdf)
-  // and rosco assigns the MFP to the first 680x0 user interrupt vector #64.
-  // So our interrupt vector is at address 0x118 = 0x100 (64*4 user interrupt vector
-  // start) plus 6*4 (the sixth MFP interrupt).  Each address is 4 bytes.
-  //
-  // This _could_ be done in C, but since it would need an ugly cast along with
-  // the "pedantic" compiler options restrictons making it more difficult, one
-  // line of inline asm seemed prefereable.
-  __asm__ __volatile__ (
-    " move.l 0x100+6*4,%[old_hdlr]\n"   // move current vector into old_hdlr
-    " move.l #%[new_hdlr],0x100+6*4\n"  // write address of new_hdlr to vector
-    : [old_hdlr] "=m" (prev_handler)    // output
-    : [new_hdlr] "m"  (gpio3_handler)   // input
-    :                                   // clobbers
-  );
+  // Set MFP GPIP4 interrupt handler vector.  The rosco linker scripts provides
+  // the _MFP_VECTORS symbol for the 16 MFP interrupt vectors (vector #64 at
+  // address 0x100, the user-interrupt vector where rosco directs MFP
+  // interrupts).  Since GPIP4 is MFP interrupt source #6 (see page 3-1 in
+  // 1984 MC68901 MFP pdf) set the the 6th element with the address of the
+  // interrupt handler 
+  prev_handler = _MFP_VECTORS[6];   // save old handler (to restore on exit)
+ _MFP_VECTORS[6] = gpio3_handler;   // set new GPIP4 interrupt handler
 
   mcEnableInterrupts();   // re-enable interrupts
 
@@ -116,13 +110,11 @@ void kmain()
     printuint(loop_count);
     print(" GPIO3 interrupts=");
     printuint(gpio3_interrupts);
-    print(" 100Hz ticks=");
-    printuint(*tick_100Hz);
+    print(" 100Hz timer=");
+    printuint(_TIMER_100HZ);
     println("...");
 
-    // delay for 1 1/2 of a second
-    for (uint32_t delay = *tick_100Hz + 150; *tick_100Hz < delay;)
-      ;
+    mcDelaymsec10(100);       // delay for 1 second
  
     loop_count++;
 
@@ -132,13 +124,8 @@ void kmain()
   MFP(IERB) &= ~MFP_GPIP4_BIT; // clear MFP GPIP4 interrupt enable
   MFP(IMRB) &= ~MFP_GPIP4_BIT; // clear interrupt enable mask bit
 
-  // restore old handler
-  __asm__ __volatile__ (
-    " move.l %[old_hdlr],0x100+6*4\n"   // move contents of old_hdlr back to vector
-    :                                   // output
-    : [old_hdlr] "m" (prev_handler)     // input
-    :                                   // clobbers
-  );
+  // restore previous interrupt handler
+  _MFP_VECTORS[6] = prev_handler;
 
   println("");
   println("Glad to be of service!");  // invoke Genuine Rosco Personality(TM) module

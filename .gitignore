@@ -19,3 +19,4 @@
 **/*.dis
 **/*.sym
 **/*.elf
+.vscode/*
