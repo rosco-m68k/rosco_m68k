@@ -3,18 +3,29 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
-SOFTWARE := $(filter-out libs/.,$(wildcard */.))
+LIBSTARG = clean all install
+SOFTWARETARG = clean all
+
+SOFTWARE := $(subst /.,,$(filter-out libs/.,$(wildcard */.)))
 
 all: libs $(SOFTWARE)
 
+clean: LIBSTARG = clean
+clean: SOFTWARETARG = clean
+clean: libs $(SOFTWARE)
+
 libs:
-				@echo === Rebuilding and installing rosco_m68k libraries
-				$(MAKE) -C libs clean all install
+				@echo =
+				@echo === installing rosco_m68k libs
+				@echo = 
+				$(MAKE) -C libs $(LIBSTARG)
 
 software: $(SOFTWARE)
 
 $(SOFTWARE): libs
-				@echo === Rebuilding $@
-				$(MAKE)	-C $@ clean all
+				@echo =
+				@echo = $@
+				@echo = 
+				$(MAKE)	-C $@ $(SOFTWARETARG)
 
-.PHONY:	all libs $(SOFTWARE)
+.PHONY:	all clean libs $(SOFTWARE)
