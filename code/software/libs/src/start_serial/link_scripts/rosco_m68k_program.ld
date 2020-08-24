@@ -63,7 +63,7 @@ SECTIONS
   .text.init :
   {
     _init = .;
-    KEEP(*(.init))  /* KEEP() "anchors" section for gc-sections */
+    KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
   } > RAM
 
@@ -71,6 +71,7 @@ SECTIONS
   {
     _postinit = .;
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
+    . = ALIGN(4);       /* long align for init.S copying */
     _postinit_end = .;
   } > RAM
 
@@ -86,9 +87,7 @@ SECTIONS
   {
     _data_start = .;
     *(.data*)
-
-    . = ALIGN(4);   /* align for init.S */
-
+    . = ALIGN(4);       /* long align for init.S copying */
     _data_end = .;
   } > RAM
 
@@ -97,6 +96,7 @@ SECTIONS
     _bss_start = .;
     *(.bss*)
     *(COMMON)
+    . = ALIGN(4);       /* long align for kinit clearing */
     _bss_end = .;
   } > RAM
 

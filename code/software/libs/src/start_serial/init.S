@@ -31,32 +31,38 @@
 
 ; Stack and all registers can be trashed at this point, the machine is your
 ; own...
-START::
+
+START::                           ; position-independent load addr
     bset.b  #1,MFP_GPDR           ; turn off red LED
+    move.l  #_STACK_TOP,A7        ; reset stack from linker
 
-    move.l  #_STACK_TOP,A7        ; reset stack (from linker script)
-
-    lea.l   START(PC),A0          ; source addr, PC-rel. start (load addr)
-    lea.l   _init,A1              ; target addr, abs. start (run addr)
-    move.l  #_data_end,D0         ; use code+data length from linker
-    sub.l   A1,D0                 ; use code+data length from linker
+    lea.l   START(PC),A0          ; PC-rel source addr (load addr)
+    lea.l   _init,A1              ; absolute dest addr (run addr)
+    move.l  #_postinit_end,D0     ; init section absolute end addr
+    sub.l   A1,D0                 ; subtract dest addr for init length
     lsr.l   #2,D0                 ; convert to long words
-    subq.l  #1,D0                 ; convert to zero based length for dbf
-    move.l  D0,D1                 ; copy for outer loop
-    swap    D1                    ; swap for outer 64K loop count
-.COPY_LOOP:
-    move.l  (A0)+,(A1)+           ; copy long word from source to target
-    dbra     D0,.COPY_LOOP        ; inner loop for up to 64K
-    jmp     _postinit             ; NOTE: jump to *relocated* to continue
+    subq.l  #1,D0                 ; subtract 1 for dbra
+.INIT_LOOP:
+    move.l  (A0)+,(A1)+           ; copy long word from source to dest
+    dbra    D0,.INIT_LOOP         ; loop until end of postinit
+
+    jmp     _postinit             ; jump to copied postinit at run addr
 
     section .postinit
-                                  ; NOTE: code will have been copied from
-                                  ; above, but now in new relocated segment at
-                                  ; run addr, vs load addr and copy continues
-                                  ; but, since we crossed segments, we need to
-                                  ; use manual branch offset since assembler
-                                  ; (wisely) won't branch between segments
-    dbra     D1,*-12              ; outer loop to .COPY_LOOP for > 64K
+
+POSTINIT:                         ; running from copied run addr location
+    move.l  #_data_end,D0         ; absolute data end addr from linker
+    sub.l   A1,D0                 ; subtract dest addr for code+data length
+    lsr.l   #2,D0                 ; convert to long words
+    move.l  D0,D1                 ; copy for outer loop
+    swap    D1                    ; swap for 64K chunk count
+    bra.b   .COPY_START           ; branch to loop test first
+
+.COPY_LOOP:
+    move.l  (A0)+,(A1)+           ; copy long word from source to dest
+.COPY_START
+    dbra    D0,.COPY_LOOP         ; inner loop
+    dbra    D1,.COPY_LOOP         ; outer loop
 
 PREMAIN:
     move.l  $0004,-(A7)           ; push (soft) reset vector if kmain returns
