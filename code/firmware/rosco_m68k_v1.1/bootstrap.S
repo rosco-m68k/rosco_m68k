@@ -310,26 +310,11 @@ INITDUART:
  
     move.b  #$50,DUART_IVR            ; To further verify, try to set IVR
     move.b  DUART_IVR,D0              ; And then check it was set...
-    move.b  DUART_IVR,D0
     cmp.b   #$50,D0                   ; to 0x50.
     bne.s   .DONE                     ; If not as expected, no DUART...
 
-;    move.b  DUART_IMR,D0              ; Was it written?
-;    beq.s   .CONT1                    ; Appears so...
-
-;    move.b  #0,D5
-;    bra.s   .DONE
-
-.CONT1:
     move.b  #$93,DUART_MR1A           ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
 
- ;   move.b  DUART_IMR,D0              ; Was it written?
- ;   cmp.b   #$93,D0
- ;   beq.s   .CONT2                    ; Appears so...
-
- ;   bra.s   .DONE
-
-.CONT2:
     move.b  #$07,DUART_MR2A           ; (Normal, No TX CTS/RTS, 1 stop bit)
 
     ; 38400
@@ -350,7 +335,7 @@ INITDUART:
     move.b  R_STARTCNTCMD,D0          ; Start count
 
     ; Debug - output clocks on OP2 for scope
-    move.b  #%00000011,DUART_OPCR     ; RxCA (1x) on OP2
+    ; move.b  #%00000011,DUART_OPCR     ; RxCA (1x) on OP2
 
     move.b  #%00000101,DUART_CRA      ; Enable TX/RX
 
