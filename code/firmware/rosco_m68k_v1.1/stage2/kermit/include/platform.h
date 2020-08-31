@@ -15,7 +15,7 @@
 
 
 #ifndef IBUFLEN
-#define IBUFLEN  2048			/* File input buffer size */
+#define IBUFLEN  8192			/* File input buffer size */
 #endif /* IBUFLEN */
 
 #ifndef OBUFLEN
