@@ -83,7 +83,8 @@ START::
 
 .ISR_COPY_DONE:
     bsr.w   INITMFP                   ; Initialise MC68901
-    bsr.s   INITSDB                   ; Initialise System Data Block
+    bsr.w   INITDUART                 ; Initialise MC68681
+    bsr.w   INITSDB                   ; Initialise System Data Block
     
     bsr.s   PRINT_BANNER
 
@@ -104,13 +105,14 @@ START::
 ; Modifies: A0 (Will point to address after null terminator)
 PRINT_BANNER:
     lea.l   SZ_BANNER0,A0             ; Load first string into A0
+    move.l  EFP_PRINTLN,A3            ; Load function into A3
     
-    bsr.s   EARLY_PRINTLN             ; Print all the banner lines
-    bsr.s   EARLY_PRINTLN             ; This works because EARLY_PRINT
-    bsr.s   EARLY_PRINTLN             ; leaves A0 pointing to the next
-    bsr.s   EARLY_PRINTLN             ; character in memory ;-)
-    bsr.s   EARLY_PRINTLN
-    bsr.s   EARLY_PRINTLN
+    jsr     (A3)                      ; Print all the banner lines
+    jsr     (A3)                      ; This works because EARLY_PRINT
+    jsr     (A3)                      ; leaves A0 pointing to the next
+    jsr     (A3)                      ; character in memory ;-)
+    jsr     (A3)
+    jsr     (A3)
     
     rts                               ; We're done
 
@@ -121,7 +123,7 @@ PRINT_BANNER:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINT:
+EARLY_PRINT_MFP:
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
     beq.s   .PRINT_DONE               ; ... we're done if so.
@@ -131,7 +133,22 @@ EARLY_PRINT:
     beq.s   .BUFF_WAIT                ; Busywait if not
     
     move.b  D0,MFP_UDR                ; ... otherwise, give character to the MFP
-    bra.s   EARLY_PRINT               ; and loop
+    bra.s   EARLY_PRINT_MFP           ; and loop
+.PRINT_DONE:    
+    rts                               ; We're done
+    
+
+EARLY_PRINT_DUART:
+    move.b  (A0)+,D0                  ; Get next character
+    tst.b   D0                        ; Is it null?
+    beq.s   .PRINT_DONE               ; ... we're done if so.
+
+.BUFF_WAIT:
+    btst.b  #3,DUART_SRA
+    beq.s   .BUFF_WAIT
+    move.b  D0,DUART_TBA
+    
+    bra.s   EARLY_PRINT_DUART         ; and loop
 .PRINT_DONE:    
     rts                               ; We're done
     
@@ -142,36 +159,53 @@ EARLY_PRINT:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
-EARLY_PRINTLN:
-    bsr.s   EARLY_PRINT               ; Print callers message
+EARLY_PRINTLN_MFP:
+    bsr.s   EARLY_PRINT_MFP           ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
     
     lea     SZ_CRLF,A0                ; Load CRLF...
-    bsr.s   EARLY_PRINT               ; ... and print it
+    bsr.s   EARLY_PRINT_MFP           ; ... and print it
+        
+    move.l  (A7)+,A0                  ; Restore A0
+    rts
+
+
+EARLY_PRINTLN_DUART:
+    bsr.s   EARLY_PRINT_DUART         ; Print callers message
+    move.l  A0,-(A7)                  ; Stash A0 to restore later
+    
+    lea     SZ_CRLF,A0                ; Load CRLF...
+    bsr.s   EARLY_PRINT_DUART         ; ... and print it
         
     move.l  (A7)+,A0                  ; Restore A0
     rts
     
+
 ; Initialise System Data Block
 ;
 INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
-    move.w  #50,$408                  ; Heartbeat flash counter at 100 (1 per second)
+    move.w  #50,$408                  ; Heartbeat flash counter at 50 (1 per second)
     move.l  #0,$40C                   ; Zero upticks
 
+    ; Do we have a 68681?
+    tst.b   D5
+    beq.s   .USEMFP
+
+.USEDUART:
     ; Setup default implementations in EFP table.
-    lea     EARLY_PRINT,A0
+    lea     EARLY_PRINT_DUART,A0
     move.l  A0,EFP_PRINT
-    lea     EARLY_PRINTLN,A0
+    lea     EARLY_PRINTLN_DUART,A0
     move.l  A0,EFP_PRINTLN
-    lea     SENDCHAR,A0
+    lea     SENDCHAR_DUART,A0
     move.l  A0,EFP_PRINTCHAR
     lea     HALT,A0
     move.l  A0,EFP_HALT
-    lea     SENDCHAR,A0
+    lea     SENDCHAR_DUART,A0
     move.l  A0,EFP_SENDCHAR
-    lea     RECVCHAR,A0
+    lea     RECVCHAR_DUART,A0
     move.l  A0,EFP_RECVCHAR
     lea     ANSI_MOVEXY,A0
     move.l  A0,EFP_MOVEXY
@@ -179,9 +213,32 @@ INITSDB:
     move.l  A0,EFP_CLRSCR
     lea     .RETURN,A0               ; No-op for default SET CURSOR
     move.l  A0,EFP_SETCURSOR
+
+    bra.s   .RETURN                  ; Done
+
+.USEMFP:
+    ; Setup default implementations in EFP table.
+    lea     EARLY_PRINT_MFP,A0
+    move.l  A0,EFP_PRINT
+    lea     EARLY_PRINTLN_MFP,A0
+    move.l  A0,EFP_PRINTLN
+    lea     SENDCHAR_MFP,A0
+    move.l  A0,EFP_PRINTCHAR
+    lea     HALT,A0
+    move.l  A0,EFP_HALT
+    lea     SENDCHAR_MFP,A0
+    move.l  A0,EFP_SENDCHAR
+    lea     RECVCHAR_MFP,A0
+    move.l  A0,EFP_RECVCHAR
+    lea     ANSI_MOVEXY,A0
+    move.l  A0,EFP_MOVEXY
+    lea     ANSI_CLRSCR,A0
+    move.l  A0,EFP_CLRSCR
+    lea     .RETURN,A0               ; No-op for default SET CURSOR
+    move.l  A0,EFP_SETCURSOR
+
 .RETURN
     rts
-
 
 
 ; Initialise MFP
@@ -221,6 +278,101 @@ INITMFP:
     move.b  #$FE,MFP_GPDR             ; Turn on GPIO #0 (Green LED)
     rts
 
+
+; Initialise MC68681 DUART if present
+;
+; If an MC68681 is found, this will set D5 to 1. Otherwise, D5 will be 0.
+; This is used to signal INITSDB that it should use the DUART vectors instead of
+; the MFP ones.
+
+; Temporary bus error handler, in case no MC68681 is installed
+BERR_HANDLER:
+    move.w  ($A,A7),D0
+    bset    #15,D0
+    move.w  D0,($8,A7)    
+    move.b  #1,$504
+    rte
+
+INITDUART:
+    ; On r1.2, not having a 68681 will generate a bus error. We can look
+    ; for this on the first access, and if we get one, just bail immediately.
+    move.b  #0,$504                   ; Zero bus error flag
+
+    move.l  $8,$500                   ; Save the original bus error handler
+    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
+
+    move.b  #0,D5                     ; Indicate no MC68681 by default
+
+    move.b  #$0,DUART_IMR             ; Mask all interrupts
+
+    ; If the first write generated a bus error, we may as well fail fast...
+    tst.b   $504                      ; Was there a bus error?
+    bne.w   .DONE                     ; Bail now if so...
+
+    ; We now know that _something_ is present in the 68681 IO space, and 
+    ; is capable of DTACK generation. Let's see if it looks like 68681...
+    ; 
+    ; IVR is a convenient register that allows both read and write. We'll check its
+    ; initial value is as expected, then set ensure the initial read wasn't
+    ; a fluke. Note that, with the basic 68681 board, vectored interrupts are 
+    ; never used, so setting this has no effect - it's just a test. 
+    ;
+    ; This is hardly definitive, but should be good-enough for our purposes...
+    ;
+    move.b  DUART_IVR,D0              ; Get IVR - Should be 0x0F at reset
+    cmp.b   #$0F,D0
+    bne.s   .DONE                     ; If not as expected, no DUART...
+ 
+    move.b  #$50,DUART_IVR            ; To further verify, try to set IVR
+    move.b  DUART_IVR,D0              ; And then check it was set...
+    cmp.b   #$50,D0                   ; to 0x50.
+    bne.s   .DONE                     ; If not as expected, no DUART...
+
+    ; If any of that generated a bus error, then it doesn't appear to be a 68681...
+    tst.b   $504                      ; Was there a bus error?
+    bne.s   .DONE                     ; Bail now if so...
+
+    ; Okay, seems legit. Let's set it up.
+    move.b  #$93,DUART_MR1A           ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
+    move.b  #$07,DUART_MR2A           ; (Normal, No TX CTS/RTS, 1 stop bit)
+
+    ; 38400
+    ; move.b  #$70,DUART_ACR           ; Set 0, Timer, X1/X2, /16
+    ; move.b  #$CC,DUART_CSRA          ; 38K4
+
+    ; 57600
+    ; move.b  #$60,DUART_ACR           ; Set 0, Counter, X1/X2, /16
+    ; move.b  #$DD,DUART_CSRA          ; Baud from timer
+
+    ; 115200 working
+    move.b  #$60,DUART_ACR            ; Set 0, Counter, X1/X2, /16
+    move.b  DUART_CRA,D0              ; Enable undocumented rates
+    move.b  #$66,DUART_CSRA           ; 1200 per spec, uses counter instead
+
+    move.b  #0,DUART_CUR              ; Counter high: 0
+    move.b  #2,DUART_CLR              ; Counter  low: 2  (115.2KHz)
+    move.b  R_STARTCNTCMD,D0          ; Start count
+
+    ; Debug - output clocks on OP2 for scope
+    ; move.b  #%00000011,DUART_OPCR     ; RxCA (1x) on OP2
+
+    move.b  #%00000101,DUART_CRA      ; Enable TX/RX
+
+    ; TODO CTS/RTS Not yet working - figure out how to lower RTS!
+    move.b  #$ff,W_OPR_RESETCMD       ; Clear all OP bits (lower RTS)
+    move.b  #0,W_OPR_SETCMD
+
+    ; Final check - if there were any bus errors during setup, then there isn't
+    ; a 68681 installed after all. Unfortunately, We have probably trashed whatever
+    ; _is_ in IO space in the 68681's range at this point...
+    tst.b   $504                      ; Was there a bus error?
+    bne.s   .DONE                     ; Bail now if so...
+
+    ; Otherwise, looks like we successfully initialized a 68681!
+    move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
+ .DONE:
+    move.l  $500,$8                   ; Restore bus error handler
+    rts
     
     
 ;------------------------------------------------------------
@@ -375,11 +527,38 @@ TRAP_HANDLER:
     move.l  #$C001C0DE,$404
     rte
 
+
+; Convenience SEND/RECV char functions, using the EFP table.
+; These are provided for use by the Easy68k syscalls.S
+;
+; TODO these should be moved to syscalls_asm.S!
+SENDCHAR::
+    move.l  A3,-(A7)
+    move.l  EFP_SENDCHAR,A3
+    jsr     (A3)
+    move.l  (A7)+,A3
+    rts
+
+RECVCHAR::
+    move.l  A3,-(A7)
+    move.l  EFP_RECVCHAR,A3
+    jsr     (A3)
+    move.l  (A7)+,A3
+    rts
+
+
 ; Send a single character via UART
 ;
 ; Trashes: MFP_UDR
 ; Modifies: Nothing
-SENDCHAR::
+SENDCHAR_DUART:
+    btst.b  #3,DUART_SRA
+    beq.s   SENDCHAR_DUART
+    move.b  D0,DUART_TBA
+    rts
+
+
+SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
 .BEGIN
     bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
@@ -397,7 +576,14 @@ SENDCHAR::
 ;
 ; Trashes: MFP_UDR
 ; Modifies: D0 (return)
-RECVCHAR::
+RECVCHAR_DUART:
+    btst.b  #0,DUART_SRA
+    beq.s   RECVCHAR_DUART
+    move.b  DUART_RBA,D0
+    rts
+
+
+RECVCHAR_MFP:
     bclr.b  #7,MFP_GPDR           ; Lower RTS
 .BEGIN
     move.b  MFP_RSR,D0            ; Get RSR
