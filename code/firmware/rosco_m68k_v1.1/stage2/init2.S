@@ -16,6 +16,7 @@
     org     $2000
 
 START::
+    move.l  $414,A7                     ; Stack to top of RAM
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0
