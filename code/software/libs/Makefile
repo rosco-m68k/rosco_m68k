@@ -35,12 +35,16 @@ include src/cstdlib/include.mk
 include src/printf/include.mk
 include src/easy68k/include.mk
 include src/rtlsupport/include.mk
+include src/debug_stub/include.mk
 include src/start_serial/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
 %.o : %.S
+	$(AS) $(ASFLAGS) -o $@ $<
+
+%.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
 .PHONY: all install clean clobber
