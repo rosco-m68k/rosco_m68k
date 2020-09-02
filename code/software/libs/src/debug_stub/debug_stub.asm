@@ -11,14 +11,16 @@
 ; MIT License
 ; ------------------------------------------------------------
 
-; This adds a small (under 1 KiB) inline asm 680x0 exception handler so if an
-; exception occurs (i.e., a crash) it will print the CPU PC address where the
-; exception occurred along with registers.  Often with just the PC crash
-; address the code causing the you can located with e.g:
+; This adds a small (under 1 KiB) 680x0 exception handler stub so that if a
+; CPU exception occurs (i.e., a crash) it will print the CPU PC address where
+; the exception occurred along with registers on the default output device.
+; Often with just the PC crash address you can narrow down the source code
+; causing the problem with e.g:
 ;
 ; m68k-elf-addr2line -e myprogram.elf 0x1234
 ;
-; This will often give a line "near" the problem, but is still very helpful.
+; This will often give a line "near" the problem (usually after the actual
+; cause), but is still very helpful.
 ;
 ; You can also look for the PC crash address in the ".dis" disassembly, which
 ; if debug information is enabled will show the source with corresponding asm
@@ -26,9 +28,9 @@
 ;
 ; TO USE: Link with program -ldebug_stub, #include <debug_stub.h> and call
 ; debug_stub() at program startup.  This will install the exception handlers
-; (with no other noticiable effect).  After this, a program crash will invoke
-; a debug_stub exceptions handlers which will print CPU state at the time of
-; the crash on the default UART, and then warm-reset back to the loader.
+; (with no other noticeable effect).  After this, a program crash will invoke
+; a debug_stub exception handler which will print CPU state at the time of the
+; crash on the default output device, and then warm-reset back to the loader.
 
                 include "../../shared/equates.S"
 

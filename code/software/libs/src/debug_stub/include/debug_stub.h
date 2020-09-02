@@ -11,13 +11,13 @@
  * ------------------------------------------------------------
  * Copyright (c) 2020 Xark MIT License
  *
- * Debug stub to catch CPU exception to aid debugging.
+ * Debug stub to catch CPU exceptions to aid debugging.
  *
  * USE:  Include this header, call debug_stub() at program startup and link
- * your program with -ldebug_stub.  After that, CPU exceptions will be caught
- * and instead of the default rosco_m68k red LED blink code, CPU state
- * information will be printed to the default UART and the program will
- * warm-reset back to the loader.
+ * your program with -ldebug_stub.  After that, CPU exceptions (i.e., program
+ * crashes) will be caught and instead of the default rosco_m68k red LED blink
+ * code, CPU state information will be printed to the default output device
+ * and the program will warm-reset back to the loader.
  *
  * As an example, an "address error" exception might look like this:
  * 
@@ -37,14 +37,18 @@
  * of the exception.
  *
  * If you have a rosco_m68k elf file, generated with debug information (-g)
- * then you can usually get the C source line of the exception (or close to
- * it, often the line after) using m68k-elf-addr2line, the "-e" option
- * followed by your program elf file and the PC address from the debug
- * information printed on the UART (preceeded with "0x" for hex).  For
- * example, for the crash above:
+ * then you can usually get the C source line of the code that caused the
+ * exception (or close to it, often the line after) using m68k-elf-addr2line,
+ * the "-e" option followed by your program elf file and the PC address from
+ * the debug information printed (preceeded with "0x" for hex).  For example,
+ * for the crash above:
  *
  * m68k-elf-addr2line -e example.elf 0x115A
  *
+ * NOTE: On 68010/12 CPUs the PC counter (and "op") may be up to five words
+ * ahead of the actual location where the exception occurred on a bus or
+ * address error (due to additional prefetch mechanisms in those CPUs).
+ * However, the "fault addr" should remain accurate.
  * ------------------------------------------------------------
  */
 #ifndef _ROSCOM68K_DEBUGSTUB_H
