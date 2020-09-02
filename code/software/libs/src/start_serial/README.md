@@ -36,19 +36,19 @@ for details):
   * Exception vectors are located at $0 to $3FF
   * If you wish to reuse RAM from $400 to $FFF then some standard libraries can no longer be used 
   * Some of the default exception handlers do write to this area, so change them too!
-* Supervisor stack will be at top of RAM and growing downward 
+* Supervisor stack will be at top of the first contiguous block of RAM, and growing downward 
 * Interrupts will be enabled
 * Bus error, address error and illegal instruction will have default handlers (that flash I1 1, 2 or 3 times in a loop)
 * MFP Timer C will be driving a 100Hz system tick
 * System tick will be vectored to CPU vector 0x45, default handler flashes I0.
 * MFP Interrupts other than Timer C will be disabled
-* TRAP#14 will be hooked by the firmware to provide some basic IO (see next section)
+* TRAP#14 will be hooked by the firmware to provide some basic IO (See Interface Reference)
   * This is used by the standard libraries
-* TRAP#15 will be hooked by the firmware to provide some basic IO (see next section)
+* TRAP#15 will be hooked by the firmware to provide some basic IO (see Interface Reference)
   * This is used by Easy68k compatibility layer
 * UART TX and RX will be enabled, but their interrupts won't be
   * you'll either have to enable (and handle) them or use polling
-  * If you do enable them, don't use the TRAP#14 IO routines any more or sadness is likely to ensue.
+  * If you do enable them, don't use the TRAP#14/TRAP#15 IO routines any more or sadness is likely to ensue.
   * This also means not using the standard libraries for IO!
 * CTS (MFP GPIO #7) will be low (i.e. asserted).
 
