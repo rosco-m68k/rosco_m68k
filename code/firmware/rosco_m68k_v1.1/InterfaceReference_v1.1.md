@@ -785,7 +785,8 @@ exception handlers and TRAP routines.
 | 0x411   | 1    | Easy68k 'prompt on' flag                                  |
 | 0x412   | 1    | Easy68k 'LF display' flag                                 |
 | 0x413   | 1    | Easy68k Reserved                                          |
-| 0x414   | 12   | System Reserved                                           |
+| 0x414   | 4    | Size of the first block of contiguious memory             |
+| 0x418   | 8    | System Reserved                                           |
 
 For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`.
 
