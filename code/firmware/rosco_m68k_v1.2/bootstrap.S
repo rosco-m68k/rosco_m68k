@@ -85,7 +85,7 @@ START::
     bsr.w   INITMFP                   ; Initialise MC68901
     bsr.w   INITDUART                 ; Initialise MC68681
     bsr.w   INITSDB                   ; Initialise System Data Block
-    
+    bsr.w   INITMEMCOUNT              ; Initialise memory count in SDB    
     bsr.s   PRINT_BANNER
 
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
@@ -238,6 +238,30 @@ INITSDB:
     move.l  A0,EFP_SETCURSOR
 
 .RETURN
+    rts
+
+
+; Count size of the first block of contiguous memory,
+; and store it in the SDB.
+INITMEMCOUNT:
+.TESTVALUE equ $12345678
+.BLOCKSIZE equ $80000
+.MEMTOP    equ $F80000
+    move.l  #.BLOCKSIZE,A0
+.LOOP
+    move.l  #.TESTVALUE,(A0)
+    move.l  (A0),D0
+    cmp.l   #.TESTVALUE,D0
+    bne.s   .DONE
+
+    cmp.l   #.MEMTOP,A0
+    beq.s   .DONE
+
+    add.l   #.BLOCKSIZE,A0
+    bra.s   .LOOP
+
+.DONE
+    move.l  A0,$414
     rts
 
 
