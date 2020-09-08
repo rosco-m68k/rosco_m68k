@@ -83,7 +83,10 @@ START::
 
 .ISR_COPY_DONE:
     bsr.w   INITMFP                   ; Initialise MC68901
+
+    ifnd NO_68681
     bsr.w   INITDUART                 ; Initialise MC68681
+    endif
     bsr.w   INITSDB                   ; Initialise System Data Block
     bsr.w   INITMEMCOUNT              ; Initialise memory count in SDB    
     bsr.s   PRINT_BANNER
@@ -138,6 +141,7 @@ EARLY_PRINT_MFP:
     rts                               ; We're done
     
 
+    ifnd NO_68681
 EARLY_PRINT_DUART:
     move.b  (A0)+,D0                  ; Get next character
     tst.b   D0                        ; Is it null?
@@ -151,7 +155,8 @@ EARLY_PRINT_DUART:
     bra.s   EARLY_PRINT_DUART         ; and loop
 .PRINT_DONE:    
     rts                               ; We're done
-    
+    endif
+ 
 ; PRINT null-terminated string pointed to by A0 followed by CRLF.
 ;
 ; Only used directly during early init; Becomes the default implementation
@@ -169,7 +174,7 @@ EARLY_PRINTLN_MFP:
     move.l  (A7)+,A0                  ; Restore A0
     rts
 
-
+    ifnd NO_68681
 EARLY_PRINTLN_DUART:
     bsr.s   EARLY_PRINT_DUART         ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
@@ -179,7 +184,7 @@ EARLY_PRINTLN_DUART:
         
     move.l  (A7)+,A0                  ; Restore A0
     rts
-    
+    endif 
 
 ; Initialise System Data Block
 ;
@@ -189,6 +194,7 @@ INITSDB:
     move.w  #50,$408                  ; Heartbeat flash counter at 50 (1 per second)
     move.l  #0,$40C                   ; Zero upticks
 
+    ifnd NO_68681
     ; Do we have a 68681?
     tst.b   D5
     beq.s   .USEMFP
@@ -215,6 +221,7 @@ INITSDB:
     move.l  A0,EFP_SETCURSOR
 
     bra.s   .RETURN                  ; Done
+    endif
 
 .USEMFP:
     ; Setup default implementations in EFP table.
@@ -303,6 +310,7 @@ INITMFP:
     rts
 
 
+    ifnd NO_68681
 ; Initialise MC68681 DUART if present
 ;
 ; If an MC68681 is found, this will set D5 to 1. Otherwise, D5 will be 0.
@@ -400,6 +408,8 @@ INITDUART:
  .DONE:
     move.l  $500,$8                   ; Restore bus error handler
     rts
+
+    endif
     
     
 ;------------------------------------------------------------
@@ -573,7 +583,7 @@ RECVCHAR::
     move.l  (A7)+,A3
     rts
 
-
+    ifnd NO_68681
 ; Send a single character via UART
 ;
 ; Trashes: MFP_UDR
@@ -583,7 +593,7 @@ SENDCHAR_DUART:
     beq.s   SENDCHAR_DUART
     move.b  D0,DUART_TBA
     rts
-
+    endif
 
 SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
@@ -603,12 +613,13 @@ SENDCHAR_MFP:
 ;
 ; Trashes: MFP_UDR
 ; Modifies: D0 (return)
+    ifnd NO_68681
 RECVCHAR_DUART:
     btst.b  #0,DUART_SRA
     beq.s   RECVCHAR_DUART
     move.b  DUART_RBA,D0
     rts
-
+    endif
 
 RECVCHAR_MFP:
     bclr.b  #7,MFP_GPDR           ; Lower RTS

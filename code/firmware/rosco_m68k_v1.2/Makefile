@@ -37,6 +37,10 @@ else
 ROMDEVICE?=AT28C64B
 endif
 
+ifeq ($(NO68681),true)
+DEFINES:=$(DEFINES) -DNO_68681
+endif
+
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o main1.o 
 
 # Big ROM configuration (enable everything)
