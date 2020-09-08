@@ -29,12 +29,15 @@
 ; NOTE: Loaded at $00040000 (or $00028000 in firmware prior to r1.2), but init
 ; code is position-independent.
 
-; Stack and all registers can be trashed at this point, the machine is your
-; own...
 
 START::                           ; position-independent load addr
     bset.b  #1,MFP_GPDR           ; turn off red LED
+
+    ; @Xark - I do not know which of the follow two lines should be
+    ; kept - the first is from develop, the second is from the 
+    ; memory count changes...
     move.l  #_STACK_TOP,A7        ; reset stack from linker
+    move.l  $414,A7               ; Reset stack to top of memory
 
     lea.l   START(PC),A0          ; PC-rel source addr (load addr)
     lea.l   _init,A1              ; absolute dest addr (run addr)
