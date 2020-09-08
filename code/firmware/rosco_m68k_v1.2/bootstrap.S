@@ -311,21 +311,23 @@ INITMFP:
 
 ; Temporary bus error handler, in case no MC68681 is installed
 BERR_HANDLER:
+    move.w  D0,-(A7)
     move.w  ($A,A7),D0
     bset    #15,D0
-    move.w  D0,($8,A7)    
+    move.w  D0,($A,A7)    
     move.b  #1,$504
+    move.w  (A7)+,D0
     rte
 
 INITDUART:
+    move.b  #0,D5                     ; Indicate no MC68681 by default
+
     ; On r1.2, not having a 68681 will generate a bus error. We can look
     ; for this on the first access, and if we get one, just bail immediately.
     move.b  #0,$504                   ; Zero bus error flag
 
     move.l  $8,$500                   ; Save the original bus error handler
     move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
-
-    move.b  #0,D5                     ; Indicate no MC68681 by default
 
     move.b  #$0,DUART_IMR             ; Mask all interrupts
 
@@ -379,12 +381,13 @@ INITDUART:
 
     ; Debug - output clocks on OP2 for scope
     ; move.b  #%00000011,DUART_OPCR     ; RxCA (1x) on OP2
+    move.b  #%00000000,DUART_OPCR     ; All output port disabled
 
     move.b  #%00000101,DUART_CRA      ; Enable TX/RX
 
     ; TODO CTS/RTS Not yet working - figure out how to lower RTS!
-    move.b  #$ff,W_OPR_RESETCMD       ; Clear all OP bits (lower RTS)
-    move.b  #0,W_OPR_SETCMD
+    ;move.b  #$ff,W_OPR_RESETCMD       ; Clear all OP bits (lower RTS)
+    ;move.b  #0,W_OPR_SETCMD
 
     ; Final check - if there were any bus errors during setup, then there isn't
     ; a 68681 installed after all. Unfortunately, We have probably trashed whatever
