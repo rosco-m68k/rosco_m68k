@@ -100,7 +100,10 @@ test: rle_images.h $(BINARY) $(DISASM)
 mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
-	open -b com.apple.terminal ./rosco_start.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" > ./rosco_screen.sh
+	chmod +x ./rosco_screen.sh
+	sleep 1
+	open -b com.apple.terminal ./rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
 .PHONY: all clean dump disasm load test images

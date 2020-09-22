@@ -30,8 +30,9 @@ Here are the connections I used with [this LCD module](http://www.lcdwiki.com/2.
 | 6          | COPI     | SPI data write to LCD        | J5-P5 GPIO3 |
 | 7          | SCK      | SPI clock signal             | J5-P3 GPIO2 |
 | 8          | LED      | LED backlight pin            | VCC         |
-| 9          | SIPO     | SPI data read from LCD       | J5-P7 GPIO4 |
-<br>
+| 9          | CIPO     | SPI data read from LCD       | J5-P7 GPIO4 |
+
+(Check the documentation for your module, there are many varieties.)
 
 ## Makefile targets
 

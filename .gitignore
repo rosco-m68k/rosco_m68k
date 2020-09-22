@@ -22,3 +22,4 @@
 .vscode/*
 code/software/lcd-ili9341/images/BMPToRLE555
 code/software/lcd-ili9341/rle_images.h
+code/software/lcd-ili9341/rosco_screen.sh

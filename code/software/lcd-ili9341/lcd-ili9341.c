@@ -46,6 +46,8 @@
 #include <debug_stub.h>
 
 // Include GPIO SPI routines
+// NOTE: SPI_FAST makes SPI routines inline (can bloat code size)
+#define SPI_FAST
 #include <gpio_spi.h>
 
 #include "lcd-ili9341.h"  // definitions for ILI9341 LCD
@@ -77,7 +79,7 @@
 // 6          | COPI     | SPI data write to LCD        | J5-P5 GPIO3 |
 // 7          | SCK      | SPI clock signal             | J5-P3 GPIO2 |
 // 8          | LED      | LED backlight pin            | VCC         |
-// 9          | SIPO     | SPI data read from LCD       | J5-P7 GPIO4 |
+// 9          | CIPO     | SPI data read from LCD       | J5-P7 GPIO4 |
 //
 // * RESET signal is optional (there is software reset sequence)
 
@@ -180,10 +182,10 @@ static inline void lcd_end()
 }
 
 // using macros here to allow testing/experimentation
-#define SPI_SEND_BYTE(b)          spi_exchange_byte(b)
-#define SPI_SEND_BUFFER(p, c)     spi_exchange_buffer(p, c)
-#define SPI_RECEIVE_BYTE()        spi_exchange_byte(0xe3)
-#define SPI_RECEIVE_BUFFER(p, c)  spi_exchange_buffer(p,c)
+#define SPI_SEND_BYTE(b)          spi_send_byte(b)
+#define SPI_SEND_BUFFER(p, c)     spi_send_buffer(p, c)
+#define SPI_READ_BYTE()           spi_read_byte()
+#define SPI_READ_BUFFER(p, c)     spi_read_buffer(p,c)
 #define SPI_EXCHANGE_BYTE(b)      spi_exchange_byte(b)
 #define SPI_EXCHANGE_BUFFER(p, c) spi_exchange_buffer(p, c)
 
@@ -409,8 +411,8 @@ void lcd_readimage()
   lcd_write16(_height-1);       // YEND
   lcd_command(ILI9341_RAMRD);   // read from RAM
 
-  SPI_RECEIVE_BYTE();
-  SPI_EXCHANGE_BUFFER(RGB888Buffer, sizeof(RGB888Buffer));
+  SPI_READ_BYTE();
+  SPI_READ_BUFFER(RGB888Buffer, sizeof(RGB888Buffer));
 
   lcd_end();
 }
@@ -418,9 +420,9 @@ void lcd_readimage()
 int lcd_readscanline()
 {
   lcd_command(ILI9341_GETSCAN);
-  SPI_RECEIVE_BYTE();
-  int r = SPI_RECEIVE_BYTE() << 8;
-  r |= SPI_RECEIVE_BYTE();
+  SPI_READ_BYTE();
+  int r = SPI_READ_BYTE() << 8;
+  r |= SPI_READ_BYTE();
 
   lcd_end();
 
@@ -629,15 +631,7 @@ void kmain()
       for (int x = 0; x < 320; x++)
       {
         uint16_t c = color565(src[0], src[1], src[2]);
-        if ((((y >> 5) ^ (x >> 5)) & 1))
-        {
-          *dst++ = ~c;
-        }
-        else
-        {
-          *dst++ = c;
-        }
-
+        *dst++ = ((y^x) & 0x40) ? c : ~c;
         src += 3;
       }
     }
