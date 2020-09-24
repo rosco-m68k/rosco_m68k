@@ -6,7 +6,7 @@
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lprintf -lcstdlib -lrtlsupport -lmachine -lstart_serial -lgcc
+LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\

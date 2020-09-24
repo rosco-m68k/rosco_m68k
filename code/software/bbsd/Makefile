@@ -6,7 +6,11 @@
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lcstdlib -lrtlsupport -lmachine -lstart_serial -lgpio
+LIBS=-lcstdlib -lmachine -lstart_serial -lgpio -lgcc
+GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
+		| grep libraries:\ =																								\
+    | sed 's/libraries: =/-L/g' 																				\
+    | sed 's/:/m68000\/ -L/g')m68000/
 DEFINES=-DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE -DSPI_FASTER -DSPI_ZERODELAY -DSD_FASTER -DSD_MINIMAL
 CFLAGS=-std=c11 -ffreestanding  -Ifat_io_lib	-I$(SYSINCDIR)					\
 			-Wall -Werror -Wno-unused-function 				\
@@ -41,7 +45,7 @@ OBJECTS=kmain.o bbspi.o bbsd.o  fat_io_lib/fat_access.o  fat_io_lib/fat_cache.o	
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
 	chmod a-x $@
 
 .PHONY: all clean load
