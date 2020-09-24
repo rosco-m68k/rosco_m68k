@@ -33,6 +33,7 @@ include src/gpio/include.mk
 include src/cstdlib/include.mk
 include src/printf/include.mk
 include src/easy68k/include.mk
+include src/rtlsupport/include.mk
 include src/start_serial/include.mk
 
 %.o : %.c

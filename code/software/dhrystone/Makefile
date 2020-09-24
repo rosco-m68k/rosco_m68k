@@ -12,7 +12,7 @@ DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
 				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010 -O1				\
 				-mno-align-int -mno-strict-align -Wno-pedantic -Wno-maybe-uninitialized $(DEFINES)
-LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
+LIBS=-lprintf -lcstdlib -lmachine -lrtlsupport -lstart_serial -lgcc
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
