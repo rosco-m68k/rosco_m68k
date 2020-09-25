@@ -6,7 +6,11 @@
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lprintf -lcstdlib -lrtlsupport -lmachine -lstart_serial
+LIBS=-lprintf-softfloat -lcstdlib -lmachine -lstart_serial -lgcc
+GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
+		| grep libraries:\ =																								\
+    | sed 's/libraries: =/-L/g' 																				\
+    | sed 's/:/m68000\/ -L/g')m68000/
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mcpu=68010 -march=68010 -mtune=68010														\
@@ -38,7 +42,7 @@ OBJECTS=kmain.o
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
 	chmod a-x $@
 
 .PHONY: all clean load
