@@ -18,8 +18,12 @@ BINARY_EXT=bin
 LST=$(BINARY_BASENAME).lst
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
+ifeq ($(MC68681),true)
+DEFINES:=$(DEFINES) -DMC68681 -quiet -nowarn=2028
+endif
+
 $(BINARY) : ehbasic.S ehdefs.S
-	vasmm68k_mot -quiet -Fbin -m68010 -nowarn=2028 -L $(LST) -o $(BINARY) ehbasic.S
+	vasmm68k_mot $(ASFLAGS) -L $(LST) -o $(BINARY) ehbasic.S
 	chmod a-x $@
 
 .PHONY: all clean load
