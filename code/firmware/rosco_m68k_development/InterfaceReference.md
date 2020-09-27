@@ -818,17 +818,19 @@ to provide its own hooks).
 User code **must not** call these functions directly - they 
 must be accessed through the public TRAP functions!
 
-| Address | Function                                                         |
-|---------|------------------------------------------------------------------|
-| 0x420   | FW_PRINT - Print SZ to the default console.                      |
-| 0x424   | FW_PRINTLN - Print SZ to the default console, followed by CRLF   |
-| 0x428   | FW_PRINTCHAR - Print a character to the default console          |
-| 0x42C   | FW_HALT - Disable interrupts and halt                            |
-| 0x430   | FW_SENDCHAR - Send a character via the default UART              |
-| 0x434   | FW_RECVCHAR - Receive a character via the default UART           |
-| 0x438   | FW_CLRSCR - Clear the default console (where supported)          |
-| 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                    |
-| 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor    |
+| Address | Function                                                                                          |
+|---------|---------------------------------------------------------------------------------------------------|
+| 0x420   | FW_PRINT - Print SZ to the default console.                                                       |
+| 0x424   | FW_PRINTLN - Print SZ to the default console, followed by CRLF                                    |
+| 0x428   | FW_PRINTCHAR - Print a character to the default console                                           |
+| 0x42C   | FW_HALT - Disable interrupts and halt                                                             |
+| 0x430   | FW_SENDCHAR - Send a character via the default UART                                               | 
+| 0x434   | FW_RECVCHAR - Receive a character via the default UART                                            |
+| 0x438   | FW_CLRSCR - Clear the default console (where supported)                                           |
+| 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                                                     |
+| 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor                                     |
+| 0x444   | RESERVED
+| 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to Kermit)      |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).

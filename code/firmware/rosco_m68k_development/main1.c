@@ -25,21 +25,25 @@
 #include "video9958.h"
 #endif
 
-extern void INSTALL_EASY68K_TRAP_HANDLERS();
+#define RESET_VEC_ADDRESS 0x4
+#define PROGRAM_LOADER_EFP_ADDRESS 0x448
 
+extern void INSTALL_EASY68K_TRAP_HANDLERS();
+extern void warm_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
-extern void print_unsigned(unsigned int num, unsigned char base);
 
 /*
  * This is what a Stage 2 entry point should look like.
  */
-typedef void (*Stage2)();
+typedef void (*Stage2)(void);
 
 // Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end, _end;
+extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 extern uint32_t _zip_start, _zip_end;
 
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
+static uint32_t* program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADDRESS;
+static uint32_t* reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
 
 // Stage 2 loads at 0x2000
 uint8_t *stage2_load_ptr = (uint8_t*) 0x2000;
@@ -58,7 +62,39 @@ uint32_t get_zip_size() {
   return (uint32_t)&_zip_end - (uint32_t)&_zip_start;
 }
 
-/* Main stage 1 entry point */
+/*
+ * This function becomes the default loader implementation pointed to by the EFP.
+ * It can be swapped out to use different loaders - see InterfaceReference.md.
+ */ 
+noreturn void default_program_loader() {
+    if (!decompress_stage2((uint32_t)&_zip_start, get_zip_size())) {
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
+        
+        while (true) {
+            BUSYWAIT_C(10000);
+            //HALT();
+        }
+    }
+
+    // Call into stage 2
+    stage2();
+
+    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
+
+    while (true) {
+        HALT();
+    }
+}
+
+static void initialize_loader_efp() {
+    *program_loader_ptr = (uint32_t)default_program_loader;
+}
+
+static void initialize_warm_reboot() {
+    *reset_vector_ptr = (uint32_t)warm_boot;
+}
+
+/* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
         FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
@@ -78,23 +114,14 @@ noreturn void main1() {
     }
 #endif
 
-    if (!decompress_stage2((uint32_t)&_zip_start, get_zip_size())) {
-        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
-        
-        while (true) {
-            BUSYWAIT_C(10000);
-            //HALT();
-        }
-    }
+    // Initialize the EFP's PROGRAM_LOADER func with the default loader to begin with
+    initialize_loader_efp();
 
-    // Call into stage 2
-    stage2();
+    // We have enough setup done now that we can handle future warm reboot. Let's set that up..
+    initialize_warm_reboot();
 
-    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
-
-    while (true) {
-        HALT();
-    }
+    // And let's do default program loader first time around...
+    default_program_loader();
 }
 
 // TODO these are duplicated in stage2, find a way not to do that...
