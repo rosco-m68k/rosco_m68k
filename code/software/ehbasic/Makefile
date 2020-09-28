@@ -4,7 +4,7 @@
 # See LICENSE
 
 DEFINES=-DROSCO_M68K
-ASFLAGS=-Fbin -m68010 -quiet $(DEFINES)
+ASFLAGS=-Fbin -m68010 -quiet -nowarn=2028 $(DEFINES)
 AS=vasmm68k_mot
 RM=rm -f
 
@@ -19,7 +19,7 @@ LST=$(BINARY_BASENAME).lst
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
 ifeq ($(MC68681),true)
-DEFINES:=$(DEFINES) -DMC68681 -quiet -nowarn=2028
+DEFINES:=$(DEFINES) -DMC68681 
 endif
 
 $(BINARY) : ehbasic.S ehdefs.S
