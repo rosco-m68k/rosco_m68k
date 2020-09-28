@@ -83,9 +83,31 @@ nobrk		EQU	0				* null response to INPUT causes a break
 
 * output character to the console from register d0.b
 
+; While not strictly _to spec_ to reset cursor position on LF (it should be CR), ehBASIC 
+; *always* prints them in pairs, so this will work (and fits nicely with the way the 
+; VDP IO routines handle LF, while also still working with the UART).
 VEC_OUT:
     move.l  D1,-(A7)              ; Save D1
-    move.l  #4,D1                 ; Trap function code 4... 
+    move.b  TPos(A3),D1           ; Grab TPos...
+
+    cmp.b   #$A,D0                ; Is character a linefeed?
+    bne.s   .NOTLF                ; ...carry on if not
+    move.b  #0,D1                 ; ...else zero TPos
+    bra.s   .SETTPOS              ; ...and store it back to mem, then print (for UART compatibility).
+.NOTLF
+    cmp.b   #$8,D0                ; Is it a BS?
+    bne.s   .PRINT                ; ...nope, go directly to print...
+    cmp.b   #0,D1                 ; ...else, check if TPos is 0
+    beq.s   .BSZERO               ; branch is it is zero...
+    subq.b  #1,D1                 ; ...else just subtract 1
+    bra.s   .SETTPOS              ; and save to mem, then print
+.BSZERO
+    move.b  TWidth(A3),D1         ; If it was zero, move to end of previous line...
+                                  ; (ehBASIC should actually prevent this, but belt-and-braces...)
+.SETTPOS
+    move.b  D1,TPos(A3)           ; Store D1 back into TPos
+.PRINT
+    move.l  #4,D1                 ; Trap function code 4...
     trap    #14                   ; .. and go
     move.l  (A7)+,D1              ; Restore D1
     rts
@@ -219,7 +241,7 @@ LAB_COLD
 	MOVE.w	d0,prg_strt-2(a3)		* clear start word
 	MOVE.w	d0,BHsend(a3)		* clear value to string end word
 
-	MOVE.b	#$50,TWidth(a3)		* default terminal width byte for simulator
+	MOVE.b	#$4F,TWidth(a3)		* default terminal width (should be width - 1)
 	MOVE.b	#$0E,TabSiz(a3)		* save default tab size = 14
 
 	MOVE.b	#$38,Iclim(a3)		* default limit for TAB = 14 for simulator
