@@ -73,7 +73,7 @@ nobrk		EQU	0				* null response to INPUT causes a break
 * Use this value to run out of ROM
 *	ORG		$FC0000			* past the vectors in a real system
 * Use this value to run out of RAM
-  ORG		$28000			* past the vectors in a real system
+*  ORG		$28000			* past the vectors in a real system
 
          BRA    code_start       * For convenience, so you can start from first address
 
