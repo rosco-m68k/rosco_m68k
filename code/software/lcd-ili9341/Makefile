@@ -5,13 +5,17 @@
 
 EXTRA_CFLAGS?=-g -O3 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
-DEFINES=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
-LIBS=-lmachine -lstart_serial -lrtlsupport -ldebug_stub
+DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -pedantic -I$(SYSINCDIR) \
 				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
+GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
+		| grep libraries:\ =																								\
+    | sed 's/libraries: =/-L/g' 																				\
+    | sed 's/:/m68000\/ -L/g')m68000/
+LIBS=-lmachine -lstart_serial -ldebug_stub -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP) --gc-sections --oformat=elf32-m68k --defsym=_RAM_SIZE=1M
@@ -52,7 +56,7 @@ OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 all: images $(BINARY) $(DISASM)
 
 $(ELF) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
 	chmod a-x $@
@@ -100,10 +104,10 @@ test: rle_images.h $(BINARY) $(DISASM)
 mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
-	echo "/usr/bin/screen $(SERIAL) $(BAUD)" > ./rosco_screen.sh
-	chmod +x ./rosco_screen.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" > $(TMPDIR)/rosco_screen.sh
+	chmod +x $(TMPDIR)/rosco_screen.sh
 	sleep 1
-	open -b com.apple.terminal ./rosco_screen.sh
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
 .PHONY: all clean dump disasm load test images
