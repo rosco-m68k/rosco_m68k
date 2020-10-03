@@ -72,7 +72,7 @@ noreturn void lmain() {
     }
 
     // Wait a short while for the user's terminal to come back...
-    mcBusywait(100000);
+    mcBusywait(400000);
     
     mcPrint("Kernel received okay; Starting...\r\n");
 #  else
