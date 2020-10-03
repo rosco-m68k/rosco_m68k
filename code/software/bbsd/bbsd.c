@@ -15,6 +15,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #include "bbspi.h"
 #include "bbsd.h"
@@ -27,6 +28,7 @@ static bool send_idle(BBSPI*);
 static BBSDCardType get_card_type(BBSPI*);
 static bool try_acmd41(BBSPI*, uint32_t, uint32_t);
 static uint8_t raw_sd_command(BBSPI*, uint8_t, uint32_t);
+static uint8_t raw_sd_command_force(BBSPI*, uint8_t, uint32_t, bool force);
 static uint8_t raw_sd_acommand(BBSPI*, uint8_t, uint32_t);
 static bool sd_partial_read_p(BBSDCard *sd);
 
@@ -55,11 +57,15 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
         goto finally;
     }
 
+    printf("Send idle completed\n");
+
     BBSDCardType card_type = get_card_type(spi);
 
     if (card_type == BBSD_CARD_TYPE_UNKNOWN) {
         goto finally;
     }
+
+    printf("Got card type: 0x%04x", card_type);
 
     // Try to initialize the card...
     uint32_t supports = card_type == BBSD_CARD_TYPE_V2 ? 0x40000000 : 0;
@@ -70,31 +76,33 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
             if (raw_sd_command(spi, 58, 0)) {
                 goto finally;
             } else {
-                if (BBSPI_recv_byte(spi) & 0xC0) {
+                if ((BBSPI_recv_byte(spi) & 0xC0) == 0xC0) {
                     card_type = BBSD_CARD_TYPE_SDHC;
+                }
 
-                    // don't care about voltage range...
-                    BBSPI_recv_byte(spi);
-                    BBSPI_recv_byte(spi);
-                    BBSPI_recv_byte(spi);
+                // don't care about voltage range...
+                BBSPI_recv_byte(spi);
+                BBSPI_recv_byte(spi);
+                BBSPI_recv_byte(spi);
 
-                    sd->type = card_type;
-                    sd->spi = spi;
+                sd->type = card_type;
+                sd->spi = spi;
 
 #ifndef SD_BLOCK_READ_ONLY
-                    sd->have_current_block = false;
+                sd->have_current_block = false;
 
-                    // TODO this can't currently signal error!
-                    sd->can_partial_read = sd_partial_read_p(sd);
+                // TODO this can't currently signal error!
+                sd->can_partial_read = sd_partial_read_p(sd);
 #endif
 
 #ifndef SD_FASTER
-                    sd->initialized = true;
+                sd->initialized = true;
 #endif
 
-                    result = true;
-                }
+                result = true;
             }
+        } else {
+          printf("Not a V2 card\n");
         }
     }
 
@@ -221,7 +229,13 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         addressable_block = block << 9;
     }
 
-    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 10)) {
+    if (BBSD_command(sd, 17, addressable_block)) {
+        printf("Command 17 failed - ignoring...\n");
+        //goto finally;
+    }
+
+    if (!wait_for_block_start(sd->spi, 10)) {
+        printf("Wait for block start failed\n");
         goto finally;
     }
 
@@ -272,6 +286,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
         }
 
         if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 10)) {
+            printf("Command 17 / wait for start failed\n");
             goto finally;
         }
 
@@ -280,10 +295,14 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
         sd->current_block_offset = 0;
     }
 
+    printf("Addressing done; skipping to %d\n", start_ofs);
+
     // Skip data before offset
     for (; sd->current_block_offset < start_ofs; sd->current_block_offset++) {
         BBSPI_recv_byte(sd->spi);
     }
+
+    printf("Reading %d bytes...\n", count);
 
     // Read data into buffer
     for (uint16_t i = 0; i < count; i++) {
@@ -306,6 +325,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
     }
 #endif
 
+    printf("Read done...\n");
     result = true;
 
 finally:
@@ -316,20 +336,27 @@ finally:
 
 /* ********* PRIVATE *********** */
 static bool wait_for_card(BBSPI *spi, uint32_t nops) {
+    printf("Waiting for card... ");
     for (uint32_t i = 0; i < nops; i++) {
         if (BBSPI_recv_byte(spi) == 0xFF) {
+            printf("Card responds after %d nops\n", i);
             return true;
         }
     }
+    printf("No response after %d nops\n", nops);
     return false;
 }
 
 static void reset_card(BBSPI *spi) {
+    printf("Reset card: deassert_cs\n");
     BBSPI_deassert_cs(spi);
 
-    for (int i = 0; i < 10; i++) {
-        BBSPI_recv_byte(spi);
+    printf("Loop to reset\n");
+    for (int i = 0; i < 100; i++) {
+        BBSPI_send_byte(spi, 0xFF);
     }
+
+    printf("Reset complete\n");
 }
 
 static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
@@ -349,12 +376,15 @@ static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
 }
 
 static bool send_idle(BBSPI *spi) {
-    for (int i = 0; i < 100; i++) {
-        if (raw_sd_command(spi, 0, 0) == R1_IDLE_STATE) {
+    printf("Sending idle...\n");
+    for (int i = 0; i < 10; i++) {
+        if (raw_sd_command_force(spi, 0, 0, true) == R1_IDLE_STATE) {
+            printf("Idled after %d nops\n");
             return true;
         }
     }
 
+    printf("Did not idle\n");
     return false;
 }
 
@@ -389,10 +419,20 @@ static bool try_acmd41(BBSPI *spi, uint32_t nops, uint32_t supports) {
 }
 
 static uint8_t raw_sd_command(BBSPI *spi, uint8_t command, uint32_t arg) {
+  return raw_sd_command_force(spi, command, arg, false);
+}
+
+static uint8_t raw_sd_command_force(BBSPI *spi, uint8_t command, uint32_t arg, bool force) {
     BBSPI_assert_cs(spi);
 
+    //if (!wait_for_card(spi, 1000)) {
+    //    return 0xFF;
+    //}
     if (!wait_for_card(spi, 1000)) {
-        return 0xFF;
+        printf("Card still says busy, will carry on regardless...\n");
+        if (!force) {
+          return 0xFF;
+        }
     }
 
     BBSPI_send_byte(spi, command | 0x40);
@@ -445,6 +485,7 @@ static bool sd_device_read_block_func(BlockDevice *device, uint32_t block, void 
     } else {
 #endif
         // TODO bounds check start_ofs!
+        printf("In read block func: block: 0x%08x\n", block);
         return BBSD_read_block(device->device_data, block, buffer);
 #ifndef SD_FASTER
     }
@@ -459,6 +500,7 @@ static bool sd_device_read_func(BlockDevice *device, uint32_t block, uint32_t st
     } else {
 #  endif
         // TODO bounds check start_ofs!
+        printf("In read func: block: 0x%08x : start_ofs = 0x%08x : passing 0x%08x\n", block, start_ofs, start_ofs & 0xFFFF);
         return BBSD_read_data(device->device_data, block, start_ofs & 0xFFFF, len, buffer);
 #   ifndef SD_FASTER
     }
