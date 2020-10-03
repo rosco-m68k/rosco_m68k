@@ -7,51 +7,49 @@
 #include <stdio.h>
 #include <debug_stub.h>
 
-static uint32_t * rom_init_stack = (uint32_t *)&_FIRMWARE[0];
 static uint32_t * rom_reset_vector = (uint32_t *)&_FIRMWARE[4];
 
-static uint32_t * init_stack = (uint32_t *)0x0;
-static uint32_t * reset_vector = (uint32_t *)0x4;
-//static uint32_t * efp_program_loader = (uint32_t *)0x448;
-
+#define RESIDENT_MAGIC  0xc0de0042
 extern void resident_init();
 
 void kmain()
 {
   debug_stub();
   mcDelaymsec10(250);
-  printf("Simple test/example of rosco_m68k warm reboot\n\n");
+  printf("Example/test of rosco_m68k warm reboot.\n\n");
 
-
-  printf("rosco_m68k firmware code: %08X\n", _FIRMWARE_REV);
-  
-  printf("Default configuration (from ROM)\n");
-  printf("--------------------------------\n");
-  printf(" Stack will reset to: 0x%08x (%d KiB main RAM)\n", *rom_init_stack, *rom_init_stack / 1024);
-  printf("  Reset vector is at: 0x%08x (full reset)\n", *rom_reset_vector);
-  printf("\n");
-  printf("Current runtime configuration (from RAM)\n");
-  printf("----------------------------------------\n");
-  printf(" Stack will reset to: 0x%08x (%d KiB main RAM)\n", *init_stack, *init_stack / 1024);
-  int32_t reserved = *rom_init_stack - *init_stack;
+  printf("rosco_m68k config (firmware: 0x%08X)\n", _FIRMWARE_REV);
+  printf("------------------------------------\n");
+  printf(" Total memory     : 0x%08x (%d KiB)\n", _SDB_MEM_SIZE, _SDB_MEM_SIZE / 1024);
+  printf(" Available memory : 0x%08x (%d KiB)\n", _INITIAL_STACK, _INITIAL_STACK / 1024);
+  int32_t reserved = _SDB_MEM_SIZE - _INITIAL_STACK;
   if (reserved > 0)
   {
     printf("  (0x%08x bytes reserved)\n", reserved);
   }
   else if (reserved < 0)
   {
-    printf("  (%d KiB expansion memory detected)\n", (-reserved) / 1024);
+    printf("  (ERROR: initial stack > memory size?)\n");
   }
-  printf("  Reset vector is at: 0x%08x (soft reset)\n", *reset_vector);
-
-  printf("Program loader is at: 0x%08x\n", (uint32_t)_EFP_PROGLOADER);
+  printf(" ROM reset vector : 0x%08x\n", *rom_reset_vector);
+  printf(" Warm-boot vector : 0x%08x\n", _WARM_BOOT);
   printf("\n");
 
-  // NOTE: This could access past actual RAM (bus error hazard)?
-  uint32_t signature = *(uint32_t *)(*init_stack + 0x000);
-  if (signature != 0xc0de0042)
+  printf(" EFP_PRINT        : 0x%08x\n", _EFP_PRINT);
+  printf(" EFP_PRINTLN      : 0x%08x\n", _EFP_PRINTLN);
+  printf(" EFP_PRINTCHAR    : 0x%08x\n", _EFP_PRINTCHAR);
+  printf(" EFP_HALT         : 0x%08x\n", _EFP_HALT);
+  printf(" EFP_SENDCHAR     : 0x%08x\n", _EFP_SENDCHAR);
+  printf(" EFP_RECVCHAR     : 0x%08x\n", _EFP_RECVCHAR);
+  printf(" EFP_CLRSCR       : 0x%08x\n", _EFP_CLRSCR);
+  printf(" EFP_MOVEXY       : 0x%08x\n", _EFP_MOVEXY);
+  printf(" EFP_SETCURSOR    : 0x%08x\n", _EFP_SETCURSOR);
+  printf(" EFP_PROGLOADER   : 0x%08x\n", _EFP_PROGLOADER);
+  printf("\n");
+
+  if (reserved <= 0 || *(uint32_t *)_INITIAL_STACK != RESIDENT_MAGIC)
   {
-    printf("*** Resident signature not detected, installing resident test.\n");
+    printf("*** Resident test signature not detected, installing test.\n");
     printf(" ... Initializing resident test.\n");
     uint32_t a7_before;
     __asm__ __volatile__ ("move.l %%a7,%[a7_before]\n" : [a7_before] "=d" (a7_before) : : );
@@ -60,15 +58,15 @@ void kmain()
     __asm__ __volatile__ ("move.l %%a7,%[a7_after]\n" : [a7_after] "=d" (a7_after) : : );
     int32_t reserved = a7_before - a7_after;
     printf(" ... Completed.\n");
-    printf("     Reserved 0x%08x bytes memory for resident test.\n", reserved);
+    printf(" Test reserved 0x%08x bytes memory.\n", reserved);
   }
   else
   {
-    printf("*** Resident signature detected, already installed.\n");
-    printf(" ... Test signature @ 0x%08x = 0x%08x\n", *init_stack + 0x000, *(uint32_t *)(*init_stack + 0x000));
+    printf("*** Resident signature detected, test already installed.\n");
+    printf(" ... Test signature @ 0x%08x = 0x%08x\n", _INITIAL_STACK, *(uint32_t *)_INITIAL_STACK);
   }
 
-  printf("\nResident loader completed.\n\n");
+  printf("\nResident test loader completed.\n\n");
 
   for (int d = 3; d != 0; d--)
   {
@@ -76,6 +74,6 @@ void kmain()
     mcDelaymsec10(100);
   }
   mcDelaymsec10(100);
-  printf("Exit...\n");
+  printf("\nExit...\n");
   mcDelaymsec10(10);
 }

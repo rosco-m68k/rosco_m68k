@@ -57,12 +57,6 @@ void kmain()
   println("This will test interrupt generation on a negative");
   println("edge on rosco GPIO3 (J5-pin 5 aka MFP GPIP4).");
 
-  print("stack bottom=");
-  printuint((uint32_t)_HEAP_END);
-  print(" top=");
-  printuint((uint32_t)_STACK_TOP);
-  println("");
-
   println("Initializing MFP for GPIP4 interrupt...");
 
   // It is documented that if you are "unlucky" and touch the MFP interrupt

@@ -26,17 +26,24 @@ MEMORY
 
 /* program configuration symbols that may be useful to override */
 /* using linker option: --defsym=<symbol_name>=<value>          */
-PROVIDE(_RAM_SIZE     = 1M);            /* default to 1MB of RAM        */
-PROVIDE(_STACK_TOP    = _RAM_SIZE);     /* default stack at top of RAM  */
-PROVIDE(_STACK_SIZE   = 0x00004000);    /* 16KB default stack size      */
-PROVIDE(_HEAP_END     = _STACK_TOP - _STACK_SIZE); /* heap end at stack */
+PROVIDE(_STACK_SIZE     = 0x00004000);  /* 16KB default stack size      */
 
-/* firware absolute addresses (generally not useful to override)  */
+/* firmware absolute addresses (generally not useful to override)  */
+PROVIDE(_INITIAL_STACK  = 0x00000000);  /* firmware stack top (mem top) */
+PROVIDE(_WARM_BOOT      = 0x00000004);  /* firmware warm boot address   */
+
 PROVIDE(_MFP_VECTORS    = 0x00000100);  /* MFP interrupt vector base    */
-PROVIDE(_TIMER_100HZ    = 0x0000040C);  /* firmware 100Hz timer counter */
+
+/* system data block */
+PROVIDE(_SDB_MAGIC      = 0x00000400);  /* SDB magic number             */
+PROVIDE(_SDB_STATUS     = 0x00000404);  /* SDB status code              */
+PROVIDE(_SDB_RSRVD_408  = 0x00000408);  /* SDB reserved                 */
+PROVIDE(_TIMER_100HZ    = 0x0000040C);  /* 100Hz timer counter          */
 PROVIDE(_EASY68K_ECHOON = 0x00000410);  /* Easy68k 'echo on' flag       */
 PROVIDE(_EASY68K_PROMPT = 0x00000411);  /* Easy68k 'prompt on' flag     */
 PROVIDE(_EASY68K_SHOWLF = 0x00000412);  /* Easy68k 'LF display' flag    */
+PROVIDE(_SDB_RSRVD_413  = 0x00000413);  /* SDB reserved                 */
+PROVIDE(_SDB_MEM_SIZE   = 0x00000414);  /* contiguous memory size       */
 
 /* NOTE: These need to be kept in sync with firmware equates.S! */
 PROVIDE(_EFP_TABLE      = 0x00000420);  /* Extension function ptr table */
@@ -49,8 +56,7 @@ PROVIDE(_EFP_SENDCHAR   = 0x00000430);  /* Send a character via UART    */
 PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
 PROVIDE(_EFP_CLRSCR     = 0x00000438);  /* Clear screen (optional)      */
 PROVIDE(_EFP_MOVEXY     = 0x0000043C);  /* Set cursor position (opt.)   */
-PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
-PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enable/disable cursor (opt.) */
 PROVIDE(_EFP_RESRVD_444 = 0x00000444);  /* reserved                     */
 PROVIDE(_EFP_PROGLOADER = 0x00000448);  /* Initial program loader       */
 
