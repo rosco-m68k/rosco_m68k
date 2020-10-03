@@ -30,10 +30,12 @@
 #define MOSI    GPIO3
 #define MISO    GPIO4
 
-//#ifdef _PRINTF_H_
-//#include <basicio.h>
-//#define printf_(stuff)   mcPrint(stuff)
-//#endif
+#ifdef SD_MINIMAL
+#ifdef _PRINTF_H_
+#include <basicio.h>
+#define printf_(stuff)   mcPrint(stuff)
+#endif
+#endif
 
 typedef void (*loadedfunc)();
 
@@ -51,7 +53,6 @@ int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
 
     for(int i = 0; i < sector_count; i++) {
         if (!block_device.readBlock(&block_device, sector, buffer)) {
-            printf("Sector read %d of %d failed\n", i, sector_count);
             return 0;
         }
         buffer += block_device.getBlockSize(&block_device);
@@ -65,7 +66,7 @@ int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
 }
 
 void kmain() {
-    printf("BBSD Test Starting...\n");
+    printf("BBSD Test Starting...\r\n");
 
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
         if (BBSD_initialize(&sd, &spi)) {
@@ -95,19 +96,10 @@ void kmain() {
             if (BBSD_make_device(&sd, &block_device)) {
                 fl_attach_media(media_read, media_write);
 
-                struct fatfs fs;
-                fs.disk_io.read_media = media_read;
-                int result = fatfs_init(&fs);
-                if (result != FAT_INIT_OK) {
-                    printf("Filesystem init failed (%d)\n", result);
-                } else {
-                    printf("FAT filesystem of type %s with %d FAT(s), %d root entries", (fs.fat_type == FAT_TYPE_32 ? "FAT32" : "FAT16"), fs.num_of_fats, fs.root_entry_count);
-                }
-
                 void *file = fl_fopen("/ROSCODE1.BIN", "r");
 
                 if (file != NULL) {
-                    printf("Loading...\n");
+                    printf("Loading...\r\n");
 
                     int c;
                     while ((c = fl_fread(loadptr, 512, 1, file)) != EOF) {
@@ -118,17 +110,17 @@ void kmain() {
 
                     entryPoint();
                 } else {
-                    printf("Open failed\n");
+                    printf("Open failed\r\n");
                 }
 
             } else {
-                printf("BlockDevice failed to initialize");
+                printf("BlockDevice failed to initialize\r\n");
             }
         } else {
-          printf("SD init failed\n");
+          printf("SD init failed\r\n");
         }
     } else {
-        printf("SPI init failed\n");
+        printf("SPI init failed\r\n");
     }
 
     printf("Game Over; Rebooting...\r\n");
