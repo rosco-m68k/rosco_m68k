@@ -12,7 +12,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
     | sed 's/libraries: =/-L/g' 																				\
     | sed 's/:/m68000\/ -L/g')m68000/
 DEFINES=-DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE -DSPI_FASTER 					\
-				-DSPI_ZERODELAY -DSD_FASTER -DSD_MINIMAL
+				-DSPI_FAST -DSD_FASTER -DSD_MINIMAL
 CFLAGS=-std=c11 -ffreestanding  -Ifat_io_lib	-I$(SYSINCDIR)						\
 			-Wall -Werror -Wno-unused-function 																\
 			-Iinclude -mcpu=68010 -march=68010 -mtune=68010 -Os								\
