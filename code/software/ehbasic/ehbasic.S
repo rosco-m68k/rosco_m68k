@@ -76,7 +76,6 @@ nobrk		EQU	0				* null response to INPUT causes a break
 *  ORG		$28000			* past the vectors in a real system
 
          BRA    code_start       * For convenience, so you can start from first address
-
 *************************************************************************************
 *
 * the following code is rosco_m68k-specific
@@ -117,7 +116,29 @@ VEC_OUT:
 * input a character from the console into register d0
 * else return Cb=0 if there's no character available
 
+DUART_SRA      equ     $f80022      ; R register 1
+DUART_RBA      equ     $f80026      ; R register 3
+
 VEC_IN:
+    ifd MC68681
+
+; MC68681 version
+
+    move.b  DUART_SRA,D0          ; Check DUART status reg A
+    btst    #0,D0                 ; Bit 0
+    bne.s   .GOTCHR               ; Notready if zero
+    andi.b  #$FE,CCR              ; Else clear the carry flag, no character available
+    rts                           ; And return
+    
+.GOTCHR
+    move.b  DUART_RBA,D0
+    ori.b   #1,CCR                ; ... and set the carry to flag to indicate we got a char
+    rts
+
+    else
+
+; MFP UART version
+
     move.b  MFP_RSR,D0            ; Get RSR
     btst    #7,D0                 ; Is buffer_full bit set?
     bne.s   .GOTCHR               ; Yes - Go to receive character
@@ -136,6 +157,8 @@ VEC_IN:
     move.b  MFP_UDR,D0            ; Get the data
     ori.b   #1,CCR                ; Set the carry to flag we got a char
     rts
+    
+    endif
 
 *************************************************************************************
 *
@@ -155,11 +178,8 @@ VEC_SV
 
 *************************************************************************************
 *
-* turn off simulator key echo
-
 code_start
 kmain::
-
 * Display cursor
   move.l  #5,D1
   move.l  #1,D0
