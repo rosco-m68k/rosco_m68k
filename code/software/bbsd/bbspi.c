@@ -15,6 +15,7 @@
 
 #include <stdbool.h>
 #include <gpio.h>
+#include <gpio_spi.h>
 #include "bbspi.h"
 
 #ifndef SPI_ZERODELAY
@@ -129,52 +130,14 @@ uint8_t BBSPI_transfer_byte(BBSPI *spi, uint8_t byte_out) {
         return 0;
     }
 #endif
-
-    uint8_t byte_in = 0;
-    uint8_t bit;
-
-    for (bit = 0x80; bit; bit >>= 1) {
-        BBSPI_write_mosi(spi, (byte_out & bit));
-
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_low_hold_nops);
-#endif
-        BBSPI_write_sck(spi, true);
-
-        if (BBSPI_read_miso(spi)) {
-            byte_in |= bit;
-        }
-
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_high_hold_nops);
-#endif
-        BBSPI_write_sck(spi, false);
-    }
-
-    return byte_in;
+    return spi_exchange_byte(byte_out);
 }
 
 void BBSPI_send_byte(BBSPI *spi, uint8_t byte_out) {
 #ifndef SPI_FASTER
     if (spi->initialized) {
 #endif
-
-    uint8_t bit;
-
-    for (bit = 0x80; bit; bit >>= 1) {
-        BBSPI_write_mosi(spi, (byte_out & bit));
-
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_low_hold_nops);
-#endif
-        BBSPI_write_sck(spi, true);
-
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_high_hold_nops);
-#endif
-        BBSPI_write_sck(spi, false);
-    }
-
+        return spi_send_byte(byte_out);
 #ifndef SPI_FASTER
     }
 #endif
@@ -186,27 +149,5 @@ uint8_t BBSPI_recv_byte(BBSPI *spi) {
         return 0;
     }
 #endif
-
-    uint8_t byte_in = 0;
-    uint8_t bit;
-
-    BBSPI_write_mosi(spi, 1);
-
-    for (bit = 0x80; bit; bit >>= 1) {
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_low_hold_nops);
-#endif
-        BBSPI_write_sck(spi, true);
-
-        if (BBSPI_read_miso(spi)) {
-            byte_in |= bit;
-        }
-
-#ifndef SPI_ZERODELAY
-        delay(spi->sck_high_hold_nops);
-#endif
-        BBSPI_write_sck(spi, false);
-    }
-
-    return byte_in;
+    return spi_read_byte();
 }
