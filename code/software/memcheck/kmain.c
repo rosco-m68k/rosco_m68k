@@ -71,7 +71,7 @@ static uint32_t count_rom_size() {
       }
 
       if (((uint32_t)current) % 4096 == 0) {
-        printf("\033[20DROM: %dK %s", 
+        printf("\rROM: %dK %s", 
             ((uint32_t)current) / 1024, "[\033[1;32m✔\033[0m]");
       }
 
@@ -126,7 +126,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
         current_block++;
         
         if (current_block == MAX_RAMBLOCKS) {
-          printf("\033[20D");
+          printf("\r");
           return KFAILURE_NORESOURCE;
         }
       }
@@ -154,7 +154,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
     
         if (current_block == MAX_RAMBLOCKS) {
           // Uh-oh, no more blocks :(
-          printf("\033[20D");
+          printf("\r");
           return KFAILURE_NORESOURCE;
         }
       }
@@ -168,14 +168,14 @@ static KRESULT build_memory_map(MEMINFO *header) {
     current++;
 
     if (current_addr % 65536 == 0) {
-      printf("\033[20DRAM: %dK %s", 
+      printf("\rRAM: %dK %s", 
           current_addr / 1024, 
           block_started ? "[\033[1;32m✔\033[0m]" : "[\033[1;31m✗\033[0m]");
     }
   }
 
   if (current_block == MAX_RAMBLOCKS - 1) {  // We need at least two more blocks
-    printf("\033[20D");
+    printf("\r");
     return KFAILURE_NORESOURCE;
   }
 
@@ -200,7 +200,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
   if (rom_size < (256 << 10)) {
     // We have some shadow ROM, need a block for that..
     if (current_block == MAX_RAMBLOCKS - 1) {  // We need to create 2 at least more blocks
-      printf("\033[20D");
+      printf("\r");
       return KFAILURE_NORESOURCE;
     }
 
@@ -215,7 +215,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
         RAMBLOCK_FLAG_SHADOW;
   }
   
-  printf("\033[20D");
+  printf("\r");
   return KRESULT_SUCCESS;
 }
 
@@ -265,10 +265,10 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   }
 
   print_flags(block->flags);
-  printf("\r\n");
+  printf("\n");
 }
 
-/* System-wide memory map. Stored in SDB at 0x430.
+/* Build a memory map at _end (start of 'heap').
  *
  * This map always consists of one MEMINFO header,
  * followed by MAX_RAMBLOCKS blocks.
@@ -277,18 +277,19 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  * address. Blocks with zero start and size are 
  * unused.
  */
-MEMINFO * volatile header = (MEMINFO*)0x430;
+extern const void* _end;
+static MEMINFO* header = (MEMINFO*)&_end;
 
-noreturn void kmain() {
-  MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
+void kmain() {
+  MEMBLOCK * blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
 
-  printf("Building memory map...\r\n");
+  printf("Building memory map...\n");
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
-    printf("Failed to build memory map (0x%04x)\r\n", result);
+    printf("Failed to build memory map (0x%04x)\n", result);
   } else {
-    printf("Map build successfully 😃\r\n");
+    printf("Map build successfully\n");
 
     uint8_t current_block = 0;
 
@@ -297,9 +298,7 @@ noreturn void kmain() {
       current_block++;
     }
 
-    printf("Complete; Found a total of %d bytes of writeable RAM\r\n\r\n", header->ram_total);
+    printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
   }
-
-  mcHalt();
 }
 
