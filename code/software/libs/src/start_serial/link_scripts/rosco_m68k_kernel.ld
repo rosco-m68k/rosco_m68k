@@ -50,8 +50,12 @@ PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
 PROVIDE(_EFP_CLRSCR     = 0x00000438);  /* Clear screen (optional)      */
 PROVIDE(_EFP_MOVEXY     = 0x0000043C);  /* Set cursor position (opt.)   */
 PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+PROVIDE(_EFP_RESRVD_444 = 0x00000444);  /* reserved                     */
+PROVIDE(_EFP_PROGLOADER = 0x00000448);  /* Initial program loader       */
 
 /* ROM absolute addresses */
+PROVIDE(_FIRMWARE       = 0x00FC0000);  /* firmware address             */
 PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
@@ -63,7 +67,7 @@ SECTIONS
   .text.init :
   {
     _init = .;
-    KEEP(*(.init))  /* KEEP() "anchors" section for gc-sections */
+    KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
   } > RAM
 
@@ -71,6 +75,7 @@ SECTIONS
   {
     _postinit = .;
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
+    . = ALIGN(4);       /* long align for init.S copying */
     _postinit_end = .;
   } > RAM
 
@@ -86,7 +91,7 @@ SECTIONS
   {
     _data_start = .;
     *(.data*)
-    . = ALIGN(4);   /* align for init.S longword copy */
+    . = ALIGN(4);       /* long align for init.S copying */
     _data_end = .;
   } > RAM
 
@@ -95,6 +100,7 @@ SECTIONS
     _bss_start = .;
     *(.bss*)
     *(COMMON)
+    . = ALIGN(4);       /* long align for kinit clearing */
     _bss_end = .;
   } > RAM
 

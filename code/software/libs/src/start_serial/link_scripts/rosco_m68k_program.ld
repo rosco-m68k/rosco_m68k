@@ -50,8 +50,12 @@ PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
 PROVIDE(_EFP_CLRSCR     = 0x00000438);  /* Clear screen (optional)      */
 PROVIDE(_EFP_MOVEXY     = 0x0000043C);  /* Set cursor position (opt.)   */
 PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enbable/disable cursor (opt.)*/
+PROVIDE(_EFP_RESRVD_444 = 0x00000444);  /* reserved                     */
+PROVIDE(_EFP_PROGLOADER = 0x00000448);  /* Initial program loader       */
 
 /* ROM absolute addresses */
+PROVIDE(_FIRMWARE       = 0x00FC0000);  /* firmware address             */
 PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */

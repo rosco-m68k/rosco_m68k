@@ -1,9 +1,9 @@
-# Make lcd-ili9341 GPIO example program for rosco_m68k
-#
-# Copyright (c)2020 Xark
-# MIT LICENSE
+# Make rosco_m68k programs
+# 
+# Copyright (c)2020 Ross Bamford
+# See LICENSE
 
-EXTRA_CFLAGS?=-g -O3 -fomit-frame-pointer
+EXTRA_CFLAGS?=-g -O0 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
@@ -15,7 +15,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
     | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lmachine -lstart_serial -ldebug_stub -lgcc
+LIBS=-lprintf -lmachine -lstart_serial -ldebug_stub -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP) --gc-sections --oformat=elf32-m68k --defsym=_RAM_SIZE=1M
@@ -53,7 +53,7 @@ SOURCES=$(CSOURCES) $(SSOURCES) $(ASMSOURCES)
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 
-all: images $(BINARY) $(DISASM)
+all: $(BINARY) $(DISASM)
 
 $(ELF) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
@@ -67,12 +67,7 @@ $(BINARY) : $(ELF)
 $(DISASM) : $(ELF)
 	$(OBJDUMP) --disassemble -S $(ELF) >$(DISASM)
 
-$(OBJECTS): rle_images.h Makefile
-
-rle_images.h: images
-
-images:
-	$(MAKE) -C images
+$(OBJECTS): Makefile
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -100,7 +95,7 @@ test: rle_images.h $(BINARY) $(DISASM)
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
-# This is handy to test on iMac	
+# This is handy to test on MacOS
 mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
@@ -110,4 +105,4 @@ mactest: $(BINARY) $(DISASM)
 	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
-.PHONY: all clean dump disasm load test images
+.PHONY: all clean dump disasm load test mactest

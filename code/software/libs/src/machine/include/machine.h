@@ -75,12 +75,30 @@
 /*
  * Absolute symbols defined in linker script
  */
-extern volatile uint32_t  _TIMER_100HZ;         // 100Hz timer counter
-extern void             (*_MFP_VECTORS[16])();  // MFP interrupt vectors
-extern uint32_t           _FIRMWARE_REV;        // rosco ROM firmware rev.
+extern volatile uint32_t _TIMER_100HZ;      // 100Hz timer counter
 
-extern char _STACK_TOP[];     /* default stack at top of RAM  */
-extern char _HEAP_END[];      /* heap end at stack */
+extern char           _FIRMWARE[];          // ROM firmware start address
+extern uint32_t       _FIRMWARE_REV;        // rosco ROM firmware rev.
+
+// NOTE: These are not active when firmware sets stack address
+extern char           _STACK_TOP[];         // default stack at top of RAM
+extern char           _HEAP_END[];          // heap end at stack
+
+// NOTE: These are not generally callable from C
+extern void           (*_MFP_VECTORS[16])();  // MFP interrupt vectors
+
+extern void           (*_EFP_PRINT)();        // ROM EFP vectors
+extern void           (*_EFP_PRINTLN)();   
+extern void           (*_EFP_PRINTCHAR)(); 
+extern void           (*_EFP_HALT)();      
+extern void           (*_EFP_SENDCHAR)();  
+extern void           (*_EFP_RECVCHAR)();  
+extern void           (*_EFP_CLRSCR)();    
+extern void           (*_EFP_MOVEXY)();    
+extern void           (*_EFP_SETCURSOR)(); 
+extern void           (*_EFP_SETCURSOR)(); 
+extern void           (*_EFP_RESRVD_444)();
+extern void           (*_EFP_PROGLOADER)();
 
 /*
  * Early print null-terminated string.
