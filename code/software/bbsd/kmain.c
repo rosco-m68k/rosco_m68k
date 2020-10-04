@@ -17,6 +17,7 @@
 #include <stdnoreturn.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <machine.h>
 #include <gpio.h>
 
 #include "bbspi.h"
@@ -30,16 +31,56 @@
 #define MOSI    GPIO3
 #define MISO    GPIO4
 
-#ifdef SD_MINIMAL
-#ifdef _PRINTF_H_
-#include <basicio.h>
-#define printf_(stuff)   mcPrint(stuff)
-#endif
-#endif
+// #ifdef SD_MINIMAL
+// #ifdef _PRINTF_H_
+// #include <basicio.h>
+// #define printf_(stuff)   mcPrint(stuff)
+// #endif
+// #endif
+
+
+// timer helpers
+static uint32_t start_tick;
+void timer_start()
+{
+  uint32_t ts = _TIMER_100HZ;
+  uint32_t t;
+  while ((t = _TIMER_100HZ) == ts)
+    ;
+  start_tick = t;
+}
+
+uint32_t timer_stop()
+{
+  uint32_t stop_tick = _TIMER_100HZ;
+
+  return (stop_tick - start_tick) * 10;
+}
+
+// from https://stackoverflow.com/questions/21001659
+unsigned int crc32b(unsigned char *message, int count)
+{
+  int i, j;
+  unsigned int byte, crc, mask;
+
+  crc = 0xFFFFFFFF;
+  for (i = 0; i < count; i++)
+  {
+    byte = message[i]; // Get next byte.
+    crc = crc ^ byte;
+    for (j = 7; j >= 0; j--)
+    { // Do eight times.
+      mask = -(crc & 1);
+      crc = (crc >> 1) ^ (0xEDB88320 & mask);
+    }
+  }
+  return ~crc;
+}
+
 
 typedef void (*loadedfunc)();
 
-uint8_t *loadptr = (void*)0x28000;
+uint8_t *loadstartptr = (void*)0x28000;
 loadedfunc entryPoint = (loadedfunc)0x28000;
 
 static BBSPI spi;
@@ -66,7 +107,8 @@ int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
 }
 
 void kmain() {
-    printf("BBSD Test Starting...\r\n");
+    mcDelaymsec10(100);
+    printf("BBSD Test Starting...\n");
 
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
         if (BBSD_initialize(&sd, &spi)) {
@@ -87,41 +129,56 @@ void kmain() {
 #ifndef SD_MINIMAL
 #ifdef _ROSCOM68K_STDIO_H
             uint32_t size = BBSD_get_size(&sd);
-            printf("with %d block(s)\r\n", size);
+            printf("with %d block(s)\n", size);
 #endif
 #else
-            printf("(Size unknown in minimal configuration)\r\n");
+            printf("(Size unknown in minimal configuration)\n");
 #endif
 
             if (BBSD_make_device(&sd, &block_device)) {
                 fl_attach_media(media_read, media_write);
 
+                printf("Opening \"ROSCODE1.BIN\"...\n");
+
+                timer_start();
                 void *file = fl_fopen("/ROSCODE1.BIN", "r");
+                uint32_t open_time = timer_stop();
 
                 if (file != NULL) {
-                    printf("Loading...\r\n");
+                    printf("Open succeeded, time %d msec.\n", open_time);
+                    printf("Reading \"ROSCODE1.BIN\"...\n");
 
                     int c;
+                    uint8_t *loadptr = loadstartptr;
+                    timer_start();
                     while ((c = fl_fread(loadptr, 512, 1, file)) != EOF) {
                         loadptr += c;
                     }
 
                     fl_fclose(file);
+                    uint32_t load_time = timer_stop();
+
+                    uint32_t bytes = loadptr - loadstartptr;
+                    printf("Finished loading %d bytes (%0.02f KiB).\n", bytes, bytes / 1024.0f);
+                    printf("Time % 0.03f seconds, Speed: % 0.02f KiB/sec.\n", load_time / 1000.0f, (bytes / 1024.0f) / (load_time / 1000.0f));
+                    printf("Calculating CRC32...");
+                    uint32_t crc = crc32b(loadstartptr, bytes);
+                    printf(" = 0x%08X\n", crc);
 
                     entryPoint();
                 } else {
-                    printf("Open failed\r\n");
+                    printf("Open failed\n");
                 }
 
             } else {
-                printf("BlockDevice failed to initialize\r\n");
+                printf("BlockDevice failed to initialize\n");
             }
         } else {
-          printf("SD init failed\r\n");
+          printf("SD init failed\n");
         }
     } else {
-        printf("SPI init failed\r\n");
+        printf("SPI init failed\n");
     }
 
-    printf("Game Over; Rebooting...\r\n");
+    printf("Game Over; Rebooting...\n");
 }
