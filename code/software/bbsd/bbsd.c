@@ -350,7 +350,7 @@ static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
 }
 
 static bool send_idle(BBSPI *spi) {
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 500; i++) {
         if (raw_sd_command_force(spi, 0, 0, true) == R1_IDLE_STATE) {
             return true;
         }
