@@ -29,7 +29,7 @@ static bool try_acmd41(BBSPI*, uint32_t, uint32_t);
 static uint8_t raw_sd_command(BBSPI*, uint8_t, uint32_t);
 static uint8_t raw_sd_command_force(BBSPI*, uint8_t, uint32_t, bool);
 static uint8_t raw_sd_acommand(BBSPI*, uint8_t, uint32_t);
-static bool sd_partial_read_p(BBSDCard);
+static bool sd_partial_read_p(BBSDCard*);
 
 // BlockDevice handlers
 static uint32_t sd_device_block_size_func(BlockDevice *device);
