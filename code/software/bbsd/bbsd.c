@@ -158,7 +158,7 @@ bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf) {
     bool result = false;
 
     if (!raw_sd_command(sd->spi, command, 0)) {
-        if (wait_for_block_start(sd->spi, 100)) {
+        if (wait_for_block_start(sd->spi, 200)) {
             for (uint32_t i = 0; i < 16; i++) {
                 buf[i] = BBSPI_recv_byte(sd->spi);
             }
@@ -222,7 +222,7 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         addressable_block = block << 9;
     }
 
-    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 100)) {
+    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 200)) {
         goto finally;
     }
 
@@ -272,7 +272,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
             addressable_block = block << 9;
         }
 
-        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 100)) {
+        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 200)) {
             goto finally;
         }
 
