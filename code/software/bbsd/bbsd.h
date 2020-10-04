@@ -31,6 +31,16 @@
 #define R1_ILLEGAL_COMMAND  0x04
 #define BLOCK_START         0xFE
 
+// Timings - these are measured in 'nops' (number of operations, basically the
+// number of times it will loop waiting for the condition. This means they'll
+// need to be tuned based on your CPU speed and SPI routines, for example.
+#ifndef BBSD_IDLE_TIMEOUT
+#define BBSD_IDLE_TIMEOUT           500
+#endif
+#ifndef BBSD_BLOCK_START_TIMEOUT
+#define BBSD_BLOCK_START_TIMEOUT    200
+#endif
+
 typedef enum {
     BBSD_CARD_TYPE_V1,
     BBSD_CARD_TYPE_V2,
@@ -188,10 +198,11 @@ bool BBSD_get_csd(BBSDCard *sd, BBSDCard_CSD *csd);
 uint32_t BBSD_get_size(BBSDCard *sd);
 #endif
 
-bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
+bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
 
 #ifndef SD_BLOCK_READ_ONLY
-bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
+bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
 #endif
 
 #endif /* ROSCO_M68K_BBSD_H */
+

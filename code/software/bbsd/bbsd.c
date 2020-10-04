@@ -22,14 +22,14 @@
 
 static bool wait_for_card(BBSPI*, uint32_t);
 static void reset_card(BBSPI*);
-static bool wait_for_block_start(BBSPI*, uint32_t);
+static bool wait_for_block_start(BBSPI*);
 static bool send_idle(BBSPI*);
 static BBSDCardType get_card_type(BBSPI*);
 static bool try_acmd41(BBSPI*, uint32_t, uint32_t);
 static uint8_t raw_sd_command(BBSPI*, uint8_t, uint32_t);
-static uint8_t raw_sd_command_force(BBSPI*, uint8_t, uint32_t, bool force);
+static uint8_t raw_sd_command_force(BBSPI*, uint8_t, uint32_t, bool);
 static uint8_t raw_sd_acommand(BBSPI*, uint8_t, uint32_t);
-static bool sd_partial_read_p(BBSDCard *sd);
+static bool sd_partial_read_p(BBSDCard);
 
 // BlockDevice handlers
 static uint32_t sd_device_block_size_func(BlockDevice *device);
@@ -158,7 +158,7 @@ bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf) {
     bool result = false;
 
     if (!raw_sd_command(sd->spi, command, 0)) {
-        if (wait_for_block_start(sd->spi, 200)) {
+        if (wait_for_block_start(sd->spi)) {
             for (uint32_t i = 0; i < 16; i++) {
                 buf[i] = BBSPI_recv_byte(sd->spi);
             }
@@ -222,7 +222,7 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         addressable_block = block << 9;
     }
 
-    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 200)) {
+    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi)) {
         goto finally;
     }
 
@@ -272,7 +272,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
             addressable_block = block << 9;
         }
 
-        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 200)) {
+        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi)) {
             goto finally;
         }
 
@@ -333,8 +333,8 @@ static void reset_card(BBSPI *spi) {
     }
 }
 
-static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
-    for (uint32_t i = 0; i < nops; i++) {
+static bool wait_for_block_start(BBSPI *spi) {
+    for (uint32_t i = 0; i < BBSD_BLOCK_START_TIMEOUT; i++) {
         uint8_t status = BBSPI_recv_byte(spi);
         if (status != 0xFF) {
             if (status == BLOCK_START) {
@@ -350,7 +350,7 @@ static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
 }
 
 static bool send_idle(BBSPI *spi) {
-    for (int i = 0; i < 500; i++) {
+    for (int i = 0; i < BBSD_IDLE_TIMEOUT; i++) {
         if (raw_sd_command_force(spi, 0, 0, true) == R1_IDLE_STATE) {
             return true;
         }
