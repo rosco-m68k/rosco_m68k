@@ -47,13 +47,17 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
         return false;
     }
 #endif
-
+    int idle_tries = 0;
     bool result = false;
 
-    reset_card(spi);
+    while (idle_tries++ < BBSD_MAX_IDLE_RETRIES) {
+        reset_card(spi);
 
-    if (!send_idle(spi)) {
-        goto finally;
+        if (!send_idle(spi) && idle_tries == (BBSD_MAX_IDLE_RETRIES + 1)) {
+            goto finally;
+        } else {
+            break;
+        }
     }
 
     BBSDCardType card_type = get_card_type(spi);
@@ -324,7 +328,7 @@ static bool wait_for_card(BBSPI *spi, uint32_t nops) {
 static void reset_card(BBSPI *spi) {
     BBSPI_deassert_cs(spi);
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < BBSD_RESET_CYCLES; i++) {
         BBSPI_send_byte(spi, 0xFF);
     }
 }

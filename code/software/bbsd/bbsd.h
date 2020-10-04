@@ -34,11 +34,17 @@
 // Timings - these are measured in 'nops' (number of operations, basically the
 // number of times it will loop waiting for the condition. This means they'll
 // need to be tuned based on your CPU speed and SPI routines, for example.
+#ifndef BBSD_RESET_CYCLES
+#define BBSD_RESET_CYCLES           200
+#endif
 #ifndef BBSD_IDLE_TIMEOUT
-#define BBSD_IDLE_TIMEOUT           1000
+#define BBSD_IDLE_TIMEOUT           750
 #endif
 #ifndef BBSD_BLOCK_START_TIMEOUT
-#define BBSD_BLOCK_START_TIMEOUT    200
+#define BBSD_BLOCK_START_TIMEOUT    300
+#endif
+#ifndef BBSD_MAX_IDLE_RETRIES
+#define BBSD_MAX_IDLE_RETRIES       5
 #endif
 
 typedef enum {

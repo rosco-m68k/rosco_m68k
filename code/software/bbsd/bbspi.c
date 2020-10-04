@@ -48,9 +48,6 @@ bool BBSPI_initialize(BBSPI *spi, GPIO cs, GPIO sck, GPIO mosi, GPIO miso) {
     pinMode(mosi, OUTPUT);
     pinMode(miso, INPUT);
 
-    // TODO this should be in bbsd, not here!
-    digitalWrite(cs, true);
-
 #ifndef SPI_FASTER
     spi->initialized = true;
 #endif
