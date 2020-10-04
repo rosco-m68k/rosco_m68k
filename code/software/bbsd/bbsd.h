@@ -35,7 +35,7 @@
 // number of times it will loop waiting for the condition. This means they'll
 // need to be tuned based on your CPU speed and SPI routines, for example.
 #ifndef BBSD_IDLE_TIMEOUT
-#define BBSD_IDLE_TIMEOUT           500
+#define BBSD_IDLE_TIMEOUT           1000
 #endif
 #ifndef BBSD_BLOCK_START_TIMEOUT
 #define BBSD_BLOCK_START_TIMEOUT    200
