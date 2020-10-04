@@ -227,9 +227,7 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     }
 
     // Read data into buffer
-    for (uint16_t i = 0; i < 512; i++) {
-        *buffer++ = BBSPI_recv_byte(sd->spi);
-    }
+    BBSPI_recv_buffer(sd->spi, buffer, 512);
 
     // Get checksum too (and ignore it ;) )
     BBSPI_recv_byte(sd->spi);
@@ -287,9 +285,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
     }
 
     // Read data into buffer
-    for (uint16_t i = 0; i < count; i++) {
-        *buffer++ = BBSPI_recv_byte(sd->spi);
-    }
+    BBSPI_recv_buffer(sd->spi, buffer, 512);
 
     sd->current_block_offset += count;
 

@@ -151,3 +151,13 @@ uint8_t BBSPI_recv_byte(BBSPI *spi) {
 #endif
     return spi_read_byte();
 }
+
+size_t BBSPI_recv_buffer(BBSPI *spi, void *buffer, size_t count) {
+#ifndef SPI_FASTER
+    if (!spi->initialized) {
+        return 0;
+    }
+#endif
+    spi_read_buffer(buffer, count);
+    return count;
+}
