@@ -17,7 +17,7 @@
 ; Flags:
 ; bit 0 - 14: Reserved
 ; bit 15    : Snapshot version
-RELEASE_VER     equ    $80000121
+RELEASE_VER     equ    $00000122
 
 ; EFP table addresses
 EFP_PRINT       equ    $420
