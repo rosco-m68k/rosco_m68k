@@ -96,22 +96,17 @@ static KRESULT build_memory_map(MEMINFO *header) {
   // 
   // ISRs and SDB - 0x00000000 - 0x000004FF
   blocks[0].block_start = 0;
-  blocks[0].block_size = 0x500;
+  blocks[0].block_size = 0x1000;
   blocks[0].flags = RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_SYSTEM;
 
-  // Kernel bss, data and (old) stack - 0x00000500 - 0x00001FFF
-  blocks[1].block_start = 0x500;
-  blocks[1].block_size = 0x1B00;
-  blocks[1].flags = RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_KERNEL;
-
   // Onboard user RAM - 0x00002000 - 0x0001FFFF
-  blocks[2].block_start = 0x2000;
-  blocks[2].block_size = 0xFE000;
-  blocks[2].flags = RAMBLOCK_FLAG_ONBOARD;
+  blocks[1].block_start = 0x1000;
+  blocks[1].block_size = 0xFF000;
+  blocks[1].flags = RAMBLOCK_FLAG_ONBOARD;
 
   header->ram_total = 0x100000;
   uint32_t *current = (uint32_t*)0x100000;
-  uint8_t current_block = 3;
+  uint8_t current_block = 2;
 
   while (true) {
     uint32_t current_addr = (uint32_t)((uint8_t*)current);
