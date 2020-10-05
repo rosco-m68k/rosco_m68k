@@ -37,7 +37,7 @@ static bool sd_device_read_block_func(BlockDevice *device, uint32_t block, void 
 static bool sd_device_read_func(BlockDevice *device, uint32_t block, uint32_t start_ofs, uint32_t len, void *buffer);
 static bool sd_device_write_func(BlockDevice *device, uint32_t block, uint32_t start_ofs, uint32_t len, void *buffer);
 
-bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
+BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
 #ifndef SD_FASTER
 #ifdef SPI_FASTER
     if (sd->initialized) {
@@ -48,12 +48,13 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
     }
 #endif
     int idle_tries = 0;
-    bool result = false;
+    BBSDInitStatus result = BBSD_INIT_OK;
 
     while (idle_tries++ < BBSD_MAX_IDLE_RETRIES) {
         reset_card(spi);
 
         if (!send_idle(spi) && idle_tries == (BBSD_MAX_IDLE_RETRIES + 1)) {
+            result = BBSD_INIT_IDLE_FAILED;
             goto finally;
         } else {
             break;
@@ -63,13 +64,14 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
     BBSDCardType card_type = get_card_type(spi);
 
     if (card_type == BBSD_CARD_TYPE_UNKNOWN) {
+        result = BBSD_INIT_CMD8_FAILED;
         goto finally;
     }
 
     // Try to initialize the card...
     uint32_t supports = card_type == BBSD_CARD_TYPE_V2 ? 0x40000000 : 0;
 
-    if (try_acmd41(spi, 100, supports)) {
+    if (try_acmd41(spi, BBSD_MAX_ACMD41_RETRIES, supports)) {
         if (card_type == BBSD_CARD_TYPE_V2) {
             // check OCR for SDHC...
             if (raw_sd_command(spi, 58, 0)) {
@@ -98,9 +100,11 @@ bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
                 sd->initialized = true;
 #endif
 
-                result = true;
+                result = BBSD_INIT_OK;
             }
         }
+    } else {
+        result = BBSD_INIT_ACMD41_FAILED;
     }
 
 finally:

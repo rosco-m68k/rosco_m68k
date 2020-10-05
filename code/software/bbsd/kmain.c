@@ -170,7 +170,8 @@ void kmain() {
     printf("BBSD Test Starting #%d ...\n", try_count);
 
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
-        if (BBSD_initialize(&sd, &spi)) {
+        BBSDInitStatus init_status = BBSD_initialize(&sd, &spi);
+        if (init_status == BBSD_INIT_OK) {
 
             switch (sd.type) {
             case BBSD_CARD_TYPE_V1:
@@ -260,8 +261,8 @@ void kmain() {
                 bad_bdinit++;
             }
         } else {
-        printf("SD init failed\n");
-        bad_sdinit++;
+            printf("SD init failed: %d\n", init_status);
+            bad_sdinit++;
         }
     } else {
         printf("SPI init failed\n");
