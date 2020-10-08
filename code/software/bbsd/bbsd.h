@@ -47,7 +47,7 @@
 #define BBSD_MAX_IDLE_RETRIES       5
 #endif
 #ifndef BBSD_MAX_ACMD41_RETRIES
-#define BBSD_MAX_ACMD41_RETRIES     200
+#define BBSD_MAX_ACMD41_RETRIES     400
 #endif
 
 typedef enum {
