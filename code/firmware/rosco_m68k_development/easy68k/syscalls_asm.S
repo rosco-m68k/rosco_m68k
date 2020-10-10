@@ -17,7 +17,7 @@
 
     section .text
 
-TRAP_15_VECTOR      equ     $bc
+TRAP_15_VECTOR      equ     $2f
 TRAP_15_VECTOR_ADDR equ     TRAP_15_VECTOR*4
 
 ; Globals
@@ -365,7 +365,7 @@ INSTALL_EASY68K_TRAP_HANDLERS::
 
 ; Install handler
     lea     EASY68K_TRAP_15_HANDLER,A0
-    move.l  A0,TRAP_15_VECTOR
+    move.l  A0,TRAP_15_VECTOR_ADDR
     rts
 
 

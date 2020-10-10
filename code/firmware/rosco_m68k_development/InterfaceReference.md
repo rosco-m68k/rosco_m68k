@@ -829,8 +829,12 @@ must be accessed through the public TRAP functions!
 | 0x438   | FW_CLRSCR - Clear the default console (where supported)                                           |
 | 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                                                     |
 | 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor                                     |
-| 0x444   | RESERVED
-| 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to Kermit)      |
+| 0x444   | RESERVED                                                                                          |
+| 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to SD/Kermit)   |
+| 0x44C   | FW_SD_INIT - Initialize SD Card                                                                   |
+| 0x450   | FW_SD_READ - Read from SD Card                                                                    |
+| 0x454   | FW_SD_WRITE - Write to SD Card                                                                    |
+| 0x458   | FW_SD_REG - Read SD Card register                                                                 |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
@@ -838,7 +842,7 @@ byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
 Arguments, modifies and other information for these functions are the same
 as for the TRAP functions they implement. If replacing them, you **must**
 adhere to the same interface. The reference implementations can be found in
-`bootstrap.S` and `trap14.S`.
+`bootstrap.S`, `trap14.S` and `sdcard/syscalls_asm.S`.
 
 **Note** that all of these are allowed to block! 
 

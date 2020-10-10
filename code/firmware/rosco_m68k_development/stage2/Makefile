@@ -42,6 +42,8 @@ ifeq ($(WITH_SDFAT),true)
 include sdfat/include.mk
 endif
 
+export CFLAGS
+
 main2.o: main2.c
 	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
 

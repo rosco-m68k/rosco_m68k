@@ -45,7 +45,8 @@ VECTORS:
     dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
     
     dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
-    dcb.l   14,TRAP_HANDLER             ; 20-2D: TRAP Handlers (unused)
+    dcb.l   13,TRAP_HANDLER             ; 20-2C: TRAP Handlers (unused)
+    dc.l    TRAP_HANDLER                ; 2D: TRAP#13 handler (replaced later)
     dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
     dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (replaced later)
     dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors

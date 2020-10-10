@@ -17,7 +17,6 @@
 #define ROSCO_M68K_BBSD_H
 
 #include <stdbool.h>
-#include <device/block.h>
 
 #ifdef SD_MINIMAL
 #ifndef SD_BLOCK_READ_ONLY      // Minimal config precludes non-block-sized reads...
@@ -57,21 +56,18 @@ typedef enum {
     BBSD_CARD_TYPE_V1,
     BBSD_CARD_TYPE_V2,
     BBSD_CARD_TYPE_SDHC,
-    BBSD_CARD_TYPE_UNKNOWN
+    BBSD_CARD_TYPE_UNKNOWN,
 } BBSDCardType;
 
 typedef enum {
     BBSD_INIT_OK,
     BBSD_INIT_IDLE_FAILED,
     BBSD_INIT_CMD8_FAILED,
-    BBSD_INIT_ACMD41_FAILED
+    BBSD_INIT_ACMD41_FAILED,
 } BBSDInitStatus;
 
 typedef struct {
-#ifndef SD_FASTER
     bool            initialized;
-#endif
-    BBSPI           *spi;
     BBSDCardType    type;
 #ifndef SD_BLOCK_READ_ONLY
     bool            have_current_block;     /* if true, the next two members have meaning */
@@ -82,6 +78,7 @@ typedef struct {
 } BBSDCard;
 
 #ifndef SD_MINIMAL
+#ifdef SD_SIZE_SUPPORT
 typedef struct {
   // 0x0
   unsigned csd_ver : 2;
@@ -205,19 +202,22 @@ typedef union {
   BBSDCard_CSD2 v2;
 } BBSDCard_CSD;
 #endif
+#endif
 
-BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi);
-bool BBSD_make_device(BBSDCard *sd, BlockDevice *device);
+BBSDInitStatus BBSD_initialize(BBSDCard *sd);
 uint8_t BBSD_command(BBSDCard *sd, uint8_t command, uint32_t arg);
 uint8_t BBSD_acommand(BBSDCard *sd, uint8_t command, uint32_t arg);
 
 #ifndef SD_MINIMAL
 bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf);
+#ifdef SD_SIZE_SUPPORT
 bool BBSD_get_csd(BBSDCard *sd, BBSDCard_CSD *csd);
 uint32_t BBSD_get_size(BBSDCard *sd);
 #endif
+#endif
 
 bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
+bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
 
 #ifndef SD_BLOCK_READ_ONLY
 bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
