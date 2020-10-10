@@ -78,7 +78,7 @@ SD_READ_REGISTER:
 ;   A1  - Pointer to an SD struct
 ;
 ; Returns:
-;   D0  - Result (0 failed, otherwise OK)
+;   D0  - Result (0 = OK, otherwise failed)
 FW_SD_INIT:
     move.l  A1,-(A7)
     jsr     BBSD_initialize
@@ -91,7 +91,7 @@ FW_SD_INIT:
 ;   D1  - Block number to read
 ;
 ; Returns
-;   D0  - 0 on success, else error code
+;   D0  - 0 on error, else success
 FW_SD_READ:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
@@ -106,7 +106,7 @@ FW_SD_READ:
 ;   D1  - Block number to write
 ;
 ; Returns
-;   D0  - 0 on success, else error code
+;   D0  - 0 on error, else success
 FW_SD_WRITE:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
@@ -121,7 +121,7 @@ FW_SD_WRITE:
 ;   D1  - Register number to read
 ;
 ; Returns
-;   D0  - 0 on success, else error code
+;   D0  - 0 on error, else success
 FW_SD_REG:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
