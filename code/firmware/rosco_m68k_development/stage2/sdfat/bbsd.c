@@ -20,16 +20,18 @@
 #include "bbsd.h"
 #include "device/block.h"
 
+// Will try to idle the SD this many times before giving up
+#define MAX_IDLE_TRIES    5
+
 static bool wait_for_card(BBSPI*, uint32_t);
 static void reset_card(BBSPI*);
-static bool wait_for_block_start(BBSPI*);
+static bool wait_for_block_start(BBSPI*, uint32_t);
 static bool send_idle(BBSPI*);
 static BBSDCardType get_card_type(BBSPI*);
 static bool try_acmd41(BBSPI*, uint32_t, uint32_t);
 static uint8_t raw_sd_command(BBSPI*, uint8_t, uint32_t);
-static uint8_t raw_sd_command_force(BBSPI*, uint8_t, uint32_t, bool);
 static uint8_t raw_sd_acommand(BBSPI*, uint8_t, uint32_t);
-static bool sd_partial_read_p(BBSDCard*);
+static bool sd_partial_read_p(BBSDCard *sd);
 
 // BlockDevice handlers
 static uint32_t sd_device_block_size_func(BlockDevice *device);
@@ -37,7 +39,7 @@ static bool sd_device_read_block_func(BlockDevice *device, uint32_t block, void 
 static bool sd_device_read_func(BlockDevice *device, uint32_t block, uint32_t start_ofs, uint32_t len, void *buffer);
 static bool sd_device_write_func(BlockDevice *device, uint32_t block, uint32_t start_ofs, uint32_t len, void *buffer);
 
-BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
+bool BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
 #ifndef SD_FASTER
 #ifdef SPI_FASTER
     if (sd->initialized) {
@@ -47,66 +49,56 @@ BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
         return false;
     }
 #endif
-    int idle_tries = 0;
-    BBSDInitStatus result = BBSD_INIT_OK;
 
-    while (idle_tries++ < BBSD_MAX_IDLE_RETRIES) {
-        reset_card(spi);
+    bool result = false;
 
-        if (!send_idle(spi)) {
-            if (idle_tries == BBSD_MAX_IDLE_RETRIES) {
-                result = BBSD_INIT_IDLE_FAILED;
-                goto finally;
-            }
-        } else {
-            break;
-        }
+    reset_card(spi);
+
+    if (!send_idle(spi)) {
+        goto finally;
     }
 
     BBSDCardType card_type = get_card_type(spi);
 
     if (card_type == BBSD_CARD_TYPE_UNKNOWN) {
-        result = BBSD_INIT_CMD8_FAILED;
         goto finally;
     }
 
     // Try to initialize the card...
     uint32_t supports = card_type == BBSD_CARD_TYPE_V2 ? 0x40000000 : 0;
 
-    if (try_acmd41(spi, BBSD_MAX_ACMD41_RETRIES, supports)) {
+    if (try_acmd41(spi, 100, supports)) {
         if (card_type == BBSD_CARD_TYPE_V2) {
             // check OCR for SDHC...
             if (raw_sd_command(spi, 58, 0)) {
                 goto finally;
             } else {
-                if ((BBSPI_recv_byte(spi) & 0xC0) == 0xC0) {
+                if (BBSPI_recv_byte(spi) & 0xC0) {
                     card_type = BBSD_CARD_TYPE_SDHC;
-                }
 
-                // don't care about voltage range...
-                BBSPI_recv_byte(spi);
-                BBSPI_recv_byte(spi);
-                BBSPI_recv_byte(spi);
+                    // don't care about voltage range...
+                    BBSPI_recv_byte(spi);
+                    BBSPI_recv_byte(spi);
+                    BBSPI_recv_byte(spi);
 
-                sd->type = card_type;
-                sd->spi = spi;
+                    sd->type = card_type;
+                    sd->spi = spi;
 
 #ifndef SD_BLOCK_READ_ONLY
-                sd->have_current_block = false;
+                    sd->have_current_block = false;
 
-                // TODO this can't currently signal error!
-                sd->can_partial_read = sd_partial_read_p(sd);
+                    // TODO this can't currently signal error!
+                    sd->can_partial_read = sd_partial_read_p(sd);
 #endif
 
 #ifndef SD_FASTER
-                sd->initialized = true;
+                    sd->initialized = true;
 #endif
 
-                result = BBSD_INIT_OK;
+                    result = true;
+                }
             }
         }
-    } else {
-        result = BBSD_INIT_ACMD41_FAILED;
     }
 
 finally:
@@ -168,7 +160,7 @@ bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf) {
     bool result = false;
 
     if (!raw_sd_command(sd->spi, command, 0)) {
-        if (wait_for_block_start(sd->spi)) {
+        if (wait_for_block_start(sd->spi, 10)) {
             for (uint32_t i = 0; i < 16; i++) {
                 buf[i] = BBSPI_recv_byte(sd->spi);
             }
@@ -232,12 +224,14 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         addressable_block = block << 9;
     }
 
-    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi)) {
+    if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 10)) {
         goto finally;
     }
 
     // Read data into buffer
-    BBSPI_recv_buffer(sd->spi, buffer, 512);
+    for (uint16_t i = 0; i < 512; i++) {
+        *buffer++ = BBSPI_recv_byte(sd->spi);
+    }
 
     // Get checksum too (and ignore it ;) )
     BBSPI_recv_byte(sd->spi);
@@ -280,7 +274,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
             addressable_block = block << 9;
         }
 
-        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi)) {
+        if (BBSD_command(sd, 17, addressable_block) || !wait_for_block_start(sd->spi, 10)) {
             goto finally;
         }
 
@@ -295,7 +289,9 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
     }
 
     // Read data into buffer
-    BBSPI_recv_buffer(sd->spi, buffer, 512);
+    for (uint16_t i = 0; i < count; i++) {
+        *buffer++ = BBSPI_recv_byte(sd->spi);
+    }
 
     sd->current_block_offset += count;
 
@@ -334,13 +330,13 @@ static bool wait_for_card(BBSPI *spi, uint32_t nops) {
 static void reset_card(BBSPI *spi) {
     BBSPI_deassert_cs(spi);
 
-    for (int i = 0; i < BBSD_RESET_CYCLES; i++) {
-        BBSPI_send_byte(spi, 0xFF);
+    for (int i = 0; i < 10; i++) {
+        BBSPI_recv_byte(spi);
     }
 }
 
-static bool wait_for_block_start(BBSPI *spi) {
-    for (uint32_t i = 0; i < BBSD_BLOCK_START_TIMEOUT; i++) {
+static bool wait_for_block_start(BBSPI *spi, uint32_t nops) {
+    for (uint32_t i = 0; i < nops; i++) {
         uint8_t status = BBSPI_recv_byte(spi);
         if (status != 0xFF) {
             if (status == BLOCK_START) {
@@ -356,8 +352,8 @@ static bool wait_for_block_start(BBSPI *spi) {
 }
 
 static bool send_idle(BBSPI *spi) {
-    for (int i = 0; i < BBSD_IDLE_TIMEOUT; i++) {
-        if (raw_sd_command_force(spi, 0, 0, true) == R1_IDLE_STATE) {
+    for (int i = 0; i < MAX_IDLE_TRIES; i++) {
+        if (raw_sd_command(spi, 0, 0) == R1_IDLE_STATE) {
             return true;
         }
     }
@@ -396,13 +392,9 @@ static bool try_acmd41(BBSPI *spi, uint32_t nops, uint32_t supports) {
 }
 
 static uint8_t raw_sd_command(BBSPI *spi, uint8_t command, uint32_t arg) {
-  return raw_sd_command_force(spi, command, arg, false);
-}
-
-static uint8_t raw_sd_command_force(BBSPI *spi, uint8_t command, uint32_t arg, bool force) {
     BBSPI_assert_cs(spi);
 
-    if (!wait_for_card(spi, BBSD_COMMAND_WAIT_RETRIES) && !force) {
+    if (!wait_for_card(spi, 1000)) {
         return 0xFF;
     }
 

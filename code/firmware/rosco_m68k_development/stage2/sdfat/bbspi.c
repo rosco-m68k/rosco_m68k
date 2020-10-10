@@ -15,7 +15,6 @@
 
 #include <stdbool.h>
 #include <gpio.h>
-#include <gpio_spi.h>
 #include "bbspi.h"
 
 #ifndef SPI_ZERODELAY
@@ -47,6 +46,9 @@ bool BBSPI_initialize(BBSPI *spi, GPIO cs, GPIO sck, GPIO mosi, GPIO miso) {
     pinMode(sck, OUTPUT);
     pinMode(mosi, OUTPUT);
     pinMode(miso, INPUT);
+
+    // TODO this should be in bbsd, not here!
+    digitalWrite(cs, true);
 
 #ifndef SPI_FASTER
     spi->initialized = true;
@@ -127,14 +129,52 @@ uint8_t BBSPI_transfer_byte(BBSPI *spi, uint8_t byte_out) {
         return 0;
     }
 #endif
-    return spi_exchange_byte(byte_out);
+
+    uint8_t byte_in = 0;
+    uint8_t bit;
+
+    for (bit = 0x80; bit; bit >>= 1) {
+        BBSPI_write_mosi(spi, (byte_out & bit));
+
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_low_hold_nops);
+#endif
+        BBSPI_write_sck(spi, true);
+
+        if (BBSPI_read_miso(spi)) {
+            byte_in |= bit;
+        }
+
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_high_hold_nops);
+#endif
+        BBSPI_write_sck(spi, false);
+    }
+
+    return byte_in;
 }
 
 void BBSPI_send_byte(BBSPI *spi, uint8_t byte_out) {
 #ifndef SPI_FASTER
     if (spi->initialized) {
 #endif
-        spi_send_byte(byte_out);
+
+    uint8_t bit;
+
+    for (bit = 0x80; bit; bit >>= 1) {
+        BBSPI_write_mosi(spi, (byte_out & bit));
+
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_low_hold_nops);
+#endif
+        BBSPI_write_sck(spi, true);
+
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_high_hold_nops);
+#endif
+        BBSPI_write_sck(spi, false);
+    }
+
 #ifndef SPI_FASTER
     }
 #endif
@@ -146,15 +186,27 @@ uint8_t BBSPI_recv_byte(BBSPI *spi) {
         return 0;
     }
 #endif
-    return spi_read_byte();
-}
 
-size_t BBSPI_recv_buffer(BBSPI *spi, void *buffer, size_t count) {
-#ifndef SPI_FASTER
-    if (!spi->initialized) {
-        return 0;
-    }
+    uint8_t byte_in = 0;
+    uint8_t bit;
+
+    BBSPI_write_mosi(spi, 1);
+
+    for (bit = 0x80; bit; bit >>= 1) {
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_low_hold_nops);
 #endif
-    spi_read_buffer(buffer, count);
-    return count;
+        BBSPI_write_sck(spi, true);
+
+        if (BBSPI_read_miso(spi)) {
+            byte_in |= bit;
+        }
+
+#ifndef SPI_ZERODELAY
+        delay(spi->sck_high_hold_nops);
+#endif
+        BBSPI_write_sck(spi, false);
+    }
+
+    return byte_in;
 }

@@ -91,21 +91,7 @@ static void print_unsigned(uint32_t num, uint8_t base) {
 
 bool load_kernel() {
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
-        if (BBSD_initialize(&sd, &spi) == BBSD_INIT_OK) {
-            switch (sd.type) {
-            case BBSD_CARD_TYPE_V1:
-                mcPrint("Found SD v1 card ");
-                break;
-            case BBSD_CARD_TYPE_V2:
-                mcPrint("Found SD v2 card ");
-                break;
-            case BBSD_CARD_TYPE_SDHC:
-                mcPrint("Found SDHC card ");
-                break;
-            default:
-                mcPrint("Found unknown card type ");
-            }
-
+        if (BBSD_initialize(&sd, &spi)) {
             if (BBSD_make_device(&sd, &block_device)) {
                 fl_attach_media(media_read, media_write);
 
@@ -127,9 +113,8 @@ bool load_kernel() {
                     }
 
                     uint32_t total_ticks = *upticks - start;
-                    uint32_t total_secs = total_ticks / 200;
                     mcPrint(" Completed in ~");
-                    print_unsigned(total_secs ? total_secs : 1, 10);
+                    print_unsigned(total_ticks / 200, 10);
                     mcPrint(" seconds\r\n");
 
                     fl_fclose(file);

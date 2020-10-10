@@ -5,7 +5,7 @@ OBJECTS := $(OBJECTS) sdfat/gpio.o sdfat/bbspi.o sdfat/bbsd.o sdfat/load.o	\
 	sdfat/fat_io_lib/fat_table.o sdfat/fat_io_lib/fat_write.o
 
 EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE		\
-		-DSPI_FASTER -DSD_FASTER -DSD_MINIMAL -DSDFAT_LOADER                    \
+		-DSPI_FASTER -DSPI_ZERODELAY -DSD_FASTER -DSD_MINIMAL -DSDFAT_LOADER    \
 		-Isdfat/include
 
 BBSD_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter										\

@@ -31,41 +31,12 @@
 #define R1_ILLEGAL_COMMAND  0x04
 #define BLOCK_START         0xFE
 
-// Timings - these are measured in 'nops' (number of operations, basically the
-// number of times it will loop waiting for the condition. This means they'll
-// need to be tuned based on your CPU speed and SPI routines, for example.
-#ifndef BBSD_RESET_CYCLES
-#define BBSD_RESET_CYCLES           10
-#endif
-#ifndef BBSD_IDLE_TIMEOUT
-#define BBSD_IDLE_TIMEOUT           20
-#endif
-#ifndef BBSD_BLOCK_START_TIMEOUT
-#define BBSD_BLOCK_START_TIMEOUT    200
-#endif
-#ifndef BBSD_MAX_IDLE_RETRIES
-#define BBSD_MAX_IDLE_RETRIES       5
-#endif
-#ifndef BBSD_MAX_ACMD41_RETRIES
-#define BBSD_MAX_ACMD41_RETRIES     400
-#endif
-#ifndef BBSD_COMMAND_WAIT_RETRIES
-#define BBSD_COMMAND_WAIT_RETRIES   100
-#endif
-
 typedef enum {
     BBSD_CARD_TYPE_V1,
     BBSD_CARD_TYPE_V2,
     BBSD_CARD_TYPE_SDHC,
     BBSD_CARD_TYPE_UNKNOWN
 } BBSDCardType;
-
-typedef enum {
-    BBSD_INIT_OK,
-    BBSD_INIT_IDLE_FAILED,
-    BBSD_INIT_CMD8_FAILED,
-    BBSD_INIT_ACMD41_FAILED
-} BBSDInitStatus;
 
 typedef struct {
 #ifndef SD_FASTER
@@ -206,7 +177,7 @@ typedef union {
 } BBSDCard_CSD;
 #endif
 
-BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi);
+bool BBSD_initialize(BBSDCard *sd, BBSPI *spi);
 bool BBSD_make_device(BBSDCard *sd, BlockDevice *device);
 uint8_t BBSD_command(BBSDCard *sd, uint8_t command, uint32_t arg);
 uint8_t BBSD_acommand(BBSDCard *sd, uint8_t command, uint32_t arg);
@@ -217,12 +188,10 @@ bool BBSD_get_csd(BBSDCard *sd, BBSDCard_CSD *csd);
 uint32_t BBSD_get_size(BBSDCard *sd);
 #endif
 
-bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
+bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
 
 #ifndef SD_BLOCK_READ_ONLY
-bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
+bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
 #endif
 
 #endif /* ROSCO_M68K_BBSD_H */
-
-

@@ -16,7 +16,6 @@
 #define _ROSCOM68K_MACHINE_H
 
 #include <stdnoreturn.h>
-#include <stdint.h>
 
 #define MFP_GPDR      0xf80001
 #define MFP_AER       0xf80003
