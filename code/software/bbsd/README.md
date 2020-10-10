@@ -11,11 +11,15 @@ Expected hookup on J5:
 * MOSI - Pin 5
 * MISO - Pin 7
 
-N.B. This is tested with a sample size of exactly one SD card. YMMV!
+Your SD card must be FAT formatted, and have a file ROSCODE1.BIN in the root
+directory - this should be a rosco_m68k binary (e.g. one of the example 
+programs).
 
-TODOS:
+This can be compiled either as a burn-in cyclic test program (which will not
+run the program loaded from the SD card) or as a loader (which will).
 
-* Lots of TODOs in the code
-* Everything returns bool. This is not helpful when debugging - use codes instead
-* SD code could be tightened up considerably
-* ... and lots more most likely :D
+The burn-in test will repeatedly load the binary in a loop, printing a 
+running total of the number of times it succeeded vs failed in various ways.
+
+The loader will load ROSCODE1.BIN and, if successful, run the program.
+ 

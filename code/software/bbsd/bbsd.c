@@ -53,9 +53,11 @@ BBSDInitStatus BBSD_initialize(BBSDCard *sd, BBSPI *spi) {
     while (idle_tries++ < BBSD_MAX_IDLE_RETRIES) {
         reset_card(spi);
 
-        if (!send_idle(spi) && idle_tries == (BBSD_MAX_IDLE_RETRIES + 1)) {
-            result = BBSD_INIT_IDLE_FAILED;
-            goto finally;
+        if (!send_idle(spi)) {
+            if (idle_tries == BBSD_MAX_IDLE_RETRIES) {
+                result = BBSD_INIT_IDLE_FAILED;
+                goto finally;
+            }
         } else {
             break;
         }
@@ -400,7 +402,7 @@ static uint8_t raw_sd_command(BBSPI *spi, uint8_t command, uint32_t arg) {
 static uint8_t raw_sd_command_force(BBSPI *spi, uint8_t command, uint32_t arg, bool force) {
     BBSPI_assert_cs(spi);
 
-    if (!wait_for_card(spi, 1000) && !force) {
+    if (!wait_for_card(spi, BBSD_COMMAND_WAIT_RETRIES) && !force) {
         return 0xFF;
     }
 

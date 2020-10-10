@@ -31,14 +31,6 @@
 #define MOSI    GPIO3
 #define MISO    GPIO4
 
-// #ifdef SD_MINIMAL
-// #ifdef _PRINTF_H_
-// #include <basicio.h>
-// #define printf_(stuff)   mcPrint(stuff)
-// #endif
-// #endif
-
-
 // timer helpers
 static uint32_t start_tick;
 void timer_start()
@@ -57,6 +49,7 @@ uint32_t timer_stop()
   return (stop_tick - start_tick) * 10;
 }
 
+#ifdef TEST_CYCLE
 // From https://web.mit.edu/freebsd/head/sys/libkern/crc32.c
 /*-
  *  COPYRIGHT (C) 1986 Gary S. Brown.  You may use this program, or
@@ -128,6 +121,7 @@ uint32_t crc32b(const void * buf, size_t size)
     crc = crc32_tab[(crc ^ *p++) & 0xFF] ^ (crc >> 8);
   return crc ^ ~0U;
 }
+#endif
 
 typedef void (*loadedfunc)();
 
@@ -157,18 +151,22 @@ int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     return 0;
 }
 
+#ifdef TEST_CYCLE
 uint32_t check_crc = 0x0;    // if zero, first CRC will be assumed correct for other tests
 
 static int try_count, success_count;
 static int bad_open, bad_crc, bad_bdinit, bad_sdinit;
+#endif
 
 void kmain() {
+#ifdef TEST_CYCLE
   while (true) {
     try_count++;
-
     mcDelaymsec10(100);
     printf("BBSD Test Starting #%d ...\n", try_count);
-
+#else
+    printf("BBSD Loader starting...\n");
+#endif
     if (BBSPI_initialize(&spi, CS, SCK, MOSI, MISO)) {
         BBSDInitStatus init_status = BBSD_initialize(&sd, &spi);
         if (init_status == BBSD_INIT_OK) {
@@ -223,6 +221,8 @@ void kmain() {
 
                     uint32_t bytes = loadptr - loadstartptr;
                     printf("\nFinished!  Bytes:%d (%0.02f KiB), Time:%0.03f sec., Speed:%0.02f KiB/sec.\n", bytes, bytes / 1024.0f, load_time / 1000.0f, (bytes / 1024.0f) / (load_time / 1000.0f));
+#ifdef TEST_CYCLE
+
                     printf("Calculating CRC32...");
                     uint32_t crc = crc32b(loadstartptr, bytes);
                     printf(" 0x%08X", crc);
@@ -249,26 +249,39 @@ void kmain() {
                     {
                         bad_crc++;
                     }
+#else
 
-  //                    entryPoint();
+                    entryPoint();
+#endif
                 } else {
                     printf("\nOpen failed\n");
+#ifdef TEST_CYCLE
                     bad_open++;
+#endif
                 }
 
             } else {
                 printf("BlockDevice failed to initialize\n");
+#ifdef TEST_CYCLE
                 bad_bdinit++;
+#endif
             }
         } else {
             printf("SD init failed: %d\n", init_status);
+#ifdef TEST_CYCLE
             bad_sdinit++;
+#endif
         }
     } else {
         printf("SPI init failed\n");
     }
 
+#ifdef TEST_CYCLE
     printf("*** Game Over: Games played: %d, Won: %d, Lost: %d [bd:%d sd:%d open:%d crc:%d]\n\n", try_count,
     success_count, try_count - success_count, bad_bdinit, bad_sdinit, bad_open, bad_crc);
   }
+#else
+    printf("*** Game Over: Rebooting\n\n");
+#endif
 }
+

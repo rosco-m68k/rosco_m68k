@@ -54,6 +54,10 @@ SOURCES=$(CSOURCES) $(SSOURCES) $(ASMSOURCES)
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 
+ifeq ($(TEST_CYCLE),true)
+CFLAGS:=$(CFLAGS) -DTEST_CYCLE
+endif
+
 all: $(BINARY) $(DISASM)
 
 $(ELF) : $(OBJECTS)
