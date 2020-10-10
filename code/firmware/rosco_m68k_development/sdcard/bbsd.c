@@ -276,8 +276,37 @@ finally:
 #endif
 
 bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
-    // TODO Not yet implemented
-    return false;
+    if (!sd->initialized) {
+        return false;
+    }
+    bool result = false;
+
+    uint32_t addressable_block;
+
+    if (sd->type == BBSD_CARD_TYPE_SDHC) {
+        // SDHC is addressed by block number
+        addressable_block = block;
+    } else {
+        // Other cards use absolute addressing
+        addressable_block = block << 9;
+    }
+
+    if (BBSD_command(sd, 24, addressable_block) || !wait_for_block_start()) {
+        goto finally;
+    }
+
+    // Write data into buffer
+    BBSPI_send_buffer(buffer, 512);
+
+    // Send dummy checksum
+    BBSPI_send_byte(0);
+    BBSPI_send_byte(0);
+
+    result = true;
+
+finally:
+    BBSPI_deassert_cs();
+    return result;
 }
 
 

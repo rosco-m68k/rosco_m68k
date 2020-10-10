@@ -68,3 +68,8 @@ size_t BBSPI_recv_buffer(void *buffer, size_t count) {
     spi_read_buffer(buffer, count);
     return count;
 }
+
+size_t BBSPI_send_buffer(void *buffer, size_t count) {
+    spi_send_buffer(buffer, count);
+    return count;
+}

@@ -31,5 +31,6 @@ uint8_t BBSPI_transfer_byte(uint8_t byte_out);
 void BBSPI_send_byte(uint8_t byte_out);
 uint8_t BBSPI_recv_byte();
 size_t BBSPI_recv_buffer(void *buffer, size_t count);
+size_t BBSPI_send_buffer(void *buffer, size_t count);
 
 #endif /* ROSCO_M68K_BBSD_H */
