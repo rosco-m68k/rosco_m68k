@@ -21,6 +21,8 @@ TRAP_13_VECTOR_ADDR equ     TRAP_13_VECTOR*4
 ;
 ; D0 is expected to contain the task number (function code). Other arguments
 ; depend on the specific function - See README for details.
+;
+; NOTE: Trashes A0, and allowed to modify arguments.
 SDCARD_TRAP_13_HANDLER:
     cmp.l   #4,D0                       ; Is function code in range?
     bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
@@ -49,31 +51,23 @@ CHECK_SDFAT:
     rte
 
 SD_INIT:
-    move.l  A1,-(A7)
-    move.l  EFP_SD_INIT,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
+    move.l  EFP_SD_INIT,A0
+    jsr     (A0)
     rte
 
 SD_READ_BLOCK:
-    move.l  A1,-(A7)
-    move.l  EFP_SD_READ,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
+    move.l  EFP_SD_READ,A0
+    jsr     (A0)
     rte
 
 SD_WRITE_BLOCK:
-    move.l  A1,-(A7)
-    move.l  EFP_SD_WRITE,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
+    move.l  EFP_SD_WRITE,A0
+    jsr     (A0)
     rte
 
 SD_READ_REGISTER:
-    move.l  A1,-(A7)
-    move.l  EFP_SD_REG,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
+    move.l  EFP_SD_REG,A0
+    jsr     (A0)
     rte
 
 * ************************************************************************** *
@@ -81,18 +75,18 @@ SD_READ_REGISTER:
 ; EFP default handlers
 * ************************************************************************** *
 ; Arguments:
-;   A0  - Pointer to an SD struct
+;   A1  - Pointer to an SD struct
 ;
 ; Returns:
 ;   D0  - Result (0 failed, otherwise OK)
 FW_SD_INIT:
-    move.l  A0,-(A7)
+    move.l  A1,-(A7)
     jsr     BBSD_initialize
     addq.l  #4,A7
     rts
 
 ; Arguments
-;   A0  - Pointer to an SD struct
+;   A1  - Pointer to an SD struct
 ;   A2  - Pointer to 512-byte buffer
 ;   D1  - Block number to read
 ;
@@ -101,13 +95,13 @@ FW_SD_INIT:
 FW_SD_READ:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
-    move.l  A0,-(A7)
+    move.l  A1,-(A7)
     jsr     BBSD_read_block
     add.l   #12,A7
     rts
 
 ; Arguments
-;   A0  - Pointer to an SD struct
+;   A1  - Pointer to an SD struct
 ;   A2  - Pointer to 512-byte buffer
 ;   D1  - Block number to write
 ;
@@ -116,13 +110,13 @@ FW_SD_READ:
 FW_SD_WRITE:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
-    move.l  A0,-(A7)
+    move.l  A1,-(A7)
     jsr     BBSD_write_block
     add.l   #12,A7
     rts
 
 ; Arguments
-;   A0  - Pointer to an SD struct
+;   A1  - Pointer to an SD struct
 ;   A2  - Pointer to register buffer
 ;   D1  - Register number to read
 ;
@@ -131,14 +125,14 @@ FW_SD_WRITE:
 FW_SD_REG:
     move.l  A2,-(A7)
     move.l  D1,-(A7)
-    move.l  A0,-(A7)
+    move.l  A1,-(A7)
     jsr     BBSD_readreg
     add.l   #12,A7
     rts
 
 * ************************************************************************** *
 * ************************************************************************** *
-; Called to install the TRAP handlers
+; Called to install the TRAP handlers; Trashes A0
 * ************************************************************************** *
 INSTALL_SDCARD_HANDLERS::
     ; Install TRAP handler
