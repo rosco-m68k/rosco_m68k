@@ -1,23 +1,18 @@
-# C Starter Project for rosco_m68k
+# Firmware SD / Standard FAT library demo
 
-This is an empty (well, "Hello World") C project. You can use it as 
-a starting point for your own programs.
+This is a demo of the firmware SD Card functionality and the FAT standard 
+library. It requires the (currently-development) ROMs with SD support built
+in. It works with either the 16KB or 64KB ROMs.
  
-## What next?
-
-* Edit `kmain.c` to add your own code.
-* Add more C or assembly files. Add them to the `$(OBJECTS)` line in `Makefile`
-  * Use the `.o` extension instead of `.c` or `.S` in the `Makefile`!
-* Make this README.md your own!
-
 ## Building
 
 ```
 make clean all
 ```
 
-This will build `myprogram.bin`, which can be uploaded to a board that
-is running the `serial-receive` firmware.
+This will build `sdfat_demo.bin`, which can be uploaded to a board that
+is running the `serial-receive` firmware (or can be loaded from SD too
+if you have the larger ROMs with the SD loader!).
 
 If you're feeling adventurous (and have ckermit installed), you
 can try:
