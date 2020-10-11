@@ -59,6 +59,10 @@ PROVIDE(_EFP_MOVEXY     = 0x0000043C);  /* Set cursor position (opt.)   */
 PROVIDE(_EFP_SETCURSOR  = 0x00000440);  /* Enable/disable cursor (opt.) */
 PROVIDE(_EFP_RESRVD_444 = 0x00000444);  /* reserved                     */
 PROVIDE(_EFP_PROGLOADER = 0x00000448);  /* Initial program loader       */
+PROVIDE(_EFP_SD_INIT    = 0x0000044C);  /* SD Card init                 */
+PROVIDE(_EFP_SD_READ    = 0x00000450);  /* SD Card read                 */
+PROVIDE(_EFP_SD_WRITE   = 0x00000454);  /* SD Card write                */
+PROVIDE(_EFP_SD_REG     = 0x00000458);  /* SD Card register read        */
 
 /* ROM absolute addresses */
 PROVIDE(_FIRMWARE       = 0x00FC0000);  /* firmware address             */
