@@ -29,6 +29,7 @@ INSTALL_INC=$(INSTALL_DIR)/include
 decoy:
 	@echo Please use \"make all\" to build all the libraries.
 
+include src/sdfat/include.mk
 include src/machine/include.mk
 include src/gpio/include.mk
 include src/cstdlib/include.mk
@@ -36,7 +37,6 @@ include src/easy68k/include.mk
 include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/printf/include.mk
-include src/sdfat/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
