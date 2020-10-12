@@ -45,7 +45,7 @@ static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
 extern int receive_kernel();
 
 // This is provided by the SD/FAT loader
-int load_kernel();
+bool load_kernel();
 
 void linit() {
     // zero .bss

@@ -16,6 +16,7 @@
 #include <stdnoreturn.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <system.h>
 #include <bbsd.h>
 #include "fat_filelib.h"
 
@@ -116,23 +117,30 @@ bool load_kernel() {
 
             int c;
             uint8_t b = 0;
-            while ((c = fl_fread(kernel_load_ptr, 512, 1, file)) != EOF) {
+            while ((c = fl_fread(kernel_load_ptr, 512, 1, file)) > 0) {
                 kernel_load_ptr += c;
-                if (++b == 10) {
-                  mcPrint(".");
-                  b = 0;
+                if (++b == 16) {
+                    mcPrint(".");
+                    b = 0;
                 }
             }
 
-            uint32_t total_ticks = *upticks - start;
-            uint32_t total_secs = total_ticks / 200;
-            mcPrint(" Completed in ~");
-            print_unsigned(total_secs ? total_secs : 1, 10);
-            mcPrint(" seconds\r\n");
-
             fl_fclose(file);
 
-            return true;
+            if (c != EOF) {
+                mcPrint("\r\n*** Load error\r\n");
+            } else {
+                uint32_t total_ticks = *upticks - start;
+                uint32_t total_secs = (total_ticks + 50) / 100;
+                uint32_t load_size = kernel_load_ptr - (uint8_t*)KERNEL_LOAD_ADDRESS;
+                mcPrint("\r\nLoaded ");
+                print_unsigned(load_size, 10);
+                mcPrint(" bytes in ~");
+                print_unsigned(total_secs ? total_secs : 1, 10);
+                mcPrint(" seconds\r\n");
+
+                return true;
+            }
         } else {
             mcPrint("Open failed\r\n");
         }
