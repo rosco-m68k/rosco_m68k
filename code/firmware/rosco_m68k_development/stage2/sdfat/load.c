@@ -16,7 +16,6 @@
 #include <stdnoreturn.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <system.h>
 #include <bbsd.h>
 #include "fat_filelib.h"
 
@@ -116,9 +115,10 @@ bool load_kernel() {
             mcPrint("Loading");
 
             int c;
+            uint8_t *current_load_ptr = kernel_load_ptr;
             uint8_t b = 0;
-            while ((c = fl_fread(kernel_load_ptr, 512, 1, file)) > 0) {
-                kernel_load_ptr += c;
+            while ((c = fl_fread(current_load_ptr, 512, 1, file)) > 0) {
+                current_load_ptr += c;
                 if (++b == 16) {
                     mcPrint(".");
                     b = 0;
@@ -128,11 +128,11 @@ bool load_kernel() {
             fl_fclose(file);
 
             if (c != EOF) {
-                mcPrint("\r\n*** Load error\r\n");
+                mcPrint("\r\n*** SD load error\r\n\r\n");
             } else {
                 uint32_t total_ticks = *upticks - start;
                 uint32_t total_secs = (total_ticks + 50) / 100;
-                uint32_t load_size = kernel_load_ptr - (uint8_t*)KERNEL_LOAD_ADDRESS;
+                uint32_t load_size = current_load_ptr - kernel_load_ptr;
                 mcPrint("\r\nLoaded ");
                 print_unsigned(load_size, 10);
                 mcPrint(" bytes in ~");
