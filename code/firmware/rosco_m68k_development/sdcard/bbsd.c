@@ -95,7 +95,7 @@ BBSDInitStatus BBSD_initialize(BBSDCard *sd) {
     }
 
 finally:
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
     return result;
 }
 
@@ -137,7 +137,7 @@ bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf) {
         }
     }
 
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
     return result;
 }
 
@@ -202,7 +202,7 @@ bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     result = true;
 
 finally:
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
     return result;
 }
 
@@ -270,7 +270,7 @@ bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t c
     result = true;
 
 finally:
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
     return result;
 }
 #endif
@@ -305,7 +305,7 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     result = true;
 
 finally:
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
     return result;
 }
 
@@ -321,7 +321,7 @@ static bool wait_for_card(uint32_t nops) {
 }
 
 static void reset_card() {
-    BBSPI_deassert_cs();
+    BBSPI_deassert_cs0();
 
     for (int i = 0; i < BBSD_RESET_CYCLES; i++) {
         BBSPI_send_byte(0xFF);
@@ -389,7 +389,7 @@ static uint8_t raw_sd_command(uint8_t command, uint32_t arg) {
 }
 
 static uint8_t raw_sd_command_force(uint8_t command, uint32_t arg, bool force) {
-    BBSPI_assert_cs();
+    BBSPI_assert_cs0();
 
     if (!wait_for_card(BBSD_COMMAND_WAIT_RETRIES) && !force) {
         return 0xFF;

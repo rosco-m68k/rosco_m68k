@@ -18,13 +18,15 @@
 #include <gpio_spi.h>
 #include "bbspi.h"
 
-#define CS      GPIO1
+#define CS0     GPIO1
 #define SCK     GPIO2
 #define MOSI    GPIO3
 #define MISO    GPIO4
+#define CS1     GPIO5
 
 bool BBSPI_initialize() {
-    pinMode(CS, OUTPUT);
+    pinMode(CS0, OUTPUT);
+    pinMode(CS1, OUTPUT);
     pinMode(SCK, OUTPUT);
     pinMode(MOSI, OUTPUT);
     pinMode(MISO, INPUT);
@@ -32,12 +34,20 @@ bool BBSPI_initialize() {
     return true;
 }
 
-void BBSPI_assert_cs() {
-    digitalWrite(CS, false);
+void BBSPI_assert_cs0() {
+    digitalWrite(CS0, false);
 }
 
-void BBSPI_deassert_cs() {
-    digitalWrite(CS, true);
+void BBSPI_deassert_cs0() {
+    digitalWrite(CS0, true);
+}
+
+void BBSPI_assert_cs1() {
+    digitalWrite(CS1, false);
+}
+
+void BBSPI_deassert_cs1() {
+    digitalWrite(CS1, true);
 }
 
 void BBSPI_write_mosi(bool state) {
@@ -54,6 +64,11 @@ bool BBSPI_read_miso() {
 
 uint8_t BBSPI_transfer_byte(uint8_t byte_out) {
     return spi_exchange_byte(byte_out);
+}
+
+size_t BBSPI_transfer_buffer(void *buffer, size_t count) {
+    spi_exchange_buffer(buffer, count);
+    return count;
 }
 
 void BBSPI_send_byte(uint8_t byte_out) {

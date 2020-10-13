@@ -711,13 +711,11 @@ BUFFER        equ       $50A
 ; TODO this should be in .rodata, but same issue as above.
 SZID          dc.b    "Video board identified: V9958", 10, 13, 0
 SZNOID        dc.b    "No video output found", 10, 13, 0
-;                      123456789^123456789^123456789^123456789^123456789^123456789^123456789^123456789^
-SZHEADER      dc.b    "                                ___ ___ _                                       "
-              dc.b    " ___ ___ ___ __ ___       _____|  _| . | |_                                     "
-              dc.b    "|  _| . |_ -| _| . |     |     | . | . | '_|                                    "
-              dc.b    "|_| |___|___|__|___|_____|_|_|_|___|___|_,_|                                    "
-              dc.b    "                   |_____| Snapshot Firmware                                    "
-              dc.b    "                                                                                "
-              dc.b    13, 0
+SZHEADER      dc.b    "                                ___ ___ _", 13
+              dc.b    " ___ ___ ___ __ ___       _____|  _| . | |_",13
+              dc.b    "|  _| . |_ -| _| . |     |     | . | . | '_|",13
+              dc.b    "|_| |___|___|__|___|_____|_|_|_|___|___|_,_|",13
+              dc.b    "                   |_____| Snapshot Firmware",13
+              dc.b    13,13, 0
 SZ_CR         dc.b    $D, 0
 
