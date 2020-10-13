@@ -11,7 +11,7 @@ as possible, and will be kept updated as firmware 1.2 is developed.
 # Contents
 
 * 1. TRAP Interfaces for User Code
-  * 1.1. Block device IO (TRAP 13)
+  * 1.1. SPI & Block device IO (TRAP 13)
     * 1.1.1 Example Usage
     * 1.1.2 Functions
       * 1.1.2.1 CHECK_SD_SUPPORT (Function #0)
@@ -19,6 +19,16 @@ as possible, and will be kept updated as firmware 1.2 is developed.
       * 1.1.2.3 SD_READ_BLOCK (Function #2)
       * 1.1.2.4 SD_WRITE_BLOCK (Function #3)
       * 1.1.2.5 SD_READ_REGISTER (Function #4)
+      * 1.1.2.6 CHECK_SPI
+      * 1.1.2.7 SPI_INIT
+      * 1.1.2.8 SPI_ASSERT_CS
+      * 1.1.2.9 SPI_DEASSERT_CS
+      * 1.1.2.10 SPI_TRANSFER_BYTE
+      * 1.1.2.11 SPI_TRANSFER_BUFFER
+      * 1.1.2.12 SPI_RECV_BYTE
+      * 1.1.2.13 SPI_RECV_BUFFER
+      * 1.1.2.14 SPI_SEND_BYTE
+      * 1.1.2.15 SPI_SEND_BUFFER
   * 1.2. Character device IO routines (TRAP 14)
     * 1.2.1 Example Usage
     * 1.2.2 Functions
@@ -153,7 +163,7 @@ Where SD Card support is available, this will return the magic
 number $1234FEDC in D0.L. 
 
 Any other value indicates that support is not available. In this
-case, none of the TRAP 13 routines should be used.
+case, none of the SD Card routines should be used.
 
 #### 1.1.2.2 SD_INIT (Function #1)
 
@@ -253,6 +263,175 @@ pointed to by A2.
 
 Returns 0 in D0.L to indicate failure, any other value
 indicates success.
+
+#### 1.1.2.6 CHECK_SPI
+
+**Arguments**
+
+* None
+
+**Modifies**
+
+* `D0.L` - Return value
+
+**Description**
+
+Determine whether SPI support is present in the Firmware.
+
+Where SPI Card support is available, this will return the magic
+number $1234FEDC in D0.L. 
+
+Any other value indicates that support is not available. In this
+case, none of the SPI routines should be used.
+
+#### 1.1.2.7 SPI_INIT
+
+**Arguments**
+
+* None
+
+**Modifies**
+
+* `D0.L` - Result (0 = OK, otherwise failed)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Initialize the SPI interface. This sets the SPI pins to the 
+appropriate modes (input vs output).
+
+#### 1.1.2.8 SPI_ASSERT_CS
+
+**Arguments**
+
+* `D1.L` - Device number (0 or 1)
+
+**Modifies**
+
+* `D0.L` - Result (0 = failed, otherwise OK)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Assert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
+Note that asserting one line *does not* automatically deassert 
+the other!
+
+#### 1.1.2.9 SPI_DEASSERT_CS
+
+**Arguments**
+
+* `D1.L` - Device number (0 or 1)
+
+**Modifies**
+
+* `D0.L` - Result (0 = failed, otherwise OK)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
+
+#### 1.1.2.10 SPI_TRANSFER_BYTE
+
+**Arguments**
+
+* `D1.L` -  Byte to send
+
+**Modifies**
+
+* `D0.L` -  Byte received
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.11 SPI_TRANSFER_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count exchanged
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Transfer count (`D1.L`) bytes from the given buffer, exchanging them 
+with bytes received at the same time (and returned in the buffer).
+
+Note that the buffer pointer may be modified, so keep a copy locally.
+
+#### 1.1.2.12 SPI_RECV_BYTE
+
+**Arguments**
+
+* `D1.L` -  None
+
+**Modifies**
+
+* `D0.L` - Byte received
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.13 SPI_RECV_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count received
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Receive count (`D1.L`) bytes into the given buffer.
+Note that the buffer pointer may be modified, so keep a copy locally.
+
+#### 1.1.2.14 SPI_SEND_BYTE
+
+**Arguments**
+
+* `D1.L` -  Byte to send
+
+**Modifies**
+
+* `A0`   - Modified arbitrarily
+* `D1.L` - Possibly trashed
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.15 SPI_SEND_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count received
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Send count (`D1.L`) bytes from the given buffer.
+Note that the buffer pointer may be modified, so keep a copy locally.
 
 ## 1.2. Basic IO routines (TRAP 14)
 
@@ -1009,9 +1188,21 @@ must be accessed through the public TRAP functions!
 | 0x450   | FW_SD_READ - Read from SD Card                                                                    |
 | 0x454   | FW_SD_WRITE - Write to SD Card                                                                    |
 | 0x458   | FW_SD_REG - Read SD Card register                                                                 |
+| 0x45C   | FW_SPI_INIT - Intialize SPI subsystem                                                             |
+| 0x460   | SPI_ASSERT_CS - Assert SPI chip select 0 or 1                                                     |
+| 0x464   | SPI_DEASSERT_CS - Deassert SPI chip select 0 or 1                                                 |
+| 0x468   | SPI_TRANSFER_BYTE - Transfer (exchange) a byte                                                    |
+| 0x46C   | SPI_TRANSFER_BUFFER - Transfer (exchange) N bytes to/from a buffer                                |
+| 0x470   | SPI_RECV_BYTE - Receive a byte                                                                    |
+| 0x474   | SPI_RECV_BUFFER - Receive N bytes into a buffer                                                   |
+| 0x478   | SPI_SEND_BYTE - Send a byte                                                                       |
+| 0x47C   | SPI_SEND_BUFFER - Send N bytes from a buffer                                                      |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
+
+**Note 2**: The SD and SPI routines arguments, modifies and returns are the same as for the TRAPs they 
+underlie unless otherwise noted. See section 1 for details.
 
 Arguments, modifies and other information for these functions are the same
 as for the TRAP functions they implement. If replacing them, you **must**
