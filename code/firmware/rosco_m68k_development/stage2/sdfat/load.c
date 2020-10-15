@@ -119,7 +119,7 @@ bool load_kernel() {
             uint8_t b = 0;
             while ((c = fl_fread(current_load_ptr, 512, 1, file)) > 0) {
                 current_load_ptr += c;
-                if (++b == 16) {
+                if (++b == 8) {
                     mcPrint(".");
                     b = 0;
                 }
@@ -137,7 +137,7 @@ bool load_kernel() {
                 print_unsigned(load_size, 10);
                 mcPrint(" bytes in ~");
                 print_unsigned(total_secs ? total_secs : 1, 10);
-                mcPrint(" seconds\r\n");
+                mcPrint(" sec.\r\n");
 
                 return true;
             }
