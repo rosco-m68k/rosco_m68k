@@ -76,11 +76,19 @@ int strcmp(const char *str1, const char *str2) {
 }
 
 int isupper(int c) {
-  return (c > 'A' && c < 'Z');
+  return (c >= 'A' && c <= 'Z');
+}
+
+int islower(int c) {
+  return (c >= 'a' && c <= 'z');
+}
+
+int toupper(int c) {
+  return islower(c) ? (c) - ('a' - 'A') : c;
 }
 
 int tolower(int c) {
-  return isupper(c) ? (c) - 'A' + 'a' : c;
+  return isupper(c) ? (c) + ('a' - 'A') : c;
 }
 
 int strcasecmp (const char *s1, const char *s2) {
@@ -93,6 +101,24 @@ int strcasecmp (const char *s1, const char *s2) {
     }
 
     while ((result = tolower (*p1) - tolower (*p2++)) == 0) {
+        if (*p1++ == '\0') {
+            break;
+        }
+    }
+
+    return result;
+}
+
+int strncasecmp (const char *s1, const char *s2, size_t n) {
+    const unsigned char *p1 = (const unsigned char *) s1;
+    const unsigned char *p2 = (const unsigned char *) s2;
+    int result = 0;
+
+    if (p1 == p2) {
+        return 0;
+    }
+
+    while (n-- && (result = tolower (*p1) - tolower (*p2++)) == 0) {
         if (*p1++ == '\0') {
             break;
         }
@@ -130,12 +156,20 @@ size_t strnlen(const char* str, size_t maxlen) {
 }
 
 int strncmp(const char* s1, const char* s2, size_t n) {
-    while(n--) {
-        if(*s1++!=*s2++) {
-            return *(unsigned char*)(s1 - 1) - *(unsigned char*)(s2 - 1);
-        }
+    const unsigned char *p1 = (const unsigned char *) s1;
+    const unsigned char *p2 = (const unsigned char *) s2;
+    int result = 0;
+
+    if (p1 == p2) {
+        return 0;
     }
-    return 0;
+
+    while(n-- && (result = *p1 - *p2++) == 0) {
+        if (*p1++ == '\0')
+            break;
+    }
+
+    return result;
 }
 
 char* strncpy(char *to, const char *from, size_t n) {
