@@ -155,6 +155,8 @@ static char filename[256];
 // NOTE: puts full path in "filename"
 static char * fullpath(const char * path)
 {
+    memset(filename, 0, sizeof(filename));
+
     // full path
     if (path[0] == '/')
     {
@@ -620,6 +622,7 @@ void kmain()
     {
         while (!SD_FAT_initialize())
         {
+            memset(current_dir, 0, sizeof(current_dir));
             printf("\nNo SD card found. SPACE to retry, other key to exit: ");
             char key = readchar();
             if (key != ' ')
