@@ -19,10 +19,16 @@
 #include <machine.h>
 #include <gpio.h>
 
+// SPI functions are static, so inlining depends on compiler optimization
+// level.  However, you can influence the compiler by defining one of these:
+// SPI_FAST   - encourage the compiler to inline functions
+// SPI_SMALL  - prevent the compiler from inlining functions
 #if !defined(SPI_INLINE)
 #if defined(SPI_FAST)
 #define SPI_INLINE    inline
-#else 
+#elif defined(SPI_SMALL)
+#define SPI_INLINE __attribute__ ((noinline))
+#else
 #define SPI_INLINE
 #endif
 #endif
@@ -44,7 +50,11 @@
 // SPI active LEDs - LEDs to set during buffer transfers
 // NOTE: Normal rosco_m68k LED blinking overridden during transfers
 #if !defined(SPI_LED)
-#define SPI_LED     (LED_RED|LED_GREEN)     // LEDs on during block transfer (or 0)
+#define SPI_LED     (LED_RED)                 // LEDs on during block transfer (or 0)
+#endif
+
+#if !defined(SPI_TXLED)
+#define SPI_TXLED   (LED_GREEN)               // LEDs to flicker with sent data (or 0)
 #endif
 
 // calculate bit values for bit positions
@@ -77,7 +87,7 @@ static SPI_INLINE void spi_send_byte(int byte)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A-reg
       [sckbit] "d" (SPI_SCK_B),                 // COPI bit # D-reg
-      [copi] "d" (SPI_COPI),                    // COPI value D-reg
+      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
       [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)) // SPI bit mask value
     : // clobbers (none)
   );
@@ -114,7 +124,7 @@ static SPI_INLINE void spi_send_buffer(void* data, int count)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A-reg
       [sckbit] "d" (SPI_SCK_B),                 // COPI bit # D-reg
-      [copi] "d" (SPI_COPI),                    // COPI value D-reg
+      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
       [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
       [ledoff] "n" (SPI_LED)                    // LED off value
     : // clobbers (none)
@@ -191,7 +201,7 @@ static SPI_INLINE void spi_exchange_buffer(void *data, int count)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A reg
       [sckbit] "d" (SPI_SCK_B),                 // SCK bit # D-reg
-      [copi] "d" (SPI_COPI),                    // COPI value D-reg
+      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
       [cipobit] "d" (SPI_CIPO_B),               // CIPO bit # D-reg
       [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
       [ledoff] "n" (SPI_LED)                    // LED off value
