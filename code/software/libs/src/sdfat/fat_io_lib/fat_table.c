@@ -80,7 +80,6 @@ void fatfs_fat_init(struct fatfs *fs)
 //-----------------------------------------------------------------------------
 // fatfs_fat_writeback: Writeback 'dirty' FAT sectors to disk
 //-----------------------------------------------------------------------------
-#if FATFS_INC_WRITE_SUPPORT
 static int fatfs_fat_writeback(struct fatfs *fs, struct fat_buffer *pcur)
 {
     if (pcur)
@@ -111,8 +110,6 @@ static int fatfs_fat_writeback(struct fatfs *fs, struct fat_buffer *pcur)
     else
         return 0;
 }
-#endif
-
 //-----------------------------------------------------------------------------
 // fatfs_fat_read_sector: Read a FAT sector
 //-----------------------------------------------------------------------------
@@ -157,12 +154,10 @@ static struct fat_buffer *fatfs_fat_read_sector(struct fatfs *fs, uint32 sector)
     pcur->next = fs->fat_buffer_head;
     fs->fat_buffer_head = pcur;
 
-#if FATFS_INC_WRITE_SUPPORT
     // Writeback sector if changed
     if (pcur->dirty)
         if (!fatfs_fat_writeback(fs, pcur))
             return 0;
-#endif
 
     // Address is now new sector
     pcur->address = sector;
@@ -181,7 +176,6 @@ static struct fat_buffer *fatfs_fat_read_sector(struct fatfs *fs, uint32 sector)
 //-----------------------------------------------------------------------------
 // fatfs_fat_purge: Purge 'dirty' FAT sectors to disk
 //-----------------------------------------------------------------------------
-#if FATFS_INC_WRITE_SUPPORT
 int fatfs_fat_purge(struct fatfs *fs)
 {
     struct fat_buffer *pcur = fs->fat_buffer_head;
@@ -199,7 +193,6 @@ int fatfs_fat_purge(struct fatfs *fs)
 
     return 1;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 //                        General FAT Table Operations

@@ -58,13 +58,8 @@ static struct fat_list    _free_file_list;
 // Macro for checking if file lib is initialised
 #define CHECK_FL_INIT()     { if (_filelib_init==0) fl_init(); }
 
-#if FATFS_INC_LOCKING
 #define FL_LOCK(a)          do { if ((a)->fl_lock) (a)->fl_lock(); } while (0)
 #define FL_UNLOCK(a)        do { if ((a)->fl_unlock) (a)->fl_unlock(); } while (0)
-#else
-#define FL_LOCK(a)
-#define FL_UNLOCK(a)
-#endif
 
 //-----------------------------------------------------------------------------
 // Local Functions
@@ -85,7 +80,6 @@ static FL_FILE* _allocate_file(void)
 
     return fat_list_entry(node, FL_FILE, list_node);
 }
-
 //-----------------------------------------------------------------------------
 // _check_file_open: Returns true if the file is already open
 //-----------------------------------------------------------------------------
@@ -388,9 +382,9 @@ static FL_FILE* _open_file(const char *path)
             file->last_fat_lookup.CurrentCluster = 0xFFFFFFFF;
 
             fatfs_cache_init(&_fs, file);
-#if FATFS_INC_WRITE_SUPPORT
+
             fatfs_fat_purge(&_fs);
-#endif
+
             return file;
         }
 
@@ -651,14 +645,11 @@ void fl_init(void)
 //-----------------------------------------------------------------------------
 // fl_attach_locks:
 //-----------------------------------------------------------------------------
-#if FATFS_INC_LOCKING
 void fl_attach_locks(void (*lock)(void), void (*unlock)(void))
 {
     _fs.fl_lock = lock;
     _fs.fl_unlock = unlock;
 }
-#endif
-
 //-----------------------------------------------------------------------------
 // fl_attach_media:
 //-----------------------------------------------------------------------------
@@ -685,7 +676,6 @@ int fl_attach_media(fn_diskio_read rd, fn_diskio_write wr)
 //-----------------------------------------------------------------------------
 // fl_shutdown: Call before shutting down system
 //-----------------------------------------------------------------------------
-#if FATFS_INC_WRITE_SUPPORT
 void fl_shutdown(void)
 {
     // If first call to library, initialise
@@ -695,7 +685,6 @@ void fl_shutdown(void)
     fatfs_fat_purge(&_fs);
     FL_UNLOCK(&_fs);
 }
-#endif
 //-----------------------------------------------------------------------------
 // fopen: Open or Create a file for reading or writing
 //-----------------------------------------------------------------------------
@@ -740,7 +729,6 @@ void* fl_fopen(const char *path, const char *mode)
         case 'R':
             flags |= FILE_READ;
             break;
-#if FATFS_INC_WRITE_SUPPORT
         case 'w':
         case 'W':
             flags |= FILE_WRITE;
@@ -770,7 +758,6 @@ void* fl_fopen(const char *path, const char *mode)
                 flags |= FILE_CREATE;
             }
             break;
-#endif
         case 'b':
         case 'B':
             flags |= FILE_BINARY;
@@ -786,8 +773,8 @@ void* fl_fopen(const char *path, const char *mode)
 #endif
 
     // No write access - remove write/modify flags
-//    if (!_fs.disk_io.write_media)
-//        flags &= ~(FILE_CREATE | FILE_WRITE | FILE_APPEND);
+    if (!_fs.disk_io.write_media)
+        flags &= ~(FILE_CREATE | FILE_WRITE | FILE_APPEND);
 
     FL_LOCK(&_fs);
 
@@ -799,13 +786,13 @@ void* fl_fopen(const char *path, const char *mode)
 #if FATFS_INC_WRITE_SUPPORT
     if (!file && (flags & FILE_CREATE))
         file = _create_file(path);
+#endif
 
     // Write Existing (and not open due to read or create)
     if (!(flags & FILE_READ))
         if ((flags & FILE_CREATE) && !file)
             if (flags & (FILE_WRITE | FILE_APPEND))
                 file = _open_file(path);
-#endif
 
     if (file)
         file->flags = flags;
@@ -902,7 +889,34 @@ static uint32 _write_sectors(FL_FILE* file, uint32 offset, uint8 *buf, uint32 co
         return 0;
 }
 #endif
+//-----------------------------------------------------------------------------
+// fl_fflush: Flush un-written data to the file
+//-----------------------------------------------------------------------------
+int fl_fflush(void *f)
+{
+#if FATFS_INC_WRITE_SUPPORT
+    FL_FILE *file = (FL_FILE *)f;
 
+    // If first call to library, initialise
+    CHECK_FL_INIT();
+
+    if (file)
+    {
+        FL_LOCK(&_fs);
+
+        // If some write data still in buffer
+        if (file->file_data_dirty)
+        {
+            // Write back current sector before loading next
+            if (_write_sectors(file, file->file_data_address, file->file_data_sector, 1))
+                file->file_data_dirty = 0;
+        }
+
+        FL_UNLOCK(&_fs);
+    }
+#endif
+    return 0;
+}
 //-----------------------------------------------------------------------------
 // fl_fclose: Close an open file
 //-----------------------------------------------------------------------------
@@ -917,10 +931,8 @@ void fl_fclose(void *f)
     {
         FL_LOCK(&_fs);
 
-#if FATFS_INC_WRITE_SUPPORT
         // Flush un-written data to file
         fl_fflush(f);
-#endif
 
         // File size changed?
         if (file->filelength_changed)
@@ -942,14 +954,58 @@ void fl_fclose(void *f)
         // Free file handle
         _free_file(file);
 
-#if FATFS_INC_WRITE_SUPPORT
         fatfs_fat_purge(&_fs);
-#endif
 
         FL_UNLOCK(&_fs);
     }
 }
+//-----------------------------------------------------------------------------
+// fl_fgetc: Get a character in the stream
+//-----------------------------------------------------------------------------
+int fl_fgetc(void *f)
+{
+    int res;
+    uint8 data = 0;
 
+    res = fl_fread(&data, 1, 1, f);
+    if (res == 1)
+        return (int)data;
+    else
+        return res;
+}
+//-----------------------------------------------------------------------------
+// fl_fgets: Get a string from a stream
+//-----------------------------------------------------------------------------
+char *fl_fgets(char *s, int n, void *f)
+{
+    int idx = 0;
+
+    // Space for null terminator?
+    if (n > 0)
+    {
+        // While space (+space for null terminator)
+        while (idx < (n-1))
+        {
+            int ch = fl_fgetc(f);
+
+            // EOF / Error?
+            if (ch < 0)
+                break;
+
+            // Store character read from stream
+            s[idx++] = (char)ch;
+
+            // End of line?
+            if (ch == '\n')
+                break;
+        }
+
+        if (idx > 0)
+            s[idx] = '\0';
+    }
+
+    return (idx > 0) ? s : 0;
+}
 //-----------------------------------------------------------------------------
 // fl_fread: Read a block of data from the file
 //-----------------------------------------------------------------------------
@@ -1015,11 +1071,9 @@ int fl_fread(void * buffer, int size, int length, void *f )
             // Do we need to re-read the sector?
             if (file->file_data_address != sector)
             {
-#if FATFS_INC_WRITE_SUPPORT
                 // Flush un-written data to file
                 if (file->file_data_dirty)
                     fl_fflush(file);
-#endif
 
                 // Get LBA of sector offset within file
                 if (!_read_sectors(file, sector, file->file_data_sector, 1))
@@ -1053,108 +1107,6 @@ int fl_fread(void * buffer, int size, int length, void *f )
     }
 
     return bytesRead;
-}
-
-//-----------------------------------------------------------------------------
-// fl_feof: Is the file pointer at the end of the stream?
-//-----------------------------------------------------------------------------
-int fl_feof(void *f)
-{
-    FL_FILE *file = (FL_FILE *)f;
-    int res;
-
-    if (!file)
-        return -1;
-
-    FL_LOCK(&_fs);
-
-    if (file->bytenum == file->filelength)
-        res = EOF;
-    else
-        res = 0;
-
-    FL_UNLOCK(&_fs);
-
-    return res;
-}
-
-#if !FATFS_MINIMAL_API
-
-//-----------------------------------------------------------------------------
-// fl_fflush: Flush un-written data to the file
-//-----------------------------------------------------------------------------
-#if FATFS_INC_WRITE_SUPPORT
-int fl_fflush(void *f)
-{
-    FL_FILE *file = (FL_FILE *)f;
-
-    // If first call to library, initialise
-    CHECK_FL_INIT();
-
-    if (file)
-    {
-        FL_LOCK(&_fs);
-
-        // If some write data still in buffer
-        if (file->file_data_dirty)
-        {
-            // Write back current sector before loading next
-            if (_write_sectors(file, file->file_data_address, file->file_data_sector, 1))
-                file->file_data_dirty = 0;
-        }
-
-        FL_UNLOCK(&_fs);
-    }
-    return 0;
-}
-#endif
-
-//-----------------------------------------------------------------------------
-// fl_fgetc: Get a character in the stream
-//-----------------------------------------------------------------------------
-int fl_fgetc(void *f)
-{
-    int res;
-    uint8 data = 0;
-
-    res = fl_fread(&data, 1, 1, f);
-    if (res == 1)
-        return (int)data;
-    else
-        return res;
-}
-//-----------------------------------------------------------------------------
-// fl_fgets: Get a string from a stream
-//-----------------------------------------------------------------------------
-char *fl_fgets(char *s, int n, void *f)
-{
-    int idx = 0;
-
-    // Space for null terminator?
-    if (n > 0)
-    {
-        // While space (+space for null terminator)
-        while (idx < (n-1))
-        {
-            int ch = fl_fgetc(f);
-
-            // EOF / Error?
-            if (ch < 0)
-                break;
-
-            // Store character read from stream
-            s[idx++] = (char)ch;
-
-            // End of line?
-            if (ch == '\n')
-                break;
-        }
-
-        if (idx > 0)
-            s[idx] = '\0';
-    }
-
-    return (idx > 0) ? s : 0;
 }
 //-----------------------------------------------------------------------------
 // fl_fseek: Seek to a specific place in the file
@@ -1254,6 +1206,28 @@ long fl_ftell(void *f)
     fl_fgetpos(f, &pos);
 
     return (long)pos;
+}
+//-----------------------------------------------------------------------------
+// fl_feof: Is the file pointer at the end of the stream?
+//-----------------------------------------------------------------------------
+int fl_feof(void *f)
+{
+    FL_FILE *file = (FL_FILE *)f;
+    int res;
+
+    if (!file)
+        return -1;
+
+    FL_LOCK(&_fs);
+
+    if (file->bytenum == file->filelength)
+        res = EOF;
+    else
+        res = 0;
+
+    FL_UNLOCK(&_fs);
+
+    return res;
 }
 //-----------------------------------------------------------------------------
 // fl_fputc: Write a character to the stream
@@ -1619,8 +1593,6 @@ int fl_format(uint32 volume_sectors, const char *name)
     return fatfs_format(&_fs, volume_sectors, name);
 }
 #endif /*FATFS_INC_FORMAT_SUPPORT*/
-
-#endif /*FATFS_MINIMAL_API*/
 //-----------------------------------------------------------------------------
 // fl_get_fs:
 //-----------------------------------------------------------------------------

@@ -26,7 +26,7 @@
 
 // Number of sectors per FAT_BUFFER (min 1)
 #ifndef FAT_BUFFER_SECTORS
-    #define FAT_BUFFER_SECTORS              16
+    #define FAT_BUFFER_SECTORS              1
 #endif
 
 // Max FAT sectors to buffer (min 1)

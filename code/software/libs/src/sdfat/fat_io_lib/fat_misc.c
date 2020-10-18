@@ -38,9 +38,8 @@
 //-----------------------------------------------------------------------------
 void fatfs_lfn_cache_init(struct lfn_cache *lfn, int wipeTable)
 {
-#if FATFS_INC_LFN_SUPPORT
     int i = 0;
-#endif
+
     lfn->no_of_strings = 0;
 
 #if FATFS_INC_LFN_SUPPORT

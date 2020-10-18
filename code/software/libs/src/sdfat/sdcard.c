@@ -16,6 +16,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <sdfat.h>
+#include <stdio.h>
 
 bool SD_get_csd(SDCard *sd, SDCard_CSD *csd) {
     return SD_read_register(sd, 9, (void*) csd);
@@ -49,7 +50,7 @@ static SDCard sdcard;
 
 static int FAT_media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     for(int i = 0; i < sector_count; i++) {
-        if (!SD_read_block(&sdcard, sector, buffer)) {
+        if (!SD_read_block(&sdcard, sector + i, buffer)) {
             return 0;
         }
         buffer += 512;
@@ -60,7 +61,7 @@ static int FAT_media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_coun
 
 static int FAT_media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     for(int i = 0; i < sector_count; i++) {
-        if (!SD_write_block(&sdcard, sector, buffer)) {
+        if (!SD_write_block(&sdcard, sector + i, buffer)) {
             return 0;
         }
         buffer += 512;

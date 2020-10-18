@@ -384,7 +384,6 @@ int fatfs_write_sector(struct fatfs *fs, uint32 cluster, uint32 sector, uint8 *t
 //-----------------------------------------------------------------------------
 // fatfs_show_details: Show the details about the filesystem
 //-----------------------------------------------------------------------------
-#if FATFS_INC_USELESS_STUFF
 void fatfs_show_details(struct fatfs *fs)
 {
     FAT_PRINTF(("FAT details:\r\n"));
@@ -394,7 +393,6 @@ void fatfs_show_details(struct fatfs *fs)
     FAT_PRINTF((" Cluster Begin LBA = 0x%x\r\n",fs->cluster_begin_lba));
     FAT_PRINTF((" Sectors Per Cluster = %d\r\n", fs->sectors_per_cluster));
 }
-#endif
 //-----------------------------------------------------------------------------
 // fatfs_get_root_cluster: Get the root dir cluster
 //-----------------------------------------------------------------------------
@@ -412,9 +410,7 @@ uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find
     uint16 recordoffset = 0;
     uint8 i=0;
     int x=0;
-#if FATFS_INC_LFN_SUPPORT
     char *long_filename = NULL;
-#endif
     char short_filename[13];
     struct lfn_cache lfn;
     int dotRequired = 0;
@@ -498,6 +494,7 @@ uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find
                         memcpy(sfEntry,directoryEntry,sizeof(struct fat_dir_entry));
                         return 1;
                     }
+
                     fatfs_lfn_cache_init(&lfn, 0);
                 }
             } // End of if

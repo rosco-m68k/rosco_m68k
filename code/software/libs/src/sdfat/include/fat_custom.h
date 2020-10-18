@@ -21,11 +21,10 @@
 #define FATFS_INC_LFN_SUPPORT           1
 #define FATFS_DIR_LIST_SUPPORT          1
 
+// Standard options
+#define FATFS_MAX_OPEN_FILES            16      /* 16KB */
+
 // Lower-level but standard options
-#define FAT_CLUSTER_CACHE_ENTRIES       1
-
-// Added by us
-#define FATFS_INC_LOCKING               1
-#define FATFS_INC_USELESS_STUFF         1
-#define FATFS_MINIMAL_API               0
-
+#define FAT_BUFFER_SECTORS              8
+#define FAT_BUFFERS                     4       /* 16KB */
+#define FAT_CLUSTER_CACHE_ENTRIES       128     /* 1KB */

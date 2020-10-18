@@ -132,7 +132,6 @@ static FAT_INLINE void fat_list_insert_last(struct fat_list *list, struct fat_no
      else
         fat_list_insert_after(list, list->tail, node);
 }
-
 //-----------------------------------------------------------------
 // fat_list_is_empty:
 //-----------------------------------------------------------------
@@ -142,7 +141,6 @@ static FAT_INLINE int fat_list_is_empty(struct fat_list *list)
 
     return !list->head;
 }
-
 //-----------------------------------------------------------------
 // fat_list_pop_head:
 //-----------------------------------------------------------------
@@ -158,7 +156,6 @@ static FAT_INLINE struct fat_node * fat_list_pop_head(struct fat_list *list)
 
     return node;
 }
-
 
 #endif
 
