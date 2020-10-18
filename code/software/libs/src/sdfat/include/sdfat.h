@@ -4,55 +4,44 @@
  *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
- *                     |_____|       firmware v1
+ *                     |_____|      libraries v1
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * rosco_m68k Bit-Banged SD Card over SPI
+ * Interface to the firmware SD Card support
  * ------------------------------------------------------------
  */
 
-#ifndef ROSCO_M68K_BBSD_H
-#define ROSCO_M68K_BBSD_H
+#ifndef ROSCO_M68K_SDFAT_H
+#define ROSCO_M68K_SDFAT_H
 
 #include <stdbool.h>
-#include <device/block.h>
-
-#ifdef SD_MINIMAL
-#ifndef SD_BLOCK_READ_ONLY      // Minimal config precludes non-block-sized reads...
-#define SD_BLOCK_READ_ONLY
-#endif
-#endif
-
-// Responses
-#define R1_READY_STATE      0x00
-#define R1_IDLE_STATE       0x01
-#define R1_ILLEGAL_COMMAND  0x04
-#define BLOCK_START         0xFE
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+#include "fat_filelib.h"
 
 typedef enum {
-    BBSD_CARD_TYPE_V1,
-    BBSD_CARD_TYPE_V2,
-    BBSD_CARD_TYPE_SDHC,
-    BBSD_CARD_TYPE_UNKNOWN
-} BBSDCardType;
+    SD_CARD_TYPE_V1,
+    SD_CARD_TYPE_V2,
+    SD_CARD_TYPE_SDHC,
+    SD_CARD_TYPE_UNKNOWN,
+} SDCardType;
+
+typedef enum {
+    SD_INIT_OK,
+    SD_INIT_IDLE_FAILED,
+    SD_INIT_CMD8_FAILED,
+    SD_INIT_ACMD41_FAILED,
+} SDInitStatus;
 
 typedef struct {
-#ifndef SD_FASTER
     bool            initialized;
-#endif
-    BBSPI           *spi;
-    BBSDCardType    type;
-#ifndef SD_BLOCK_READ_ONLY
-    bool            have_current_block;     /* if true, the next two members have meaning */
-    uint32_t        current_block_start;
-    uint16_t        current_block_offset;
-    bool            can_partial_read;
-#endif
-} BBSDCard;
+    SDCardType      type;
+    uint32_t        reserved[4];
+} SDCard;
 
-#ifndef SD_MINIMAL
 typedef struct {
   // 0x0
   unsigned csd_ver : 2;
@@ -111,7 +100,7 @@ typedef struct {
   // 0xF
   unsigned crc : 7;
   unsigned always1 : 1;
-} __attribute__ ((packed)) BBSDCard_CSD1;
+} __attribute__ ((packed)) SDCard_CSD1;
 
 //------------------------------------------------------------------------------
 // CSD for version 2.00 cards
@@ -169,29 +158,69 @@ typedef struct {
   // 0xF
   unsigned crc : 7;
   unsigned always1 : 1;
-} __attribute__ ((packed)) BBSDCard_CSD2;
+} __attribute__ ((packed)) SDCard_CSD2;
 
 typedef union {
-  BBSDCard_CSD1 v1;
-  BBSDCard_CSD2 v2;
-} BBSDCard_CSD;
+  SDCard_CSD1 v1;
+  SDCard_CSD2 v2;
+} SDCard_CSD;
+
+
+
+/*** The first two routines should be good enough for common use *** */
+
+/**
+ * Check whether SD Card support is present in the current firmware.
+ *
+ * You should do this before using any of the other routines!
+ */
+bool SD_check_support();
+
+/**
+ * Initialize the SD Card, and set up the FAT file library with sensible 
+ * defaults.
+ */
+bool SD_FAT_initialize();
+
+/**
+ * Get the default SD Card used by the FAT libs by default,
+ * or NULL if it hasn't been initialized (with a call to 
+ * SD_FAT_initialize()). 
+ */
+SDCard* SD_FAT_get_sd_card();
+
+
+/*** The following routines are lower-level and allow finer control *** */
+
+/**
+ * Attempt to initialize the SD card, populating the supplied SDCard struct.
+ */
+SDInitStatus SD_initialize(SDCard *sd);
+
+/**
+ * Attempt to read a block from the SD card.
+ */ 
+bool SD_read_block(SDCard *sd, uint32_t block, void *buf);
+
+/**
+ * Attempt to write a block from the SD card.
+ */
+bool SD_write_block(SDCard *sd, uint32_t block, void *buf);
+
+/**
+ * Attempt to read an SD card register into the supplied buffer.
+ */
+bool SD_read_register(SDCard *sd, uint8_t regcmd, void *buf);
+
+/**
+ * Attempt to read the CSD register into the supplied struct.
+ */
+bool SD_get_csd(SDCard *sd, SDCard_CSD *csd);
+
+/** 
+ * Attempt to determine the size of the connected SD card.
+ */
+uint32_t SD_get_size(SDCard *sd);
+
 #endif
 
-bool BBSD_initialize(BBSDCard *sd, BBSPI *spi);
-bool BBSD_make_device(BBSDCard *sd, BlockDevice *device);
-uint8_t BBSD_command(BBSDCard *sd, uint8_t command, uint32_t arg);
-uint8_t BBSD_acommand(BBSDCard *sd, uint8_t command, uint32_t arg);
-
-#ifndef SD_MINIMAL
-bool BBSD_readreg(BBSDCard *sd, uint8_t command, uint8_t *buf);
-bool BBSD_get_csd(BBSDCard *sd, BBSDCard_CSD *csd);
-uint32_t BBSD_get_size(BBSDCard *sd);
-#endif
-
-bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
-
-#ifndef SD_BLOCK_READ_ONLY
-bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
-#endif
-
-#endif /* ROSCO_M68K_BBSD_H */

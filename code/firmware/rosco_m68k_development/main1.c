@@ -29,6 +29,9 @@
 #define PROGRAM_LOADER_EFP_ADDRESS 0x448
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
+#ifdef SDCARD_SUPPORT
+extern void INSTALL_SDCARD_HANDLERS();
+#endif
 extern void warm_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 
@@ -106,6 +109,10 @@ noreturn void main1() {
     START_HEART();
 
     INSTALL_EASY68K_TRAP_HANDLERS();
+
+#ifdef SDCARD_SUPPORT
+    INSTALL_SDCARD_HANDLERS();
+#endif
 
 #ifdef VIDEO9958_CON
     if (HAVE_V9958()) {

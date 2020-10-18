@@ -104,6 +104,7 @@ extern void           (*_EFP_PROGLOADER)();
 
 extern char           _FIRMWARE[];          // ROM firmware start address
 extern uint32_t       _FIRMWARE_REV;        // rosco ROM firmware revision
+extern char           _LOAD_ADDRESS[];      // firmware load address
 
 /*
  * Early print null-terminated string.

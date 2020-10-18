@@ -29,6 +29,21 @@ EFP_RECVCHAR    equ    $434
 EFP_CLRSCR      equ    $438
 EFP_MOVEXY      equ    $43C
 EFP_SETCURSOR   equ    $440
+EFP_RESERVED1   equ    $444
+EFP_PROGLOADER  equ    $448
+EFP_SD_INIT     equ    $44C
+EFP_SD_READ     equ    $450
+EFP_SD_WRITE    equ    $454
+EFP_SD_REG      equ    $458
+EFP_SPI_INIT    equ    $45C
+EFP_SPI_CS_A    equ    $460
+EFP_SPI_CS_D    equ    $464
+EFP_SPI_XFER_B  equ    $468
+EFP_SPI_XFER_M  equ    $46C
+EFP_SPI_RECV_B  equ    $470
+EFP_SPI_RECV_M  equ    $474
+EFP_SPI_SEND_B  equ    $478
+EFP_SPI_SEND_M  equ    $47C
 
 ; Equates for MC68681 DUART
 ; ------------------------------------------------------------

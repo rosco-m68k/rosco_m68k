@@ -54,6 +54,7 @@ WITH_KERMIT?=true
 endif
 
 include easy68k/include.mk
+include sdcard/include.mk
 
 ifneq ($(WITH_VDP),false)
 include video9958/include.mk

@@ -11,37 +11,55 @@ as possible, and will be kept updated as firmware 1.2 is developed.
 # Contents
 
 * 1. TRAP Interfaces for User Code
-  * 1.1. Basic IO routines (TRAP 14)
+  * 1.1. SPI & Block device IO (TRAP 13)
     * 1.1.1 Example Usage
     * 1.1.2 Functions
-      * 1.1.2.1 PRINT (Function #0)
-      * 1.1.2.2 PRINTLN (Function #1)
-      * 1.1.2.3 SENDCHAR (Function #2)
-      * 1.1.2.4 RECVCHAR (Function #3)
-      * 1.1.2.5 PRINTCHAR (Function #4)
-      * 1.1.2.6 SETCURSOR (Function #5)
-  * 1.2. Easy68k compatibility layer (TRAP 15)
+      * 1.1.2.1 CHECK_SD_SUPPORT (Function #0)
+      * 1.1.2.2 SD_INIT (Function #1)
+      * 1.1.2.3 SD_READ_BLOCK (Function #2)
+      * 1.1.2.4 SD_WRITE_BLOCK (Function #3)
+      * 1.1.2.5 SD_READ_REGISTER (Function #4)
+      * 1.1.2.6 CHECK_SPI
+      * 1.1.2.7 SPI_INIT
+      * 1.1.2.8 SPI_ASSERT_CS
+      * 1.1.2.9 SPI_DEASSERT_CS
+      * 1.1.2.10 SPI_TRANSFER_BYTE
+      * 1.1.2.11 SPI_TRANSFER_BUFFER
+      * 1.1.2.12 SPI_RECV_BYTE
+      * 1.1.2.13 SPI_RECV_BUFFER
+      * 1.1.2.14 SPI_SEND_BYTE
+      * 1.1.2.15 SPI_SEND_BUFFER
+  * 1.2. Character device IO routines (TRAP 14)
     * 1.2.1 Example Usage
     * 1.2.2 Functions
-      * 1.2.2.1 PRINTLN_LEN (Function #0)
-      * 1.2.2.2 PRINT_LEN (Function #1)
-      * 1.2.2.3 READSTR (Function #2)
-      * 1.2.2.4 DISPLAYNUM_SIGNED (Function #3)
-      * 1.2.2.5 READNUM (Function #4)
-      * 1.2.2.6 READCHAR (Function #5)
-      * 1.2.2.7 SENDCHAR (Function #6)
-      * 1.2.2.8 CHECKINPUT (Function #7)
-      * 1.2.2.9 GETUPTICKS (Function #8)
-      * 1.2.2.10 TERMINATE (Function #9)
-      * 1.2.2.11 MOVEXY (Function #11)
-      * 1.2.2.12 SETECHO (Function #12)
-      * 1.2.2.13 PRINTLN_SZ (Function #13)
-      * 1.2.2.14 PRINT_SZ (Function #14)
-      * 1.2.2.15 PRINT_UNSIGNED (Function #15)
-      * 1.2.2.16 SETDISPLAY (Function #16)
-      * 1.2.2.17 PRINTSZ_NUM (Function #17)
-      * 1.2.2.18 PRINTSZ_READ_NUM (Function #18)
-      * 1.2.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
+      * 1.2.2.1 PRINT (Function #0)
+      * 1.2.2.2 PRINTLN (Function #1)
+      * 1.2.2.3 SENDCHAR (Function #2)
+      * 1.2.2.4 RECVCHAR (Function #3)
+      * 1.2.2.5 PRINTCHAR (Function #4)
+      * 1.2.2.6 SETCURSOR (Function #5)
+  * 1.3. Easy68k compatibility layer (TRAP 15)
+    * 1.3.1 Example Usage
+    * 1.3.2 Functions
+      * 1.3.2.1 PRINTLN_LEN (Function #0)
+      * 1.3.2.2 PRINT_LEN (Function #1)
+      * 1.3.2.3 READSTR (Function #2)
+      * 1.3.2.4 DISPLAYNUM_SIGNED (Function #3)
+      * 1.3.2.5 READNUM (Function #4)
+      * 1.3.2.6 READCHAR (Function #5)
+      * 1.3.2.7 SENDCHAR (Function #6)
+      * 1.3.2.8 CHECKINPUT (Function #7)
+      * 1.3.2.9 GETUPTICKS (Function #8)
+      * 1.3.2.10 TERMINATE (Function #9)
+      * 1.3.2.11 MOVEXY (Function #11)
+      * 1.3.2.12 SETECHO (Function #12)
+      * 1.3.2.13 PRINTLN_SZ (Function #13)
+      * 1.3.2.14 PRINT_SZ (Function #14)
+      * 1.3.2.15 PRINT_UNSIGNED (Function #15)
+      * 1.3.2.16 SETDISPLAY (Function #16)
+      * 1.3.2.17 PRINTSZ_NUM (Function #17)
+      * 1.3.2.18 PRINTSZ_READ_NUM (Function #18)
+      * 1.3.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
 * 2. System Data Area memory map
   * 2.1. Exception vectors
   * 2.2. Basic System Data Block (SDB)
@@ -58,9 +76,10 @@ to an exception vector (initialized by the firmware) as if an
 exception were being processed. Context is stored on the stack
 and Supervisor mode is entered automatically.
 
-Currently, two TRAPs are used by the firmware:
+Currently, three TRAPs are used by the firmware:
 
-* TRAP 14 provides rosco_m68k's native basic input/output routines
+* TRAP 13 provides rosco_m68k's native block device IO routines (SD)
+* TRAP 14 provides rosco_m68k's native serial device IO routines (UART/Console)
 * TRAP 15 provides basic IO routines that are broadly Easy68k-compatible(*)
 
 All other TRAP vectors are unused at boot-time (and initialized to no-op
@@ -81,10 +100,344 @@ reused or corrupted, these routines may not function properly.
 firmware build. In such cases, the functions offered on TRAP 15 will
 not be available, and that TRAP vector may be reused.
 
-## 1.1. Basic IO routines (TRAP 14)
+## 1.1. Block device IO (TRAP 13)
 
-TRAP 14 provides access to the basic IO functionality provided by
-the firmware.
+TRAP 13 provides access to the block-device IO functionality
+provided by the firmware. At present, this means SD cards.
+
+Register D0.L is expected to contain the function code (note that
+this is different to the TRAP 14 handler!). Other arguments
+depend on the specific function, and are documented below.
+
+In all cases, registers used as aguments (including D0.L) are **not** 
+guaranteed to be preserved. All other registers are preserved.
+
+Function codes outside the range documented here are considered
+reserved for future expansion, and should not be used by integrators
+or other code. The exception to this is where the user program 
+is intended to take complete control of the system, in which case
+the TRAP handlers, and the SDA that underpins them, may be entirely
+replaced in the scope of that program.
+
+### 1.1.1 Example Usage
+
+An example of using function 2 (SD_READ_BLOCK) of TRAP 13 is:
+
+```
+SD_read_block::
+    movem.l A0-A2/D1,-(A7)
+    move.l  (20,A7),A1
+    move.l  (24,A7),D1
+    move.l  (28,A7),A2
+    move.l  #2,D0
+    trap    #13
+    movem.l (A7)+,A0-A2/D1
+    rts
+```
+
+With GCC as the compiler, this could be called directly from C, 
+with the prototype: 
+
+
+```
+bool SD_read_block(SDCard *sd, uint32_t block, void *buf);
+```
+ 
+### 1.1.2 Functions
+
+#### 1.1.2.1 CHECK_SD_SUPPORT (Function #0)
+
+**Arguments**
+
+* D0.L - 0 (Function code)
+
+**Modifies**
+
+* `D0.L` - Return value
+
+**Description**
+
+Determine whether SD Card support is present in the Firmware.
+
+Where SD Card support is available, this will return the magic
+number $1234FEDC in D0.L. 
+
+Any other value indicates that support is not available. In this
+case, none of the SD Card routines should be used.
+
+#### 1.1.2.2 SD_INIT (Function #1)
+
+**Arguments**
+
+* `D0.L` - 1 (Function code)
+* `A1`   - Pointer to an SDCard struct
+
+**Modifies**
+
+* `D0.L` - Return value
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+
+**Description**
+
+Attempt to initialize the SD Card. 
+
+The memory pointed to by A1 will be a SDCard structure - see
+sdfat.h in the standard libraries for details.
+
+The return value in D0.L will be one of the SDInitStatus
+codes - `SD_INIT_OK` (ordinal 0) indicates success, while failure 
+is indicated by any other value. Again, see sdfat.h for details.
+
+#### 1.1.2.3 SD_READ_BLOCK (Function #2)
+
+**Arguments**
+
+* `D0.L` - 1 (Function code)
+* `D1.L` - Block number to read
+* `A1`   - Pointer to an initialized SDCard struct
+* `A2`   - Pointer to a 512-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Read a 512-byte block from the SD Card into the buffer
+pointed to by A2.
+
+Returns 0 in D0.L to indicate failure, any other value
+indicates success.
+
+#### 1.1.2.4 SD_WRITE_BLOCK (Function #3)
+
+**Arguments**
+
+* `D0.L` - 1 (Function code)
+* `D1.L` - Block number to read
+* `A1`   - Pointer to an initialized SDCard struct
+* `A2`   - Pointer to a 512-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Write a 512-byte block from the buffer pointed to by A2 to
+the SD Card..
+
+Returns 0 in D0.L to indicate failure, any other value
+indicates success.
+
+#### 1.1.2.5 SD_READ_REGISTER (Function #4)
+
+**Arguments**
+
+* `D0.L` - 1 (Function code)
+* `D1.L` - Register number to read (translates directly to a CMD)
+* `A1`   - Pointer to an initialized SDCard struct
+* `A2`   - Pointer to a 16-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Read an SD Card register block from the SD Card into the buffer
+pointed to by A2.
+
+Returns 0 in D0.L to indicate failure, any other value
+indicates success.
+
+#### 1.1.2.6 CHECK_SPI
+
+**Arguments**
+
+* None
+
+**Modifies**
+
+* `D0.L` - Return value
+
+**Description**
+
+Determine whether SPI support is present in the Firmware.
+
+Where SPI Card support is available, this will return the magic
+number $1234FEDC in D0.L. 
+
+Any other value indicates that support is not available. In this
+case, none of the SPI routines should be used.
+
+#### 1.1.2.7 SPI_INIT
+
+**Arguments**
+
+* None
+
+**Modifies**
+
+* `D0.L` - Result (0 = OK, otherwise failed)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Initialize the SPI interface. This sets the SPI pins to the 
+appropriate modes (input vs output).
+
+#### 1.1.2.8 SPI_ASSERT_CS
+
+**Arguments**
+
+* `D1.L` - Device number (0 or 1)
+
+**Modifies**
+
+* `D0.L` - Result (0 = failed, otherwise OK)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Assert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
+Note that asserting one line *does not* automatically deassert 
+the other!
+
+#### 1.1.2.9 SPI_DEASSERT_CS
+
+**Arguments**
+
+* `D1.L` - Device number (0 or 1)
+
+**Modifies**
+
+* `D0.L` - Result (0 = failed, otherwise OK)
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
+
+#### 1.1.2.10 SPI_TRANSFER_BYTE
+
+**Arguments**
+
+* `D1.L` -  Byte to send
+
+**Modifies**
+
+* `D0.L` -  Byte received
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.11 SPI_TRANSFER_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count exchanged
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Transfer count (`D1.L`) bytes from the given buffer, exchanging them 
+with bytes received at the same time (and returned in the buffer).
+
+Note that the buffer pointer may be modified, so keep a copy locally.
+
+#### 1.1.2.12 SPI_RECV_BYTE
+
+**Arguments**
+
+* `D1.L` -  None
+
+**Modifies**
+
+* `D0.L` - Byte received
+* `A0`   - Modified arbitrarily
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.13 SPI_RECV_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count received
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Receive count (`D1.L`) bytes into the given buffer.
+Note that the buffer pointer may be modified, so keep a copy locally.
+
+#### 1.1.2.14 SPI_SEND_BYTE
+
+**Arguments**
+
+* `D1.L` -  Byte to send
+
+**Modifies**
+
+* `A0`   - Modified arbitrarily
+* `D1.L` - Possibly trashed
+
+**Description**
+
+Send and receive a byte (exchange) via SPI.
+
+#### 1.1.2.15 SPI_SEND_BUFFER
+
+**Arguments**
+
+* `A1.L` - Pointer to buffer
+* `D1.L` - Number of bytes
+
+**Modifies**
+
+* `D0.L` - Count received
+* `A0`   - Modified arbitrarily
+* `A1`   - Possibly modified
+
+**Description**
+
+Send count (`D1.L`) bytes from the given buffer.
+Note that the buffer pointer may be modified, so keep a copy locally.
+
+## 1.2. Basic IO routines (TRAP 14)
+
+TRAP 14 provides access to the character-based IO functionality 
+provided by the firmware. This includes the default UART and
+console.
 
 Register D1.L is expected to contain the function code. Other arguments
 depend on the specific function, and are documented below.
@@ -99,7 +452,7 @@ is intended to take complete control of the system, in which case
 the TRAP handlers, and the SDA that underpins them, may be entirely
 replaced in the scope of that program.
 
-### 1.1.1 Example Usage
+### 1.2.1 Example Usage
 
 An example of calling function 1 (PRINTLN) of TRAP 14 is:
 
@@ -114,9 +467,9 @@ DO_PRINTLN:
 MYSTRING    dc.b    "Hello, World!", 0
 ```
 
-### 1.1.2 Functions
+### 1.2.2 Functions
 
-#### 1.1.2.1 PRINT (Function #0)
+#### 1.2.2.1 PRINT (Function #0)
 
 **Arguments**
 
@@ -146,7 +499,7 @@ System integrators and third-party hardware developers may also override
 the default console (for example to output to third-party video 
 hardware). See section 2.3 for details.
 
-#### 1.1.2.2 PRINTLN (Function #1)
+#### 1.2.2.2 PRINTLN (Function #1)
 
 **Arguments**
 
@@ -176,7 +529,7 @@ System integrators and third-party hardware developers may also override
 the default console (for example to output to third-party video 
 hardware). See section 2.3 for details.
 
-#### 1.1.2.3 SENDCHAR (Function #2)
+#### 1.2.2.3 SENDCHAR (Function #2)
 
 **Arguments**
 
@@ -202,7 +555,7 @@ System integrators and third-party hardware developers may also override
 the default UART (for example to utilise third-party hardware). 
 See section 2.3 for details.
 
-#### 1.1.2.4 RECVCHAR (Function #3)
+#### 1.2.2.4 RECVCHAR (Function #3)
 
 **Arguments**
 
@@ -227,7 +580,7 @@ System integrators and third-party hardware developers may also override
 the default UART (for example to utilise third-party hardware). 
 See section 2.3 for details.
 
-#### 1.1.2.5 PRINTCHAR (Function #4)
+#### 1.2.2.5 PRINTCHAR (Function #4)
 
 **Arguments**
 
@@ -255,7 +608,7 @@ System integrators and third-party hardware developers may also override
 the default console (for example to output to third-party video 
 hardware). See section 2.3 for details.
 
-#### 1.1.2.6 SETCURSOR (Function #5)
+#### 1.2.2.6 SETCURSOR (Function #5)
 
 **Arguments**
 
@@ -280,7 +633,7 @@ System integrators and third-party hardware developers may also override
 the default console (for example to output to third-party video 
 hardware). See section 2.3 for details.
 
-## 1.2. Easy68k compatibility layer (TRAP 15)
+## 1.3. Easy68k compatibility layer (TRAP 15)
 
 
 TRAP 15 provides an (optional, included by default) Easy68k-compatible
@@ -297,7 +650,7 @@ setting will not be available where output is via UART).
 These functions are called by loading the task number into `D0` and setting
 up other registers as documented below, and then calling `TRAP #15`.
 
-### 1.2.1 Example Usage
+### 1.3.1 Example Usage
 
 An example of calling function 0 (PRINTLN with length) of TRAP 15 is:
 
@@ -313,9 +666,9 @@ DO_EASY68K_PRINTLN_LEN:
 MYSTRING    dc.b    "Hello, World!"
 ```
 
-### 1.2.2 Functions
+### 1.3.2 Functions
 
-#### 1.2.2.1 PRINTLN_LEN (Function #0)
+#### 1.3.2.1 PRINTLN_LEN (Function #0)
 
 **Arguments**
 
@@ -336,7 +689,7 @@ and line feed (CR, LF) to the system's *default console*.
 
 See also: Function 13
 
-#### 1.2.2.2 PRINT_LEN (Function #1)
+#### 1.3.2.2 PRINT_LEN (Function #1)
 
 **Arguments**
 
@@ -357,7 +710,7 @@ and line feed (CR, LF) to the system's *default console*.
 
 See also: Function 14
 
-#### 1.2.2.3 READSTR (Function #2)
+#### 1.3.2.3 READSTR (Function #2)
 
 **Arguments**
 
@@ -375,7 +728,7 @@ See also: Function 14
 
 Read string from keyboard and store at (A1), NULL terminated, length retuned in D1.W (max 80). 
 
-#### 1.2.2.4 DISPLAYNUM_SIGNED (Function #3)
+#### 1.3.2.4 DISPLAYNUM_SIGNED (Function #3)
 
 **Arguments**
 
@@ -394,7 +747,7 @@ Print signed number in D1.L in decimal (in smallest field) to the system's
 
 See also: Functions 15 & 20
 
-#### 1.2.2.5 READNUM (Function #4)
+#### 1.3.2.5 READNUM (Function #4)
 
 **Arguments**
 
@@ -411,7 +764,7 @@ Read a number from the keyboard into D1.L.
 
 See also: Functions 15 & 20
 
-#### 1.2.2.6 READCHAR (Function #5)
+#### 1.3.2.6 READCHAR (Function #5)
 
 **Arguments**
 
@@ -428,7 +781,7 @@ Read single character from the keyboard into D1.B.
 
 **Note** Unlike Easy68k, this will block until input is available.
 
-#### 1.2.2.7 SENDCHAR (Function #6)
+#### 1.3.2.7 SENDCHAR (Function #6)
 
 **Arguments**
 
@@ -444,7 +797,7 @@ Read single character from the keyboard into D1.B.
 
 Display single character in D1.B.
 
-#### 1.2.2.8 CHECKINPUT (Function #7)
+#### 1.3.2.8 CHECKINPUT (Function #7)
 
 **Arguments**
 
@@ -483,7 +836,7 @@ So, if you must use this task, keep all this in mind!
 
 See also: Function 5                       
 
-#### 1.2.2.9 GETUPTICKS (Function #8)
+#### 1.3.2.9 GETUPTICKS (Function #8)
 
 **Arguments**
 
@@ -515,7 +868,7 @@ definition of "hundredths" and the computer was started less than ~11 minutes ag
 If you do need any kind of precision timing, you'll have to design some sort
 of expansion that connects to the expansion bus :) 
 
-#### 1.2.2.10 TERMINATE (Function #9)
+#### 1.3.2.10 TERMINATE (Function #9)
 
 **Arguments**
 
@@ -532,7 +885,7 @@ Terminate the program (Disables interrupts and halts the CPU).
 This will never return - the only way back is through wetware
 intervention.
 
-#### 1.2.2.11 MOVEXY (Function #11)
+#### 1.3.2.11 MOVEXY (Function #11)
 
 **Arguments**
 
@@ -561,7 +914,7 @@ Out of range coordinates are usually ignored (depends on terminal).
 
 **Clear Screen : Set D1.W to $FF00**.
 
-#### 1.2.2.12 SETECHO (Function #12)
+#### 1.3.2.12 SETECHO (Function #12)
 
 **Arguments**
 
@@ -582,7 +935,7 @@ Keyboard Echo.
 
 Echo is restored on 'Reset'.
 
-#### 1.2.2.13 PRINTLN_SZ (Function #13)
+#### 1.3.2.13 PRINTLN_SZ (Function #13)
 
 **Arguments**
 
@@ -602,7 +955,7 @@ and line feed (CR, LF) to the system's *default console*.
 
 See also: Function 0
 
-#### 1.2.2.14 PRINT_SZ (Function #14)
+#### 1.3.2.14 PRINT_SZ (Function #14)
 
 **Arguments**
 
@@ -622,7 +975,7 @@ and line feed (CR, LF) to the system's *default console*.
 
 See also: Function 1
 
-#### 1.2.2.15 PRINT_UNSIGNED (Function #15)
+#### 1.3.2.15 PRINT_UNSIGNED (Function #15)
 
 **Arguments**
 
@@ -645,7 +998,7 @@ For example, to display D1.L in base16 put 16 in D2.B
 
 Values of D2.B outside the range 2 to 36 inclusive are ignored.
 
-#### 1.2.2.16 SETDISPLAY (Function #16)
+#### 1.3.2.16 SETDISPLAY (Function #16)
 
 **Arguments**
 
@@ -670,7 +1023,7 @@ Other values of D1 reserved for future use.
 
 Input prompt display is enabled by default and by 'Reset'.
 
-#### 1.2.2.17 PRINTSZ_NUM (Function #17)
+#### 1.3.2.17 PRINTSZ_NUM (Function #17)
 
 **Arguments**
 
@@ -691,7 +1044,7 @@ Combination of functions 14 & 3.
 * Display the NULL terminated string at (A1) without CR, LF then
 * Display the number in D1.L, in base 10
 
-#### 1.2.2.18 PRINTSZ_READ_NUM (Function #18)
+#### 1.3.2.18 PRINTSZ_READ_NUM (Function #18)
 
 **Arguments**
 
@@ -712,7 +1065,7 @@ Combination of functions 14 & 4.
 * Display the NULL terminated string at (A1) without CR, LF then
 * Read a number from the keyboard into D1.L.
 
-#### 1.2.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
+#### 1.3.2.19 PRINTNUM_SIGNED_WIDTH (Function #20)
 
 **Arguments**
 
@@ -829,16 +1182,32 @@ must be accessed through the public TRAP functions!
 | 0x438   | FW_CLRSCR - Clear the default console (where supported)                                           |
 | 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                                                     |
 | 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor                                     |
-| 0x444   | RESERVED
-| 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to Kermit)      |
+| 0x444   | RESERVED                                                                                          |
+| 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to SD/Kermit)   |
+| 0x44C   | FW_SD_INIT - Initialize SD Card                                                                   |
+| 0x450   | FW_SD_READ - Read from SD Card                                                                    |
+| 0x454   | FW_SD_WRITE - Write to SD Card                                                                    |
+| 0x458   | FW_SD_REG - Read SD Card register                                                                 |
+| 0x45C   | FW_SPI_INIT - Intialize SPI subsystem                                                             |
+| 0x460   | SPI_ASSERT_CS - Assert SPI chip select 0 or 1                                                     |
+| 0x464   | SPI_DEASSERT_CS - Deassert SPI chip select 0 or 1                                                 |
+| 0x468   | SPI_TRANSFER_BYTE - Transfer (exchange) a byte                                                    |
+| 0x46C   | SPI_TRANSFER_BUFFER - Transfer (exchange) N bytes to/from a buffer                                |
+| 0x470   | SPI_RECV_BYTE - Receive a byte                                                                    |
+| 0x474   | SPI_RECV_BUFFER - Receive N bytes into a buffer                                                   |
+| 0x478   | SPI_SEND_BYTE - Send a byte                                                                       |
+| 0x47C   | SPI_SEND_BUFFER - Send N bytes from a buffer                                                      |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
 
+**Note 2**: The SD and SPI routines arguments, modifies and returns are the same as for the TRAPs they 
+underlie unless otherwise noted. See section 1 for details.
+
 Arguments, modifies and other information for these functions are the same
 as for the TRAP functions they implement. If replacing them, you **must**
 adhere to the same interface. The reference implementations can be found in
-`bootstrap.S` and `trap14.S`.
+`bootstrap.S`, `trap14.S` and `sdcard/syscalls_asm.S`.
 
 **Note** that all of these are allowed to block! 
 

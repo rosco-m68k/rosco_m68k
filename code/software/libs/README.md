@@ -10,12 +10,23 @@ Specifically:
 |:-------------------:|------------------------------------------------|
 | cstdlib             | Bare-minimum C stdlib required for examples    |
 | easy68k             | C interface to the Easy68k compatibility layer |
-| gpio                | Functions for intefacing with the GPIOs        |
+| gpio                | Functions for intefacing with the GPIOs & SPI  |
 | machine             | Low-level functions and basic IO               |
 | printf              | An implementation of `printf`                  |
 | rtlsupport          | Replacement for some GCC math routines         |
+| sdfat               | Exposes firmware SD support (where available)  |
 | start_serial        | Link scripts and start files for programs      |
 
+**Note 1**: The `printf` lib provides two versions of the library, 
+one with support for software floating point, and the other without.
+While the floating-point one is obviously more complete, it is larget
+than the one without, so if space is a consideration you may want to 
+link `-lprintf` instead of `-lprintf-softfloat`.
+
+**Note 2**: When building with the SDFAT library, you will currently 
+need to disable the warning about unused functions. To do this, add
+`-Wno-unused-function` to your `CFLAGS`.
+ 
 ## Documentation
 
 I'm working on documenting the individual libraries, but for now see
