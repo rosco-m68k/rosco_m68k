@@ -44,7 +44,7 @@ int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     }
 
     for(uint32_t i = 0; i < sector_count; i++) {
-        if (!BBSD_read_block(&sd, sector, buffer)) {
+        if (!BBSD_read_block(&sd, sector + i, buffer)) {
             return 0;
         }
         buffer += 512;
