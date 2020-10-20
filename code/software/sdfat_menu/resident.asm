@@ -37,11 +37,11 @@ resident_init::
                 dbra    d0,.copy_resident                
                 rts
 ;
-; code that will remain resident in high-memory on warm boot
+; code that will remain resident in high-memory on warm-boot
 ;
                 align   4
 resident_begin:
-                dc.l    $b007c0de               ; signature
+                dc.l    $b007c0de               ; no SD boot signature
 
 sd_init_hook:   moveq.l #1,d1                   ; message
                 lea.l   sd_init_str(pc),a0
