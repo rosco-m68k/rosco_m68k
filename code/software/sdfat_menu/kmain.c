@@ -30,7 +30,6 @@
 // menu program options
 #define INSTALL_DEBUG_STUB 1 // 1 to trap exceptions (~700 bytes bigger)
 #define ENABLE_LOAD_CRC32  1 // 1 to calc CRC-32 of loaded programs (slight delay)
-#define ENABLE_CMD_PROMPT  1 // 1 to enable mini SD command prompt (~3KB bigger)
 
 // number of elements in C array
 #define ELEMENTS(a) ((int)(sizeof(a) / sizeof(*a)))
@@ -42,9 +41,9 @@ static uint32_t private_stack[4096]; // 16KB "private" stack
 #define MAX_BIN_NAMELEN FATFS_MAX_LONG_FILENAME // full name length
 
 static bool no_sd_boot;                                // flag to disable SD boot upon warm-start
-static int num_bin_files;                              // number of BIN files in menu
+static int num_menu_files;                              // number of BIN files in menu
 static int num_dir_files;                              // number of directories in menu
-static char bin_files[MAX_BIN_FILES][MAX_BIN_NAMELEN]; // names of BIN files
+static char menu_files[MAX_BIN_FILES][MAX_BIN_NAMELEN]; // names of BIN files
 static char dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN]; // names of directories
 static uint32_t bin_sizes[MAX_BIN_FILES];              // sizes of BIN files
 static char current_dir[MAX_BIN_NAMELEN];              // current dir string (root = "")
@@ -254,7 +253,7 @@ static char * friendly_size(uint32_t v)
     // if single digit, also give tenths
     uint32_t round = (units / 10) / 2;
     uint32_t iv = (v + round) / units;
-    if (iv < 10)
+    if (iv < 10 && units > 1)
     {
         uint32_t tenth_units = units / 10;
         uint32_t tv = (v + round - (iv * units)) / (tenth_units > 0 ? tenth_units : 1);
@@ -296,9 +295,9 @@ static void check_sd_card()
 // gather files and directories for menu from current dir
 static void get_menu_files()
 {
-    num_bin_files = 0;
+    num_menu_files = 0;
     num_dir_files = 0;
-    memset(bin_files, 0, sizeof(bin_files));
+    memset(menu_files, 0, sizeof(menu_files));
     memset(bin_sizes, 0, sizeof(bin_sizes));
     memset(dir_files, 0, sizeof(dir_files));
     FL_DIR dirstat;
@@ -317,22 +316,22 @@ static void get_menu_files()
                 if (len >= 4)
                 {
                     const char * ext = dirent.filename + len - 4;
-                    if (strcasecmp(ext, ".bin") == 0)
+                    if (strcasecmp(ext, ".bin") == 0 || strcasecmp(ext, ".txt") == 0)
                     {
-                        if (num_bin_files < MAX_BIN_FILES)
+                        if (num_menu_files < MAX_BIN_FILES)
                         {
-                            strncpy(bin_files[num_bin_files], dirent.filename, MAX_BIN_NAMELEN - 1);
+                            strncpy(menu_files[num_menu_files], dirent.filename, MAX_BIN_NAMELEN - 1);
                         }
                         else
                         {
                             if (!too_many_files)
                             {
-                                printf("*** Too many BIN files (use prompt to access others > 26)\n");
+                                printf("*** Too many menu files (use prompt to access others > 26)\n");
                                 too_many_files = true;
                             }
                         }
-                        bin_sizes[num_bin_files] = dirent.size;
-                        num_bin_files++;
+                        bin_sizes[num_menu_files] = dirent.size;
+                        num_menu_files++;
                     }
                 }
             }
@@ -371,11 +370,11 @@ static void show_menu_files()
     snprintf(up_str, sizeof(up_str), "%02u:%02u", tm, ts);
     printf("\nDir: %-34.34s <Mem %-6.6s Uptime %s>\n", fullpath(""), mem_str, up_str);
     bool odd = false;
-    int half = (num_bin_files + 1) / 2;
-    for (int i = 0; i < num_bin_files; i++)
+    int half = (num_menu_files + 1) / 2;
+    for (int i = 0; i < num_menu_files; i++)
     {
         printf("[%4s] %c - %-28.28s%s", friendly_size(bin_sizes[i]), 'A' + (i / 2) + (odd ? half : 0),
-               bin_files[i], odd ? "\n" : "  ");
+               menu_files[i], odd ? "\n" : "  ");
         odd = !odd;
     }
 
@@ -501,8 +500,6 @@ static void change_dir(const char * name)
     }
 }
 
-#if ENABLE_CMD_PROMPT
-
 static char cmd_line[256]; // prompt command line buffer
 static char buffer[512];   // file sector buffer
 static uint32_t filesize;  // current filesize at start of sector
@@ -561,7 +558,7 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
     filecrc = 0;
 
     const char * filename = fullpath(name);
-    printf("\"%s\":\n", filename);
+    printf("\n\"%s\":\n", filename);
 
     void * file = fl_fopen(filename, "r");
     // if open failed, try again with padded 3 character extension
@@ -602,6 +599,8 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
     {
         printf("\n*** Can't open \"%s\"\n", filename);
     }
+
+    printf("\n");
 }
 
 // type operation callback
@@ -636,21 +635,41 @@ static void op_dump(char * p, int l)
             printf("%08x: ", off);
             s = t;
         }
+        else if ((off & 0x7) == 0)
+        {
+            printf(" ");
+        }
         printf("%02x ", *t++);
         if ((off & 0xf) == 0xf)
         {
-            printf("  ");
+            printf(" |");
             for (int a = 0; a < 16; a++)
+            {
+                printf("%c", s[a] < ' ' || s[a] > '~' ? '.' : s[a]);
+            }
+            printf("|\n");
+        }
+        off++;
+    }
+
+    l = (off & 0xf);
+    while ((off & 0xf) != 0x0)
+    {
+        if ((off & 0x7) == 0)
+        {
+            printf(" ");
+        }
+        printf("   ");
+        if ((off & 0xf) == 0xf)
+        {
+            printf(" |");
+            for (int a = 0; a < l; a++)
             {
                 printf("%c", s[a] < ' ' || s[a] > '~' ? '.' : s[a]);
             }
             printf("\n");
         }
         off++;
-    }
-    if ((off & 0xf) != 0)
-    {
-        printf("\n");
     }
 }
 
@@ -785,7 +804,6 @@ void command_prompt()
         }
     }
 }
-#endif // ENABLE_CMD_PROMPT
 
 // main SD Card Menu function
 void kmain()
@@ -808,50 +826,43 @@ void kmain()
 
         get_menu_files();
 
-        if (num_bin_files == 0 && num_dir_files == 0)
+        if (num_menu_files == 0 && num_dir_files == 0)
         {
-            printf("\nNo BIN files present.\n");
-#if ENABLE_CMD_PROMPT
+            printf("\nNo menu files present.\n");
             command_prompt();
-#endif
             continue;
         }
 
         show_menu_files();
 
         printf("\nPress ");
-        if (num_bin_files > 0)
+        if (num_menu_files > 0)
         {
-            printf("A-%c to run, ", 'A' + num_bin_files - 1);
+            printf("A-%c to run, ", 'A' + num_menu_files - 1);
         }
         if (num_dir_files > 0)
         {
             printf("0-%c for dir, ", '0' + num_dir_files - 1);
         }
-#if ENABLE_CMD_PROMPT
-        printf("RETURN for prompt, ");
-#endif
-        printf("SPACE to reload:");
+        printf("RETURN for prompt, SPACE to reload:");
 
         bool getnewkey;
         do
         {
             getnewkey = false;
-            char key = readchar();
+            char key = toupper(readchar());
 
-#if ENABLE_CMD_PROMPT
             if (key == '\r')
             {
                 printf("prompt\n");
                 command_prompt();
                 continue;
             }
-#endif
-            key = toupper(key);
+
             if (key >= 'A' && key <= 'Z')
             {
                 int run_num = (key - 'A');
-                int half = (num_bin_files + 1) / 2;
+                int half = (num_menu_files + 1) / 2;
                 if (run_num >= half)
                 {
                     run_num = ((run_num - half) * 2) + 1;
@@ -861,7 +872,7 @@ void kmain()
                     run_num = run_num * 2;
                 }
 
-                if (run_num >= num_bin_files)
+                if (run_num >= num_menu_files)
                 {
                     mcSendchar('\a');
                     getnewkey = true;
@@ -870,7 +881,21 @@ void kmain()
 
                 printf("%c\n", key);
 
-                execute_bin_file(bin_files[run_num]);
+                const char *n = menu_files[run_num];
+
+                // if ends with 't', assume ".txt"
+                if (tolower(n[strlen(n)-1]) == 't')
+                {
+                    file_operation(n, op_type);
+
+                    printf("Press any key:");
+                    readchar();
+                    printf("\n");
+                }
+                else
+                {
+                    execute_bin_file(n);
+                }
             }
             else if (key >= '0' && key <= '9')
             {
