@@ -50,11 +50,7 @@
 // SPI active LEDs - LEDs to set during buffer transfers
 // NOTE: Normal rosco_m68k LED blinking overridden during transfers
 #if !defined(SPI_LED)
-#define SPI_LED     (LED_RED)                 // LEDs on during block transfer (or 0)
-#endif
-
-#if !defined(SPI_TXLED)
-#define SPI_TXLED   (LED_GREEN)               // LEDs to flicker with sent data (or 0)
+#define SPI_LED     (LED_RED|LED_GREEN)         // LEDs on during block transfer (or 0)
 #endif
 
 // calculate bit values for bit positions
@@ -79,6 +75,7 @@ static SPI_INLINE void spi_send_byte(int byte)
     "     move.b  %[temp],(%[gpdr])       \n"   //  8   output SCK low and COPI value
     "     bset.b  %[sckbit],(%[gpdr])     \n"   //  12  set SCK high
     "   .endr                             \n"   //      end repeat
+    "     or.b   %[ledoff],(%[gpdr])      \n"   //  12  set LED off
 
     : // outputs
       [byte] "+&d" (byte),                      // in/out D-reg
@@ -87,8 +84,9 @@ static SPI_INLINE void spi_send_byte(int byte)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A-reg
       [sckbit] "d" (SPI_SCK_B),                 // COPI bit # D-reg
-      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
-      [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)) // SPI bit mask value
+      [copi] "d" (SPI_COPI),                    // COPI value D-reg
+      [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
+      [ledoff] "n" (SPI_LED)                    // LED off
     : // clobbers (none)
   );
 }
@@ -124,7 +122,7 @@ static SPI_INLINE void spi_send_buffer(void* data, int count)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A-reg
       [sckbit] "d" (SPI_SCK_B),                 // COPI bit # D-reg
-      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
+      [copi] "d" (SPI_COPI),                    // COPI value D-reg
       [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
       [ledoff] "n" (SPI_LED)                    // LED off value
     : // clobbers (none)
@@ -149,6 +147,7 @@ static SPI_INLINE int spi_exchange_byte(int byte)
     "     sne     %[temp]                 \n"   // 4/6  set temp to 0 or -1 based on CIPO
     "     sub.b   %[temp],%[byte]         \n"   //  4   add 0 or 1 to receive byte
     "   .endr                             \n"   //      end repeat
+    "     or.b   %[ledoff],(%[gpdr])      \n"   //  12  set LED off
 
     : // outputs
       [byte] "+&d" (byte),                      // in/out D-reg
@@ -159,7 +158,8 @@ static SPI_INLINE int spi_exchange_byte(int byte)
       [sckbit] "d" (SPI_SCK_B),                 // SCK bit # D-reg
       [copibit] "d" (SPI_COPI_B),               // COPI bit # D-reg
       [cipobit] "d" (SPI_CIPO_B),               // CIPO bit # D-reg
-      [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)) // SPI bit mask value
+      [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
+      [ledoff] "n" (SPI_LED)                    // LED off value
     : // clobbers (none)
   );
 
@@ -190,7 +190,7 @@ static SPI_INLINE void spi_exchange_buffer(void *data, int count)
     "     move.b  %[byte],(%[data])+      \n"   //  8   store receieve byte to memory
     "     subq.l  #1,%[count]             \n"   //  4   decrement byte count
     "     bne     0b                      \n"   // 8/10 loop until count bytes read
-    "     or.b   %[ledoff],(%[gpdr])      \n"   // 12  set LED off
+    "     or.b   %[ledoff],(%[gpdr])      \n"   // 12   set LED off
 
     : // outputs
       [data] "+&a" (data),                      // in/out A reg
@@ -201,7 +201,7 @@ static SPI_INLINE void spi_exchange_buffer(void *data, int count)
     : // inputs
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A reg
       [sckbit] "d" (SPI_SCK_B),                 // SCK bit # D-reg
-      [copi] "d" (SPI_COPI|SPI_TXLED),          // COPI value D-reg
+      [copi] "d" (SPI_COPI),                    // COPI value D-reg
       [cipobit] "d" (SPI_CIPO_B),               // CIPO bit # D-reg
       [maskbits] "n" (~(SPI_SCK|SPI_COPI|SPI_LED)), // SPI bit mask value
       [ledoff] "n" (SPI_LED)                    // LED off value
@@ -232,6 +232,7 @@ static SPI_INLINE int spi_read_byte(void)
     "     sne     %[temp]                 \n"   //  4/6 set temp to 0 or -1 based on CIPO
     "     sub.b   %[temp],%[byte]         \n"   //  4   add 0 or 1 to output byte
     "   .endr                             \n"   //      end repeat
+    "     or.b   %[ledoff],(%[gpdr])      \n"   // 12   set LED off
     : // outputs
       [byte] "+&d" (byte),                      // temp D-reg
       [sck_lo] "=&d" (sck_lo),                  // temp D-reg
@@ -241,7 +242,8 @@ static SPI_INLINE int spi_read_byte(void)
       [gpdr] "a" (MFP_GPDR),                    // GPDR address A-reg
       [cipobit] "d" (SPI_CIPO_B),               // CIPO bit # D-reg
       [sck] "n" (SPI_SCK),                      // SCK value
-      [maskbits] "n" (~(SPI_SCK|SPI_LED))       // SPI bit mask value
+      [maskbits] "n" (~(SPI_SCK|SPI_LED)),      // SPI bit mask value
+      [ledoff] "n" (SPI_LED)                    // LED off value
     : // clobbers (none)
   );
 
@@ -270,7 +272,7 @@ static SPI_INLINE void spi_read_buffer(void *data, int count)
     "     move.b  %[byte],(%[data])+      \n"   //  8   save received byte
     "     subq.l  #1,%[count]             \n"   //  4   decrement byte count
     "     bne     0b                      \n"   // 8/10 loop until count bytes read
-    "     or.b   %[ledoff],(%[gpdr])      \n"   // 12  set LED off
+    "     or.b   %[ledoff],(%[gpdr])      \n"   // 12   set LED off
 
     : // outputs
       [data] "+&a" (data),                      // in/out A-reg
