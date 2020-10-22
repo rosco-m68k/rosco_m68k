@@ -1,9 +1,9 @@
 # Make sdfat_menu example program for rosco_m68k
 #
-# Copyright (c)2020 Xark
+# Copyright (c) 2020 Xark
 # MIT LICENSE
 
-EXTRA_CFLAGS?=-g -Os -fomit-frame-pointer
+EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
@@ -95,7 +95,7 @@ test: rle_images.h $(BINARY) $(DISASM)
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
-# This is handy to test on iMac	
+# This is handy to test on MacOS
 mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
