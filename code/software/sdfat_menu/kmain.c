@@ -40,13 +40,13 @@ static uint32_t private_stack[4096]; // 16KB "private" stack
 #define MAX_DIR_FILES   10                      // 0 to 9 menu directories
 #define MAX_BIN_NAMELEN FATFS_MAX_LONG_FILENAME // full name length
 
-static bool no_sd_boot;                                // flag to disable SD boot upon warm-start
+static bool no_sd_boot;                                 // flag to disable SD boot upon warm-start
 static int num_menu_files;                              // number of BIN files in menu
-static int num_dir_files;                              // number of directories in menu
+static int num_dir_files;                               // number of directories in menu
 static char menu_files[MAX_BIN_FILES][MAX_BIN_NAMELEN]; // names of BIN files
-static char dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN]; // names of directories
-static uint32_t bin_sizes[MAX_BIN_FILES];              // sizes of BIN files
-static char current_dir[MAX_BIN_NAMELEN];              // current dir string (root = "")
+static char dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN];  // names of directories
+static uint32_t bin_sizes[MAX_BIN_FILES];               // sizes of BIN files
+static char current_dir[MAX_BIN_NAMELEN];               // current dir string (root = "")
 
 // timer helpers
 uint32_t timer_start()
@@ -590,6 +590,8 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
 
         fl_fclose(file);
 
+        op_func(NULL, 0);
+
         if (c != EOF)
         {
             printf("\n*** Read error at offset %d (0x%08x)\n", filesize, filesize);
@@ -625,6 +627,10 @@ static void op_type(char * p, int l)
 // NOTE: assumes l is always multiple of 16
 static void op_dump(char * p, int l)
 {
+    if (l == 0)
+    {
+        return;
+    }
     uint32_t off = filesize;
     uint8_t * t = (uint8_t *)p;
     uint8_t * s = t;
@@ -677,7 +683,7 @@ static void op_dump(char * p, int l)
 static void op_crc(char * p, int l)
 {
     filecrc = crc32b(filecrc, p, l);
-    if ((filesize & 0x3fff) == 0)
+    if ((filesize & 0x3fff) == 0 || l == 0)
     {
         printf("\r%-4.4s", friendly_size(filesize));
     }
@@ -781,7 +787,7 @@ void command_prompt()
             break;
         case CMD_CRC:
             file_operation(arg, op_crc);
-            printf("\r%-4.4s\n%10d bytes, CRC-32=0x%08X\n", friendly_size(filesize), filesize, filecrc);
+            printf("\n%10d bytes, CRC-32=0x%08X\n", filesize, filecrc);
             break;
         case CMD_BOOT:
             warm_boot(no_sd_boot);
@@ -881,10 +887,10 @@ void kmain()
 
                 printf("%c\n", key);
 
-                const char *n = menu_files[run_num];
+                const char * n = menu_files[run_num];
 
                 // if ends with 't', assume ".txt"
-                if (tolower(n[strlen(n)-1]) == 't')
+                if (tolower(n[strlen(n) - 1]) == 't')
                 {
                     file_operation(n, op_type);
 
