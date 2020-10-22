@@ -112,11 +112,6 @@ PRINT_BANNER:
     move.l  EFP_PRINTLN,A3            ; Load function into A3
     
     jsr     (A3)                      ; Print all the banner lines
-    jsr     (A3)                      ; This works because EARLY_PRINT
-    jsr     (A3)                      ; leaves A0 pointing to the next
-    jsr     (A3)                      ; character in memory ;-)
-    jsr     (A3)
-    jsr     (A3)
     
     rts                               ; We're done
 
@@ -129,8 +124,7 @@ PRINT_BANNER:
 ; Modifies: A0 (Will point to address after null terminator)
 EARLY_PRINT_MFP:
     move.b  (A0)+,D0                  ; Get next character
-    tst.b   D0                        ; Is it null?
-    beq.s   .PRINT_DONE               ; ... we're done if so.
+    beq.s   .PRINT_DONE               ; ... we're done if null.
 
 .BUFF_WAIT:
     btst.b  #7,MFP_TSR                ; Is transmit buffer empty?
@@ -145,8 +139,7 @@ EARLY_PRINT_MFP:
     ifnd NO_68681
 EARLY_PRINT_DUART:
     move.b  (A0)+,D0                  ; Get next character
-    tst.b   D0                        ; Is it null?
-    beq.s   .PRINT_DONE               ; ... we're done if so.
+    beq.s   .PRINT_DONE               ; ... we're done if its null.
 
 .BUFF_WAIT:
     btst.b  #3,DUART_SRA
@@ -214,14 +207,8 @@ INITSDB:
     move.l  A0,EFP_SENDCHAR
     lea     RECVCHAR_DUART,A0
     move.l  A0,EFP_RECVCHAR
-    lea     ANSI_MOVEXY,A0
-    move.l  A0,EFP_MOVEXY
-    lea     ANSI_CLRSCR,A0
-    move.l  A0,EFP_CLRSCR
-    lea     .RETURN,A0               ; No-op for default SET CURSOR
-    move.l  A0,EFP_SETCURSOR
-
-    bra.s   .RETURN                  ; Done
+    bra.s   .COMMON
+    
     endif
 
 .USEMFP:
@@ -238,6 +225,8 @@ INITSDB:
     move.l  A0,EFP_SENDCHAR
     lea     RECVCHAR_MFP,A0
     move.l  A0,EFP_RECVCHAR
+    
+.COMMON
     lea     ANSI_MOVEXY,A0
     move.l  A0,EFP_MOVEXY
     lea     ANSI_CLRSCR,A0
@@ -647,11 +636,11 @@ RECVCHAR_MFP:
 ; Consts 
     section .rodata
 
-SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _   ", 0
-SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", 0
-SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", 0
-SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", 0 
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m Snapshot Firmware", $D, $A, 0
+SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _   ", $D, $A
+SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
+SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
+SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m Snapshot Firmware", $D, $A
 SZ_INITDONE     dc.b    $1B, "[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...", 0
 
 SZ_CRLF         dc.b    $D, $A, 0

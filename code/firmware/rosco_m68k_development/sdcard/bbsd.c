@@ -90,6 +90,8 @@ BBSDInitStatus BBSD_initialize(BBSDCard *sd) {
         sd->type = card_type;
         result = BBSD_INIT_OK;
 
+        // Explicitly disable CRC as some cards are non-compliant with this...
+        BBSD_command(sd, 59, 0);
     } else {
         result = BBSD_INIT_ACMD41_FAILED;
     }
@@ -291,9 +293,12 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         addressable_block = block << 9;
     }
 
-    if (BBSD_command(sd, 24, addressable_block) || !wait_for_block_start()) {
+    if (BBSD_command(sd, 24, addressable_block)) {
         goto finally;
     }
+
+    // Send block start token
+    BBSPI_send_byte(BLOCK_START);
 
     // Write data into buffer
     BBSPI_send_buffer(buffer, 512);
@@ -302,7 +307,15 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     BBSPI_send_byte(0);
     BBSPI_send_byte(0);
 
-    result = true;
+    // Read and ignore response (probably should check it)
+    BBSPI_recv_byte();
+
+    // Wait for card to be done...
+    if (!wait_for_card(BBSD_COMMAND_WAIT_RETRIES)) {
+        result = false;
+    } else {
+        result = true;
+    }
 
 finally:
     BBSPI_deassert_cs0();
