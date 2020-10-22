@@ -304,8 +304,8 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     BBSPI_send_buffer(buffer, 512);
 
     // Send dummy checksum
-    BBSPI_send_byte(0);
-    BBSPI_send_byte(0);
+    BBSPI_send_byte(0xFF);
+    BBSPI_send_byte(0xFF);
 
     // Read and ignore response (probably should check it)
     BBSPI_recv_byte();
