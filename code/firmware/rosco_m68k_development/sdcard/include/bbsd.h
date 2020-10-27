@@ -51,6 +51,9 @@
 #ifndef BBSD_COMMAND_WAIT_RETRIES
 #define BBSD_COMMAND_WAIT_RETRIES   100
 #endif
+#ifndef BBSD_WRITE_WAIT_RETRIES
+#define BBSD_WRITE_WAIT_RETRIES     400
+#endif
 
 typedef enum {
     BBSD_CARD_TYPE_V1,

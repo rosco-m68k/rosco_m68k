@@ -308,7 +308,7 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
     BBSPI_send_byte(0xFF);
 
     // Wait for card to be done...
-    if (!wait_for_card(BBSD_COMMAND_WAIT_RETRIES)) {
+    if (!wait_for_card(BBSD_WRITE_WAIT_RETRIES)) {
         result = false;
     } else {
         result = true;

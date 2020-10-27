@@ -95,8 +95,7 @@ START::
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
     and.w   #$F0FF,SR                 ; Enable interrupts
 
-    jsr     linit                     ; Init C land
-    jmp     main1                     ; Call stage 1 main
+    jmp     linit                     ; Init C land, calls through to main1
 
 ; main1 is noreturn, so That's All, Folks(tm).
 
@@ -331,7 +330,7 @@ INITDUART:
 
     ; If the first write generated a bus error, we may as well fail fast...
     tst.b   $504                      ; Was there a bus error?
-    bne.w   .DONE                     ; Bail now if so...
+    bne.s   .DONE                     ; Bail now if so...
 
     ; We now know that _something_ is present in the 68681 IO space, and 
     ; is capable of DTACK generation. Let's see if it looks like 68681...
