@@ -76,7 +76,6 @@ START::
 
 .ISR_COPY_LOOP:    
     move.l  A1,D0                     ; Have we reached destination zero?
-    tst.l   D0
     beq.s   .ISR_COPY_DONE            ; Halt if so
     
     move.l  -(A0),-(A1)               ; Copy long source to dest, with predecrement.
@@ -192,40 +191,41 @@ INITSDB:
     tst.b   D5
     beq.s   .USEMFP
 
-.USEDUART:
     ; Setup default implementations in EFP table.
+.USEDUART:
     lea     EARLY_PRINT_DUART,A0
     move.l  A0,EFP_PRINT
     lea     EARLY_PRINTLN_DUART,A0
     move.l  A0,EFP_PRINTLN
     lea     SENDCHAR_DUART,A0
     move.l  A0,EFP_PRINTCHAR
-    lea     HALT,A0
-    move.l  A0,EFP_HALT
     lea     SENDCHAR_DUART,A0
     move.l  A0,EFP_SENDCHAR
     lea     RECVCHAR_DUART,A0
     move.l  A0,EFP_RECVCHAR
+    lea     CHECKCHAR_DUART,A0
+    move.l  A0,EFP_CHECKCHAR
     bra.s   .COMMON
     
     endif
 
 .USEMFP:
-    ; Setup default implementations in EFP table.
     lea     EARLY_PRINT_MFP,A0
     move.l  A0,EFP_PRINT
     lea     EARLY_PRINTLN_MFP,A0
     move.l  A0,EFP_PRINTLN
     lea     SENDCHAR_MFP,A0
     move.l  A0,EFP_PRINTCHAR
-    lea     HALT,A0
-    move.l  A0,EFP_HALT
     lea     SENDCHAR_MFP,A0
     move.l  A0,EFP_SENDCHAR
     lea     RECVCHAR_MFP,A0
     move.l  A0,EFP_RECVCHAR
+    lea     CHECKCHAR_MFP,A0
+    move.l  A0,EFP_CHECKCHAR
     
 .COMMON
+    lea     HALT,A0
+    move.l  A0,EFP_HALT
     lea     ANSI_MOVEXY,A0
     move.l  A0,EFP_MOVEXY
     lea     ANSI_CLRSCR,A0
@@ -572,11 +572,28 @@ RECVCHAR::
     move.l  (A7)+,A3
     rts
 
+; Check if a character is ready to receive via UART
+;
+; Trashes: UART registers
+; Modifies: D0.B (return = 0 if no character waiting, nonzero otherwise)
     ifnd NO_68681
+CHECKCHAR_DUART:
+    move.b  DUART_SRA,D0          ; Get RSR
+    andi.b  #1,D0                 ; And with buffer full bit
+    rts
+    endif
+
+CHECKCHAR_MFP:
+    move.b  MFP_RSR,D0            ; Get RSR
+    andi.b  #$80,D0               ; And with buffer full bit
+    rts
+
+
 ; Send a single character via UART
 ;
 ; Trashes: MFP_UDR
 ; Modifies: Nothing
+    ifnd NO_68681
 SENDCHAR_DUART:
     btst.b  #3,DUART_SRA
     beq.s   SENDCHAR_DUART
@@ -639,8 +656,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m Snapshot Firmware", $D, $A
-SZ_INITDONE     dc.b    $1B, "[0mHardware initialisation ", $1B, "[1;32mcomplete", $1B, "[0m; Commencing software initialisation...", 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m Snapshot Firmware", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 

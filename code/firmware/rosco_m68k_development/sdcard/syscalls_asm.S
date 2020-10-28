@@ -24,7 +24,7 @@ TRAP_13_VECTOR_ADDR equ     TRAP_13_VECTOR*4
 ;
 ; NOTE: Trashes A0, and allowed to modify arguments.
 SDCARD_TRAP_13_HANDLER:
-    cmp.l   #4,D0                       ; Is function code in range?
+    cmp.l   #14,D0                      ; Is function code in range?
     bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
 
     add.l   D0,D0                       ; Multiply FC...
