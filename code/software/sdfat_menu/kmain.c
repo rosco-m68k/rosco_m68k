@@ -47,6 +47,12 @@ static char menu_files[MAX_BIN_FILES][MAX_BIN_NAMELEN]; // names of BIN files
 static char dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN];  // names of directories
 static uint32_t bin_sizes[MAX_BIN_FILES];               // sizes of BIN files
 static char current_dir[MAX_BIN_NAMELEN];               // current dir string (root = "")
+static char buffer[512];                                // file sector buffer
+static char cmd_line[256];                              // prompt command line buffer
+static void * file2;                                    // target fileptr
+static char * cmd_ptr;                                  // ptr to next token in cmd_line
+static uint32_t filesize;                               // current filesize at start of sector
+static uint32_t filecrc;                                // current CRC-32 at start of sector for crc
 
 // timer helpers
 uint32_t timer_start()
@@ -222,6 +228,35 @@ static char * fullpath(const char * path)
     }
 
     return filename;
+}
+
+// return next argument from cmd_ptr
+char * next_cmd_token()
+{
+    char * token = cmd_ptr;
+    // skip leading spaces
+    while (*token == ' ')
+    {
+        token++;
+    }
+    bool quoted = false;
+    if (*token == '"')
+    {
+        quoted = true;
+        token++;
+    }
+    // arg string
+    char * end_token = token;
+    // either empty or starts after space (unless quoted)
+    while (*end_token && *end_token != '"' && !(*end_token == ' ' && quoted == false))
+    {
+        end_token++;
+    }
+    // end cmd_ptr string
+    *end_token++ = '\0';
+    cmd_ptr = end_token;
+
+    return token;
 }
 
 // format size to "friendly" 4 char string (e.g, 321B, 4.2K, 42M or 3.1G)
@@ -423,7 +458,7 @@ static void execute_bin_file(const char * name)
         uint8_t * loadstartptr = (uint8_t *)_LOAD_ADDRESS;
         uint8_t * loadptr = loadstartptr;
         uint8_t * endptr = (uint8_t *)_INITIAL_STACK;
-        while (loadptr < endptr && (c = fl_fread(loadptr, 512, 1, file)) > 0)
+        while (loadptr < endptr && (c = fl_fread(loadptr, 1, 512, file)) > 0)
         {
             loadptr += c;
             /* period every 4KiB, does not noticeably affect speed */
@@ -459,7 +494,7 @@ static void execute_bin_file(const char * name)
         }
         else
         {
-            printf("\n*** %s error at offset %d (0x%08x)\n", (loadptr < endptr) ? "Read" : "Too large", bytes,
+            printf("\n*** %s error at offset %u (0x%08x)\n", (loadptr < endptr) ? "Read" : "Too large", bytes,
                    bytes);
         }
     }
@@ -500,11 +535,6 @@ static void change_dir(const char * name)
     }
 }
 
-static char cmd_line[256]; // prompt command line buffer
-static char buffer[512];   // file sector buffer
-static uint32_t filesize;  // current filesize at start of sector
-static uint32_t filecrc;   // current CRC-32 at start of sector for crc
-
 // directory listing
 static void dir_operation(const char * name)
 {
@@ -523,7 +553,7 @@ static void dir_operation(const char * name)
         {
             if (!dirent.is_dir)
             {
-                printf("%10d  %s\n", dirent.size, dirent.filename);
+                printf("%10u  %s\n", dirent.size, dirent.filename);
                 uint32_t old_total = totalsize; // clamp vs wrap
                 totalsize += dirent.size;
                 if (totalsize < old_total)
@@ -558,7 +588,7 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
     filecrc = 0;
 
     const char * filename = fullpath(name);
-    printf("\n\"%s\":\n", filename);
+    printf("\"%s\":\n", filename);
 
     void * file = fl_fopen(filename, "r");
     // if open failed, try again with padded 3 character extension
@@ -582,7 +612,7 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
     if (file != NULL)
     {
         int c;
-        while ((c = fl_fread(buffer, sizeof(buffer), 1, file)) > 0)
+        while ((c = fl_fread(buffer, 1, sizeof(buffer), file)) > 0)
         {
             op_func(buffer, c);
             filesize += c;
@@ -594,7 +624,7 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
 
         if (c != EOF)
         {
-            printf("\n*** Read error at offset %d (0x%08x)\n", filesize, filesize);
+            printf("\n*** Read error at offset %u (0x%08x)\n", filesize, filesize);
         }
     }
     else
@@ -603,6 +633,23 @@ static void file_operation(const char * name, void (*op_func)(char * p, int l))
     }
 
     printf("\n");
+}
+
+static void file_del(char * name)
+{
+    const char * filename = fullpath(name);
+    printf("Delete \"%s\", are you sure? ", filename);
+    char k = readchar();
+    if (tolower(k) == 'y')
+    {
+        printf("yes\nDelete \"%s\"...", filename);
+        int res = fl_remove(filename);
+        printf("%s (%d)\n", res == 0 ? "OK" : "failed!", res);
+    }
+    else
+    {
+        printf("no\n");
+    }
 }
 
 // type operation callback
@@ -689,15 +736,36 @@ static void op_crc(char * p, int l)
     }
 }
 
+// copy operation callback
+static void op_copy(char * p, int l)
+{
+    if (l)
+    {
+        int res = fl_fwrite(p, 1, l, file2);
+        if (res != l)
+        {
+            printf("*** Write error (%d vs %d) at offset %u (0x%08x)\n", res, l, filesize, filesize);
+        }
+    }
+    if ((filesize & 0x3fff) == 0 || l == 0)
+    {
+        printf("\r%-4.4s", friendly_size(filesize));
+    }
+}
+
 // simple command prompt
 enum
 {
     CMD_DIR,
     CMD_CD,
+    CMD_MKDIR,
     CMD_RUN,
+    CMD_DEL,
     CMD_TYPE,
     CMD_DUMP,
+    CMD_WRITE,
     CMD_CRC,
+    CMD_COPY,
     CMD_BOOT,
     CMD_UPLOAD,
     CMD_EXIT,
@@ -711,10 +779,14 @@ static struct
     const char * help;
 } cmd_table[NUM_CMD] = {[CMD_DIR] = {"dir", "ls", "Directory listing"},
                         [CMD_CD] = {"cd", NULL, "Change current dir"},
+                        [CMD_MKDIR] = {"mkdir", "md", "Make directory"},
                         [CMD_RUN] = {"run", NULL, "Load and execute BIN file"},
+                        [CMD_DEL] = {"del", "rm", "Delete file"},
                         [CMD_TYPE] = {"type", "cat", "Display ASCII file"},
                         [CMD_DUMP] = {"dump", NULL, "Dump file in hex and ASCII"},
+                        [CMD_WRITE] = {"write", NULL, "Write 100KB test file"},
                         [CMD_CRC] = {"crc", NULL, "CRC-32 of file"},
+                        [CMD_COPY] = {"copy", "cp", "Copy file"},
                         [CMD_BOOT] = {"boot", NULL, "Warm-boot"},
                         [CMD_UPLOAD] = {"upload", "/", "Warm-boot without SD card boot"},
                         [CMD_EXIT] = {"exit", "x", "Exit to menu in current dir"}};
@@ -729,26 +801,9 @@ void command_prompt()
         prompt_readline(cmd_line, sizeof(cmd_line));
 
         // cmd string
-        char * cmd = cmd_line;
-        // skip leading cmd spaces
-        while (*cmd == ' ')
-        {
-            cmd++;
-        }
-        // arg string
-        char * arg = cmd;
-        // either empty or starts after space
-        while (*arg && *arg != ' ')
-        {
-            arg++;
-        }
-        // end cmd string
-        *arg++ = '\0';
-        // ski
-        while (*arg == ' ')
-        {
-            arg++;
-        }
+        cmd_ptr = cmd_line;
+
+        char * cmd = next_cmd_token();
 
         if (strlen(cmd) < 1)
         {
@@ -765,17 +820,26 @@ void command_prompt()
             }
         }
 
+        char * arg = next_cmd_token();
+        char * arg2 = NULL;
+
         switch (cmd_num)
         {
-        case CMD_EXIT:
-            printf("\nExit to menu.\n");
-            return;
         case CMD_DIR:
             dir_operation(arg);
             break;
         case CMD_CD:
             change_dir(arg);
             break;
+        case CMD_DEL:
+            file_del(arg);
+            break;
+        case CMD_MKDIR:
+        {
+            char * filename = fullpath(arg);
+            printf("Create directory \"%s\"...%s\n", filename, fl_createdirectory(filename) == 1 ? "OK" : "failed!");
+            break;
+        }
         case CMD_RUN:
             execute_bin_file(arg);
             break;
@@ -785,9 +849,65 @@ void command_prompt()
         case CMD_DUMP:
             file_operation(arg, op_dump);
             break;
+        case CMD_WRITE:
+        {
+            uint32_t crc = 0;
+            char * filename = fullpath(arg);
+            printf("Writing test file \"%s\"...\n");
+            void * file = fl_fopen(filename, "w");
+            if (file != NULL)
+            {
+                filesize = 0;
+                while (filesize < (100 * 1024))
+                {
+                    memset(buffer, filesize >> 9, sizeof(buffer));
+                    crc = crc32b(crc, buffer, sizeof(buffer));
+                    int l = fl_fwrite(buffer, 1, sizeof(buffer), file);
+                    if (l != sizeof(buffer))
+                    {
+                        printf("*** Error writing %d\n", l);
+                        break;
+                    }
+                    filesize += sizeof(buffer);
+                    if ((filesize & 0x3fff) == 0 || l == 0)
+                    {
+                        printf("\r%-4.4s", friendly_size(filesize));
+                    }
+                }
+                fl_fclose(file);
+
+                printf("\nCRC=0x%08x, size %u (%s)\n", crc, filesize, friendly_size(filesize));
+            }
+            else
+            {
+                printf("*** Can't create \"%s\"\n", filename);
+                break;
+            }
+            printf("Verify ");
+            file_operation(arg, op_crc);
+            printf("%10u bytes, CRC-32=0x%08X %s\n", filesize, filecrc, filecrc == crc ? "VERIFIED" : "*** MISMATCH ***");
+            break;
+        }
         case CMD_CRC:
             file_operation(arg, op_crc);
-            printf("\n%10d bytes, CRC-32=0x%08X\n", filesize, filecrc);
+            printf("%10u bytes, CRC-32=0x%08X\n", filesize, filecrc);
+            break;
+        case CMD_COPY:
+            arg2 = fullpath(next_cmd_token());
+            file2 = fl_fopen(arg2, "w");
+            if (file2 != NULL)
+            {
+                printf("Copying ");
+                file_operation(arg, op_copy);
+                fl_fclose(file2);
+
+                printf("%10u (0x%08x) bytes, copied.\n", filesize, filesize);
+            }
+            else
+            {
+                printf("*** Can't create \"%s\"\n", arg2);
+            }
+            file2 = NULL;
             break;
         case CMD_BOOT:
             warm_boot(no_sd_boot);
@@ -795,12 +915,17 @@ void command_prompt()
         case CMD_UPLOAD:
             warm_boot(true);
             break;
+        case CMD_EXIT:
+            printf("\nExit to menu.\n");
+            return;
         default:
             printf("SD Card prompt commands:\n");
             for (cmd_num = 0; cmd_num < NUM_CMD; cmd_num++)
             {
-                const char * cmd_arg = cmd_num < CMD_RUN ? "[dir]" : cmd_num < CMD_UPLOAD ? "<file>" : "";
-                printf(" %-8.8s %-6.6s %s", cmd_table[cmd_num].command, cmd_arg, cmd_table[cmd_num].help);
+                const char * cmd_arg =
+                    cmd_num < CMD_RUN ? "[directory]"
+                                      : cmd_num < CMD_COPY ? "<filename>" : cmd_num < CMD_BOOT ? "<src> <dest>" : "";
+                printf(" %-8.8s %-12.12s %s", cmd_table[cmd_num].command, cmd_arg, cmd_table[cmd_num].help);
                 if (cmd_table[cmd_num].alias != NULL)
                 {
                     printf(" (alias %s)", cmd_table[cmd_num].alias);
