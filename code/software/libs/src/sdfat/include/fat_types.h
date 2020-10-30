@@ -58,12 +58,25 @@
     #define STRUCT_PACK_BEGIN
     #define STRUCT_PACK_END
     #define STRUCT_PACKED           __attribute__ ((packed))
+    // ROSCO_M68K - Xark
+    // Bug workaround for packed vs alignment gcc-7.5 m68k issue. It tries to
+    // "optimize" two byte writes into one mis-aligned word store causing
+    // exception.  It may be related to this, but worked around by declaring
+    // struct pointer "volatile" which prevents the optimization that is
+    // breaking:
+    // https://stackoverflow.com/questions/8568432/is-gccs-attribute-packed-pragma-pack-unsafe
+    #ifdef __m68k__
+        #define STRUCT_PACKED_VOLATILE  volatile
+    #else
+        #define STRUCT_PACKED_VOLATILE
+    #endif
 #else
     // Other compilers may require other methods of packing structures
     #define STRUCT_PACK
     #define STRUCT_PACK_BEGIN
     #define STRUCT_PACK_END
     #define STRUCT_PACKED
+    #define STRUCT_PACKED_VOLATILE
 #endif
 
 #endif
