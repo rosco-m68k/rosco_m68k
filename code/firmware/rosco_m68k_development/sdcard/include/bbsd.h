@@ -52,7 +52,7 @@
 #define BBSD_COMMAND_WAIT_RETRIES   100
 #endif
 #ifndef BBSD_WRITE_WAIT_RETRIES
-#define BBSD_WRITE_WAIT_RETRIES     400
+#define BBSD_WRITE_WAIT_RETRIES     800
 #endif
 
 typedef enum {
