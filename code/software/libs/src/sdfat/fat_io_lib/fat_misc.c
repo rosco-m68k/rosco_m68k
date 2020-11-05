@@ -247,7 +247,7 @@ void fatfs_filename_to_lfn(char *filename, uint8 *buffer, int entry, uint8 sfnCh
 // fatfs_sfn_create_entry: Create the short filename directory entry
 //-----------------------------------------------------------------------------
 #if FATFS_INC_WRITE_SUPPORT
-void fatfs_sfn_create_entry(char *shortfilename, uint32 size, uint32 startCluster, volatile struct fat_dir_entry *entry, int dir)
+void fatfs_sfn_create_entry(char *shortfilename, uint32 size, uint32 startCluster, STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry, int dir)
 {
     int i;
 
