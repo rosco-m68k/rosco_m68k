@@ -122,12 +122,12 @@ int     fatfs_read_sector(struct fatfs *fs, uint32 cluster, uint32 sector, uint8
 int     fatfs_write_sector(struct fatfs *fs, uint32 cluster, uint32 sector, uint8 *target);
 void    fatfs_show_details(struct fatfs *fs);
 uint32  fatfs_get_root_cluster(struct fatfs *fs);
-uint32  fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *nametofind, struct fat_dir_entry *sfEntry);
+uint32  fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *nametofind, STRUCT_PACKED_VOLATILE struct fat_dir_entry *sfEntry);
 int     fatfs_sfn_exists(struct fatfs *fs, uint32 Cluster, char *shortname);
 int     fatfs_update_file_length(struct fatfs *fs, uint32 Cluster, char *shortname, uint32 fileLength);
 int     fatfs_mark_file_deleted(struct fatfs *fs, uint32 Cluster, char *shortname);
 void    fatfs_list_directory_start(struct fatfs *fs, struct fs_dir_list_status *dirls, uint32 StartCluster);
 int     fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls, struct fs_dir_ent *entry);
-int     fatfs_update_timestamps(struct fat_dir_entry *directoryEntry, int create, int modify, int access);
+int     fatfs_update_timestamps(STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry, int create, int modify, int access);
 
 #endif

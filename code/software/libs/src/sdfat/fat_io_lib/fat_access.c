@@ -404,7 +404,7 @@ uint32 fatfs_get_root_cluster(struct fatfs *fs)
 //-------------------------------------------------------------
 // fatfs_get_file_entry: Find the file entry for a filename
 //-------------------------------------------------------------
-uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find, struct fat_dir_entry *sfEntry)
+uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find, STRUCT_PACKED_VOLATILE struct fat_dir_entry *sfEntry)
 {
     uint8 item=0;
     uint16 recordoffset = 0;
@@ -414,7 +414,7 @@ uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find
     char short_filename[13];
     struct lfn_cache lfn;
     int dotRequired = 0;
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
 
     fatfs_lfn_cache_init(&lfn, 1);
 
@@ -450,7 +450,7 @@ uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find
                     // Compare names to see if they match
                     if (fatfs_compare_names(long_filename, name_to_find))
                     {
-                        memcpy(sfEntry,directoryEntry,sizeof(struct fat_dir_entry));
+                        memcpy((uint8*)sfEntry,(uint8*)directoryEntry,sizeof(struct fat_dir_entry));
                         return 1;
                     }
 
@@ -491,7 +491,7 @@ uint32 fatfs_get_file_entry(struct fatfs *fs, uint32 Cluster, char *name_to_find
                     // Compare names to see if they match
                     if (fatfs_compare_names(short_filename, name_to_find))
                     {
-                        memcpy(sfEntry,directoryEntry,sizeof(struct fat_dir_entry));
+                        memcpy((uint8*)sfEntry,(uint8*)directoryEntry,sizeof(struct fat_dir_entry));
                         return 1;
                     }
 
@@ -515,7 +515,7 @@ int fatfs_sfn_exists(struct fatfs *fs, uint32 Cluster, char *shortname)
     uint8 item=0;
     uint16 recordoffset = 0;
     int x=0;
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
 
     // Main cluster following loop
     while (1)
@@ -561,7 +561,7 @@ int fatfs_sfn_exists(struct fatfs *fs, uint32 Cluster, char *shortname)
 // fatfs_update_timestamps: Update date/time details
 //-------------------------------------------------------------
 #if FATFS_INC_TIME_DATE_SUPPORT
-int fatfs_update_timestamps(struct fat_dir_entry *directoryEntry, int create, int modify, int access)
+int fatfs_update_timestamps(STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry, int create, int modify, int access)
 {
     time_t time_now;
     struct tm * time_info;
@@ -618,7 +618,7 @@ int fatfs_update_file_length(struct fatfs *fs, uint32 Cluster, char *shortname, 
     uint8 item=0;
     uint16 recordoffset = 0;
     int x=0;
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
 
     // No write access?
     if (!fs->disk_io.write_media)
@@ -688,7 +688,7 @@ int fatfs_mark_file_deleted(struct fatfs *fs, uint32 Cluster, char *shortname)
     uint8 item=0;
     uint16 recordoffset = 0;
     int x=0;
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
 
     // No write access?
     if (!fs->disk_io.write_media)
@@ -769,7 +769,7 @@ int fatfs_list_directory_next(struct fatfs *fs, struct fs_dir_list_status *dirls
 {
     uint8 i,item;
     uint16 recordoffset;
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
     char *long_filename = NULL;
     char short_filename[13];
     struct lfn_cache lfn;

@@ -853,12 +853,12 @@ void command_prompt()
         {
             uint32_t crc = 0;
             char * filename = fullpath(arg);
-            printf("Writing test file \"%s\"...\n");
+            printf("Writing 512K test file \"%s\"...\n");
             void * file = fl_fopen(filename, "w");
             if (file != NULL)
             {
                 filesize = 0;
-                while (filesize < (100 * 1024))
+                while (filesize < (512 * 1024))
                 {
                     memset(buffer, filesize >> 9, sizeof(buffer));
                     crc = crc32b(crc, buffer, sizeof(buffer));

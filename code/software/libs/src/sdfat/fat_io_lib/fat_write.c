@@ -129,7 +129,7 @@ int fatfs_allocate_free_space(struct fatfs *fs, int newFile, uint32 *startCluste
 //-----------------------------------------------------------------------------
 static int fatfs_find_free_dir_offset(struct fatfs *fs, uint32 dirCluster, int entryCount, uint32 *pSector, uint8 *pOffset)
 {
-    struct fat_dir_entry *directoryEntry;
+    STRUCT_PACKED_VOLATILE struct fat_dir_entry *directoryEntry;
     uint8 item=0;
     uint16 recordoffset = 0;
     uint8 i=0;
