@@ -297,6 +297,9 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer) {
         goto finally;
     }
 
+    // Send dummy byte prior to block start. Some cards require this.
+    BBSPI_send_byte(0xFF);
+
     // Send block start token
     BBSPI_send_byte(BLOCK_START);
 
