@@ -39,6 +39,7 @@ typedef struct __MEMBLOCK {
 typedef struct {
   uint32_t    ram_total;
   uint32_t    ram_free;
+  MEMBLOCK    blocks[MAX_RAMBLOCKS];
 } __attribute__ ((packed)) MEMINFO;
 
 typedef uint32_t KRESULT;
@@ -50,6 +51,9 @@ typedef uint32_t KRESULT;
 #define KFAILURE_NOMEM            0x1002
 
 #define IS_KFAILURE(result)   (((result & KRESULT_FAILURE) != 0))
+
+extern void FIX_STACK();
+extern uint32_t GET_CPU_ID();
 
 static void zeromeminfo(MEMINFO *header) {
   uint8_t *ptr = (uint8_t*)header;
@@ -86,7 +90,7 @@ static uint32_t count_rom_size() {
 }
 
 static KRESULT build_memory_map(MEMINFO *header) {
-  MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
+  MEMBLOCK * blocks = header->blocks;
   bool block_started = false;
 
   zeromeminfo(header);
@@ -276,9 +280,33 @@ extern const void* _end;
 static MEMINFO* header = (MEMINFO*)&_end;
 
 void kmain() {
-  MEMBLOCK * blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
+  FIX_STACK();
 
-  printf("Building memory map...\n");
+  printf("Found ");
+  switch (GET_CPU_ID()) {
+    case 0: 
+      printf("MC68000");
+      break;
+    case 1:
+      printf("MC68010");
+      break;
+    case 2:
+      printf("MC68020");
+      break;
+    case 3:
+      printf("MC68030");
+      break;
+    case 4:
+      printf("MC68040");
+      break;
+    case 6:
+      printf("MC68060");
+      break;
+    default:
+      printf("<unrecognized CPU>");
+  }
+
+  printf(" - Building memory map...\n");
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
@@ -286,11 +314,11 @@ void kmain() {
   } else {
     printf("Map build successfully\n");
 
-    uint8_t current_block = 0;
-
-    while(blocks[current_block].block_size > 0) {
-      print_block(current_block, &blocks[current_block]);
-      current_block++;
+    for (uint8_t i = 0; i < MAX_RAMBLOCKS; i++) {
+      if (header->blocks[i].block_size == 0) {
+        break;
+      }
+      print_block(i, &header->blocks[i]);
     }
 
     printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
