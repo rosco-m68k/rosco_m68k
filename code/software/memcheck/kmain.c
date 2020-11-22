@@ -278,9 +278,15 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  */
 extern const void* _end;
 static MEMINFO* header = (MEMINFO*)&_end;
+static uint16_t* FIRMWARE_VER = (uint16_t*)0xfc0402;
+static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
 void kmain() {
   FIX_STACK();
+
+  if (*FIRMWARE_VER >= 0x0120) {
+    printf("Firmware reports %d bytes total contiguous memory\n", *FW_MEMSIZE);
+  }
 
   printf("Found ");
   switch (GET_CPU_ID()) {
