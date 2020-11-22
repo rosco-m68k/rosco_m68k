@@ -7,11 +7,11 @@ AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VC
 /EVENRAM      = IACK * /AS * BOOT * /UDS * /A23 * /A22 * /A21 * /A20
 /ODDRAM       = IACK * /AS * BOOT * /LDS * /A23 * /A22 * /A21 * /A20
 
-/EVENROM      = IACK * /AS * A18 * A19 * A20 * A21 * A22 * A23 
-              + /BOOT * /UDS
+/EVENROM      = IACK * /AS * /UDS * A18 * A19 * A20 * A21 * A22 * A23 
+              + /BOOT * /AS * /UDS
 
-/ODDROM       = IACK * /AS * A18 * A19 * A20 * A21 * A22 * A23 
-              + /BOOT * /LDS
+/ODDROM       = IACK * /AS * /LDS * A18 * A19 * A20 * A21 * A22 * A23 
+              + /BOOT * /AS * /LDS
 
 /IOSEL        = IACK * /AS * /A18 * A19 * A20 * A21 * A22 * A23
 
