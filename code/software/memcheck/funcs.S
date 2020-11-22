@@ -69,14 +69,3 @@ GET_CPU_ID::
     
     rte
 
-
-; Juggle the stack around to put it back at the top of 
-; onboard RAM. Workaround for #135
-;
-; Ensures a warm reboot when kmain returns
-FIX_STACK::
-    move.l  (A7),A0         ; Get return address
-    move.l  #$100000,A7     ; Stack to 1MB mark
-    move.l  _WARM_BOOT,-(A7); Push reset vector 
-    jmp     (A0)            ; and return
-

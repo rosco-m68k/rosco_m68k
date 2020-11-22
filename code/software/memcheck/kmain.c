@@ -52,7 +52,6 @@ typedef uint32_t KRESULT;
 
 #define IS_KFAILURE(result)   (((result & KRESULT_FAILURE) != 0))
 
-extern void FIX_STACK();
 extern uint32_t GET_CPU_ID();
 
 static void zeromeminfo(MEMINFO *header) {
@@ -282,8 +281,6 @@ static uint16_t* FIRMWARE_VER = (uint16_t*)0xfc0402;
 static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
 void kmain() {
-  FIX_STACK();
-
   if (*FIRMWARE_VER >= 0x0120) {
     printf("Firmware reports %d bytes total contiguous memory\n", *FW_MEMSIZE);
   }
@@ -329,5 +326,31 @@ void kmain() {
 
     printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
   }
+}
+
+// Use custom __kinit (called by serial_start init.S before kmain) to set juggle stack around
+// and call main. Workaround for #135.
+extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+
+// The aforementioned Dragons! the subql #4,%sp mirrors what GCC does with -fomit-frame-pointer,
+// which is why that option is necessary. Without it, the postamble (?) of the function
+// won't clean up the (new) stack correctly...
+void __kinit()
+{
+    __asm__ __volatile__(" move.l  #100000,%%sp\n"
+                         " move.l  4.w,-(%%sp)\n"
+                         " subql   #4,%%sp"
+                         :
+                         :
+                         :);
+    // zero .bss
+    for (uint32_t * dst = &_bss_start; dst < &_bss_end; dst++)
+    {
+        *dst = 0;
+    }
+
+    kmain();      // call kmain here
+
+    // Returning here will go to the reset vector we pushed earlier...
 }
 
