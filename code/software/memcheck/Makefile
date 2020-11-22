@@ -17,7 +17,7 @@ CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m68020 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
@@ -33,7 +33,7 @@ BINARY_EXT=bin
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
-OBJECTS=kmain.o
+OBJECTS=kmain.o funcs.o
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
