@@ -4,23 +4,21 @@ DECODER
 A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    GND
 AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VCC
 
-/EVENRAM      = IACK * /AS * BOOT * /UDS * /A23 * /A22 * /A21 * /A20
-/ODDRAM       = IACK * /AS * BOOT * /LDS * /A23 * /A22 * /A21 * /A20
+/EVENRAM      = IACK * /AS * /UDS * BOOT * /A23 * /A22 * /A21 * /A20
+/ODDRAM       = IACK * /AS * /LDS * BOOT * /A23 * /A22 * /A21 * /A20
 
-/EVENROM      = IACK * /AS * /UDS * A18 * A19 * A20 * A21 * A22 * A23 
-              + /BOOT * /AS * /UDS
+/EVENROM      = IACK * /AS * /UDS * A23 * A22 * A21 * A20 * A19 * A18
+              + IACK * /AS * /UDS * /BOOT
+/ODDROM       = IACK * /AS * /LDS * A23 * A22 * A21 * A20 * A19 * A18
+              + IACK * /AS * /LDS * /BOOT
 
-/ODDROM       = IACK * /AS * /LDS * A18 * A19 * A20 * A21 * A22 * A23 
-              + /BOOT * /AS * /LDS
+/IOSEL        = IACK * /AS * A23 * A22 * A21 * A20 * A19 * /A18
 
-/IOSEL        = IACK * /AS * /A18 * A19 * A20 * A21 * A22 * A23
-
-/EXPSEL       = IACK * /AS * /A20 * A23
-              + IACK * /AS * /A20 * A22 
-              + IACK * /AS * A21 * /A22 
-              + IACK * /AS * A21 * /A23 
-              + IACK * /AS * A20 * /A21 
-              + IACK * /AS * A18 * /A19 * A20
+/EXPSEL       = IACK * /AS * /A23 * A22
+              + IACK * /AS * /A22 * A21
+              + IACK * /AS * /A21 * A20
+              + IACK * /AS * /A20 * A23
+              + IACK * /AS * A23 * A22 * A21 * A20 * /A19
 
 DESCRIPTION
 
