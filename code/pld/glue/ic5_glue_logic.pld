@@ -5,8 +5,12 @@ FC0   FC1   FC2   ODDROM    ODDRAM    EVENROM   EVENRAM   IOSEL   IODTACK   GND
 A17   NC    IACK  PPDTACK   MFPDS     RAMOE     RW        LDS     DTACK     VCC
 
 /IACK     = A17 * FC0 * FC1 * FC2
-PPDTACK   = /IOSEL * /LDS * IODTACK
-          + /IACK * IODTACK
+/PPDTACK  = /IOSEL * /IODTACK
+          + /IACK * /IODTACK
+          + IACK * /EVENROM
+          + IACK * /ODDROM
+          + IACK * /EVENRAM
+          + IACK * /ODDRAM
 
 /MFPDS    = /LDS 
           + /IACK
@@ -22,9 +26,3 @@ IC5 (DTACK and MFP Glue Logic for rosco_m68k)
  
 Copyright (c)2020 Ross Bamford. See LICENSE.
 
-/PPDTACK  = /IOSEL * /IODTACK 
-          + /IACK * /IODTACK
-          + IACK * /EVENROM
-          + IACK * /ODDROM
-          + IACK * /EVENRAM
-          + IACK * /ODDRAM
