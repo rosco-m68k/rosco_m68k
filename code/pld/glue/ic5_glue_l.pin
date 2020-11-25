@@ -15,11 +15,11 @@
   11   | A17      | Input
   12   | NC       | NC
   13   | IACK     | Output
-  14   | DTACK    | Output
+  14   | PPDTACK  | Output
   15   | MFPDS    | Output
   16   | RAMOE    | Output
   17   | RW       | Input
   18   | LDS      | Input
-  19   | NC       | NC
+  19   | DTACK    | Output
   20   | VCC      | VCC
 
