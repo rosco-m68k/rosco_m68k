@@ -38,6 +38,7 @@ as possible, and will be kept updated as firmware 1.2 is developed.
       * 1.2.2.4 RECVCHAR (Function #3)
       * 1.2.2.5 PRINTCHAR (Function #4)
       * 1.2.2.6 SETCURSOR (Function #5)
+      * 1.2.2.9 CHECKCHAR (Function #6)
   * 1.3. Easy68k compatibility layer (TRAP 15)
     * 1.3.1 Example Usage
     * 1.3.2 Functions
@@ -632,6 +633,32 @@ For details on the default UART, see the `SENDCHAR` function.
 System integrators and third-party hardware developers may also override
 the default console (for example to output to third-party video 
 hardware). See section 2.3 for details.
+
+#### 1.2.2.7 CHECKCHAR (Function #6)
+
+**Arguments**
+
+* `D1.L` - 6 (Function code)
+
+**Modifies**
+
+* `D0.B` - 0 if no character waiting, nonzero otherwise
+
+**Description**
+
+Determine whether the system's *default UART* has a character waiting to
+be received, returning non-zero in `D0.B` if so, zero otherwise. 
+
+This can be used to determine whether a call to `RECVCHAR` will block.
+Note that this function may clear error flags and other status information.
+
+The default UART is initialized at boot-time by the firmware, and
+will generally be the "best" serial UART available (with the 
+fallback being the MC68901 UART that is expected to be always installed).
+
+System integrators and third-party hardware developers may also override
+the default UART (for example to utilise third-party hardware). 
+See section 2.3 for details.
 
 ## 1.3. Easy68k compatibility layer (TRAP 15)
 

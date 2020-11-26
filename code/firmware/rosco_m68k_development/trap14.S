@@ -23,58 +23,67 @@
 
 ; This is the exception handler...
 TRAP_14_HANDLER::
-    cmp.l   #0,D1                     ; FC == 0?
-    beq.s   .PRINT                    ;   PRINT if so...
-    cmp.l   #1,D1                     ; FC == 1?
-    beq.s   .PRINTLN                  ;   PRINTLN if so...
-    cmp.l   #2,D1                     ; FC == 2?
-    beq.s   .SENDCHAR                 ;   SENDCHAR if so...
-    cmp.l   #3,D1                     ; FC == 3?
-    beq.s   .RECVCHAR                 ;   RECVCHAR if so...
-    cmp.l   #4,D1                     ; FC == 4?
-    beq.s   .PRINTCHAR                ;   PRINTCHAR if so...
-    cmp.l   #5,D1                     ; FC == 5?
-    beq.s   .SETCURSOR                ;   SETCURSOR if so...
-    rte                               ; That's all for now...
+    move.l  A1,-(A7)
+    cmp.l   #6,D1                       ; Is function code in range?
+    bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
+
+    add.l   D1,D1                       ; Multiply FC...
+    add.l   D1,D1                       ; ... by 4...
+    move.l  .JUMPTABLE(PC,D1),A1        ; ... and calc offset into table...
+    jmp     (A1)                        ; ... then jump there
+
+.JUMPTABLE:
+    dc.l    .PRINT                      ; FC == 0 ; PRINT if so...
+    dc.l    .PRINTLN                    ; FC == 1 ; PRINTLN if so...
+    dc.l    .SENDCHAR                   ; FC == 2 ; SENDCHAR if so...
+    dc.l    .RECVCHAR                   ; FC == 3 ; RECVCHAR if so...
+    dc.l    .PRINTCHAR                  ; FC == 4 ; PRINTCHAR if so...
+    dc.l    .SETCURSOR                  ; FC == 5 ; SETCURSOR if so...
+    dc.l    .CHECKCHAR                  ; FC == 6 ; CHECKCHAR if so...
+    
+.NOT_IMPLEMENTED
+    move.l  (A7)+,A1
+    rte                                 ; That's all for now...
+
 
 .PRINT
-    move.l  A1,-(A7)
     move.l  EFP_PRINT,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte
 
 .PRINTLN
-    move.l  A1,-(A7)
     move.l  EFP_PRINTLN,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte
 
 .SENDCHAR
-    move.l  A1,-(A7)
     move.l  EFP_SENDCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte
 
 .RECVCHAR
-    move.l  A1,-(A7)
     move.l  EFP_RECVCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte
     
 .PRINTCHAR
-    move.l  A1,-(A7)
     move.l  EFP_PRINTCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte
 
 .SETCURSOR
-    move.l  A1,-(A7)
     move.l  EFP_SETCURSOR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rte
+
+.CHECKCHAR
+    move.l  EFP_CHECKCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rte

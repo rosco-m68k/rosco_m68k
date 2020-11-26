@@ -111,7 +111,7 @@ char* fatfs_lfn_cache_get(struct lfn_cache *lfn)
 // fatfs_entry_lfn_text: If LFN text entry found
 //-----------------------------------------------------------------------------
 #if FATFS_INC_LFN_SUPPORT
-int fatfs_entry_lfn_text(struct fat_dir_entry *entry)
+int fatfs_entry_lfn_text(STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if ((entry->Attr & FILE_ATTR_LFN_TEXT) == FILE_ATTR_LFN_TEXT)
         return 1;
@@ -123,7 +123,7 @@ int fatfs_entry_lfn_text(struct fat_dir_entry *entry)
 // fatfs_entry_lfn_invalid: If SFN found not relating to LFN
 //-----------------------------------------------------------------------------
 #if FATFS_INC_LFN_SUPPORT
-int fatfs_entry_lfn_invalid(struct fat_dir_entry *entry)
+int fatfs_entry_lfn_invalid(STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if ( (entry->Name[0]==FILE_HEADER_BLANK)  ||
          (entry->Name[0]==FILE_HEADER_DELETED)||
@@ -138,7 +138,7 @@ int fatfs_entry_lfn_invalid(struct fat_dir_entry *entry)
 // fatfs_entry_lfn_exists: If LFN exists and correlation SFN found
 //-----------------------------------------------------------------------------
 #if FATFS_INC_LFN_SUPPORT
-int fatfs_entry_lfn_exists(struct lfn_cache *lfn, struct fat_dir_entry *entry)
+int fatfs_entry_lfn_exists(struct lfn_cache *lfn, STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if ( (entry->Attr!=FILE_ATTR_LFN_TEXT) &&
          (entry->Name[0]!=FILE_HEADER_BLANK) &&
@@ -154,7 +154,7 @@ int fatfs_entry_lfn_exists(struct lfn_cache *lfn, struct fat_dir_entry *entry)
 //-----------------------------------------------------------------------------
 // fatfs_entry_sfn_only: If SFN only exists
 //-----------------------------------------------------------------------------
-int fatfs_entry_sfn_only(struct fat_dir_entry *entry)
+int fatfs_entry_sfn_only(STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if ( (entry->Attr!=FILE_ATTR_LFN_TEXT) &&
          (entry->Name[0]!=FILE_HEADER_BLANK) &&
@@ -169,7 +169,7 @@ int fatfs_entry_sfn_only(struct fat_dir_entry *entry)
 //-----------------------------------------------------------------------------
 // fatfs_entry_is_dir: Returns 1 if a directory
 //-----------------------------------------------------------------------------
-int fatfs_entry_is_dir(struct fat_dir_entry *entry)
+int fatfs_entry_is_dir(STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if (entry->Attr & FILE_TYPE_DIR)
         return 1;
@@ -179,7 +179,7 @@ int fatfs_entry_is_dir(struct fat_dir_entry *entry)
 //-----------------------------------------------------------------------------
 // fatfs_entry_is_file: Returns 1 is a file entry
 //-----------------------------------------------------------------------------
-int fatfs_entry_is_file(struct fat_dir_entry *entry)
+int fatfs_entry_is_file(STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry)
 {
     if (entry->Attr & FILE_TYPE_FILE)
         return 1;
@@ -247,7 +247,7 @@ void fatfs_filename_to_lfn(char *filename, uint8 *buffer, int entry, uint8 sfnCh
 // fatfs_sfn_create_entry: Create the short filename directory entry
 //-----------------------------------------------------------------------------
 #if FATFS_INC_WRITE_SUPPORT
-void fatfs_sfn_create_entry(char *shortfilename, uint32 size, uint32 startCluster, struct fat_dir_entry *entry, int dir)
+void fatfs_sfn_create_entry(char *shortfilename, uint32 size, uint32 startCluster, STRUCT_PACKED_VOLATILE struct fat_dir_entry *entry, int dir)
 {
     int i;
 

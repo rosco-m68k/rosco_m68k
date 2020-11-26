@@ -52,13 +52,16 @@ static uint32_t* reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
 uint8_t *stage2_load_ptr = (uint8_t*) 0x2000;
 static Stage2 stage2 = (Stage2) 0x2000;
 
-// Probably not needed any more...
-void linit() {
+noreturn void main1();
+
+noreturn void linit() {
   // copy .data
   for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
 
   // zero .bss
   for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
+
+  main1();
 }
 
 uint32_t get_zip_size() {

@@ -29,7 +29,7 @@ EFP_RECVCHAR    equ    $434
 EFP_CLRSCR      equ    $438
 EFP_MOVEXY      equ    $43C
 EFP_SETCURSOR   equ    $440
-EFP_RESERVED1   equ    $444
+EFP_CHECKCHAR   equ    $444
 EFP_PROGLOADER  equ    $448
 EFP_SD_INIT     equ    $44C
 EFP_SD_READ     equ    $450

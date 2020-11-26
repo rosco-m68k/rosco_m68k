@@ -34,23 +34,31 @@
 // number of times it will loop waiting for the condition. This means they'll
 // need to be tuned based on your CPU speed and SPI routines, for example.
 #ifndef BBSD_RESET_CYCLES
-#define BBSD_RESET_CYCLES           10
+#define BBSD_RESET_CYCLES               10
 #endif
 #ifndef BBSD_IDLE_TIMEOUT
-#define BBSD_IDLE_TIMEOUT           20
+#define BBSD_IDLE_TIMEOUT               20
 #endif
 #ifndef BBSD_BLOCK_START_TIMEOUT
-#define BBSD_BLOCK_START_TIMEOUT    200
+#define BBSD_BLOCK_START_TIMEOUT        200
 #endif
 #ifndef BBSD_MAX_IDLE_RETRIES
-#define BBSD_MAX_IDLE_RETRIES       5
+#define BBSD_MAX_IDLE_RETRIES           5
 #endif
 #ifndef BBSD_MAX_ACMD41_RETRIES
-#define BBSD_MAX_ACMD41_RETRIES     400
+#define BBSD_MAX_ACMD41_RETRIES         400
 #endif
 #ifndef BBSD_COMMAND_WAIT_RETRIES
-#define BBSD_COMMAND_WAIT_RETRIES   100
+#define BBSD_COMMAND_WAIT_RETRIES       100
 #endif
+#ifndef BBSD_WRITE_WAIT_RETRIES
+#define BBSD_WRITE_WAIT_RETRIES         1600
+#endif
+#ifndef BBSD_COMMAND_RESPONSE_RETRIES
+#define BBSD_COMMAND_RESPONSE_RETRIES   400
+#endif
+
+#define WRITE_RESPONSE_OK           5
 
 typedef enum {
     BBSD_CARD_TYPE_V1,
