@@ -420,9 +420,7 @@ static uint8_t raw_sd_command_force(uint8_t command, uint32_t arg, bool force) {
     BBSPI_send_byte(crc);
 
     uint8_t result = 0xFF;
-    // for (uint8_t i = 0; ((result = BBSPI_recv_byte()) & 0x80) && i != 0xFF; i++);
-    // for (uint16_t i = 0; ((result = BBSPI_recv_byte()) & 0x80) && i < BBSD_COMMAND_RESPONSE_RETRIES; i++);
-    while ((result = BBSPI_recv_byte()) & 0x80);
+    for (uint16_t i = 0; ((result = BBSPI_recv_byte()) & 0x80) && i < BBSD_COMMAND_RESPONSE_RETRIES; i++);
     return result;
 }
 
