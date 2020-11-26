@@ -3,7 +3,7 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
-;     |_____|       firmware v1.2
+;                     |_____|    firmware v1.2
 ;------------------------------------------------------------
 ; Copyright (c)2020 Ross Bamford See top-level LICENSE.md for licence
 ; information.
@@ -31,7 +31,10 @@
 
 
 START::                           ; position-independent load addr
-    bset.b  #1,MFP_GPDR           ; turn off red LED
+    move.b  MFP_GPDR,D0           ; Get GPDR
+    or.b    #2,D0                 ; Turn off I1
+    and.b   D1,D0                 ; Mask with flags
+    move.b  D0,MFP_GPDR           ; Set GPDR
     move.l  $414,A7               ; Reset stack to top of memory
 
     lea.l   START(PC),A0          ; PC-rel source addr (load addr)
