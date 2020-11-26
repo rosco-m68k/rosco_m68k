@@ -1159,7 +1159,7 @@ exception handlers and TRAP routines.
 | 0x400   | 4    | SDB Magic (0xB105D47A)                                    |
 | 0x404   | 4    | Status code (set by exception handlers)                   |
 | 0x408   | 2    | Internal counter used by timer tick handler               |
-| 0x40A   | 2    | Reserved                                                  |
+| 0x40A   | 2    | System flags (see below)                                  |
 | 0x40C   | 4    | Upticks counter, updated by timer tick handler            |
 | 0x410   | 1    | Easy68k 'echo on' flag                                    |
 | 0x411   | 1    | Easy68k 'prompt on' flag                                  |
@@ -1169,6 +1169,40 @@ exception handlers and TRAP routines.
 | 0x418   | 8    | System Reserved                                           |
 
 For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`.
+
+### System flags word (0x40A)
+
+This word contains various flags that control system behaviour. The main use
+at the moment is to prevent the system from using certain GPIOs (e.g. the
+LEDs).
+
+| Bit | Description                                       |
+|-----|---------------------------------------------------|
+|  15 | Allow system use of CTS (MFP GPIP7)               |
+|  14 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
+|  13 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
+|  12 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
+|  11 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
+|  10 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
+|   9 | Allow system use of LED1 (MFP GPIP1)              |
+|   8 | Allow system use of LED0 (MFP GPIP0)              |
+| 0-7 | Reserved                                          |
+
+The default value for the flags word is $FFXX (XX being reserved bits which can
+have any value). This allows the system to take control of the two LEDs I0 and I1,
+and the CTS line and allows the firmware SD/SPI interface to function normally.
+
+User code may clear any of the non-reserved bits to take full control of the appropriate
+lines. 
+
+**Note** that, in systems where the firmware SPI/SD interfaces are being used,
+setting bits 10-14 to zero will result in undefined behaviour and possible data loss.
+
+**Note** that, in the case of total system crash, these bits will not be honored
+and the system will revert to blinking the red LED as normal in a crash situation.
+
+**Note** also that clearing these bits has no effect on the actual state of the GPIP lines.
+User code should set the lines to a known state after setting this word.
 
 ## 2.3. Extension Function Pointer Table (EFPT)
 

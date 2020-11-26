@@ -184,6 +184,7 @@ INITSDB:
     move.l  #$B105D47A,$400           ; Magic at $400
     move.l  #$C001C001,$404           ; OK OSHI Code at $404
     move.w  #50,$408                  ; Heartbeat flash counter at 50 (1 per second)
+    move.w  #$FF00,$40A               ; Initial system flags word (enable LEDs and CTS)
     move.l  #0,$40C                   ; Zero upticks
 
     ifnd NO_68681
@@ -442,7 +443,8 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER:
     move.l  D0,-(A7)                  ; Save D0
-    
+    move.l  D1,-(A7)                  ; Save D1
+
     ; Increment upticks
     move.l  $40C,D0                   ; Read SDB dword at 12
     add.l   #1,D0                     ; Increment
@@ -453,13 +455,20 @@ TICK_HANDLER:
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
     
-    ; counted to zero, so toggle indicator 0 and reset counter
-    bchg.b  #0,MFP_GPDR             
-    move.w  #50,D0
+    ; counted to zero, so toggle indicator 0 (if allowed) 
+    ; and reset counter
+    move.b  $40A,D0                   ; Get sysflags (high byte)
+    move.b  MFP_GPDR,D1               ; Get GPDR
+    eor.b   #1,D1                     ; Toggle bit 0
+    and.b   D0,D1                     ; Mask with flags
+    move.b  D1,MFP_GPDR               ; Set GPDR
     
+    move.w  #50,D0                    ; Reset counter
+
 .TICK_HANDLER_DONE:
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,$408                   ; ... and write back to SDB
+    move.l  (A7)+,D1                  ; Restore D1
     move.l  (A7)+,D0                  ; Restore D0
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     rte                               ; We're done
@@ -621,13 +630,21 @@ SENDCHAR_DUART:
 
 SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
-.BEGIN
-    bset.b  #7,MFP_GPDR           ; Raise (inhibit) RTS
+    move.l  D2,-(A7)              ; Save D2
+
+    move.b  $40A,D2               ; Get sysflags (high byte)
+    move.b  MFP_GPDR,D1           ; Get GPDR
+    or.b    #$80,D1               ; Raise (inhibit) bit 7 (RTS)
+    and.b   D2,D1                 ; Mask with flags
+    move.b  D1,MFP_GPDR           ; Set GPDR
+
+.BEGIN    
     move.b  MFP_TSR,D1            ; Get TSR
     btst    #7,D1                 ; Is buffer empty bit set?
     beq.s   .BEGIN                ; No - loop until it is
 
     move.b  D0,MFP_UDR            ; Put func arg in UDR
+    move.l  (A7)+,D2              ; Restore D2
     move.l  (A7)+,D1              ; Restore D1
     rts
 
@@ -646,7 +663,14 @@ RECVCHAR_DUART:
     endif
 
 RECVCHAR_MFP:
-    bclr.b  #7,MFP_GPDR           ; Lower RTS
+    move.l  D1,-(A7)              ; Store D1
+    move.b  $40A,D1               ; Get sysflags (high byte)
+    
+    move.b  MFP_GPDR,D0           ; Get GPDR
+    and.b   #$7F,D0               ; Lower bit 7 (RTS)
+    and.b   D1,D0                 ; Mask with flags
+    move.b  D0,MFP_GPDR           ; Set GPDR
+
 .BEGIN
     move.b  MFP_RSR,D0            ; Get RSR
     btst    #7,D0                 ; Is buffer_full bit set?
@@ -658,11 +682,15 @@ RECVCHAR_MFP:
 
 .GOTERR
     move.b  MFP_UDR,D0            ; Empty buffer
-    bchg.b  #1,MFP_GPDR           ; And toggle I1
+    move.b  MFP_GPDR,D0           ; Get GPDR
+    eor.b   #2,D0                 ; Toggle I1
+    and.b   D1,D0                 ; Mask with flags
+    move.b  D0,MFP_GPDR           ; Set GPDR
     bra.s   .BEGIN                ; And continue testing...
     
 .GOTCHR
     move.b  MFP_UDR,D0            ; Get the data
+    move.l  (A7)+,D1              ; Restore D1
     rts
 
 
@@ -674,7 +702,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m Snapshot Firmware", $1B, "[0m", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;30m Snapshot Firmware", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 
