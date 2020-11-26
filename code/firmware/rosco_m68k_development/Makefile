@@ -65,7 +65,7 @@ endif
 
 export WITH_SDFAT
 export WITH_KERMIT
-export CPU ARCH MTUNE
+export CPU ARCH TUNE
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
