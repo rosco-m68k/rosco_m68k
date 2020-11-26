@@ -3,16 +3,19 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+CPU?=68010
+ARCH?=$(CPU)
+TUNE?=$(CPU)
 DEFINES=
 BASE_CFLAGS=-std=c11 -ffreestanding -Ifat_io_lib -Wno-unused-parameter     \
        -Wall -Werror -Wpedantic -Wno-unused-function              				 \
-			 -Iinclude -I../include -mcpu=68010 -march=68010 -mtune=68010   		 \
+			 -Iinclude -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	 \
 			 -mno-align-int -mno-strict-align $(DEFINES)
 EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os
 LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot

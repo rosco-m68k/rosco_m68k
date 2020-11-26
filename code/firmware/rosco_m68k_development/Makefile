@@ -3,17 +3,20 @@
 # Copyright (c)2019 Ross Bamford
 # See LICENSE
 
+CPU?=68010
+ARCH?=$(CPU)
+TUNE?=$(CPU)
 EXTRA_CFLAGS?=
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
-       -Iinclude -mcpu=68010 -march=68010 -mtune=68010 -Os              \
+       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
        -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
 ifeq ($(BIGROM),true)
 LDFLAGS=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 else
 LDFLAGS=-T ./rosco_m68k_firmware.ld -Map=$(MAP)
 endif
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
@@ -62,6 +65,7 @@ endif
 
 export WITH_SDFAT
 export WITH_KERMIT
+export CPU ARCH MTUNE
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -70,7 +74,7 @@ export WITH_KERMIT
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(STAGE2) : $(STAGE2_DIR)
-	make -C $^ $(STAGE2_FILE)
+	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
 
 $(BINARY) : $(OBJECTS) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
