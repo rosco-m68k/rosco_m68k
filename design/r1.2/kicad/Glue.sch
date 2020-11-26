@@ -706,7 +706,7 @@ Text GLabel 9500 3900 0    47   Input ~ 0
 IODTACK
 Text GLabel 10300 3800 2    47   Output ~ 0
 IACK
-Text GLabel 11000 3700 2    47   Output ~ 0
+Text GLabel 10950 3200 2    47   Output ~ 0
 DTACK
 Text GLabel 10300 3600 2    47   Output ~ 0
 MFPDS
@@ -1234,7 +1234,6 @@ Wire Wire Line
 Connection ~ 18700 7800
 Wire Wire Line
 	18700 7800 18700 7950
-NoConn ~ 10300 3200
 Wire Wire Line
 	12800 9000 14750 9000
 Wire Wire Line
@@ -1242,8 +1241,6 @@ Wire Wire Line
 Connection ~ 14750 9000
 Wire Wire Line
 	14750 9000 15850 9000
-Wire Wire Line
-	11000 3700 10850 3700
 $Comp
 L rosco_m68k-eagle-import:R-EU_0207_10 R?
 U 1 1 5F2C84D7
@@ -1265,10 +1262,7 @@ Connection ~ 9100 2400
 Wire Wire Line
 	9100 2400 9100 2900
 Wire Wire Line
-	10850 2900 10850 3700
-Connection ~ 10850 3700
-Wire Wire Line
-	10850 3700 10300 3700
+	10850 2900 10850 3200
 $Comp
 L 74xx:74LS93 IC7
 U 1 1 5F3446CA
@@ -1368,6 +1362,12 @@ Wire Wire Line
 	10300 3000 11350 3000
 Text Label 11200 3000 0    50   ~ 0
 A17
+Wire Wire Line
+	10300 3200 10850 3200
+Wire Wire Line
+	10950 3200 10850 3200
+Connection ~ 10850 3200
+NoConn ~ 10300 3700
 Wire Wire Line
 	18700 6600 19700 6600
 Wire Bus Line

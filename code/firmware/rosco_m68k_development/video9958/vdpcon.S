@@ -71,16 +71,6 @@ VRAM_MID_PAGE0_W  equ   $40          ; VRAM A8-A13 for page 0 (Write)
 VRAM_MID_PAGE1_R  equ   $20          ; VRAM A8-A13 for page 1 (Read)
 VRAM_MID_PAGE1_W  equ   $60          ; VRAM A8-A13 for page 1 (Write)
 
-; Temporary bus error handler, in case no V9958 is installed
-BERR_HANDLER:
-    move.w  D0,-(A7)
-    move.w  ($A,A7),D0
-    bset    #15,D0
-    move.w  D0,($A,A7)    
-    move.b  #1,$504
-    move.w  (A7)+,D0
-    rte
-
 ; Determine if there's a V9958 installed.
 ;
 ; Arguments:
