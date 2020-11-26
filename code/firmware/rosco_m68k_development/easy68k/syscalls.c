@@ -16,7 +16,7 @@
 #include <stdbool.h>
 #include "machine.h"
 
-#define BUF_LEN 82
+#define BUF_LEN 78
 #define BUF_MAX BUF_LEN - 2
 
 extern void FW_PRINT_C(char *str);
