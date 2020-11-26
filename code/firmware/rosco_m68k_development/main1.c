@@ -25,8 +25,10 @@
 #include "video9958.h"
 #endif
 
+#define INIT_STACK_VEC_ADDRESS 0x0
 #define RESET_VEC_ADDRESS 0x4
 #define PROGRAM_LOADER_EFP_ADDRESS 0x448
+#define MEM_SIZE_SDB_ADDRESS 0x414
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
 #ifdef SDCARD_SUPPORT
@@ -45,11 +47,12 @@ extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 extern uint32_t _zip_start, _zip_end;
 
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
-static uint32_t* program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADDRESS;
-static uint32_t* reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
+static uint32_t* volatile program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADDRESS;
+static uint32_t* volatile reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
+static uint32_t* volatile init_stack_vector_ptr = (uint32_t*)INIT_STACK_VEC_ADDRESS;
+static uint32_t* volatile mem_size_sdb_ptr = (uint32_t*)MEM_SIZE_SDB_ADDRESS;
 
 // Stage 2 loads at 0x2000
-uint8_t *stage2_load_ptr = (uint8_t*) 0x2000;
 static Stage2 stage2 = (Stage2) 0x2000;
 
 // Probably not needed any more...
@@ -94,6 +97,7 @@ static void initialize_loader_efp() {
 }
 
 static void initialize_warm_reboot() {
+    *init_stack_vector_ptr = *mem_size_sdb_ptr;
     *reset_vector_ptr = (uint32_t)warm_boot;
 }
 
