@@ -22,7 +22,3 @@
 .vscode/*
 code/software/lcd-ili9341/images/BMPToRLE555
 code/software/lcd-ili9341/rle_images.h
-code/firmware/emucon/emucon2.tos
-code/firmware/emucon/readme.txt
-code/firmware/emutos-src-1.0
-code/firmware/rosco_m68k_v1.2/tools/liblzg/doc

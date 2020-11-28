@@ -162,7 +162,7 @@ int receive_kernel() {
         case X_DONE:
             break;                                  /* Finished */
         case X_ERROR:
-            mcPrint("\x1b[1;31mSEVERE\x1b[0m: Run failed failed\r\n");
+            mcPrint("\x1b[1;31mSEVERE\x1b[0m: Run failed\r\n");
             return 0;                               /* Failed */
         }
     }
