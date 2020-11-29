@@ -19,6 +19,9 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
+extern void mcPrint(char *str);
+extern void mcBusywait(uint32_t nops);
+
 UCHAR o_buf[OBUFLEN+8];         /* File output buffer */
 UCHAR i_buf[IBUFLEN+8];         /* File input buffer */
 
@@ -134,8 +137,10 @@ int receive_kernel() {
     k.writef = writefile;                           /* for writing to output file */
     k.closef = closefile;                           /* for closing files */
 
+    mcBusywait(100000);
     status = kermit(K_INIT, &k, 0, 0, "", &response);
     if (status != X_OK) {
+        mcPrint("\x1b[1;31mSEVERE\x1b[0m: Kermit Init failed\r\n");
         return 0;
     }
 
@@ -145,8 +150,10 @@ int receive_kernel() {
 
         if (rx_len < 1) {                           /* No data was read */
             freerslot(&k,r_slot);                   /* So free the window slot */
-            if (rx_len < 0)                         /* If there was a fatal error */
-              return 0;                             /* give up */
+            if (rx_len < 0) {                       /* If there was a fatal error */
+               mcPrint("\x1b[1;31mSEVERE\x1b[0m: Read failed\r\n");
+               return 0;                            /* give up */
+            }   
         }
 
         switch (status = kermit(K_RUN, &k, r_slot, rx_len, "", &response)) {
@@ -155,6 +162,7 @@ int receive_kernel() {
         case X_DONE:
             break;                                  /* Finished */
         case X_ERROR:
+            mcPrint("\x1b[1;31mSEVERE\x1b[0m: Run failed\r\n");
             return 0;                               /* Failed */
         }
     }
