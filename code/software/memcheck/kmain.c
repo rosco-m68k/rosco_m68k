@@ -52,6 +52,9 @@ typedef uint32_t KRESULT;
 
 #define IS_KFAILURE(result)   (((result & KRESULT_FAILURE) != 0))
 
+static uint32_t* VERSION = (uint32_t*)0xfc0400;
+static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
+
 extern uint32_t GET_CPU_ID();
 
 static void zeromeminfo(MEMINFO *header) {
@@ -266,6 +269,58 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   printf("\n");
 }
 
+char* get_cpu_display_name(uint32_t cpu_id) {
+  switch (GET_CPU_ID()) {
+    case 0: 
+      return "MC68000";
+    case 1:
+      return "MC68010";
+    case 2:
+      return "MC68020";
+    case 3:
+      return "MC68030";
+    case 4:
+      return "MC68040";
+    case 6:
+      return "MC68060";
+    default:
+      return "<WEIRD>";
+  }
+}
+
+static void show_banner() {
+  bool snapshot = (*VERSION) & 0x80000000;
+  uint16_t wver = (*VERSION) * 0x0000FFFF;
+  uint8_t major = ((*VERSION) & 0x0000FF00) >> 8;
+  uint8_t minor = (*VERSION) & 0x000000FF;
+  char *cpu_name = get_cpu_display_name(GET_CPU_ID());
+
+  if (major == 0x07 && minor == 0x00) {
+    // special case - 1.0 didn't include version 
+    major = 0x01;
+    minor = 0x01;
+  }
+
+  printf("\n\n"); 
+  printf("***********************************************************\n");
+  printf("*                                                         *\n");
+  printf("*          rosco_m68k SysInfo & MemCheck utility          *\n");
+  printf("*        %s CPU with Firmware ", cpu_name);
+  printf("%x.%x", major, minor);
+  if (snapshot) {
+    printf(" [SNAPSHOT]");
+  } else { 
+    printf(" [RELEASE ]");
+  }
+  printf("        *\n");
+  if (wver >= 0x0120) {
+    printf("* Firmware reports %8d bytes total contiguous memory *\n", *FW_MEMSIZE);
+  }
+  printf("*                                                         *\n");
+  printf("***********************************************************\n");
+  printf("\n");
+}
+
 /* Build a memory map at _end (start of 'heap').
  *
  * This map always consists of one MEMINFO header,
@@ -277,45 +332,17 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  */
 extern const void* _end;
 static MEMINFO* header = (MEMINFO*)&_end;
-static uint16_t* FIRMWARE_VER = (uint16_t*)0xfc0402;
-static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
 void kmain() {
-  if (*FIRMWARE_VER >= 0x0120) {
-    printf("Firmware reports %d bytes total contiguous memory\n", *FW_MEMSIZE);
-  }
+  show_banner();
 
-  printf("Found ");
-  switch (GET_CPU_ID()) {
-    case 0: 
-      printf("MC68000");
-      break;
-    case 1:
-      printf("MC68010");
-      break;
-    case 2:
-      printf("MC68020");
-      break;
-    case 3:
-      printf("MC68030");
-      break;
-    case 4:
-      printf("MC68040");
-      break;
-    case 6:
-      printf("MC68060");
-      break;
-    default:
-      printf("<unrecognized CPU>");
-  }
-
-  printf(" - Building memory map...\n");
+  printf("Building memory map, please wait...\n");
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
     printf("Failed to build memory map (0x%04x)\n", result);
   } else {
-    printf("Map build successfully\n");
+    printf("Map built successfully\n");
 
     for (uint8_t i = 0; i < MAX_RAMBLOCKS; i++) {
       if (header->blocks[i].block_size == 0) {
