@@ -66,13 +66,14 @@ noreturn void lmain() {
 #  endif
 #  ifdef KERMIT_LOADER
     mcPrint("Ready for Kermit receive...\r\n");
-    
+    mcBusywait(100000);
+
     while (!receive_kernel()) {
         mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
     }
 
     // Wait a short while for the user's terminal to come back...
-    mcBusywait(100000);
+    mcBusywait(400000);
     
     mcPrint("Kernel received okay; Starting...\r\n");
 #  else
