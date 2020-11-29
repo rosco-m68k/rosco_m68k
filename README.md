@@ -23,16 +23,16 @@ on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
 
 ## Specifications
 
-![Prototype board](images/r1-populated.png)
+![Prototype board](images/mainboard-1.2.jpg)
 
 ### Hardware
 
 The hardware specifications for the rosco_m68k are:
 
-* MC68010P10 at 8MHz, /DTACK not longer grounded but still zero-wait-state for RAM/ROM accesses.
+* MC68010P10 at 10MHz, /DTACK no longer grounded but still zero-wait-state for RAM/ROM accesses.
 * MC68901 MFP provides UART, Timers and Interrupt vectoring
 * 1MB RAM (0x0 - 0xFFFFF)
-* 16KB ROM (at 0xFC0000, 256KB reserved for ROM up to 0xFFFFFF)
+* Up to 64KB ROM supported (at 0xFC0000, 256KB reserved for ROM up to 0xFFFFFF)
 * 256KB IO space (0xF80000 - 0xFBFFFF)
 * High-speed decode and glue logic handled by ATF16V8BQL PLDs.
 * Comprehensive expansion and IO connectors allow the system to be easily expanded!
@@ -40,11 +40,11 @@ The hardware specifications for the rosco_m68k are:
 ### Software
 
 * A serial bootloader that can load software via the UART (with Kermit protocol)
-* Basic I/O library using Serial (FTDI cable or Serial-USB converter required)
-* Firmware features an (optional) Easy68K-compatible* TRAP 15 (IO) handler
-* A proof-of-concept "kernel" that demonstrates the serial loader
+* Lots of example code and community projects
+* Rich firmware interface for with serial and video console for easy programming
+* Easy68K-compatible* TRAP 15 (IO) handler
 * A growing collection of system libraries and utility code
-* Assembly build with VASM. C/C++ built with GCC 7.5.
+* Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 7.5.
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
 
