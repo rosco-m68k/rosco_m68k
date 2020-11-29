@@ -23,7 +23,7 @@ on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
 
 ## Specifications
 
-![Prototype board](images/r1-populated.png)
+![Prototype board](images/mainboard-1.2.jpg)
 
 ### Hardware
 
