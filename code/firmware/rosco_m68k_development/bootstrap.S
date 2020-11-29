@@ -479,17 +479,13 @@ BUSYWAIT_C::
     move.l  (4,A7),D0
     jmp     BUSYWAIT
 
-; Busywait - expects a delay in D0, returns when D0 gets to 0 
-;
-; Trashes: D0
-BUSYWAIT:
-    sub.l   #1,D0
-    tst.l   D0
-    bne.s   BUSYWAIT
-    rts
-
 BUS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
+
+    move.b  #0,MFP_IERA               ; Disable MFP interrupts
+    move.b  #0,MFP_IERB               
+    move.b  #$FF,MFP_DDR              ; All GPIOs are output
+
     move.b  #0,MFP_IERA
     move.b  #0,MFP_IERB
 
@@ -504,11 +500,22 @@ BUS_ERROR_HANDLER:
     
     rte                               ; Never reached
 
+; Busywait - expects a delay in D0, returns when D0 gets to 0 
+;
+; Trashes: D0
+BUSYWAIT:
+    sub.l   #1,D0
+    tst.l   D0
+    bne.s   BUSYWAIT
+    rts
+
 ADDRESS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
-    move.b  #0,MFP_IERA
-    move.b  #0,MFP_IERB
-
+    
+    move.b  #0,MFP_IERA               ; Disable MFP interrupts
+    move.b  #0,MFP_IERB               
+    move.b  #$FF,MFP_DDR              ; All GPIOs are output
+    
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
     move.l  #50000,D0                 ; Wait a while
     bsr.s   BUSYWAIT
@@ -530,8 +537,10 @@ ADDRESS_ERROR_HANDLER:
 
 ILLEGAL_INSTRUCTION_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
-    move.b  #0,MFP_IERA
-    move.b  #0,MFP_IERB
+
+    move.b  #0,MFP_IERA               ; Disable MFP interrupts
+    move.b  #0,MFP_IERB               
+    move.b  #$FF,MFP_DDR              ; All GPIOs are output
 
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
     move.l  #50000,D0                 ; Wait a while
