@@ -58,6 +58,7 @@ noreturn void lmain() {
 
 #ifndef MAME_FIRMWARE
 #  ifdef SDFAT_LOADER    
+    mcPrint("Looking for SD card...\r\n");
     if (load_kernel()) {
         goto have_kernel;
     }
