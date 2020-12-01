@@ -1,14 +1,6 @@
-# C Starter Project for rosco_m68k
+# C Game of Life for rosco_m68k
 
-This is an empty (well, "Hello World") C project. You can use it as 
-a starting point for your own programs.
- 
-## What next?
-
-* Edit `kmain.c` to add your own code.
-* Add more C or assembly files. Add them to the `$(OBJECTS)` line in `Makefile`
-  * Use the `.o` extension instead of `.c` or `.S` in the `Makefile`!
-* Make this README.md your own!
+Based on code from this site: https://rosettacode.org/wiki/Conway%27s_Game_of_Life
 
 ## Building
 
@@ -16,7 +8,7 @@ a starting point for your own programs.
 make clean all
 ```
 
-This will build `myprogram.bin`, which can be uploaded to a board that
+This will build `life.bin`, which can be uploaded to a board that
 is running the `serial-receive` firmware.
 
 If you're feeling adventurous (and have ckermit installed), you
