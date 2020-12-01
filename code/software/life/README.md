@@ -2,6 +2,8 @@
 
 Based on code from this site: https://rosettacode.org/wiki/Conway%27s_Game_of_Life
 
+Dependent on new code in this version of stdlib. https://github.com/mattuna15/rosco_m68k/tree/develop/code/software/libs
+
 ## Building
 
 ```
