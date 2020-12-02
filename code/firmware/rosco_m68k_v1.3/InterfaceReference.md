@@ -1,12 +1,12 @@
 # rosco_m68k Firmware - Memory & Interfaces
-## Firmware revision 1.2
+## Firmware revision 1.3
 
 This document describes the interfaces provided for programmers,
 hardware integrators and those expanding the rosco_m68k, as it
-applies to firmware revision 1.2. 
+applies to firmware revision 1.3. 
 
 The information contained herein is accurate and complete as far
-as possible, and will be kept updated as firmware 1.2 is developed.
+as possible, and will be kept updated as firmware 1.3 is developed.
 
 # Contents
 
