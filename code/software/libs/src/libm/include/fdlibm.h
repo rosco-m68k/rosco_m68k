@@ -433,3 +433,8 @@ typedef union {
 
 #endif  /* _COMPLEX_H */
 
+int err = 1;
+int *__errno()
+{
+return &err;
+}
