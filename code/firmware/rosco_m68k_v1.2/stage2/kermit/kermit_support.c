@@ -150,10 +150,10 @@ int receive_kernel() {
 
         if (rx_len < 1) {                           /* No data was read */
             freerslot(&k,r_slot);                   /* So free the window slot */
-            if (rx_len < 0)    {                     /* If there was a fatal error */
-              mcPrint("\x1b[1;31mSEVERE\x1b[0m: Read failed\r\n");
-              return 0;        
-            }                     /* give up */
+            if (rx_len < 0) {                       /* If there was a fatal error */
+                mcPrint("\x1b[1;31mSEVERE\x1b[0m: Read failed\r\n");
+                return 0;                             /* give up */
+            }
         }
 
         switch (status = kermit(K_RUN, &k, r_slot, rx_len, "", &response)) {
