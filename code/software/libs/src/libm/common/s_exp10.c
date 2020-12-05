@@ -51,7 +51,6 @@ PORTABILITY
 
 #undef exp10
 #include "fdlibm.h"
-#include <errno.h>
 #include <math.h>
 
 #ifndef _DOUBLE_IS_32BITS

@@ -50,7 +50,6 @@ PORTABILITY
 
 #undef pow10
 #include "fdlibm.h"
-#include <errno.h>
 #include <math.h>
 
 #ifndef _DOUBLE_IS_32BITS
