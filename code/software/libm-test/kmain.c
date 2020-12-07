@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 You (you@youremail.com)
+ * Copyright (c) 2020 Matthew Pearce (mattpearce@me.com)
  */
 
 #include <stdio.h>
