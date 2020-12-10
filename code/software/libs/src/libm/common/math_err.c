@@ -30,7 +30,12 @@
 
 #if WANT_ERRNO
 #include <errno.h>
-extern int *__errno(void);
+
+   int err = 1;
+   int *__errno()
+   {
+      return &err;
+   }
 /* NOINLINE reduces code size and avoids making math functions non-leaf
    when the error handling is inlined.  */
 NOINLINE static double
