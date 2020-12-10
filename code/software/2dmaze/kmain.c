@@ -1,3 +1,5 @@
+/** Rosco m68k 2d maze demo Matt Pearce (c) 2020 Mattpearce@me.com */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -126,8 +128,6 @@ void kmain()
    int curSq, printSq;
 
    InitMaze();
-   
-   cputsxy(1, 1, "GO!");
 
    /* Get random start square */
    curSq = MAX_SQUARES - 1;
@@ -156,12 +156,9 @@ void kmain()
       
       char in = mcReadchar();
       char in2 = mcReadchar();
-      char *key = "";
 
       if (in == 0x1B && in2 == 0x5B) {
-          char in = mcReadchar();
-          sprintf(key, "key: %02x", in);
-          cputsxy(3,3, key);
+            char in = mcReadchar();
       /* Handle arrow keys */
             switch (in)
             {

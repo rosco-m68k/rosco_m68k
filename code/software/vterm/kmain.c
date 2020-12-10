@@ -1,5 +1,7 @@
 /* COPYRIGHT 2018 BRYAN HALEY UNDER THE MIT LICENSE *
- * SEE LICENSE.MD FOR MORE INFORMATION              */
+ * SEE LICENSE.MD FOR MORE INFORMATION       
+ * 
+ * Modified Matt Pearce 2020 to support Rosco m68k       */
 
 
 
