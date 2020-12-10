@@ -20,7 +20,8 @@
 #include "printf.h"
 
 typedef void    FILE;
-#define stdin   (FILE*)0
+#define stdin   (FILE*)
+#define stdout   (FILE*)
 
 char *fgets(char *buf, int len, FILE *ignored);
 
