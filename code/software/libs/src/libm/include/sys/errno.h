@@ -14,6 +14,7 @@ extern "C" {
 #define errno (*__errno())
 #endif
 
+extern int *__errno(void);
 
 /* Please don't use these variables directly.
    Use strerror instead. */
