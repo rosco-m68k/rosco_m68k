@@ -22,15 +22,12 @@
 
 #include <stddef.h>
 
-#define RAND_MAX 32767
-
 void exit(int status);
 void abort(void);
 void *malloc(size_t size);
 void free(void *ptr);
 void *realloc(void *ptr, size_t size);
 void *calloc(size_t nitems, size_t size);
-int rand(void);
 
 #endif
 
