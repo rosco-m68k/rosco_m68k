@@ -33,7 +33,7 @@
 START::
     bset.b  #1,MFP_GPDR                 ; Turn off red LED
 
-    move.l  #RAMLIMIT,A7                ; Reset stack 
+    move.l  $414,A7                     ; Reset stack to top of memory
     move.l  #_init_end,A0               ; End of init into A0 (source)
     move.l  #_postinit,A1               ; target into A1 (destination)
 
