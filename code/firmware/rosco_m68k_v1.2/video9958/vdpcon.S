@@ -74,12 +74,40 @@ VRAM_MID_PAGE1_W  equ   $60          ; VRAM A8-A13 for page 1 (Write)
 ; Temporary bus error handler, in case no V9958 is installed
 BERR_HANDLER:
     move.w  D0,-(A7)
-    move.w  ($A,A7),D0
-    bset    #15,D0
-    move.w  D0,($A,A7)    
+    move.w  ($8,A7),D0                ; Get format
+    and.w   #$F000,D0                 ; Mask vector
+    cmp.w   #$8000,D0                 ; Is it an 010 BERR frame?
+    beq.w   .FRAME010                 ; Handle if so...
+
+    cmp.w   #$A000,D0                 ; Is it an 020 A000 BERR frame?
+    beq.s   .LFRAME                   ; Handle if so
+
+    cmp.w   #$B000,D0                 ; Is it an 020 B000 BERR frame?
+    beq.s   .LFRAME                   ; Handle if so
+
+    ; If we're here, assume it's a 68000 frame. To handle this, we'll just
+    ; unstack the frame and branch directly to the "no V9958" code.
+    move.w  (A7)+,D0                  ; If we're here, assume it's a 68000 frame
+    move.b  #1,$504                   ; Set the flag
+    add.l   #14,A7                    ; Unstack the rest of the frame
+    bra.s   NO_9958                   ; And branch.
+
+.FRAME010:
+    move.w  ($A,A7),D0                ; If we're here, it's an 010 frame...                
+    bset    #15,D0                    ; ... so just set the RR (rerun) flag
+    move.w  D0,($A,A7)
+    bra.s   .DONE 
+
+.LFRAME:
+    move.w  ($C,A7),D0                ; If we're here, it's an 020 frame...                
+    bclr    #8,D0                     ; ... we only care about data faults here... Hopefully :D
+    move.w  D0,($C,A7)    
+
+.DONE
     move.b  #1,$504
     move.w  (A7)+,D0
     rte
+
 
 ; Determine if there's a V9958 installed.
 ;
@@ -103,7 +131,7 @@ HAVE_V9958::
     move.b  #1,(PORT_WREG_SETUP,A0)   ; Write 1 (SR#1)...\
 
     tst.b   $504                      ; Was there a bus error?
-    bne.s   .NO_9958                  ; Bail now if so...
+    bne.s   NO_9958                   ; Bail now if so...
    
     move.b  #$8F,(PORT_WREG_SETUP,A0) ; ... to register 15 (with high bit set)
     eor.l   D1,D1                     ; Zero D1
@@ -112,18 +140,18 @@ HAVE_V9958::
     ror.b   #1,D1                     ; Shift right by 1 (for correct display)
 
     cmp.b   #2,D1                     ; V9958 has ID 2
-    beq.s   .IS_9958
+    beq.s   IS_9958
 
-.NO_9958:
+NO_9958:
     moveq   #0,D1                     ; Stash negative result in D1 for a sec...
     lea.l   SZNOID,A1                 ; Print "not 9958"
-    bra.s   .DISPLAY_MESSAGE
+    bra.s   DISPLAY_MESSAGE
 
-.IS_9958:    
+IS_9958:    
     moveq   #1,D1                     ; Stash positive result
     lea.l   SZID,A1                   ; Print "have 9958"
 
-.DISPLAY_MESSAGE:
+DISPLAY_MESSAGE:
     move.l  #14,D0                    ; Print the message
     trap    #15
 

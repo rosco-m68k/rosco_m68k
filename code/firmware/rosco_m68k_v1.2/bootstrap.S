@@ -320,12 +320,40 @@ INITMFP:
 ; Temporary bus error handler, in case no MC68681 is installed
 BERR_HANDLER:
     move.w  D0,-(A7)
-    move.w  ($A,A7),D0
-    bset    #15,D0
-    move.w  D0,($A,A7)    
+    move.w  ($8,A7),D0                ; Get format
+    and.w   #$F000,D0                 ; Mask vector
+    cmp.w   #$8000,D0                 ; Is it an 010 BERR frame?
+    beq.w   .FRAME010                 ; Handle if so...
+
+    cmp.w   #$A000,D0                 ; Is it an 020 A000 BERR frame?
+    beq.s   .LFRAME                   ; Handle if so
+
+    cmp.w   #$B000,D0                 ; Is it an 020 B000 BERR frame?
+    beq.s   .LFRAME                   ; Handle if so
+
+    ; If we're here, assume it's a 68000 frame. To handle this, we'll just
+    ; unstack the frame and branch directly to the "DUART done" code.
+    move.w  (A7)+,D0                  ; If we're here, assume it's a 68000 frame
+    move.b  #1,$504                   ; Set the flag
+    add.l   #14,A7                    ; Unstack the rest of the frame
+    bra.w   DUART_DONE                ; And branch.
+
+.FRAME010:
+    move.w  ($A,A7),D0                ; If we're here, it's an 010 frame...                
+    bset    #15,D0                    ; ... so just set the RR (rerun) flag
+    move.w  D0,($A,A7)
+    bra.s   .DONE 
+
+.LFRAME:
+    move.w  ($C,A7),D0                ; If we're here, it's an 020 frame...                
+    bclr    #8,D0                     ; ... we only care about data faults here... Hopefully :D
+    move.w  D0,($C,A7)    
+
+.DONE
     move.b  #1,$504
     move.w  (A7)+,D0
     rte
+
 
 INITDUART:
     move.b  #0,D5                     ; Indicate no MC68681 by default
@@ -341,7 +369,7 @@ INITDUART:
 
     ; If the first write generated a bus error, we may as well fail fast...
     tst.b   $504                      ; Was there a bus error?
-    bne.w   .DONE                     ; Bail now if so...
+    bne.w   DUART_DONE                ; Bail now if so...
 
     ; We now know that _something_ is present in the 68681 IO space, and 
     ; is capable of DTACK generation. Let's see if it looks like 68681...
@@ -355,16 +383,16 @@ INITDUART:
     ;
     move.b  DUART_IVR,D0              ; Get IVR - Should be 0x0F at reset
     cmp.b   #$0F,D0
-    bne.s   .DONE                     ; If not as expected, no DUART...
+    bne.s   DUART_DONE                ; If not as expected, no DUART...
  
     move.b  #$50,DUART_IVR            ; To further verify, try to set IVR
     move.b  DUART_IVR,D0              ; And then check it was set...
     cmp.b   #$50,D0                   ; to 0x50.
-    bne.s   .DONE                     ; If not as expected, no DUART...
+    bne.s   DUART_DONE                ; If not as expected, no DUART...
 
     ; If any of that generated a bus error, then it doesn't appear to be a 68681...
     tst.b   $504                      ; Was there a bus error?
-    bne.s   .DONE                     ; Bail now if so...
+    bne.s   DUART_DONE                ; Bail now if so...
 
     ; Okay, seems legit. Let's set it up.
     move.b  #$93,DUART_MR1A           ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
@@ -401,11 +429,11 @@ INITDUART:
     ; a 68681 installed after all. Unfortunately, We have probably trashed whatever
     ; _is_ in IO space in the 68681's range at this point...
     tst.b   $504                      ; Was there a bus error?
-    bne.s   .DONE                     ; Bail now if so...
+    bne.s   DUART_DONE                ; Bail now if so...
 
     ; Otherwise, looks like we successfully initialized a 68681!
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
- .DONE:
+DUART_DONE:
     move.l  $500,$8                   ; Restore bus error handler
     rts
 
