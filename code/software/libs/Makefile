@@ -37,7 +37,6 @@ include src/easy68k/include.mk
 include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/printf/include.mk
-include src/libm/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
