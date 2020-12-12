@@ -1,8 +1,7 @@
-# C Game of Life for rosco_m68k
+# Maze demo
 
-Based on code from this site: https://rosettacode.org/wiki/Conway%27s_Game_of_Life
-
-Dependent on new code in this version of stdlib. https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs
+A demo to show some new routines from stdlib (rand()), libm, and vterm.
+Once the random maze has finished drawing you can move around the maze using the cursor keys.
 
 ## Building
 
@@ -28,4 +27,3 @@ and UTF-8 enabled, for example:
 
 ```
 minicom -D /dev/your-device -c on -R utf-8
-```

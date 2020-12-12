@@ -1,8 +1,10 @@
-# C Game of Life for rosco_m68k
+# Command line demo for Vterm Lib
 
-Based on code from this site: https://rosettacode.org/wiki/Conway%27s_Game_of_Life
+Provides a command line interface to test terminal functions.
 
-Dependent on new code in this version of stdlib. https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs
+Enter `help` for information on the available commands.
+
+The ansi colour codes are available here: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
 
 ## Building
 
@@ -29,3 +31,4 @@ and UTF-8 enabled, for example:
 ```
 minicom -D /dev/your-device -c on -R utf-8
 ```
+
