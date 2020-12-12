@@ -10,12 +10,16 @@
  * is preserved.
  * ====================================================
  */
+#ifndef _ROSCOM68K_FDMLIB_H
+#define _ROSCOM68K_FDMLIB_H
 
 /* REDHAT LOCAL: Include files.  */
 #include <math.h>
 #include <sys/types.h>
 #include <machine/ieeefp.h>
 #include "math_config.h"
+
+extern int *__errno(void);
 
 extern int finite (double);
 extern int finitef (float);
@@ -433,8 +437,4 @@ typedef union {
 
 #endif  /* _COMPLEX_H */
 
-int err = 1;
-int *__errno()
-{
-return &err;
-}
+#endif
