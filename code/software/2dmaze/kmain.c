@@ -1,6 +1,5 @@
 /** Rosco m68k 2d maze demo Matt Pearce (c) 2020 Mattpearce@me.com */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "vterm.h"
