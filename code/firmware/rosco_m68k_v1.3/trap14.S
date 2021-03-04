@@ -24,8 +24,10 @@
 ; This is the exception handler...
 TRAP_14_HANDLER::
     move.l  A1,-(A7)
+    move.l  D1,-(A7)
+
     cmp.l   #6,D1                       ; Is function code in range?
-    bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
+    bhi.s   .EPILOGUE                   ; Nope, leave...
 
     add.l   D1,D1                       ; Multiply FC...
     add.l   D1,D1                       ; ... by 4...
@@ -41,7 +43,8 @@ TRAP_14_HANDLER::
     dc.l    .SETCURSOR                  ; FC == 5 ; SETCURSOR if so...
     dc.l    .CHECKCHAR                  ; FC == 6 ; CHECKCHAR if so...
     
-.NOT_IMPLEMENTED
+.EPILOGUE
+    move.l  (A7)+,D1
     move.l  (A7)+,A1
     rte                                 ; That's all for now...
 
@@ -49,44 +52,37 @@ TRAP_14_HANDLER::
 .PRINT
     move.l  EFP_PRINT,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 .PRINTLN
     move.l  EFP_PRINTLN,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 .SENDCHAR
     move.l  EFP_SENDCHAR,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 .RECVCHAR
     move.l  EFP_RECVCHAR,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
     
 .PRINTCHAR
     move.l  EFP_PRINTCHAR,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 .SETCURSOR
     move.l  EFP_SETCURSOR,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 .CHECKCHAR
     move.l  EFP_CHECKCHAR,A1
     jsr     (A1)
-    move.l  (A7)+,A1
-    rte
+    bra.s   .EPILOGUE
 
 
 ; Wraps FW_PRINT so it can be called from C-land

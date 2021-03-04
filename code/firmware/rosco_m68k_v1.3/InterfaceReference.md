@@ -443,8 +443,10 @@ console.
 Register D1.L is expected to contain the function code. Other arguments
 depend on the specific function, and are documented below.
 
-In all cases, registers used as aguments (including D1.L) are **not** 
-guaranteed to be preserved. All other registers are preserved.
+In all cases, registers used as aguments (**excluding** D1.L, which 
+will be preserved unless explicitly documented as used for a return
+value) are **not** guaranteed to be preserved. All 
+other registers are preserved.
 
 Function codes outside the range documented here are considered
 reserved for future expansion, and should not be used by integrators
@@ -479,7 +481,6 @@ MYSTRING    dc.b    "Hello, World!", 0
 
 **Modifies**
 
-* `D1.L` - May be modified arbitrarily
 * `A0`   - Will point to the memory location following the null terminator
 
 **Description**
@@ -509,7 +510,6 @@ hardware). See section 2.3 for details.
 
 **Modifies**
 
-* `D1.L` - May be modified arbitrarily
 * `A0`   - Will point to the memory location following the null terminator
 
 **Description**
@@ -705,7 +705,6 @@ MYSTRING    dc.b    "Hello, World!"
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Points to memory location after the last printed character
 
@@ -726,7 +725,6 @@ See also: Function 13
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Points to memory location after the last printed character
 
@@ -746,9 +744,7 @@ See also: Function 14
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.W` - Returns length of read string (Max 80)
-* `D2` - Trashed
 * `(A1)` - Returns the string
 
 **Description**
@@ -764,7 +760,6 @@ Read string from keyboard and store at (A1), NULL terminated, length retuned in 
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Possibly trashed
 
 **Description**
@@ -782,7 +777,6 @@ See also: Functions 15 & 20
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.L` - Returns the read number
 
 **Description**
@@ -799,7 +793,6 @@ See also: Functions 15 & 20
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.B` - The read character.
 
 **Description**
@@ -817,7 +810,6 @@ Read single character from the keyboard into D1.B.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 
 **Description**
@@ -832,7 +824,6 @@ Display single character in D1.B.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.B` - 1 if input pending, 0 otherwise
 
 **Description**
@@ -871,7 +862,6 @@ See also: Function 5
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.L` - Current number of upticks
 
 **Description**
@@ -921,7 +911,6 @@ intervention.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `D2` - Trashed
 * `A0` - Trashed
@@ -950,7 +939,6 @@ Out of range coordinates are usually ignored (depends on terminal).
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 
 **Description**
@@ -971,7 +959,6 @@ Echo is restored on 'Reset'.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Points to memory location after the last printed character
 
@@ -991,7 +978,6 @@ See also: Function 0
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Points to memory location after the last printed character
 
@@ -1012,7 +998,6 @@ See also: Function 1
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `D2` - Trashed
 
@@ -1034,7 +1019,6 @@ Values of D2.B outside the range 2 to 36 inclusive are ignored.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 
 **Description**
@@ -1060,7 +1044,6 @@ Input prompt display is enabled by default and by 'Reset'.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Trashed
 
@@ -1080,9 +1063,7 @@ Combination of functions 14 & 3.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1.L` - Returns the resulting number
-* `D2` - Trashed
 * `A1` - Trashed
 
 **Description**
@@ -1102,7 +1083,6 @@ Combination of functions 14 & 4.
 
 **Modifies**
 
-* `D0` - Trashed
 * `D1` - Trashed
 * `A1` - Trashed
 
