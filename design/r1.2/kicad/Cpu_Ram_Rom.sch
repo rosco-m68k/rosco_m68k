@@ -5,13 +5,13 @@ $Descr User 20914 11524
 encoding utf-8
 Sheet 2 4
 Title "MAIN BUS"
-Date "2020-05-26"
-Rev "1.2"
-Comp ""
+Date "2021-03-05"
+Rev "1.22"
+Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
 Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
-Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
+Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	4050 5400 3450 5400
@@ -1465,17 +1465,6 @@ Wire Wire Line
 Wire Wire Line
 	5450 8050 5450 7950
 Connection ~ 5450 7950
-$Comp
-L Connector_Generic:Conn_01x06 J2
-U 1 1 5F21AF05
-P 6500 7650
-F 0 "J2" H 6580 7642 50  0000 L CNN
-F 1 "Conn_01x06" H 6580 7551 50  0000 L CNN
-F 2 "rosco_m68k:1X06" H 6500 7650 50  0001 C CNN
-F 3 "~" H 6500 7650 50  0001 C CNN
-	1    6500 7650
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	6300 7450 6000 7450
 Wire Wire Line
@@ -1627,6 +1616,17 @@ Wire Wire Line
 Connection ~ 3500 9300
 Wire Wire Line
 	3500 9300 3500 9600
+$Comp
+L Connector_Generic:Conn_01x06 J2
+U 1 1 5F21AF05
+P 6500 7650
+F 0 "J2" H 6580 7642 50  0000 L CNN
+F 1 "Conn_01x06" H 6580 7551 50  0000 L CNN
+F 2 "rosco_m68k:1X06" H 6500 7650 50  0001 C CNN
+F 3 "~" H 6500 7650 50  0001 C CNN
+	1    6500 7650
+	1    0    0    -1  
+$EndComp
 Wire Bus Line
 	1600 6750 1600 7250
 Wire Bus Line
