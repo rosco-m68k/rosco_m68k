@@ -35,33 +35,33 @@ VECTORS:
     dc.l    GENERIC_HANDLER             ; 09: Trace
     dc.l    GENERIC_HANDLER             ; 0A: Line 1010 Emulator
     dc.l    GENERIC_HANDLER             ; 0B: Line 1111 Emulator
-    dc.l    RESERVED_HANDLER            ; 0C: Reserved
-    dc.l    RESERVED_HANDLER            ; 0D: Reserved
+    dc.l    GENERIC_HANDLER             ; 0C: Reserved
+    dc.l    GENERIC_HANDLER             ; 0D: Reserved
     dc.l    GENERIC_HANDLER             ; 0E: Format error (MC68010 Only)
     dc.l    GENERIC_HANDLER             ; 0F: Uninitialized Vector
     
-    dcb.l   8,RESERVED_HANDLER          ; 10-17: Reserved
+    dcb.l   8,GENERIC_HANDLER           ; 10-17: Reserved
     
     dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
     
-    dcb.l   7,INTERRUPT_HANDLER         ; 19-1F: Level 1-7 Autovectors
-    dcb.l   13,TRAP_HANDLER             ; 20-2C: TRAP Handlers (unused)
-    dc.l    TRAP_HANDLER                ; 2D: TRAP#13 handler (replaced later)
+    dcb.l   7,GENERIC_HANDLER           ; 19-1F: Level 1-7 Autovectors
+    dcb.l   13,GENERIC_HANDLER          ; 20-2C: TRAP Handlers (unused)
+    dc.l    GENERIC_HANDLER             ; 2D: TRAP#13 handler (replaced later)
     dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
-    dc.l    TRAP_HANDLER                ; 2F: TRAP#15 handler (replaced later)
-    dcb.l   16,RESERVED_HANDLER         ; 30-3F: Remaining Reserved vectors
-    dcb.l   4,UNMAPPED_USER_HANDLER     ; 40-43: MFP GPIO #0-3 (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 44: MFP Timer D (Interrupt not used)
+    dc.l    GENERIC_HANDLER             ; 2F: TRAP#15 handler (replaced later)
+    dcb.l   16,GENERIC_HANDLER          ; 30-3F: Remaining Reserved vectors
+    dcb.l   4,GENERIC_HANDLER           ; 40-43: MFP GPIO #0-3 (Not used)
+    dc.l    GENERIC_HANDLER             ; 44: MFP Timer D (Interrupt not used)
     dc.l    TICK_HANDLER                ; 45: MFP Timer C (System tick)
-    dcb.l   2,UNMAPPED_USER_HANDLER     ; 46-47: MFP GPIO #4-5 (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 48: MFP Timer B (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 49: Transmitter error (Not used)
-    dc.l    UNMAPPED_USER_HANDLER       ; 4A: Transmitter empty (Replaced later)
-    dc.l    UNMAPPED_USER_HANDLER       ; 4B: Receiver error (Replaced later)
-    dc.l    UNMAPPED_USER_HANDLER       ; 4C: Receiver buffer full (Replaced later)
-    dc.l    UNMAPPED_USER_HANDLER       ; 4D: Timer A (Not used)
-    dcb.l   2,UNMAPPED_USER_HANDLER     ; 4E-4F: MFP GPIO #6-7 (Not used)
-    dcb.l   176,UNMAPPED_USER_HANDLER   ; 50-FF: Unused user vectors
+    dcb.l   2,GENERIC_HANDLER           ; 46-47: MFP GPIO #4-5 (Not used)
+    dc.l    GENERIC_HANDLER             ; 48: MFP Timer B (Not used)
+    dc.l    GENERIC_HANDLER             ; 49: Transmitter error (Not used)
+    dc.l    GENERIC_HANDLER             ; 4A: Transmitter empty (Replaced later)
+    dc.l    GENERIC_HANDLER             ; 4B: Receiver error (Replaced later)
+    dc.l    GENERIC_HANDLER             ; 4C: Receiver buffer full (Replaced later)
+    dc.l    GENERIC_HANDLER             ; 4D: Timer A (Not used)
+    dcb.l   2,GENERIC_HANDLER           ; 4E-4F: MFP GPIO #6-7 (Not used)
+    dcb.l   176,GENERIC_HANDLER         ; 50-FF: Unused user vectors
     
 VEC_END:
 VERSION:
@@ -194,45 +194,29 @@ INITSDB:
 
     ; Setup default implementations in EFP table.
 .USEDUART:
-    lea     EARLY_PRINT_DUART,A0
-    move.l  A0,EFP_PRINT
-    lea     EARLY_PRINTLN_DUART,A0
-    move.l  A0,EFP_PRINTLN
-    lea     SENDCHAR_DUART,A0
-    move.l  A0,EFP_PRINTCHAR
-    lea     SENDCHAR_DUART,A0
-    move.l  A0,EFP_SENDCHAR
-    lea     RECVCHAR_DUART,A0
-    move.l  A0,EFP_RECVCHAR
-    lea     CHECKCHAR_DUART,A0
-    move.l  A0,EFP_CHECKCHAR
+    move.l  #EARLY_PRINT_DUART,EFP_PRINT
+    move.l  #EARLY_PRINTLN_DUART,EFP_PRINTLN
+    move.l  #SENDCHAR_DUART,EFP_PRINTCHAR
+    move.l  #SENDCHAR_DUART,EFP_SENDCHAR
+    move.l  #RECVCHAR_DUART,EFP_RECVCHAR
+    move.l  #CHECKCHAR_DUART,EFP_CHECKCHAR
     bra.s   .COMMON
     
     endif
 
 .USEMFP:
-    lea     EARLY_PRINT_MFP,A0
-    move.l  A0,EFP_PRINT
-    lea     EARLY_PRINTLN_MFP,A0
-    move.l  A0,EFP_PRINTLN
-    lea     SENDCHAR_MFP,A0
-    move.l  A0,EFP_PRINTCHAR
-    lea     SENDCHAR_MFP,A0
-    move.l  A0,EFP_SENDCHAR
-    lea     RECVCHAR_MFP,A0
-    move.l  A0,EFP_RECVCHAR
-    lea     CHECKCHAR_MFP,A0
-    move.l  A0,EFP_CHECKCHAR
+    move.l  #EARLY_PRINT_MFP,EFP_PRINT
+    move.l  #EARLY_PRINTLN_MFP,EFP_PRINTLN
+    move.l  #SENDCHAR_MFP,EFP_PRINTCHAR
+    move.l  #SENDCHAR_MFP,EFP_SENDCHAR
+    move.l  #RECVCHAR_MFP,EFP_RECVCHAR
+    move.l  #CHECKCHAR_MFP,EFP_CHECKCHAR
     
 .COMMON
-    lea     HALT,A0
-    move.l  A0,EFP_HALT
-    lea     ANSI_MOVEXY,A0
-    move.l  A0,EFP_MOVEXY
-    lea     ANSI_CLRSCR,A0
-    move.l  A0,EFP_CLRSCR
-    lea     .RETURN,A0               ; No-op for default SET CURSOR
-    move.l  A0,EFP_SETCURSOR
+    move.l  #HALT,EFP_HALT
+    move.l  #ANSI_MOVEXY,EFP_MOVEXY
+    move.l  #ANSI_CLRSCR,EFP_CLRSCR
+    move.l  #.RETURN,EFP_SETCURSOR     ; No-op for default SET CURSOR
 
 .RETURN
     rts
@@ -296,7 +280,6 @@ INITMFP:
                                       ; (kmain will call START_HEART later)
     
     ; Indicate success and return
-    move.b  #$FE,MFP_GPDR             ; Turn on GPIO #0 (Green LED)
     rts
 
 
@@ -405,13 +388,7 @@ INITDUART:
     ;move.b  #$ff,W_OPR_RESETCMD       ; Clear all OP bits (lower RTS)
     ;move.b  #0,W_OPR_SETCMD
 
-    ; Final check - if there were any bus errors during setup, then there isn't
-    ; a 68681 installed after all. Unfortunately, We have probably trashed whatever
-    ; _is_ in IO space in the 68681's range at this point...
-    tst.b   $504                      ; Was there a bus error?
-    bne.s   .DONE                     ; Bail now if so...
-
-    ; Otherwise, looks like we successfully initialized a 68681!
+    ; Looks like we successfully initialized a 68681!
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
  .DONE:
     move.l  $500,$8                   ; Restore bus error handler
@@ -572,22 +549,6 @@ ILLEGAL_INSTRUCTION_HANDLER:
 GENERIC_HANDLER:
     move.l  #$2BADB105,$404
     rte
-    
-RESERVED_HANDLER:
-    move.l  #$0BADC0DE,$404
-    rte
-    
-UNMAPPED_USER_HANDLER:
-    move.l  #$002BAD05,$404
-    rte
-    
-INTERRUPT_HANDLER:
-    move.l  #$0BADF00D,$404
-    rte
-
-TRAP_HANDLER:
-    move.l  #$C001C0DE,$404
-    rte
 
 
 ; Convenience SEND/RECV char functions, using the EFP table.
@@ -707,7 +668,7 @@ RECVCHAR_MFP:
 ; Consts 
     section .rodata
 
-SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _   ", $D, $A
+SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___ ___ _", $D, $A
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A

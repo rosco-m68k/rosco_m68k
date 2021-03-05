@@ -32,6 +32,8 @@ RESERVED            equ     $413
 ; D0 is expected to contain the task number (function code). Other arguments
 ; depend on the specific function - See README for details.
 EASY68K_TRAP_15_HANDLER:
+    move.l  D0,-(A7)                    ; Save function code
+    
     cmp.l   #20,D0                      ; Is function code in range?
     bhi.s   .DONE                       ; Nope, leave...
 
@@ -54,7 +56,7 @@ JUMPTABLE:
     dc.l    CHECK_RECV                  ; FC == 7
     dc.l    GET_TICKS                   ; FC == 8
     dc.l    HALT                        ; FC == 9
-    dc.l    .NOT_IMPLEMENTED            ; FC == 10
+    dc.l    EPILOGUE                    ; FC == 10 (NOT IMPLEMENTED)
     dc.l    MOVE_X_Y                    ; FC == 11
     dc.l    SET_ECHO                    ; FC == 12
     dc.l    PRINTLN_SZ                  ; FC == 13
@@ -63,28 +65,31 @@ JUMPTABLE:
     dc.l    SET_DISPLAY_OPTS            ; DC == 16
     dc.l    PRINT_SZ_PRINT_NUM          ; DC == 17
     dc.l    PRINT_SZ_READ_NUM           ; DC == 18
-    dc.l    .NOT_IMPLEMENTED            ; DC == 19
+    dc.l    EPILOGUE                    ; DC == 19 (NOT IMPLEMENTED)
     dc.l    DISPLAYNUM_SIGNED_WIDTH     ; DC == 20
 
-.NOT_IMPLEMENTED:
+; N.B. If changing this EPILOGUE, be sure to change EPILOGUE2 at the bottom
+; of the file to match!
+EPILOGUE:
+    move.l  (A7)+,D0                    ; Restore function code
     rte
 
 * ************************************************************************** *
 * ************************************************************************** *
-; The individual handlers. These are responsible for handling the rte,
-; and should not return to the main handler!
+; The individual handlers. They should jump back toEPILOGUE once complete
+; so that the stack / registers can be restored.
 * ************************************************************************** *
 PRINTLN_LEN:
     bsr.s   PRINT_LEN_IMPL              ; Print the string...
     lea     SZ_CRLF,A0                  ; Load CRLF...
     bsr.w   FW_PRINT                    ; ... and print it
-    rte
+    bra.s   EPILOGUE                   
 
 
 * ************************************************************************** *
 PRINT_LEN:
     bsr.s   PRINT_LEN_IMPL              ; Do the print...
-    rte                                 ; ... and done.
+    bra.s   EPILOGUE                   
 
 ; Sub used for both PRINT_LEN and PRINTLN_LEN
 PRINT_LEN_IMPL:
@@ -103,6 +108,7 @@ PRINT_LEN_IMPL:
 * ************************************************************************** *
 READLN_STR:
     move.l  A1,-(A7)                    ; Store buffer start
+    move.l  D2,-(A7)                    ; Store scratch register
 
     move.b  PROMPT_ON,D2                ; Get display prompt flag
     tst.b   D2                          ; Is it non-zero?
@@ -145,8 +151,9 @@ READLN_STR:
     add.w   #1,D1
     sub.w   D1,D0
     move.w  D0,D1                       ; Shuffle around to stay compatible...
-    move.l  (A7)+,A1                    ; ... and restore buffer pointer
-    rte
+    move.l  (A7)+,D2                    ; ... restore scratch reg
+    move.l  (A7)+,A1                    ; ... and buffer pointer
+    bra.w   EPILOGUE                   
 
 
 * ************************************************************************** *
@@ -154,15 +161,18 @@ DISPLAYNUM_SIGNED:
     move.l  D1,-(A7)                    ; Stack argument...
     bsr.w   print_signed                ; ... and call
     addq    #4,A7                       ; Cleanup stack
-    rte                                 ; And done!
+    bra.w   EPILOGUE                   
 
 
 * ************************************************************************** *
 READLN_NUM:
     bsr.s   READLN_NUM_IMPL
-    rte
+    bra.w   EPILOGUE                   
 
 READLN_NUM_IMPL:
+    move.l  D2,-(A7)                    ; Save scratch registers
+    move.l  D3,-(A7)                    ; ...
+
     move.b  PROMPT_ON,D2                ; Get display prompt flag
     tst.b   D2                          ; Is it non-zero?
     beq.s   .READ                       ; Nope, skip prompt display
@@ -214,20 +224,22 @@ READLN_NUM_IMPL:
     bsr.w   FW_PRINTCHAR
 
 .RETURN
+    move.l  (A7)+,D3                    ; Restore scratch registers
+    move.l  (A7)+,D2                    ; ...
     rts
 
 * ************************************************************************** *
 READ_CHAR:
     bsr.w   RECVCHAR                    ; Call RECVCHAR
     move.l  D0,D1                       ; Platform code returns in D0...
-    rte
+    bra.w   EPILOGUE                   
 
 
 * ************************************************************************** *
 SEND_CHAR:
     move.l  D1,D0                       ; Platform code expects arg in D0...
     bsr.w   SENDCHAR
-    rte
+    bra.w   EPILOGUE                   
 
 
 * ************************************************************************** *
@@ -239,17 +251,17 @@ CHECK_RECV:
     bne.s   .TRUE                       ; Yes - Go to set true
 
     move.b  #0,D1                       ; Else no - so false
-    rte                                 ; And done.
+    bra.w   EPILOGUE2                   
 
 .TRUE:
     move.b  #1,D1                       ; Set true
-    rte                                 ; And done.
+    bra.w   EPILOGUE2                   
 
 
 * ************************************************************************** *
 GET_TICKS:
     move.w  $408,D1                     ; Get (Word-sized!) count from SDB
-    rte
+    bra.w   EPILOGUE2                   
 
 
 * ************************************************************************** *
@@ -259,31 +271,37 @@ MOVE_X_Y:
 
 .MOVEXY
     bsr.w   FW_MOVEXY
-    rte                                 ; and done!
+    bra.w   EPILOGUE2                   
 
 .CLRSCR
     bsr.w   FW_CLRSCR
-    rte
+    bra.w   EPILOGUE2                   
 
 
 * ************************************************************************** *
 SET_ECHO:
     move.b  D1,ECHO_ON
-    rte
+    bra.w   EPILOGUE2
 
 
 * ************************************************************************** *
 PRINTLN_SZ:
-    movea.l A1,A0
+    move.l  A0,-(A7)
+    move.l  A1,A0
     bsr.w   FW_PRINTLN
-    rte
+    move.l  A0,A1
+    move.l  (A7)+,A0
+    bra.w   EPILOGUE2                  
 
 
 * ************************************************************************** *
 PRINT_SZ:
-    movea.l A1,A0
+    move.l  A0,-(A7)
+    move.l  A1,A0
     bsr.w   FW_PRINT
-    rte
+    move.l  A0,A1
+    move.l  (A7)+,A0
+    bra.w   EPILOGUE2 
 
 
 * ************************************************************************** *
@@ -292,7 +310,7 @@ DISPLAYNUM_UNSIGNED:
     move.l  D1,-(A7)                    ; ... and number
     bsr.w   print_unsigned              ; ... and call.
     addq    #8,A7                       ; Cleanup stack
-    rte                                 ; Fin!
+    bra.w   EPILOGUE2                  
 
 
 * ************************************************************************** *
@@ -305,43 +323,48 @@ SET_DISPLAY_OPTS:
     beq     .LF_OFF                     ;   Linefeed disable if so, else...
     cmp.b   #3,D1                       ; Is D1 3?
     beq     .LF_ON                      ;   Linefeed enable if so, else...
-    rte                                 ; Ignore.
+    bra.s   EPILOGUE2
 
 .PROMPT_OFF:
     move.b  0,PROMPT_ON
-    rte
+    bra.s   EPILOGUE2
 
 .PROMPT_ON
     move.b  1,PROMPT_ON
-    rte
+    bra.s   EPILOGUE2
 
 .LF_OFF:
     move.b  0,LF_DISPLAY
-    rte
+    bra.s   EPILOGUE2
 
 .LF_ON:
     move.b  1,LF_DISPLAY
-    rte
+    bra.s   EPILOGUE2
 
 
 * ************************************************************************** *
 PRINT_SZ_PRINT_NUM:
+    move.l  A0,-(A7)
     movea.l A1,A0                       ; Move arg for FW_PRINT...
     bsr.w   FW_PRINT                    ; ... and call it
 
     move.l  D1,-(A7)                    ; Stack number argument...
     bsr.w   print_signed                ; ... and call
     addq    #4,A7                       ; Cleanup stack
-    rte                                 ; And done!
+    
+    move.l  (A7)+,A0
+    bra.s   EPILOGUE2
 
 
 * ************************************************************************** *
 PRINT_SZ_READ_NUM:
+    move.l  A0,-(A7)
     movea.l A1,A0                       ; Move arg for FW_PRINT...
     bsr.w   FW_PRINT                    ; ... and call it
 
     bsr.w   READLN_NUM_IMPL             ; Then read a number into D1
-    rte
+    move.l  (A7)+,A0
+    bra.s   EPILOGUE2
 
 
 * ************************************************************************** *
@@ -350,8 +373,11 @@ DISPLAYNUM_SIGNED_WIDTH:
     move.l  D1,-(A7)                    ; ... and number
     bsr.w   print_signed_width          ; ... and call.
     addq    #8,A7                       ; Cleanup stack
-    rte                                 ; Fin!
 
+
+EPILOGUE2:
+    move.l  (A7)+,D0                    ; Restore function code
+    rte
 
 * ************************************************************************** *
 * ************************************************************************** *
