@@ -24,6 +24,9 @@
 #ifdef VIDEO9958_CON
 #include "video9958.h"
 #endif
+#ifdef HAVE_DEBUG_STUB
+extern void debug_stub();
+#endif
 
 #define INIT_STACK_VEC_ADDRESS 0x0
 #define RESET_VEC_ADDRESS 0x4
@@ -126,6 +129,10 @@ noreturn void main1() {
         V9958_CON_INIT();
         V9958_CON_INSTALLHANDLERS();
     }
+#endif
+
+#ifdef HAVE_DEBUG_STUB
+    debug_stub();
 #endif
 
     // Initialize the EFP's PROGRAM_LOADER func with the default loader to begin with

@@ -50,10 +50,12 @@ OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o warmboot.o mai
 ifeq ($(BIGROM),true)
 WITH_SDFAT=true
 WITH_KERMIT=true
+WITH_DEBUG_STUB=true
 else
 # Kermit enabled by default in non-big ROM, pass WITH_KERMIT=false to disable...
 WITH_SDFAT?=false
 WITH_KERMIT?=true
+WITH_DEBUG_STUB?=false
 endif
 
 include easy68k/include.mk
@@ -61,6 +63,10 @@ include sdcard/include.mk
 
 ifneq ($(WITH_VDP),false)
 include video9958/include.mk
+endif
+
+ifeq ($(WITH_DEBUG_STUB),true)
+include debug_stub/include.mk
 endif
 
 export WITH_SDFAT
@@ -71,6 +77,9 @@ export CPU ARCH TUNE
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
 %.o : %.S
+	$(AS) $(ASFLAGS) -o $@ $<
+
+%.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(STAGE2) : $(STAGE2_DIR)
