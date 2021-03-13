@@ -136,16 +136,21 @@ EARLY_PRINT_MFP:
 
     ifnd NO_68681
 EARLY_PRINT_DUART:
+    move.l  A1,-(A7)                  ; Save A1...
+    move.l  SDB_UARTBASE,A1           ; ... and get DUART base address
+
+.LOOP
     move.b  (A0)+,D0                  ; Get next character
     beq.s   .PRINT_DONE               ; ... we're done if its null.
 
 .BUFF_WAIT:
-    btst.b  #3,DUART_SRA
+    btst.b  #3,DUART_SRA(A1)
     beq.s   .BUFF_WAIT
-    move.b  D0,DUART_TBA
+    move.b  D0,DUART_TBA(A1)
     
-    bra.s   EARLY_PRINT_DUART         ; and loop
-.PRINT_DONE:    
+    bra.s   .LOOP                     ; and loop
+.PRINT_DONE:
+    move.l  (A7)+,A1                  ; Restore A1
     rts                               ; We're done
     endif
  
@@ -278,7 +283,8 @@ INITMFP:
     move.b  D0,MFP_VR                 ; ... then write to MFP vector register
     or.b    #$20,MFP_IERB             ; Enable Timer C interrupt, but leave it masked for now
                                       ; (kmain will call START_HEART later)
-    
+   
+    move.l  #MFPBASE,SDB_UARTBASE     ; Default UART starts out as MFP, may get overwritten later... 
     ; Indicate success and return
     rts
 
@@ -289,6 +295,95 @@ INITMFP:
 ; If an MC68681 is found, this will set D5 to 1. Otherwise, D5 will be 0.
 ; This is used to signal INITSDB that it should use the DUART vectors instead of
 ; the MFP ones.
+INITDUART:
+    ; Let's try the r2 DUART board first...
+    move.l  #DUART_BASE_R2,A0         ; Set R2 the base address
+    bsr.s   INITDUART_ATBASE          ; Try detect / and basic init
+    tst.b   D5                        ; Did we find it?
+    beq.s   .TRY_R1                   ; If no, try the R1 instead.
+
+    ; Else, we found an r2. Set it up for 115200
+    move.b  #$A0,DUART_CRA(A0)        ; Enable extended TX rates
+    move.b  #$80,DUART_CRA(A0)        ; Enable extended RX rates
+    move.b  #$80,DUART_ACR(A0)        ; Select bit rate set 2
+    move.b  #$88,DUART_CSRA(A0)       ; 115K2
+    bra.s   .COMMON_INIT
+
+.TRY_R1
+    move.l  #DUART_BASE_R1,A0         ; Set the R1 base address
+    bsr.s   INITDUART_ATBASE          ; Try detect / and basic init
+    tst.b   D5                        ; Did we find it?
+    beq.s   .DONE                     ; If no, we don't have a 68681
+
+    ; Else, we found an r1. Set it up for 115200
+    move.b  #$60,DUART_ACR(A0)        ; Set 0, Counter, X1/X2, /16
+    move.b  DUART_CRA(A0),D0          ; Enable undocumented rates
+    move.b  #$66,DUART_CSRA(A0)       ; 1200 per spec, uses counter instead
+
+    move.b  #0,DUART_CUR(A0)          ; Counter high: 0
+    move.b  #2,DUART_CLR(A0)          ; Counter  low: 2  (115.2KHz)
+    move.b  R_STARTCNTCMD(A0),D0      ; Start count
+
+.COMMON_INIT
+    move.l  A0,SDB_UARTBASE           ; Store the base address in SDB
+
+    move.b  #$13,DUART_MR1A(A0)       ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
+    move.b  #$07,DUART_MR2A(A0)       ; (Normal, No TX CTS/RTS, 1 stop bit)
+
+    ; Debug - output clocks on OP2 for scope
+    ;move.b  #%00000010,DUART_OPCR(A0)  ; RxCA (1x) on OP2, TxCA (1x) on OP3
+    move.b  #%00000000,DUART_OPCR(A0)  ; All output port disabled
+
+    move.b  #%00000101,DUART_CRA(A0)   ; Enable TX/RX
+
+.DONE
+    rts
+
+; Try to initialise the DUART at the base address in A0.
+INITDUART_ATBASE:
+    move.b  #0,D5                     ; Indicate no MC68681 by default
+
+    ; On r1.2, not having a 68681 will generate a bus error. We can look
+    ; for this on the first access, and if we get one, just bail immediately.
+    move.b  #0,$504                   ; Zero bus error flag
+
+    move.l  $8,$500                   ; Save the original bus error handler
+    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
+
+    move.b  #$0,DUART_IMR(A0)         ; Mask all interrupts
+
+    ; If the first write generated a bus error, we may as well fail fast...
+    tst.b   $504                      ; Was there a bus error?
+    bne.s   .DONE                     ; Bail now if so...
+
+    ; We now know that _something_ is present in the 68681 IO space, and 
+    ; is capable of DTACK generation. Let's see if it looks like 68681...
+    ; 
+    ; IVR is a convenient register that allows both read and write. We'll check its
+    ; initial value is as expected, then set ensure the initial read wasn't
+    ; a fluke. Note that, with the basic 68681 board, vectored interrupts are 
+    ; never used, so setting this has no effect - it's just a test. 
+    ;
+    ; This is hardly definitive, but should be good-enough for our purposes...
+    ;
+    move.b  DUART_IVR(A0),D0          ; Get IVR - Should be 0x0F at reset
+    cmp.b   #$0F,D0                   
+    bne.s   .DONE                     ; If not as expected, no DUART...
+ 
+    move.b  #$50,DUART_IVR(A0)        ; To further verify, try to set IVR
+    move.b  DUART_IVR(A0),D0          ; And then check it was set...
+    cmp.b   #$50,D0                   ; to 0x50.
+    bne.s   .DONE                     ; If not as expected, no DUART...
+
+    ; If any of that generated a bus error, then it doesn't appear to be a 68681...
+    tst.b   $504                      ; Was there a bus error?
+    bne.s   .DONE                     ; Bail now if so...
+
+    ; Looks like we successfully detected a 68681!
+    move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
+ .DONE:
+    move.l  $500,$8                   ; Restore bus error handler
+    rts
 
 ; Temporary bus error handler, in case no MC68681 is installed
 BERR_HANDLER::
@@ -316,83 +411,6 @@ BERR_HANDLER::
     move.b  #1,$504
     move.w  (A7)+,D0
     rte
-
-
-INITDUART:
-    move.b  #0,D5                     ; Indicate no MC68681 by default
-
-    ; On r1.2, not having a 68681 will generate a bus error. We can look
-    ; for this on the first access, and if we get one, just bail immediately.
-    move.b  #0,$504                   ; Zero bus error flag
-
-    move.l  $8,$500                   ; Save the original bus error handler
-    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
-
-    move.b  #$0,DUART_IMR             ; Mask all interrupts
-
-    ; If the first write generated a bus error, we may as well fail fast...
-    tst.b   $504                      ; Was there a bus error?
-    bne.s   .DONE                     ; Bail now if so...
-
-    ; We now know that _something_ is present in the 68681 IO space, and 
-    ; is capable of DTACK generation. Let's see if it looks like 68681...
-    ; 
-    ; IVR is a convenient register that allows both read and write. We'll check its
-    ; initial value is as expected, then set ensure the initial read wasn't
-    ; a fluke. Note that, with the basic 68681 board, vectored interrupts are 
-    ; never used, so setting this has no effect - it's just a test. 
-    ;
-    ; This is hardly definitive, but should be good-enough for our purposes...
-    ;
-    move.b  DUART_IVR,D0              ; Get IVR - Should be 0x0F at reset
-    cmp.b   #$0F,D0
-    bne.s   .DONE                     ; If not as expected, no DUART...
- 
-    move.b  #$50,DUART_IVR            ; To further verify, try to set IVR
-    move.b  DUART_IVR,D0              ; And then check it was set...
-    cmp.b   #$50,D0                   ; to 0x50.
-    bne.s   .DONE                     ; If not as expected, no DUART...
-
-    ; If any of that generated a bus error, then it doesn't appear to be a 68681...
-    tst.b   $504                      ; Was there a bus error?
-    bne.s   .DONE                     ; Bail now if so...
-
-    ; Okay, seems legit. Let's set it up.
-    move.b  #$93,DUART_MR1A           ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
-    move.b  #$07,DUART_MR2A           ; (Normal, No TX CTS/RTS, 1 stop bit)
-
-    ; 38400
-    ; move.b  #$70,DUART_ACR           ; Set 0, Timer, X1/X2, /16
-    ; move.b  #$CC,DUART_CSRA          ; 38K4
-
-    ; 57600
-    ; move.b  #$60,DUART_ACR           ; Set 0, Counter, X1/X2, /16
-    ; move.b  #$DD,DUART_CSRA          ; Baud from timer
-
-    ; 115200 working
-    move.b  #$60,DUART_ACR            ; Set 0, Counter, X1/X2, /16
-    move.b  DUART_CRA,D0              ; Enable undocumented rates
-    move.b  #$66,DUART_CSRA           ; 1200 per spec, uses counter instead
-
-    move.b  #0,DUART_CUR              ; Counter high: 0
-    move.b  #2,DUART_CLR              ; Counter  low: 2  (115.2KHz)
-    move.b  R_STARTCNTCMD,D0          ; Start count
-
-    ; Debug - output clocks on OP2 for scope
-    ; move.b  #%00000011,DUART_OPCR     ; RxCA (1x) on OP2
-    move.b  #%00000000,DUART_OPCR     ; All output port disabled
-
-    move.b  #%00000101,DUART_CRA      ; Enable TX/RX
-
-    ; TODO CTS/RTS Not yet working - figure out how to lower RTS!
-    ;move.b  #$ff,W_OPR_RESETCMD       ; Clear all OP bits (lower RTS)
-    ;move.b  #0,W_OPR_SETCMD
-
-    ; Looks like we successfully initialized a 68681!
-    move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
- .DONE:
-    move.l  $500,$8                   ; Restore bus error handler
-    rts
 
     endif
     
@@ -575,8 +593,11 @@ RECVCHAR::
 ; Modifies: D0.B (return = 0 if no character waiting, nonzero otherwise)
     ifnd NO_68681
 CHECKCHAR_DUART:
-    move.b  DUART_SRA,D0          ; Get RSR
+    move.l  A0,-(A7)              ; Stash A0
+    move.l  SDB_UARTBASE,A0       ; Get DUART base address
+    move.b  DUART_SRA(A0),D0      ; Get RSR
     andi.b  #1,D0                 ; And with buffer full bit
+    move.l  (A7)+,A0              ; Restore A0
     rts
     endif
 
@@ -592,9 +613,13 @@ CHECKCHAR_MFP:
 ; Modifies: Nothing
     ifnd NO_68681
 SENDCHAR_DUART:
-    btst.b  #3,DUART_SRA
-    beq.s   SENDCHAR_DUART
-    move.b  D0,DUART_TBA
+    move.l  A0,-(A7)              ; Stash A0
+    move.l  SDB_UARTBASE,A0       ; Get DUART base address
+.BUSYLOOP
+    btst.b  #3,DUART_SRA(A0)
+    beq.s   .BUSYLOOP
+    move.b  D0,DUART_TBA(A0)
+    move.l  (A7)+,A0              ; Restore A0
     rts
     endif
 
@@ -626,9 +651,13 @@ SENDCHAR_MFP:
 ; Modifies: D0 (return)
     ifnd NO_68681
 RECVCHAR_DUART:
-    btst.b  #0,DUART_SRA
-    beq.s   RECVCHAR_DUART
-    move.b  DUART_RBA,D0
+    move.l  A0,-(A7)              ; Stash A0
+    move.l  SDB_UARTBASE,A0       ; Get DUART base address
+.BUSYLOOP
+    btst.b  #0,DUART_SRA(A0)
+    beq.s   .BUSYLOOP
+    move.b  DUART_RBA(A0),D0
+    move.l  (A7)+,A0              ; Restore A0
     rts
     endif
 

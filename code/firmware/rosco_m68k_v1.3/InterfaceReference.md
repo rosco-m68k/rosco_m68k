@@ -1146,7 +1146,8 @@ exception handlers and TRAP routines.
 | 0x412   | 1    | Easy68k 'LF display' flag                                 |
 | 0x413   | 1    | Easy68k Reserved                                          |
 | 0x414   | 4    | Size of the first block of contiguious memory             |
-| 0x418   | 8    | System Reserved                                           |
+| 0x418   | 4    | Default UART base address                                 |
+| 0x41C   | 4    | System Reserved                                           |
 
 For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`.
 

@@ -80,7 +80,7 @@ uint32_t get_zip_size() {
  */ 
 noreturn void default_program_loader() {
     if (!decompress_stage2((uint32_t)&_zip_start, get_zip_size())) {
-        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 decompression failed; Halting.\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Stage 2 failed; Stop.\r\n");
         
         while (true) {
             BUSYWAIT_C(10000);
@@ -91,7 +91,7 @@ noreturn void default_program_loader() {
     // Call into stage 2
     stage2();
 
-    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Halting\r\n");
+    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Stop.\r\n");
 
     while (true) {
         HALT();
@@ -110,12 +110,12 @@ static void initialize_warm_reboot() {
 /* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
-        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Halting.\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
         HALT();
     }
 
     // Start the timer tick
-    FW_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick...\r\n");
+    FW_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick.\r\n");
     START_HEART();
 
     INSTALL_EASY68K_TRAP_HANDLERS();
@@ -187,3 +187,4 @@ uint32_t __udivsi3(uint32_t dividend, uint32_t divisor) {
 uint32_t __umodsi3(uint32_t dividend, uint32_t divisor) {
     return divmod(dividend, divisor, 1);
 }
+
