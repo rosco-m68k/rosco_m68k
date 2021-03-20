@@ -1,8 +1,8 @@
 GAL16V8
 GLUE
 
-FC0   FC1   FC2   ODDROM    ODDRAM    EVENROM   EVENRAM   IOSEL   IODTACK   GND
-A17   NC    IACK  PPDTACK   MFPDS     RAMOE     RW        LDS     DTACK     VCC
+FC0   FC1   FC2    ODDROM    ODDRAM    EVENROM   EVENRAM   IOSEL   IODTACK   GND
+A17   MFPDS EXPSEL PPDTACK   IACK      RAMOE     RW        LDS     DTACK     VCC
 
 /IACK     = A17 * FC0 * FC1 * FC2
 /PPDTACK  = /IOSEL * /IODTACK
@@ -11,7 +11,7 @@ A17   NC    IACK  PPDTACK   MFPDS     RAMOE     RW        LDS     DTACK     VCC
           + IACK * /ODDROM
           + IACK * /EVENRAM
           + IACK * /ODDRAM
-          + IACK * ODDROM * EVENROM * ODDRAM * EVENRAM * IOSEL
+          + IACK * /EXPSEL
 
 /MFPDS    = /LDS 
           + /IACK
