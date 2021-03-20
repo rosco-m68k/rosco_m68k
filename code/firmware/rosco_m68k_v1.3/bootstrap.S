@@ -230,8 +230,6 @@ INITSDB:
 ; Count size of the first block of contiguous memory,
 ; and store it in the SDB.
 INITMEMCOUNT:
-    move.l  #$100000,$414
-    rts
 .TESTVALUE equ $12345678
 .BLOCKSIZE equ $80000
 .MEMTOP    equ $F80000
