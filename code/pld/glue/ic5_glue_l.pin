@@ -14,9 +14,9 @@
   10   | GND      | GND
   11   | A17      | Input
   12   | MFPDS    | Output
-  13   | EXPSEL   | Input
+  13   | IACK     | Output
   14   | PPDTACK  | Output
-  15   | IACK     | Output
+  15   | EXPSEL   | Input
   16   | RAMOE    | Output
   17   | RW       | Input
   18   | LDS      | Input

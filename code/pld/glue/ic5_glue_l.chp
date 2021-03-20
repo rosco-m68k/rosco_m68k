@@ -13,11 +13,11 @@
                           |                 |
                    ODDRAM |  5           16 | RAMOE
                           |                 |
-                  EVENROM |  6           15 | IACK
+                  EVENROM |  6           15 | EXPSEL
                           |                 |
                   EVENRAM |  7           14 | PPDTACK
                           |                 |
-                    IOSEL |  8           13 | EXPSEL
+                    IOSEL |  8           13 | IACK
                           |                 |
                   IODTACK |  9           12 | MFPDS
                           |                 |
