@@ -11,7 +11,6 @@ A17   NC    IACK  PPDTACK   MFPDS     RAMOE     RW        LDS     DTACK     VCC
           + IACK * /ODDROM
           + IACK * /EVENRAM
           + IACK * /ODDRAM
-          + IACK * ODDROM * EVENROM * ODDRAM * EVENRAM * IOSEL
 
 /MFPDS    = /LDS 
           + /IACK
