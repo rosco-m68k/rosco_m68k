@@ -708,7 +708,7 @@ Text GLabel 10300 3800 2    47   Output ~ 0
 IACK
 Text GLabel 10950 3200 2    47   Output ~ 0
 DTACK
-Text GLabel 10300 3600 2    47   Output ~ 0
+Text GLabel 10300 3900 2    47   Output ~ 0
 MFPDS
 Text GLabel 10300 3500 2    47   Output ~ 0
 RAMOE
@@ -730,7 +730,6 @@ F 3 "" H 8600 3600 50  0001 C CNN
 	1    8600 3600
 	1    0    0    -1  
 $EndComp
-NoConn ~ 10300 3900
 $Comp
 L power:GND #PWR?
 U 1 1 5EE7D477
@@ -1248,7 +1247,7 @@ P 10850 2700
 AR Path="/5F2C84D7" Ref="R?"  Part="1" 
 AR Path="/5E53B952/5F2C84D7" Ref="R21"  Part="1" 
 F 0 "R21" V 10700 2759 59  0000 L BNN
-F 1 "4K7" V 10880 2750 59  0000 L BNN
+F 1 "2K2" V 10880 2750 59  0000 L BNN
 F 2 "rosco_m68k:0207_10" H 10850 2700 50  0001 C CNN
 F 3 "" H 10850 2700 50  0001 C CNN
 	1    10850 2700
@@ -1361,7 +1360,7 @@ Entry Wire Line
 Wire Wire Line
 	10300 3000 11350 3000
 Text Label 11200 3000 0    50   ~ 0
-A17
+A19
 Wire Wire Line
 	10300 3200 10850 3200
 Wire Wire Line
@@ -1376,4 +1375,6 @@ Wire Bus Line
 	12850 2600 12850 3800
 Wire Bus Line
 	19400 6050 19400 7500
+Text GLabel 10300 3600 2    50   Input ~ 0
+EXPSEL
 $EndSCHEMATC

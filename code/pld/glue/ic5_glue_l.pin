@@ -12,7 +12,7 @@
    8   | IOSEL    | Input
    9   | IODTACK  | Input
   10   | GND      | GND
-  11   | A17      | Input
+  11   | A19      | Input
   12   | MFPDS    | Output
   13   | IACK     | Output
   14   | PPDTACK  | Output
