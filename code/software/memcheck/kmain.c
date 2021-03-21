@@ -30,6 +30,8 @@
 
 #define MAX_RAMBLOCKS             32 
 
+volatile uint8_t BERRFLAG = 0;
+
 typedef struct __MEMBLOCK {
   uint32_t    block_start;
   uint32_t    block_size;
@@ -56,6 +58,8 @@ static uint32_t* VERSION = (uint32_t*)0xfc0400;
 static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
 extern uint32_t GET_CPU_ID();
+extern void INSTALL_BERR_HANDLER();
+extern void RESTORE_BERR_HANDLER();
 
 static void zeromeminfo(MEMINFO *header) {
   uint8_t *ptr = (uint8_t*)header;
@@ -336,6 +340,8 @@ static MEMINFO* header = (MEMINFO*)&_end;
 void kmain() {
   show_banner();
 
+  INSTALL_BERR_HANDLER();
+
   printf("Building memory map, please wait...\n");
   KRESULT result = build_memory_map(header);
 
@@ -350,6 +356,8 @@ void kmain() {
       }
       print_block(i, &header->blocks[i]);
     }
+
+    RESTORE_BERR_HANDLER();
 
     printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
   }
