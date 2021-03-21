@@ -5,13 +5,13 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 4
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
-Date "2021-03-05"
-Rev "1.22"
-Comp "The Really Old-School Company Limited"
+Date "2020-05-26"
+Rev "1.2"
+Comp ""
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
 Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
-Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 $Sheet
 S 5250 3300 600  1000
