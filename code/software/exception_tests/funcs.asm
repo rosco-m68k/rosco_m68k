@@ -15,11 +15,16 @@
 
     section .text
 
-; This is the stub exception handler. It does nothing more that
-; JSR to our C exception handler. It's needed to make the stack
-; behave as GCC expects.
+; This is the stub exception handler. It saves registers and 
+; sets up a pointer to the stacked CPU data for the C handler
+; to take as an argument, then calls the handler.
 BERR_HANDLER:
+    movem.l D0-D1/A0-A1,-(A7)
+    lea     16(A7),A0
+    move.l  A0,-(A7)
     jsr     berr_handler_c
+    addq.l  #4,A7
+    movem.l (A7)+,D0-D1/A0-A1
     rte
 
 

@@ -35,38 +35,36 @@ static uint32_t *bad = (uint32_t*)0x00f00000;
 /* 
  * Example of a C Bus Error handler. Note that this is *not* directly an 
  * exception handler (attribute interrupt) function - instead, it is called
- * by an assembler stub using JSR. This is because, even with the interrupt
- * attribute, GCC still offsets addresses into a stacked struct by 4 even
- * though interrupt handlers do not have a return address on the stack.
+ * by an assembler stub using JSR (to set up the stack correctly). 
  *
  * It's also worth noting that this is manipulating the passed in frame
  * directly, which is re-read by the CPU when the handler is done and 
  * (in this case) causes it to consider the bus error as handled in software.
  */
-void berr_handler_c(CPUExceptionFrame frame) {
+void berr_handler_c(CPUExceptionFrame *frame) {
   // indicate to the main code that the bus error handler has been run
   berr_hit = true;
 
   // Set some data for the main code to read after the exception
-  fmt = frame.format;
-  sr = frame.sr;
-  pc = frame.pc;
-  vec_ofs = frame.vec_ofs;
+  fmt = frame->format;
+  sr = frame->sr;
+  pc = frame->pc;
+  vec_ofs = frame->vec_ofs;
 
   // Handle the bus error appropriately for the CPU type (determined by the format code).
-  switch (frame.format) {
+  switch (frame->format) {
   case EX_FMT_010_BERR:
     // 68010 - Set bit 15 in SSW
     cpuver = 1;
-    frame.fmt010.ssw |= EX_M010_SSW_RR_MASK;  /* Set the Rerun flag, indicating that we handled the re-run */
-    frame.fmt010.data_in_buffer = 0xF00D;     /* Make the faulting read return 0xF00D (only 16-bit on 68010) */
+    frame->fmt010.ssw |= EX_M010_SSW_RR_MASK;  /* Set the Rerun flag, indicating that we handled the re-run */
+    frame->fmt010.data_in_buffer = 0xF00D;     /* Make the faulting read return 0xF00D (only 16-bit on 68010) */
     break;
   case EX_FMT_020_BERR_SHORT:
   case EX_FMT_020_BERR_LONG:
     // 68020 - Clear bit 8 in SSW
     cpuver = 2;
-    frame.fmt020.ssw &= ~EX_M020_SSW_DF_MASK; /* Clear the Data Fault flag, indicating we don't want re-run */
-    frame.fmt020.data_in_buffer = 0x2BADF00D; /* Instead, make it seem that the read returned 0x2BADF00D */
+    frame->fmt020.ssw &= ~EX_M020_SSW_DF_MASK; /* Clear the Data Fault flag, indicating we don't want re-run */
+    frame->fmt020.data_in_buffer = 0x2BADF00D; /* Instead, make it seem that the read returned 0x2BADF00D */
     break;
   default:
     // Unknown / 68000
