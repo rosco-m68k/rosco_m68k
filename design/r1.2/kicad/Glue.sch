@@ -5,13 +5,13 @@ $Descr User 23628 11170
 encoding utf-8
 Sheet 3 4
 Title "GLUE"
-Date "2021-03-05"
-Rev "1.22"
-Comp "The Really Old-School Company Limited"
+Date "2020-05-26"
+Rev "1.2"
+Comp ""
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
 Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
-Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
+Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	10450 7700 10450 8300
