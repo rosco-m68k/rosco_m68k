@@ -384,6 +384,7 @@ INITDUART_ATBASE:
  .DONE:
     move.l  $500,$8                   ; Restore bus error handler
     rts
+    endif
 
 ; Temporary bus error handler, in case no MC68681 is installed
 BERR_HANDLER::
@@ -411,8 +412,6 @@ BERR_HANDLER::
     move.b  #1,$504
     move.w  (A7)+,D0
     rte
-
-    endif
     
     
 ;------------------------------------------------------------
