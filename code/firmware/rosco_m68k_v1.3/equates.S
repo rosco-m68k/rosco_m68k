@@ -17,7 +17,7 @@
 ; Flags:
 ; bit 0 - 14: Reserved
 ; bit 15    : Snapshot version
-RELEASE_VER     equ     $80000130
+RELEASE_VER     equ     $00000130
 
 ; SDB layout
 SDB_MAGIC       equ     $400

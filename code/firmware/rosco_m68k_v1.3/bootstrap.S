@@ -700,7 +700,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;30mFirmware 1.3-BETA1", $1B, "[0m", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m      Firmware 1.3", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 
