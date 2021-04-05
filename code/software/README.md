@@ -7,14 +7,25 @@ Specifically:
 
 | Filename            | Description                                    |
 |:-------------------:|------------------------------------------------|
-| poc-kernel          | POC "kernel", compatible with `serial-receive` |
+| 2dmaze              | A 2d maze demo of libm (thanks to mattuna15)   |
+| 68010-test          | A simple program we use to test suspect CPUs   |
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
-| gpiodemo            | Stupid-simple GPIO example                     |
+| bbsd                | Bit-banged SD demo. Obsoleted by firmware      |
+| dhrystone           | Dhrystone benchmark (thanks to Xark)           |
+| easy68k-demo        | Demo of the easy68k firmware interface         |
+| ehbasic             | Lee Davison's ehBASIC (rosco_m68k port)        |
+| exception_tests     | Examples of using the exception std libraries  |
+| lcd-ili9341         | SPI demo with ILI9341 LCD (thanks to Xark)     |
 | libs                | All shared functions are built as libraries.   |
-| memcheck            | A simple memory checker / counter              |
+| life                | Conway's Game of Life (thanks to mattuna15)    |
+| memcheck            | Memory checker / basic sysinfo tool            |
+| sdfat_demo          | Demo code for using firmware SD interface      |
+| sdfat_menu          | **Awesome** SD Card bootload menu (thanks Xark)| 
+| gpiodemo            | Stupid-simple GPIO example                     |
 | starter_c           | A blank C project you can start from           |
 | starter_asm         | A blank assembler project you can start from   |
-
+| vterm               | ANSI terminal emulation (thanks to mattuna15)  |
+ 
 ## Getting Started
 
 ### GNU Toolchain
@@ -56,8 +67,12 @@ rest of the programs expect to find them.
 
 ## Building the examples
 
-Each of the example programs contains a `Make` build - simply `cd` into
-the appropriate directory and type `make all`.
+You can build all example programs in one go by simple typing `make` 
+in this directory. This will build binaries for each example in their
+respective directories.
+
+Alternatively, each of the example programs contains a `Make` build - 
+simply `cd` into the appropriate directory and type `make all`.
 
 This will build a few different artefacts, chief amongst which will be
 the `bin` file, which is a serial-bootloader compatible binary that 
