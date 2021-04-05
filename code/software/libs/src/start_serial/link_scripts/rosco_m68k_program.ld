@@ -105,8 +105,9 @@ SECTIONS
     _data_end = .;
   } > RAM
 
-  .bss ALIGN(4) :
+  .bss(NOLOAD):
   {
+    . = ALIGN(4);       /* Not strictly needed, but here in case we rearrange things */
     _bss_start = .;
     *(.bss*)
     *(COMMON)
