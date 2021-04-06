@@ -17,7 +17,7 @@
 ; Flags:
 ; bit 0 - 14: Reserved
 ; bit 15    : Snapshot version
-RELEASE_VER     equ     $00000130
+RELEASE_VER     equ     $00000131
 
 ; SDB layout
 SDB_MAGIC       equ     $400
@@ -62,8 +62,8 @@ EFP_SPI_SEND_M  equ     $47C
 ; This assumes the 68681 RS1-RS4 are connected to A1-A4, and that
 ; the decoder maps starting at either $f80008 (for the r1 board)
 ; or $f80048 (for the r2), with the difference being in that the
-; newer board is mapped with A6 high, while the older one is mapped
-; with A6 low. 
+; newer board is mapped with A7 high, while the older one is mapped
+; with A7 low. 
 ;
 ; For easier software compatibility, both the old and new boards 
 ; use the same out-of-order register ordering, which differs form
@@ -72,31 +72,32 @@ EFP_SPI_SEND_M  equ     $47C
 ; In that scheme, this is how IO addresses map to MC68681 registers:
 ;
 ; Address   :  A23 A22 A21 A20 A19 A18 A17 A16 A15 A14 A13 A12 A11 A10 A9  A8  A7  A6  A5  A4  A3  A2  A1  A0 (4321) = Reg
-; 0x00f80008:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   0   1   0   0   0  (0100) = 4
-; 0x00f8000a:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   0   1   0   1   0  (0101) = 5
-; 0x00f8000c:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   0   1   1   0   0  (0110) = 6
-; 0x00f8000e:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   0   1   1   1   0  (0111) = 7
-; 0x00f80010:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   0   0   0   0  (1000) = 8
-; 0x00f80012:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   0   0   1   0  (1001) = 9
-; 0x00f80014:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   0   1   0   0  (1010) = 10
-; 0x00f80016:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   0   1   1   0  (1011) = 11
-; 0x00f80018:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   1   0   0   0  (1100) = 12
-; 0x00f8001a:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   1   0   1   0  (1101) = 13
-; 0x00f8001c:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   1   1   0   0  (1110) = 14
-; 0x00f8001e:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   0   1   1   1   1   0  (1111) = 15
-; 0x00f80020:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   1   0   0   0   0   0  (0000) = 0
-; 0x00f80022:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   1   0   0   0   1   0  (0001) = 1
-; 0x00f80024:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   1   0   0   1   0   0  (0010) = 2
-; 0x00f80026:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   0   x   1   0   0   1   1   0  (0011) = 3
+; 0x00f80008:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   0   1   0   0   0  (0100) = 4
+; 0x00f8000a:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   0   1   0   1   0  (0101) = 5
+; 0x00f8000c:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   0   1   1   0   0  (0110) = 6
+; 0x00f8000e:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   0   1   1   1   0  (0111) = 7
+; 0x00f80010:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   0   0   0   0  (1000) = 8
+; 0x00f80012:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   0   0   1   0  (1001) = 9
+; 0x00f80014:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   0   1   0   0  (1010) = 10
+; 0x00f80016:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   0   1   1   0  (1011) = 11
+; 0x00f80018:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   1   0   0   0  (1100) = 12
+; 0x00f8001a:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   1   0   1   0  (1101) = 13
+; 0x00f8001c:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   1   1   0   0  (1110) = 14
+; 0x00f8001e:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   0   x   1   1   1   1   0  (1111) = 15
+; 0x00f80020:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   x   y   0   0   0   0   0  (0000) = 0
+; 0x00f80022:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   x   y   0   0   0   1   0  (0001) = 1
+; 0x00f80024:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   x   y   0   0   1   0   0  (0010) = 2
+; 0x00f80026:  1   1   1   1   1   0   0   0   0   0   0   0   0   0   0   0   x   x   y   0   0   1   1   0  (0011) = 3
 ;
 ; (x = 0 for r1 board, 1 for r2).
+; (y = 1 for r1 board, 0 for r2).
 ;
 ; The actual register constants below are offsets from the relevant
 ; base address (which will be determined during auto-detection, and
 ; stored in the SDB at $418.
 
 DUART_BASE_R1   equ     $f80008
-DUART_BASE_R2   equ     $f80048
+DUART_BASE_R2   equ     $f800a8
 
 ; For reference to the datasheet, the MC68681 register number is listed below.
 ;
