@@ -5,8 +5,8 @@ $Descr User 19128 10939
 encoding utf-8
 Sheet 4 4
 Title "EXPANSION AND MECHANICAL"
-Date "2021-04-09"
-Rev "1.23"
+Date "2021-03-05"
+Rev "1.22"
 Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
