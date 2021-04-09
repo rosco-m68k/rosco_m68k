@@ -21,12 +21,12 @@ Pin 18 = IACK         XOR = 0   AC1 = 1
  15  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
 Pin 17 = EXPSEL       XOR = 0   AC1 = 0
- 16  ---- -x-- --x- ---- x--- ---- ---- ---x
- 17  ---- -x-- ---- x--- ---- ---- ---- ----
- 18  ---- ---- x--- -x-- ---- ---- ---- ----
- 19  ---- ---- x--- ---- -x-- ---- ---- ----
- 20  ---- x--- -x-- ---- ---- ---- ---- ----
- 21  -xx- x--- ---- ---- ---- ---- ---- ----
+ 16  ---- ---- --x- x--- -x-- ---- ---- ---x
+ 17  ---- ---- x-x- -x-- ---- ---- ---- ---x
+ 18  ---- x--- -xx- ---- ---- ---- ---- ---x
+ 19  ---- -x-- --x- ---- x--- ---- ---- ---x
+ 20  -x-- x--- x-x- x--- x--- ---- ---- ---x
+ 21  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  22  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
@@ -41,8 +41,8 @@ Pin 16 = IOSEL        XOR = 0   AC1 = 0
  31  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
 Pin 15 = ODDROM       XOR = 0   AC1 = 0
- 32  x-x- x--- x-x- x--- x--- ---- ---- ---x
- 33  ---- ---- ---- ---- ---- ---- -x-- -x--
+ 32  x-x- x--- x-x- x--- x--- ---- -x-- ---x
+ 33  ---- ---- --x- ---- ---- ---- -x-- -x-x
  34  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -51,8 +51,8 @@ Pin 15 = ODDROM       XOR = 0   AC1 = 0
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
 Pin 14 = EVENROM      XOR = 0   AC1 = 0
- 40  x-x- x--- x-x- x--- x--- ---- ---- ---x
- 41  ---- ---- ---- ---- ---- -x-- ---- -x--
+ 40  x-x- x--- x-x- x--- x--- -x-- ---- ---x
+ 41  ---- ---- --x- ---- ---- -x-- ---- -x-x
  42  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  43  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  44  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

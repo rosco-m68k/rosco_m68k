@@ -76,11 +76,19 @@ int strcmp(const char *str1, const char *str2) {
 }
 
 int isupper(int c) {
-  return (c > 'A' && c < 'Z');
+  return (c >= 'A' && c <= 'Z');
+}
+
+int islower(int c) {
+  return (c >= 'a' && c <= 'z');
+}
+
+int toupper(int c) {
+  return islower(c) ? (c) - ('a' - 'A') : c;
 }
 
 int tolower(int c) {
-  return isupper(c) ? (c) - 'A' + 'a' : c;
+  return isupper(c) ? (c) + ('a' - 'A') : c;
 }
 
 int strcasecmp (const char *s1, const char *s2) {
@@ -93,6 +101,24 @@ int strcasecmp (const char *s1, const char *s2) {
     }
 
     while ((result = tolower (*p1) - tolower (*p2++)) == 0) {
+        if (*p1++ == '\0') {
+            break;
+        }
+    }
+
+    return result;
+}
+
+int strncasecmp (const char *s1, const char *s2, size_t n) {
+    const unsigned char *p1 = (const unsigned char *) s1;
+    const unsigned char *p2 = (const unsigned char *) s2;
+    int result = 0;
+
+    if (p1 == p2) {
+        return 0;
+    }
+
+    while (n-- && (result = tolower (*p1) - tolower (*p2++)) == 0) {
         if (*p1++ == '\0') {
             break;
         }
@@ -130,12 +156,20 @@ size_t strnlen(const char* str, size_t maxlen) {
 }
 
 int strncmp(const char* s1, const char* s2, size_t n) {
-    while(n--) {
-        if(*s1++!=*s2++) {
-            return *(unsigned char*)(s1 - 1) - *(unsigned char*)(s2 - 1);
-        }
+    const unsigned char *p1 = (const unsigned char *) s1;
+    const unsigned char *p2 = (const unsigned char *) s2;
+    int result = 0;
+
+    if (p1 == p2) {
+        return 0;
     }
-    return 0;
+
+    while(n-- && (result = *p1 - *p2++) == 0) {
+        if (*p1++ == '\0')
+            break;
+    }
+
+    return result;
 }
 
 char* strncpy(char *to, const char *from, size_t n) {
@@ -156,4 +190,96 @@ char *strcpy(char *to, const char *from) {
 	return to;
 }
 
+/*
+FUNCTION
+	<<strncat>>---concatenate strings
 
+INDEX
+	strncat
+
+SYNOPSIS
+	#include <string.h>
+	char *strncat(char *restrict <[dst]>, const char *restrict <[src]>,
+                      size_t <[length]>);
+
+DESCRIPTION
+	<<strncat>> appends not more than <[length]> characters from
+	the string pointed to by <[src]> (including the	terminating
+	null character) to the end of the string pointed to by
+	<[dst]>.  The initial character of <[src]> overwrites the null
+	character at the end of <[dst]>.  A terminating null character
+	is always appended to the result
+
+WARNINGS
+	Note that a null is always appended, so that if the copy is
+	limited by the <[length]> argument, the number of characters
+	appended to <[dst]> is <<n + 1>>.
+
+RETURNS
+	This function returns the initial value of <[dst]>
+
+PORTABILITY
+<<strncat>> is ANSI C.
+
+<<strncat>> requires no supporting OS subroutines.
+
+QUICKREF
+	strncat ansi pure
+*/
+
+#include <string.h>
+#include <limits.h>
+
+/* Nonzero if X is aligned on a "long" boundary.  */
+#define ALIGNED(X) \
+  (((long)X & (sizeof (long) - 1)) == 0)
+
+#if LONG_MAX == 2147483647L
+#define DETECTNULL(X) (((X) - 0x01010101) & ~(X) & 0x80808080)
+#else
+#if LONG_MAX == 9223372036854775807L
+/* Nonzero if X (a long int) contains a NULL byte. */
+#define DETECTNULL(X) (((X) - 0x0101010101010101) & ~(X) & 0x8080808080808080)
+#else
+#error long int is not a 32bit or 64bit type.
+#endif
+#endif
+
+#ifndef DETECTNULL
+#error long int is not a 32bit or 64bit byte
+#endif
+
+char *
+strncat (char *__restrict s1,
+	const char *__restrict s2,
+	size_t n)
+{
+  char *s = s1;
+
+  while (*s1)
+    s1++;
+  while (n-- != 0 && (*s1++ = *s2++))
+    {
+      if (n == 0)
+	*s1 = '\0';
+    }
+
+  return s;
+
+}
+
+
+char *
+strcat (char *__restrict s1,
+	const char *__restrict s2)
+{
+
+  char *s = s1;
+
+  while (*s1)
+    s1++;
+
+  while ((*s1++ = *s2++))
+    ;
+  return s;
+}

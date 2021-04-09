@@ -4,7 +4,7 @@
 # See LICENSE
 
 DEFINES=-DROSCO_M68K
-ASFLAGS=-Fbin -m68010 -quiet $(DEFINES)
+ASFLAGS=-Fbin -m68010 -quiet -nowarn=2028 $(DEFINES)
 AS=vasmm68k_mot
 RM=rm -f
 
@@ -18,8 +18,12 @@ BINARY_EXT=bin
 LST=$(BINARY_BASENAME).lst
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 
+ifeq ($(MC68681),true)
+DEFINES:=$(DEFINES) -DMC68681 
+endif
+
 $(BINARY) : ehbasic.S ehdefs.S
-	vasmm68k_mot -Fbin -m68010 -nowarn=2028 -L $(LST) -o $(BINARY) ehbasic.S
+	vasmm68k_mot $(ASFLAGS) -L $(LST) -o $(BINARY) ehbasic.S
 	chmod a-x $@
 
 .PHONY: all clean load

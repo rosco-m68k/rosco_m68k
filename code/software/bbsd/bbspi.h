@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <gpio.h>
 
 typedef struct {
@@ -50,5 +51,6 @@ void BBSPI_deassert_cs(BBSPI *spi);
 uint8_t BBSPI_transfer_byte(BBSPI *spi, uint8_t byte_out);
 void BBSPI_send_byte(BBSPI *spi, uint8_t byte_out);
 uint8_t BBSPI_recv_byte(BBSPI *spi);
+size_t BBSPI_recv_buffer(BBSPI *spi, void *buffer, size_t count);
 
 #endif /* ROSCO_M68K_BBSD_H */

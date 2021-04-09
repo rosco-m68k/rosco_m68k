@@ -24,14 +24,26 @@ char* memchr(register const char* src_void, int c, size_t length);
 size_t strlen(const char *s);
 int strcmp(const char *str1, const char *str2);
 int strcasecmp (const char *s1, const char *s2);
+int strncasecmp (const char *s1, const char *s2, size_t n);
 char *strchr(const char *s, int c);
 char *strrchr(const char *s, int c);
+int islower(int c);
 int isupper(int c);
 int tolower(int c);
+int toupper(int c);
 size_t strnlen(const char* str, size_t maxlen);
 int strncmp(const char* s1, const char* s2, size_t n);
 char *strncpy(char *to, const char *from, size_t n);
 char *strcpy(char *to, const char *from);
+char *
+strncat (char *__restrict s1,
+	const char *__restrict s2,
+	size_t n);
+
+char *
+strcat (char *__restrict s1,
+	const char *__restrict s2);
+
 
 #endif
 

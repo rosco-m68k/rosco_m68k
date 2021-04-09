@@ -73,6 +73,40 @@
 #endif
 
 /*
+ * Absolute symbols defined in linker script
+ */
+extern uint32_t       _INITIAL_STACK;     // firmware stack top (mem top)
+extern void           (*_WARM_BOOT)();      // firmware warm boot address
+
+extern void           (*_MFP_VECTORS[16])();  // MFP interrupt vectors
+
+extern uint32_t       _SDB_MAGIC;           // SDB magic number
+extern uint32_t       _SDB_STATUS;          // SDB status code
+extern volatile uint32_t _TIMER_100HZ;      // 100Hz timer counter
+extern uint8_t        _EASY68K_ECHOON;      // Easy68k 'echo on' flag
+extern uint8_t        _EASY68K_PROMPT;      // Easy68k 'prompt on' flag 
+extern uint8_t        _EASY68K_SHOWLF;      // Easy68k 'LF display' flag
+extern uint32_t       _SDB_MEM_SIZE;        // contiguous memory size
+
+// NOTE: These are not generally callable from C
+extern void           (*_EFP_PRINT)();        // ROM EFP vectors
+extern void           (*_EFP_PRINTLN)();   
+extern void           (*_EFP_PRINTCHAR)(); 
+extern void           (*_EFP_HALT)();      
+extern void           (*_EFP_SENDCHAR)();  
+extern void           (*_EFP_RECVCHAR)();  
+extern void           (*_EFP_CLRSCR)();    
+extern void           (*_EFP_MOVEXY)();    
+extern void           (*_EFP_SETCURSOR)(); 
+extern void           (*_EFP_SETCURSOR)(); 
+extern void           (*_EFP_RESRVD_444)();
+extern void           (*_EFP_PROGLOADER)();
+
+extern char           _FIRMWARE[];          // ROM firmware start address
+extern uint32_t       _FIRMWARE_REV;        // rosco ROM firmware revision
+extern char           _LOAD_ADDRESS[];      // firmware load address
+
+/*
  * Early print null-terminated string.
  */
 void mcPrint(char *str);
@@ -93,6 +127,11 @@ char mcReadchar();
  *   ~1.80 usec per tick with 10Mhz CPU
  */
 void mcBusywait(uint32_t ticks);
+
+/*
+ * Delay for n 10ms ticks (using 100Hz timer interrupt)
+ */
+void mcDelaymsec10(uint32_t ticks10ms);
 
 /*
  * Disable all interrupts (except NMI).

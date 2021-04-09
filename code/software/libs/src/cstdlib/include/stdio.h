@@ -20,7 +20,11 @@
 #include "printf.h"
 
 typedef void    FILE;
-#define stdin   (FILE*)0
+
+// TODO these aren't correct but the stdlib currently ignores them
+// anyway, they are only here to allow code to compile without changes.
+#define stdin   ((FILE*)0)
+#define stdout  ((FILE*)1)
 
 char *fgets(char *buf, int len, FILE *ignored);
 

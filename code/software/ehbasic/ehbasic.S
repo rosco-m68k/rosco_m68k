@@ -73,19 +73,40 @@ nobrk		EQU	0				* null response to INPUT causes a break
 * Use this value to run out of ROM
 *	ORG		$FC0000			* past the vectors in a real system
 * Use this value to run out of RAM
-  ORG		$28000			* past the vectors in a real system
+*  ORG		$28000			* past the vectors in a real system
 
          BRA    code_start       * For convenience, so you can start from first address
-
 *************************************************************************************
 *
 * the following code is rosco_m68k-specific
 
 * output character to the console from register d0.b
 
+; While not strictly _to spec_ to reset cursor position on LF (it should be CR), ehBASIC 
+; *always* prints them in pairs, so this will work (and fits nicely with the way the 
+; VDP IO routines handle LF, while also still working with the UART).
 VEC_OUT:
     move.l  D1,-(A7)              ; Save D1
-    move.l  #4,D1                 ; Trap function code 4... 
+    move.b  TPos(A3),D1           ; Grab TPos...
+
+    cmp.b   #$A,D0                ; Is character a linefeed?
+    bne.s   .NOTLF                ; ...carry on if not
+    move.b  #0,D1                 ; ...else zero TPos
+    bra.s   .SETTPOS              ; ...and store it back to mem, then print (for UART compatibility).
+.NOTLF
+    cmp.b   #$8,D0                ; Is it a BS?
+    bne.s   .PRINT                ; ...nope, go directly to print...
+    cmp.b   #0,D1                 ; ...else, check if TPos is 0
+    beq.s   .BSZERO               ; branch is it is zero...
+    subq.b  #1,D1                 ; ...else just subtract 1
+    bra.s   .SETTPOS              ; and save to mem, then print
+.BSZERO
+    move.b  TWidth(A3),D1         ; If it was zero, move to end of previous line...
+                                  ; (ehBASIC should actually prevent this, but belt-and-braces...)
+.SETTPOS
+    move.b  D1,TPos(A3)           ; Store D1 back into TPos
+.PRINT
+    move.l  #4,D1                 ; Trap function code 4...
     trap    #14                   ; .. and go
     move.l  (A7)+,D1              ; Restore D1
     rts
@@ -95,7 +116,29 @@ VEC_OUT:
 * input a character from the console into register d0
 * else return Cb=0 if there's no character available
 
+DUART_SRA      equ     $f80022      ; R register 1
+DUART_RBA      equ     $f80026      ; R register 3
+
 VEC_IN:
+    ifd MC68681
+
+; MC68681 version
+
+    move.b  DUART_SRA,D0          ; Check DUART status reg A
+    btst    #0,D0                 ; Bit 0
+    bne.s   .GOTCHR               ; Notready if zero
+    andi.b  #$FE,CCR              ; Else clear the carry flag, no character available
+    rts                           ; And return
+    
+.GOTCHR
+    move.b  DUART_RBA,D0
+    ori.b   #1,CCR                ; ... and set the carry to flag to indicate we got a char
+    rts
+
+    else
+
+; MFP UART version
+
     move.b  MFP_RSR,D0            ; Get RSR
     btst    #7,D0                 ; Is buffer_full bit set?
     bne.s   .GOTCHR               ; Yes - Go to receive character
@@ -114,6 +157,8 @@ VEC_IN:
     move.b  MFP_UDR,D0            ; Get the data
     ori.b   #1,CCR                ; Set the carry to flag we got a char
     rts
+    
+    endif
 
 *************************************************************************************
 *
@@ -133,11 +178,8 @@ VEC_SV
 
 *************************************************************************************
 *
-* turn off simulator key echo
-
 code_start
 kmain::
-
 * Display cursor
   move.l  #5,D1
   move.l  #1,D0
@@ -219,7 +261,7 @@ LAB_COLD
 	MOVE.w	d0,prg_strt-2(a3)		* clear start word
 	MOVE.w	d0,BHsend(a3)		* clear value to string end word
 
-	MOVE.b	#$50,TWidth(a3)		* default terminal width byte for simulator
+	MOVE.b	#$4F,TWidth(a3)		* default terminal width (should be width - 1)
 	MOVE.b	#$0E,TabSiz(a3)		* save default tab size = 14
 
 	MOVE.b	#$38,Iclim(a3)		* default limit for TAB = 14 for simulator
