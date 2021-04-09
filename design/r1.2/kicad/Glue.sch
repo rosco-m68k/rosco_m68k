@@ -706,9 +706,9 @@ Text GLabel 9500 3900 0    47   Input ~ 0
 IODTACK
 Text GLabel 10300 3800 2    47   Output ~ 0
 IACK
-Text GLabel 11000 3700 2    47   Output ~ 0
+Text GLabel 10950 3200 2    47   Output ~ 0
 DTACK
-Text GLabel 10300 3600 2    47   Output ~ 0
+Text GLabel 10300 3900 2    47   Output ~ 0
 MFPDS
 Text GLabel 10300 3500 2    47   Output ~ 0
 RAMOE
@@ -730,7 +730,6 @@ F 3 "" H 8600 3600 50  0001 C CNN
 	1    8600 3600
 	1    0    0    -1  
 $EndComp
-NoConn ~ 10300 3900
 $Comp
 L power:GND #PWR?
 U 1 1 5EE7D477
@@ -1234,7 +1233,6 @@ Wire Wire Line
 Connection ~ 18700 7800
 Wire Wire Line
 	18700 7800 18700 7950
-NoConn ~ 10300 3200
 Wire Wire Line
 	12800 9000 14750 9000
 Wire Wire Line
@@ -1242,8 +1240,6 @@ Wire Wire Line
 Connection ~ 14750 9000
 Wire Wire Line
 	14750 9000 15850 9000
-Wire Wire Line
-	11000 3700 10850 3700
 $Comp
 L rosco_m68k-eagle-import:R-EU_0207_10 R?
 U 1 1 5F2C84D7
@@ -1251,7 +1247,7 @@ P 10850 2700
 AR Path="/5F2C84D7" Ref="R?"  Part="1" 
 AR Path="/5E53B952/5F2C84D7" Ref="R21"  Part="1" 
 F 0 "R21" V 10700 2759 59  0000 L BNN
-F 1 "4K7" V 10880 2750 59  0000 L BNN
+F 1 "2K2" V 10880 2750 59  0000 L BNN
 F 2 "rosco_m68k:0207_10" H 10850 2700 50  0001 C CNN
 F 3 "" H 10850 2700 50  0001 C CNN
 	1    10850 2700
@@ -1265,15 +1261,12 @@ Connection ~ 9100 2400
 Wire Wire Line
 	9100 2400 9100 2900
 Wire Wire Line
-	10850 2900 10850 3700
-Connection ~ 10850 3700
-Wire Wire Line
-	10850 3700 10300 3700
+	10850 2900 10850 3200
 $Comp
-L 74xx:74LS93 U5
+L 74xx:74LS93 IC7
 U 1 1 5F3446CA
 P 6100 7500
-F 0 "U5" H 5900 7900 50  0000 C CNN
+F 0 "IC7" H 5900 7900 50  0000 C CNN
 F 1 "74LS93" H 6300 7900 50  0000 C CNN
 F 2 "Package_DIP:DIP-14_W7.62mm_Socket_LongPads" H 6100 7500 50  0001 C CNN
 F 3 "http://www.ti.com/lit/gpn/sn74LS93" H 6100 7500 50  0001 C CNN
@@ -1367,7 +1360,13 @@ Entry Wire Line
 Wire Wire Line
 	10300 3000 11350 3000
 Text Label 11200 3000 0    50   ~ 0
-A17
+A19
+Wire Wire Line
+	10300 3200 10850 3200
+Wire Wire Line
+	10950 3200 10850 3200
+Connection ~ 10850 3200
+NoConn ~ 10300 3700
 Wire Wire Line
 	18700 6600 19700 6600
 Wire Bus Line
@@ -1376,4 +1375,6 @@ Wire Bus Line
 	12850 2600 12850 3800
 Wire Bus Line
 	19400 6050 19400 7500
+Text GLabel 10300 3600 2    50   Input ~ 0
+EXPSEL
 $EndSCHEMATC

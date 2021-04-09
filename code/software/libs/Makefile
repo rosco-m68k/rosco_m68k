@@ -5,8 +5,9 @@
 
 EXTRA_CFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-mcpu=68010 -march=68010 -mtune=68010														\
+CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
+				-nostartfiles -Wall -pedantic -Werror \
+				-mcpu=68010 -march=68010 -mtune=68010 \
 				-mno-align-int -mno-strict-align $(DEFINES)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 ARFLAGS=
@@ -28,17 +29,24 @@ INSTALL_INC=$(INSTALL_DIR)/include
 decoy:
 	@echo Please use \"make all\" to build all the libraries.
 
+include src/cstdlib/include.mk
+include src/sdfat/include.mk
 include src/machine/include.mk
 include src/gpio/include.mk
-include src/cstdlib/include.mk
 include src/easy68k/include.mk
+include src/debug_stub/include.mk
 include src/start_serial/include.mk
+include src/vterm/include.mk
+include src/libm/include.mk
 include src/printf/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
 %.o : %.S
+	$(AS) $(ASFLAGS) -o $@ $<
+
+%.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
 .PHONY: all install clean clobber

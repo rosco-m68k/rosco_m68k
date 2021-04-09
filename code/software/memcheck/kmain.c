@@ -30,6 +30,8 @@
 
 #define MAX_RAMBLOCKS             32 
 
+volatile uint8_t BERRFLAG = 0;
+
 typedef struct __MEMBLOCK {
   uint32_t    block_start;
   uint32_t    block_size;
@@ -39,6 +41,7 @@ typedef struct __MEMBLOCK {
 typedef struct {
   uint32_t    ram_total;
   uint32_t    ram_free;
+  MEMBLOCK    blocks[MAX_RAMBLOCKS];
 } __attribute__ ((packed)) MEMINFO;
 
 typedef uint32_t KRESULT;
@@ -50,6 +53,13 @@ typedef uint32_t KRESULT;
 #define KFAILURE_NOMEM            0x1002
 
 #define IS_KFAILURE(result)   (((result & KRESULT_FAILURE) != 0))
+
+static uint32_t* VERSION = (uint32_t*)0xfc0400;
+static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
+
+extern uint32_t GET_CPU_ID();
+extern void INSTALL_BERR_HANDLER();
+extern void RESTORE_BERR_HANDLER();
 
 static void zeromeminfo(MEMINFO *header) {
   uint8_t *ptr = (uint8_t*)header;
@@ -71,7 +81,7 @@ static uint32_t count_rom_size() {
       }
 
       if (((uint32_t)current) % 4096 == 0) {
-        printf("\033[20DROM: %dK %s", 
+        printf("\rROM: %dK %s", 
             ((uint32_t)current) / 1024, "[\033[1;32m✔\033[0m]");
       }
 
@@ -86,7 +96,7 @@ static uint32_t count_rom_size() {
 }
 
 static KRESULT build_memory_map(MEMINFO *header) {
-  MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
+  MEMBLOCK * blocks = header->blocks;
   bool block_started = false;
 
   zeromeminfo(header);
@@ -121,7 +131,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
         current_block++;
         
         if (current_block == MAX_RAMBLOCKS) {
-          printf("\033[20D");
+          printf("\r");
           return KFAILURE_NORESOURCE;
         }
       }
@@ -149,7 +159,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
     
         if (current_block == MAX_RAMBLOCKS) {
           // Uh-oh, no more blocks :(
-          printf("\033[20D");
+          printf("\r");
           return KFAILURE_NORESOURCE;
         }
       }
@@ -163,14 +173,14 @@ static KRESULT build_memory_map(MEMINFO *header) {
     current++;
 
     if (current_addr % 65536 == 0) {
-      printf("\033[20DRAM: %dK %s", 
+      printf("\rRAM: %dK %s", 
           current_addr / 1024, 
           block_started ? "[\033[1;32m✔\033[0m]" : "[\033[1;31m✗\033[0m]");
     }
   }
 
   if (current_block == MAX_RAMBLOCKS - 1) {  // We need at least two more blocks
-    printf("\033[20D");
+    printf("\r");
     return KFAILURE_NORESOURCE;
   }
 
@@ -195,7 +205,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
   if (rom_size < (256 << 10)) {
     // We have some shadow ROM, need a block for that..
     if (current_block == MAX_RAMBLOCKS - 1) {  // We need to create 2 at least more blocks
-      printf("\033[20D");
+      printf("\r");
       return KFAILURE_NORESOURCE;
     }
 
@@ -210,7 +220,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
         RAMBLOCK_FLAG_SHADOW;
   }
   
-  printf("\033[20D");
+  printf("\r");
   return KRESULT_SUCCESS;
 }
 
@@ -260,10 +270,62 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   }
 
   print_flags(block->flags);
-  printf("\r\n");
+  printf("\n");
 }
 
-/* System-wide memory map. Stored in SDB at 0x430.
+char* get_cpu_display_name(uint32_t cpu_id) {
+  switch (GET_CPU_ID()) {
+    case 0: 
+      return "MC68000";
+    case 1:
+      return "MC68010";
+    case 2:
+      return "MC68020";
+    case 3:
+      return "MC68030";
+    case 4:
+      return "MC68040";
+    case 6:
+      return "MC68060";
+    default:
+      return "<WEIRD>";
+  }
+}
+
+static void show_banner() {
+  bool snapshot = (*VERSION) & 0x80000000;
+  uint16_t wver = (*VERSION) * 0x0000FFFF;
+  uint8_t major = ((*VERSION) & 0x0000FF00) >> 8;
+  uint8_t minor = (*VERSION) & 0x000000FF;
+  char *cpu_name = get_cpu_display_name(GET_CPU_ID());
+
+  if (major == 0x07 && minor == 0x00) {
+    // special case - 1.0 didn't include version 
+    major = 0x01;
+    minor = 0x01;
+  }
+
+  printf("\n\n"); 
+  printf("***********************************************************\n");
+  printf("*                                                         *\n");
+  printf("*          rosco_m68k SysInfo & MemCheck utility          *\n");
+  printf("*        %s CPU with Firmware ", cpu_name);
+  printf("%x.%x", major, minor);
+  if (snapshot) {
+    printf(" [SNAPSHOT]");
+  } else { 
+    printf(" [RELEASE ]");
+  }
+  printf("        *\n");
+  if (wver >= 0x0120) {
+    printf("* Firmware reports %8d bytes total contiguous memory *\n", *FW_MEMSIZE);
+  }
+  printf("*                                                         *\n");
+  printf("***********************************************************\n");
+  printf("\n");
+}
+
+/* Build a memory map at _end (start of 'heap').
  *
  * This map always consists of one MEMINFO header,
  * followed by MAX_RAMBLOCKS blocks.
@@ -272,29 +334,58 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
  * address. Blocks with zero start and size are 
  * unused.
  */
-MEMINFO * volatile header = (MEMINFO*)0x430;
+extern const void* _end;
+static MEMINFO* header = (MEMINFO*)&_end;
 
-noreturn void kmain() {
-  MEMBLOCK * volatile blocks = (MEMBLOCK*)(((uint8_t*)header) + sizeof(MEMINFO));
+void kmain() {
+  show_banner();
 
-  printf("Building memory map...\r\n");
+  INSTALL_BERR_HANDLER();
+
+  printf("Building memory map, please wait...\n");
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
-    printf("Failed to build memory map (0x%04x)\r\n", result);
+    printf("Failed to build memory map (0x%04x)\n", result);
   } else {
-    printf("Map build successfully 😃\r\n");
+    printf("Map built successfully\n");
 
-    uint8_t current_block = 0;
-
-    while(blocks[current_block].block_size > 0) {
-      print_block(current_block, &blocks[current_block]);
-      current_block++;
+    for (uint8_t i = 0; i < MAX_RAMBLOCKS; i++) {
+      if (header->blocks[i].block_size == 0) {
+        break;
+      }
+      print_block(i, &header->blocks[i]);
     }
 
-    printf("Complete; Found a total of %d bytes of writeable RAM\r\n\r\n", header->ram_total);
-  }
+    RESTORE_BERR_HANDLER();
 
-  mcHalt();
+    printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
+  }
+}
+
+// Use custom __kinit (called by serial_start init.S before kmain) to set juggle stack around
+// and call main. Workaround for #135.
+extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+
+// The aforementioned Dragons! the subql #4,%sp mirrors what GCC does with -fomit-frame-pointer,
+// which is why that option is necessary. Without it, the postamble (?) of the function
+// won't clean up the (new) stack correctly...
+void __kinit()
+{
+    __asm__ __volatile__(" move.l  #100000,%%sp\n"
+                         " move.l  4.w,-(%%sp)\n"
+                         " subql   #4,%%sp"
+                         :
+                         :
+                         :);
+    // zero .bss
+    for (uint32_t * dst = &_bss_start; dst < &_bss_end; dst++)
+    {
+        *dst = 0;
+    }
+
+    kmain();      // call kmain here
+
+    // Returning here will go to the reset vector we pushed earlier...
 }
 

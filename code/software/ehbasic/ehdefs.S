@@ -1,38 +1,38 @@
 * This lot is in RAM
 
 *       ORG     $0			* start of RAM
- 
-ram_strt	ds.l	$100			* allow 1K for the stack, this should be plenty
-						* for any BASIC program that doesn't do something
-						* silly, it could even be much less.
-ram_base
-LAB_WARM	ds.w	1			* BASIC warm start entry point
-Wrmjpv	ds.l	1			* BASIC warm start jump vector
 
-Usrjmp	ds.w	1			* USR function JMP address
-Usrjpv	ds.l	1			* USR function JMP vector
+ram_strt	equ	0
+					* for any BASIC program that doesn't do something
+					* silly, it could even be much less.
+ram_base	equ	$0400
+LAB_WARM	equ	$0400		* BASIC warm start entry point
+Wrmjpv		equ	$0402		* BASIC warm start jump vector
+
+Usrjmp		equ	$0406		* USR function JMP address
+Usrjpv		equ	$0408
 
 * system dependant i/o vectors
 * these are in RAM and are set at start-up
 
-V_INPT	ds.w	1			* non halting scan input device entry point
-V_INPTv	ds.l	1			* non halting scan input device jump vector
+V_INPT		equ	$040c		* non halting scan input device entry point
+V_INPTv		equ	$040e		* non halting scan input device jump vector
 
-V_OUTP	ds.w	1			* send byte to output device entry point
-V_OUTPv	ds.l	1			* send byte to output device jump vector
+V_OUTP		equ	$0412		* send byte to output device entry point
+V_OUTPv		equ	$0414		* send byte to output device jump vector
 
-V_LOAD	ds.w	1			* load BASIC program entry point
-V_LOADv	ds.l	1			* load BASIC program jump vector
+V_LOAD		equ	$0418		* load BASIC program entry point
+V_LOADv		equ	$041a		* load BASIC program jump vector
 
-V_SAVE	ds.w	1			* save BASIC program entry point
-V_SAVEv	ds.l	1			* save BASIC program jump vector
+V_SAVE		equ	$041e		* save BASIC program entry point
+V_SAVEv		equ	$0420		* save BASIC program jump vector
 
-V_CTLC	ds.w	1			* save CTRL-C check entry point
-V_CTLCv	ds.l	1			* save CTRL-C check jump vector
+V_CTLC		equ	$0424		* save CTRL-C check entry point
+V_CTLCv		equ	$0426		* save CTRL-C check jump vector
 
-Itemp		ds.l	1			* temporary integer	(for GOTO etc)
+Itemp		equ	$042a		* temporary integer	(for GOTO etc)
 
-Smeml		ds.l	1			* start of memory		(start of program)
+Smeml		equ	$042e		* start of memory		(start of program)
 
 * the program is stored as a series of lines each line having the following format
 *
@@ -42,7 +42,7 @@ Smeml		ds.l	1			* start of memory		(start of program)
 *		dc.b	$00			* [EOL] marker, there will be a second $00 byte, if
 *						* needed, to pad the line to an even number of bytes
 
-Sfncl		ds.l	1			* start of functions	(end of Program)
+Sfncl		equ	$0432			* start of functions	(end of Program)
 
 * the functions are stored as function name, function execute pointer and function
 * variable name
@@ -51,14 +51,14 @@ Sfncl		ds.l	1			* start of functions	(end of Program)
 *		ds.l	1			* execute pointer
 *		ds.l	1			* function variable
 
-Svarl		ds.l	1			* start of variables	(end of functions)
+Svarl		equ	$0436			* start of variables	(end of functions)
 
 * the variables are stored as variable name, variable value
 *
 *		ds.l	1			* name
 *		ds.l	1			* packed float or integer value
 
-Sstrl		ds.l	1			* start of strings	(end of variables)
+Sstrl		equ	$043a			* start of strings	(end of variables)
 
 * the strings are stored as string name, string pointer and string length
 *
@@ -66,7 +66,7 @@ Sstrl		ds.l	1			* start of strings	(end of variables)
 *		ds.l	1			* string pointer
 *		ds.w	1			* string length
 
-Sarryl	ds.l	1			* start of arrays		(end of strings)
+Sarryl		equ	$043e			* start of arrays		(end of strings)
 
 * the arrays are stored as array name, array size, array dimensions count, array
 * dimensions upper bounds and array elements
@@ -90,111 +90,108 @@ Sarryl	ds.l	1			* start of arrays		(end of strings)
 *
 * .. if string
 
-Earryl	ds.l	1			* end of arrays		(start of free mem)
-Sstorl	ds.l	1			* string storage		(moving down)
-Ememl		ds.l	1			* end of memory		(upper bound of RAM)
-Sutill	ds.l	1			* string utility ptr
-Clinel	ds.l	1			* current line		(Basic line number)
-Blinel	ds.l	1			* break line		(Basic line number)
+Earryl		equ	$0442		* end of arrays		(start of free mem)
+Sstorl		equ	$0446		* string storage	(moving down)
+Ememl		equ	$044a		* end of memory		(upper bound of RAM)
+Sutill		equ	$044e		* string utility ptr
+Clinel		equ	$0452		* current line		(Basic line number)
+Blinel		equ	$0456		* break line		(Basic line number)
 
-Cpntrl	ds.l	1			* continue pointer
-Dlinel	ds.l	1			* current DATA line
-Dptrl		ds.l	1			* DATA pointer
-Rdptrl	ds.l	1			* read pointer
-Varname	ds.l	1			* current var name
-Cvaral	ds.l	1			* current var address
-Lvarpl	ds.l	1			* variable pointer for LET and FOR/NEXT
+Cpntrl		equ	$045a		* continue pointer
+Dlinel		equ	$045e		* current DATA line
+Dptrl		equ	$0462		* DATA pointer
+Rdptrl		equ	$0466		* read pointer
+Varname		equ	$046a		* current var name
+Cvaral		equ	$046e		* current var address
+Lvarpl		equ	$0472		* variable pointer for LET and FOR/NEXT
 
-des_sk_e	ds.l	6			* descriptor stack end address
-des_sk					* descriptor stack start address
-						* use a4 for the descriptor pointer
-		ds.w	1			
-Ibuffs	ds.l	$40			* start of input buffer
-Ibuffe
-						* end of input buffer
+des_sk_e	equ	$0476		* descriptor stack end address
+des_sk		equ	$048e		* descriptor stack start address
+					* use a4 for the descriptor pointer
+			
+Ibuffs		equ	$0490		* start of input buffer
+Ibuffe		equ	$0590
+					* end of input buffer
 
-FAC1_m	ds.l	1			* FAC1 mantissa1
-FAC1_e	ds.w	1			* FAC1 exponent
-FAC1_s	EQU	FAC1_e+1		* FAC1 sign (b7)
-		ds.w	1			
+FAC1_m		equ	$0590		* FAC1 mantissa1
+FAC1_e		equ	$0594		* FAC1 exponent
+FAC1_s		equ	FAC1_e+1	* FAC1 sign (b7)		
 
-FAC2_m	ds.l	1			* FAC2 mantissa1
-FAC2_e	ds.l	1			* FAC2 exponent
-FAC2_s	EQU	FAC2_e+1		* FAC2 sign (b7)
-FAC_sc	EQU	FAC2_e+2		* FAC sign comparison, Acc#1 vs #2
-flag		EQU	FAC2_e+3		* flag byte for divide routine
+FAC2_m		equ	$0598		* FAC2 mantissa1
+FAC2_e		equ	$059c		* FAC2 exponent
+FAC2_s		equ	FAC2_e+1	* FAC2 sign (b7)
+FAC_sc		equ	FAC2_e+2	* FAC sign comparison, Acc#1 vs #2
+flag		equ	FAC2_e+3	* flag byte for divide routine
 
-PRNlword	ds.l	1			* PRNG seed long word
+PRNlword	equ	$05a0		* PRNG seed long word
 
-ut1_pl	ds.l	1			* utility pointer 1
+ut1_pl		equ	$05a4		* utility pointer 1
 
-Asptl		ds.l	1			* array size/pointer
-Astrtl	ds.l	1			* array start pointer
+Asptl		equ	$05a8		* array size/pointer
+Astrtl		equ	$05ac		* array start pointer
 
-numexp	EQU	Astrtl		* string to float number exponent count
-expcnt	EQU	Astrtl+1		* string to float exponent count
+numexp		equ	Astrtl		* string to float number exponent count
+expcnt		equ	Astrtl+1	* string to float exponent count
 
-expneg	EQU	Astrtl+3		* string to float eval exponent -ve flag
+expneg		equ	Astrtl+3	* string to float eval exponent -ve flag
 
-func_l	ds.l	1			* function pointer
-
-
-						* these two need to be a word aligned pair !
-Defdim	ds.w	1			* default DIM flag
-cosout	EQU	Defdim		* flag which CORDIC output (re-use byte)
-Dtypef	EQU	Defdim+1		* data type flag, $80=string, $40=integer, $00=float
+func_l		equ	$05b0		* function pointer
 
 
-Binss		ds.l	4			* number to bin string start (32 chrs)
-
-Decss		ds.l	1			* number to decimal string start (16 chrs)
-		ds.w	1			*
-Usdss		ds.w	1			* unsigned decimal string start (10 chrs)
-
-Hexss		ds.l	2			* number to hex string start (8 chrs)
-
-BHsend	ds.w	1			* bin/decimal/hex string end
+					* these two need to be a word aligned pair !
+Defdim		equ	$05b4		* default DIM flag
+cosout		equ	Defdim		* flag which CORDIC output (re-use byte)
+Dtypef		equ	Defdim+1	* data type flag, $80=string, $40=integer, $00=float
 
 
-prstk		ds.b	1			* stacked function index
+Binss		equ	$05b6		* number to bin string start (32 chrs)
 
-tpower	ds.b	1			* remember CORDIC power
+Decss		equ	$05c6		* number to decimal string start (16 chrs)
+					*
+Usdss		equ	$05cc		* unsigned decimal string start (10 chrs)
 
-Asrch		ds.b	1			* scan-between-quotes flag, alt search character
+Hexss		equ	$05ce		* number to hex string start (8 chrs)
 
-Dimcnt	ds.b	1			* # of dimensions
+BHsend		equ	$05d6		* bin/decimal/hex string end
 
-Breakf	ds.b	1			* break flag, $00=END else=break
-Oquote	ds.b	1			* open quote flag (Flag: DATA; LIST; memory)
-Gclctd	ds.b	1			* garbage collected flag
-Sufnxf	ds.b	1			* subscript/FNX flag, 1xxx xxx = FN(0xxx xxx)
-Imode		ds.b	1			* input mode flag, $00=INPUT, $98=READ
 
-Cflag		ds.b	1			* comparison evaluation flag
+prstk		equ	$05d8		* stacked function index
 
-TabSiz	ds.b	1			* TAB step size
+tpower		equ	$05d9		* remember CORDIC power
 
-comp_f	ds.b	1			* compare function flag, bits 0,1 and 2 used
+Asrch		equ	$05da		* scan-between-quotes flag, alt search character
+
+Dimcnt		equ	$05db		* # of dimensions
+
+Breakf		equ	$05dc		* break flag, $00=END else=break
+Oquote		equ	$05dd		* open quote flag (Flag: DATA; LIST; memory)
+Gclctd		equ	$05de		* garbage collected flag
+Sufnxf		equ	$05df		* subscript/FNX flag, 1xxx xxx = FN(0xxx xxx)
+Imode		equ	$05e0		* input mode flag, $00=INPUT, $98=READ
+
+Cflag		equ	$05e1		* comparison evaluation flag
+
+TabSiz		equ	$05e2		* TAB step size
+
+comp_f		equ	$05e3		* compare function flag, bits 0,1 and 2 used
 						* bit 2 set if >
 						* bit 1 set if =
 						* bit 0 set if <
 
-Nullct	ds.b	1			* nulls output after each line
-TPos		ds.b	1			* BASIC terminal position byte
-TWidth	ds.b	1			* BASIC terminal width byte
-Iclim		ds.b	1			* input column limit
-ccflag	ds.b	1			* CTRL-C check flag
-ccbyte	ds.b	1			* CTRL-C last received byte
-ccnull	ds.b	1			* CTRL-C last received byte 'life' timer
+Nullct		equ	$05e4		* nulls output after each line
+TPos		equ	$05e5		* BASIC terminal position byte
+TWidth		equ	$05e6		* BASIC terminal width byte
+Iclim		equ	$05e7		* input column limit
+ccflag		equ	$05e8		* CTRL-C check flag
+ccbyte		equ	$05e9		* CTRL-C last received byte
+ccnull		equ	$05ea		* CTRL-C last received byte 'life' timer
 
 * these variables for simulator load/save routines
 
-file_byte	ds.b	1			* load/save data byte
-file_id	ds.l	1			* load/save file ID
+file_byte	equ	$05eb		* load/save data byte
+file_id		equ	$05ec		* load/save file ID
 
-		even			        * dummy even value and zero pad byte
-
-prg_strt
+prg_strt	equ	$05f0		* start of BASIC program
 
 * Use these two lines when running from ROM
 *ram_addr	EQU	$02000		* RAM start address

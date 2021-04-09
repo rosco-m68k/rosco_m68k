@@ -5,7 +5,7 @@
                           -------\___/-------
                       FC0 |  1           20 | VCC
                           |                 |
-                      FC1 |  2           19 | NC
+                      FC1 |  2           19 | DTACK
                           |                 |
                       FC2 |  3           18 | LDS
                           |                 |
@@ -13,13 +13,13 @@
                           |                 |
                    ODDRAM |  5           16 | RAMOE
                           |                 |
-                  EVENROM |  6           15 | MFPDS
+                  EVENROM |  6           15 | EXPSEL
                           |                 |
-                  EVENRAM |  7           14 | DTACK
+                  EVENRAM |  7           14 | PPDTACK
                           |                 |
                     IOSEL |  8           13 | IACK
                           |                 |
-                  IODTACK |  9           12 | NC
+                  IODTACK |  9           12 | MFPDS
                           |                 |
-                      GND | 10           11 | A17
+                      GND | 10           11 | A19
                           -------------------

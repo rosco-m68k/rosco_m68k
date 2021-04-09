@@ -1,7 +1,7 @@
 
 
-Pin 19 = NC           XOR = 0   AC1 = 0
-  0  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+Pin 19 = DTACK        XOR = 1   AC1 = 1
+  0  ---- ---- ---- ---- ---- ---x ---- ----
   1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -40,25 +40,25 @@ Pin 16 = RAMOE        XOR = 0   AC1 = 1
  30  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  31  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 15 = MFPDS        XOR = 0   AC1 = 1
- 32  ---- ---- ---- ---- ---- ---- ---- ----
- 33  ---- ---x ---- ---- ---- ---- ---- ----
- 34  ---- ---- ---- ---- ---- ---- ---x ----
+Pin 15 = EXPSEL       XOR = 0   AC1 = 1
+ 32  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 33  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 34  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = DTACK        XOR = 0   AC1 = 1
- 40  ---- ---- ---- ---- ---- --x- ---- ----
+Pin 14 = PPDTACK      XOR = 0   AC1 = 1
+ 40  ---- ---- ---- ---- ---- ---- ---- ----
  41  ---- ---- ---- ---- ---- ---- -x-- -x--
  42  ---- ---- ---- ---- ---- ---- ---x -x--
  43  ---- ---- ---- ---- -x-- ---- --x- ----
  44  ---- ---- -x-- ---- ---- ---- --x- ----
  45  ---- ---- ---- ---- ---- -x-- --x- ----
  46  ---- ---- ---- -x-- ---- ---- --x- ----
- 47  ---- ---- x--- x--- x--- x--- x-x- ----
+ 47  ---- ---- ---- ---- ---x ---- --x- ----
 
 Pin 13 = IACK         XOR = 0   AC1 = 1
  48  ---- ---- ---- ---- ---- ---- ---- ----
@@ -70,10 +70,10 @@ Pin 13 = IACK         XOR = 0   AC1 = 1
  54  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  55  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 12 = NC           XOR = 0   AC1 = 0
- 56  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
- 57  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
- 58  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+Pin 12 = MFPDS        XOR = 0   AC1 = 1
+ 56  ---- ---- ---- ---- ---- ---- ---- ----
+ 57  ---- ---x ---- ---- ---- ---- ---- ----
+ 58  ---- ---- ---- ---- ---- ---- ---x ----
  59  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  60  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  61  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

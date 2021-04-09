@@ -28,6 +28,7 @@ int readline(char *buf, int buf_size) {
 
     switch (c) {
     case 0x08:
+    case 0x7F:  /* DEL */
       if (i > 0) {
         buf[i-1] = 0;
         i = i - 1;
