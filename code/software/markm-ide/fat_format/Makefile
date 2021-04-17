@@ -5,8 +5,8 @@
 
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
-SYSINCDIR?=../libs/build/include
-SYSLIBDIR?=../libs/build/lib
+SYSINCDIR?=../../libs/build/include
+SYSLIBDIR?=../../libs/build/lib
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \

@@ -5,11 +5,14 @@
 
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
-SYSINCDIR?=../libs/build/include
-SYSLIBDIR?=../libs/build/lib
+SYSINCDIR?=../../libs/build/include
+SYSLIBDIR?=../../libs/build/lib
 DEFINES=-DROSCO_M68K
-CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
-				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
+CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections 			\
+				-Wall -Wextra -Werror -pedantic																	\
+				-Wno-unused-function -Wno-unused-variable 											\
+				-Wno-unused-but-set-variable 																		\
+				-pedantic -I$(SYSINCDIR) 																				\
 				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
@@ -39,7 +42,7 @@ PROGRAM_BASENAME=$(shell basename $(CURDIR))
 
 # Set other output files using output basname
 ELF=$(PROGRAM_BASENAME).elf
-BINARY=ROSCODE1.BIN
+BINARY=ide-lowlevel.bin
 DISASM=$(PROGRAM_BASENAME).dis
 MAP=$(PROGRAM_BASENAME).map
 SYM=$(PROGRAM_BASENAME).sym

@@ -149,6 +149,11 @@ int FAT_media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
             buffer += 512;
         }
 
+        // printf("Sending cache flush\n");
+        idereg[IDE_REG_WR_COMMAND] = 0xE7;
+        while (idereg[IDE_REG_RD_ALT_STATUS] & 0x0080)
+          continue;
+
     }
 
     return 1;
