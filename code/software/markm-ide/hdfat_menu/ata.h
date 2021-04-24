@@ -97,5 +97,6 @@ void ata_probe();
 void ata_select_drive(uint8_t i);
 uint8_t ata_identify(uint8_t drive);
 uint32_t ata_read(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive);
+uint32_t ata_write(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive);
 
 #endif // __ROSCO_M68K_ATA_H

@@ -8,11 +8,11 @@ static PartHandle phandle;
 static uint8_t part = 4;
 
 int FAT_media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
-    return part_read(&phandle, part, buffer, sector, sector_count);
+    return part_read(&phandle, part, buffer, sector, sector_count) == sector_count ? 1 : 0;
 }
 
 int FAT_media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
-    return 0;
+    return part_write(&phandle, part, buffer, sector, sector_count) == sector_count ? 1 : 0;
 }
 
 bool HD_FAT_initialize() {

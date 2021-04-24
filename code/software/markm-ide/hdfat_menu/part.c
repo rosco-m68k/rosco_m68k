@@ -66,6 +66,21 @@ uint32_t part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32
     }
 }
 
+uint32_t part_write(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
+    if (part_num > 3 || handle->parts[part_num].type == 0) {
+        printf("Partition %d not valid or not present on disk\n", part_num);
+        return 0;
+    } else {
+        RuntimePart *part = &handle->parts[part_num];
+        if (start > part->sector_count || start + count > part->sector_count) {
+            printf("Read out of range for partition %d", part_num);
+            return 0;
+        } else {
+            return ata_write(buffer, part->lba_start + start, count, handle->drive);
+        }
+    }
+}
+
 bool part_valid(PartHandle *handle, uint8_t part) {
     // status seems unreliable in modern times (macOS MBRs set it 0), so just see if we have a type
     // TODO this can likely be tightened up quite a bit!

@@ -59,18 +59,23 @@ static uint32_t filecrc;                                // current CRC-32 at sta
 // timer helpers
 uint32_t timer_start()
 {
-    uint32_t t;
-    uint32_t ts = _TIMER_100HZ;
-    // synchronize start to next 100Hz interrupt
-    while ((t = _TIMER_100HZ) == ts)
-        ;
-    return t;
+    // TODO cannot be supported currently as MFP starved of interrupts
+    return 0;
+//    uint32_t t;
+//    uint32_t ts = _TIMER_100HZ;
+//    // synchronize start to next 100Hz interrupt
+//    while ((t = _TIMER_100HZ) == ts)
+//        ;
+//    return t;
 }
 
 uint32_t timer_stop(uint32_t start_tick)
 {
-    uint32_t stop_tick = _TIMER_100HZ;
-    return (stop_tick - start_tick) * 10;
+    // TODO cannot be supported currently as MFP starved of interrupts
+    return 0;
+
+//    uint32_t stop_tick = _TIMER_100HZ;
+//    return (stop_tick - start_tick) * 10;
 }
 
 // From https://web.mit.edu/freebsd/head/sys/libkern/crc32.c
