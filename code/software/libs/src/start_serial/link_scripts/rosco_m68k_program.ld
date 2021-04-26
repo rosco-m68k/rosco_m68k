@@ -17,11 +17,11 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 
-ram  = 0x00001000;          /* start of user memory                     */
+ram  = 0x00002000;          /* start of user memory                     */
 
 MEMORY
 {
-  RAM  : org = ram,  l = 0x00FFEFFF     /* program can use all RAM > 4K */
+  RAM  : org = ram,  l = 0x00f7e000     /* program can use all RAM > 8K */
 }
 
 /* program configuration symbols that may be useful to override */
