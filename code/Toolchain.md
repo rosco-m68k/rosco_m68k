@@ -8,7 +8,7 @@ If you have Homebrew (https://brew.sh) installed, you can install the toolchain 
 
 ```
 brew tap rosco-m68k/toolchain
-brew install gcc-cross-m68k@7 vasm-all srecord minipro
+brew install gcc-cross-m68k@10 vasm-m68k srecord minipro
 ```
 
 This will automatically download, build and install all the dependencies that you _would have_ built if you'd followed the instructions in part two. 
