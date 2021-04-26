@@ -6,8 +6,8 @@
    2   | FC1      | Input
    3   | FC2      | Input
    4   | ODDROM   | Input
-   5   | ODDRAM   | Input
-   6   | EVENROM  | Input
+   5   | EVENROM  | Input
+   6   | ODDRAM   | Input
    7   | EVENRAM  | Input
    8   | IOSEL    | Input
    9   | IODTACK  | Input

@@ -5,13 +5,13 @@ $Descr User 19128 10939
 encoding utf-8
 Sheet 4 4
 Title "EXPANSION AND MECHANICAL"
-Date "2020-05-26"
-Rev "1.2"
-Comp ""
+Date "2021-04-09"
+Rev "1.23"
+Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
 Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
-Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
+Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	9550 2400 9650 2500
@@ -1123,6 +1123,65 @@ Wire Wire Line
 	10550 7400 10950 7400
 Wire Wire Line
 	10950 7400 10950 7850
+$Comp
+L Connector_Generic:Conn_01x06 J?
+U 1 1 60465FFE
+P 13000 7150
+AR Path="/5E53B4B8/60465FFE" Ref="J?"  Part="1" 
+AR Path="/5E53BC83/60465FFE" Ref="J4"  Part="1" 
+F 0 "J4" H 12950 7500 50  0000 L CNN
+F 1 "Conn_01x06" H 12750 6700 50  0000 L CNN
+F 2 "rosco_m68k:1X06" H 13000 7150 50  0001 C CNN
+F 3 "~" H 13000 7150 50  0001 C CNN
+	1    13000 7150
+	1    0    0    -1  
+$EndComp
+Text GLabel 12800 6950 0    50   BiDi ~ 0
+GPIO1
+Text Notes 13100 7000 0    50   ~ 0
+CS
+Text Notes 13100 7100 0    50   ~ 0
+SCK
+Text GLabel 12800 7050 0    50   BiDi ~ 0
+GPIO2
+Text GLabel 12800 7150 0    50   BiDi ~ 0
+GPIO3
+Text GLabel 12800 7250 0    50   BiDi ~ 0
+GPIO4
+Text Notes 13100 7200 0    50   ~ 0
+MOSI
+Text Notes 13100 7300 0    50   ~ 0
+MISO
+$Comp
+L power:VCC #PWR0129
+U 1 1 604703CB
+P 12250 7250
+F 0 "#PWR0129" H 12250 7100 50  0001 C CNN
+F 1 "VCC" H 12267 7423 50  0000 C CNN
+F 2 "" H 12250 7250 50  0001 C CNN
+F 3 "" H 12250 7250 50  0001 C CNN
+	1    12250 7250
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0130
+U 1 1 60470D8A
+P 12250 7550
+F 0 "#PWR0130" H 12250 7300 50  0001 C CNN
+F 1 "GND" H 12255 7377 50  0000 C CNN
+F 2 "" H 12250 7550 50  0001 C CNN
+F 3 "" H 12250 7550 50  0001 C CNN
+	1    12250 7550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	12800 7350 12250 7350
+Wire Wire Line
+	12250 7350 12250 7250
+Wire Wire Line
+	12800 7450 12250 7450
+Wire Wire Line
+	12250 7450 12250 7550
 Wire Bus Line
 	11150 4100 11150 5700
 Wire Bus Line
