@@ -11,9 +11,9 @@
                           |                 |
                    ODDROM |  4           17 | RW
                           |                 |
-                   ODDRAM |  5           16 | RAMOE
+                  EVENROM |  5           16 | RAMOE
                           |                 |
-                  EVENROM |  6           15 | EXPSEL
+                   ODDRAM |  6           15 | EXPSEL
                           |                 |
                   EVENRAM |  7           14 | PPDTACK
                           |                 |

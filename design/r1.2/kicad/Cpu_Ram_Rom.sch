@@ -5,13 +5,13 @@ $Descr User 20914 11524
 encoding utf-8
 Sheet 2 4
 Title "MAIN BUS"
-Date "2020-05-26"
-Rev "1.2"
-Comp ""
+Date "2021-04-09"
+Rev "1.23"
+Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
 Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
-Comment4 "Copyright 2019-2020 Ross Bamford and Contributors"
+Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	4050 5400 3450 5400
