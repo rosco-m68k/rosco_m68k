@@ -56,6 +56,9 @@ EFP_SPI_RECV_B  equ     $470
 EFP_SPI_RECV_M  equ     $474
 EFP_SPI_SEND_B  equ     $478
 EFP_SPI_SEND_M  equ     $47C
+EFP_ATA_INIT    equ     $480
+EFP_ATA_READ    equ     $484
+EFP_ATA_WRITE   equ     $488
 
 ; Equates for MC68681 DUART
 ; ------------------------------------------------------------

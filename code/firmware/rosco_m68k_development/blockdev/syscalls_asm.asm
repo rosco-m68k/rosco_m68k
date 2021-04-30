@@ -3,7 +3,7 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
-;                     |_____|       firmware v1
+;                     |_____|       firmware v2
 ;------------------------------------------------------------
 ; Copyright (c)2020 Ross Bamford
 ; See top-level LICENSE.md for licence information.
@@ -17,14 +17,15 @@
 TRAP_13_VECTOR      equ     $2D
 TRAP_13_VECTOR_ADDR equ     TRAP_13_VECTOR*4
 
-; TRAP 13 provides access to block device IO (SD Card currently)
+; TRAP 13 provides access to block device IO (ATA & SD Card).
+; For historical reasons, this TRAP also provides access to the SPI routines.
 ;
 ; D0 is expected to contain the task number (function code). Other arguments
-; depend on the specific function - See README for details.
+; depend on the specific function - See InterfaceReference.md for details.
 ;
 ; NOTE: Trashes A0, and allowed to modify arguments.
 SDCARD_TRAP_13_HANDLER:
-    cmp.l   #14,D0                      ; Is function code in range?
+    cmp.l   #18,D0                      ; Is function code in range?
     bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
 
     add.l   D0,D0                       ; Multiply FC...
@@ -33,12 +34,12 @@ SDCARD_TRAP_13_HANDLER:
     jmp     (A0)                        ; ... then jump there
 
 .JUMPTABLE:
-    dc.l    CHECK_SD                    ; FC == 0
+    dc.l    CHECK_SUCCESS               ; FC == 0
     dc.l    SD_INIT                     ; FC == 1
     dc.l    SD_READ_BLOCK               ; FC == 2
     dc.l    SD_WRITE_BLOCK              ; FC == 3
     dc.l    SD_READ_REGISTER            ; FC == 4
-    dc.l    CHECK_SPI                   ; FC == 5
+    dc.l    CHECK_SUCCESS               ; FC == 5
     dc.l    SPI_INIT                    ; FC == 6
     dc.l    SPI_ASSERT_CS               ; FC == 7
     dc.l    SPI_DEASSERT_CS             ; FC == 8
@@ -48,6 +49,10 @@ SDCARD_TRAP_13_HANDLER:
     dc.l    SPI_RECV_BUFFER             ; FC == 12
     dc.l    SPI_SEND_BYTE               ; FC == 13
     dc.l    SPI_SEND_BUFFER             ; FC == 14
+    dc.l    CHECK_SUCCESS               ; FC == 15
+    dc.l    ATA_INIT                    ; FC == 16
+    dc.l    ATA_READ                    ; FC == 17
+    dc.l    ATA_WRITE                   ; FC == 18
 .NOT_IMPLEMENTED:
     rte
 
@@ -56,7 +61,7 @@ SDCARD_TRAP_13_HANDLER:
 ; The individual handlers. These are responsible for handling the rte,
 ; and should not return to the main handler!
 * ************************************************************************** *
-CHECK_SD:
+CHECK_SUCCESS:
     move.l  #$1234FEDC,D0               ; Move magic into D0
     rte
 
@@ -78,10 +83,6 @@ SD_WRITE_BLOCK:
 SD_READ_REGISTER:
     move.l  EFP_SD_REG,A0
     jsr     (A0)
-    rte
-
-CHECK_SPI:
-    move.l  #$1234FEDC,D0               ; Move magic into D0
     rte
 
 SPI_INIT:
@@ -126,6 +127,21 @@ SPI_SEND_BYTE:
 
 SPI_SEND_BUFFER:
     move.l  EFP_SPI_SEND_M,A0
+    jsr     (A0)
+    rte
+
+ATA_INIT:
+    move.l  EFP_ATA_INIT,A0
+    jsr     (A0)
+    rte
+
+ATA_READ:
+    move.l  EFP_ATA_READ,A0
+    jsr     (A0)
+    rte
+
+ATA_WRITE:
+    move.l  EFP_ATA_WRITE,A0
     jsr     (A0)
     rte
 
@@ -298,6 +314,57 @@ SPI_BUFFER_OP:
     add.l   #8,A7
     rts
 
+; Arguments:
+;
+;  D1.L - 0 (ATA Master) or 1 (ATA slave)
+;  A1   - Pointer to an ATADevice struct
+;
+; Modifies:
+;
+;  D0.L - Return value
+;  D1.L - May be modified arbitrarily
+;  A0   - Modified arbitrarily
+;  A1   - May be modified arbitrarily
+FW_ATA_INIT:
+    move.l  #1,D0                       ; Just indicate failure for now
+    rts
+
+; Arguments:
+;
+;  D1.L - LBA sector number to read
+;  D2.L - Number of sectors to read
+;  A1   - Pointer to an initialized ATADevice struct
+;  A2   - Pointer to a (512 * D2.L)-byte buffer
+;
+; Modifies:
+;
+;  D0.L  - Return value (Actual read count)
+;  D1.L  - May be modified arbitrarily
+;  A0    - Modified arbitrarily
+;  A1    - May be modified arbitrarily
+;  A2    - May be modified arbitrarily
+FW_ATA_READ:
+    move.l  #0,D0                       ; Indicate no sectors read for now
+    rts
+
+; Arguments:
+;
+;  D1.L - LBA sector number to write
+;  D2.L - Number of sectors to write
+;  A1   - Pointer to an initialized ATADevice struct
+;  A2   - Pointer to a (512 * D2.L)-byte buffer
+;
+; Modifies:
+;
+;  D0.L  - Return value (Actual written count)
+;  D1.L  - May be modified arbitrarily
+;  A0    - Modified arbitrarily
+;  A1    - May be modified arbitrarily
+;  A2    - May be modified arbitrarily
+FW_ATA_WRITE:
+    move.l  #0,D0                       ; Indicate no sectors written for now
+    rts
+
 * ************************************************************************** *
 * ************************************************************************** *
 ; Called to install the TRAP handlers; Trashes A0
@@ -320,6 +387,9 @@ INSTALL_SDCARD_HANDLERS::
     move.l  #FW_SPI_RECV_BUFFER,EFP_SPI_RECV_M
     move.l  #FW_SPI_SEND_BYTE,EFP_SPI_SEND_B
     move.l  #FW_SPI_SEND_BUFFER,EFP_SPI_SEND_M
+    move.l  #FW_ATA_INIT,EFP_ATA_INIT
+    move.l  #FW_ATA_READ,EFP_ATA_READ
+    move.l  #FW_ATA_WRITE,EFP_ATA_WRITE
 
     ; And done...
     rts

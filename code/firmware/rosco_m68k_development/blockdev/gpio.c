@@ -15,8 +15,9 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <gpio.h>
 #include <machine.h>
+
+#include "gpio.h"
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 static volatile uint8_t * const mfp_ddr = (uint8_t * const)MFP_DDR;

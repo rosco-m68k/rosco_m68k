@@ -1,12 +1,12 @@
 # rosco_m68k Firmware - Memory & Interfaces
-## Firmware revision 1.3
+## Firmware version 2.0
 
 This document describes the interfaces provided for programmers,
 hardware integrators and those expanding the rosco_m68k, as it
-applies to firmware revision 1.3. 
+applies to firmware revision 2.0. 
 
 The information contained herein is accurate and complete as far
-as possible, and will be kept updated as firmware 1.3 is developed.
+as possible, and will be kept updated as firmware 2.0 is developed.
 
 # Contents
 
@@ -19,16 +19,20 @@ as possible, and will be kept updated as firmware 1.3 is developed.
       * 1.1.2.3 SD_READ_BLOCK (Function #2)
       * 1.1.2.4 SD_WRITE_BLOCK (Function #3)
       * 1.1.2.5 SD_READ_REGISTER (Function #4)
-      * 1.1.2.6 CHECK_SPI
-      * 1.1.2.7 SPI_INIT
-      * 1.1.2.8 SPI_ASSERT_CS
-      * 1.1.2.9 SPI_DEASSERT_CS
-      * 1.1.2.10 SPI_TRANSFER_BYTE
-      * 1.1.2.11 SPI_TRANSFER_BUFFER
-      * 1.1.2.12 SPI_RECV_BYTE
-      * 1.1.2.13 SPI_RECV_BUFFER
-      * 1.1.2.14 SPI_SEND_BYTE
-      * 1.1.2.15 SPI_SEND_BUFFER
+      * 1.1.2.6 CHECK_SPI (Function #5)
+      * 1.1.2.7 SPI_INIT (Function #6)
+      * 1.1.2.8 SPI_ASSERT_CS (Function #7)
+      * 1.1.2.9 SPI_DEASSERT_CS (Function #8)
+      * 1.1.2.10 SPI_TRANSFER_BYTE (Function #9)
+      * 1.1.2.11 SPI_TRANSFER_BUFFER (Function #10)
+      * 1.1.2.12 SPI_RECV_BYTE (Function #11)
+      * 1.1.2.13 SPI_RECV_BUFFER (Function #12)
+      * 1.1.2.14 SPI_SEND_BYTE (Function #13)
+      * 1.1.2.15 SPI_SEND_BUFFER (Function #14)
+      * 1.1.2.16 CHECK_ATA_SUPPORT (Function #15)
+      * 1.1.2.17 ATA_INIT (Function #16)
+      * 1.1.2.18 ATA_READ_SECTORS (Function #17)
+      * 1.1.2.19 ATA_WRITE_SECTORS (Function #18)
   * 1.2. Character device IO routines (TRAP 14)
     * 1.2.1 Example Usage
     * 1.2.2 Functions
@@ -166,6 +170,9 @@ number $1234FEDC in D0.L.
 Any other value indicates that support is not available. In this
 case, none of the SD Card routines should be used.
 
+With Firmware 2.0, SD support is always available. However, this
+routine is retained to allow easy backward-compatibility.
+
 #### 1.1.2.2 SD_INIT (Function #1)
 
 **Arguments**
@@ -220,7 +227,7 @@ indicates success.
 **Arguments**
 
 * `D0.L` - 1 (Function code)
-* `D1.L` - Block number to read
+* `D1.L` - Block number to write
 * `A1`   - Pointer to an initialized SDCard struct
 * `A2`   - Pointer to a 512-byte buffer
 
@@ -265,11 +272,11 @@ pointed to by A2.
 Returns 0 in D0.L to indicate failure, any other value
 indicates success.
 
-#### 1.1.2.6 CHECK_SPI
+#### 1.1.2.6 CHECK_SPI (Function #5)
 
 **Arguments**
 
-* None
+* `D0.L` - 5 (Function code)
 
 **Modifies**
 
@@ -285,11 +292,14 @@ number $1234FEDC in D0.L.
 Any other value indicates that support is not available. In this
 case, none of the SPI routines should be used.
 
-#### 1.1.2.7 SPI_INIT
+With Firmware 2.0, SD support is always available. However, this
+routine is retained to allow easy backward-compatibility.
+
+#### 1.1.2.7 SPI_INIT (Function #6)
 
 **Arguments**
 
-* None
+* `D0.L` - 6 (Function code)
 
 **Modifies**
 
@@ -301,10 +311,11 @@ case, none of the SPI routines should be used.
 Initialize the SPI interface. This sets the SPI pins to the 
 appropriate modes (input vs output).
 
-#### 1.1.2.8 SPI_ASSERT_CS
+#### 1.1.2.8 SPI_ASSERT_CS (Function #7)
 
 **Arguments**
 
+* `D0.L` - 7 (Function code)
 * `D1.L` - Device number (0 or 1)
 
 **Modifies**
@@ -318,10 +329,11 @@ Assert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
 Note that asserting one line *does not* automatically deassert 
 the other!
 
-#### 1.1.2.9 SPI_DEASSERT_CS
+#### 1.1.2.9 SPI_DEASSERT_CS (Function #8)
 
 **Arguments**
 
+* `D0.L` - 8 (Function code)
 * `D1.L` - Device number (0 or 1)
 
 **Modifies**
@@ -333,11 +345,12 @@ the other!
 
 Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
 
-#### 1.1.2.10 SPI_TRANSFER_BYTE
+#### 1.1.2.10 SPI_TRANSFER_BYTE (Function #9)
 
 **Arguments**
 
-* `D1.L` -  Byte to send
+* `D0.L` - 9 (Function code)
+* `D1.L` - Byte to send
 
 **Modifies**
 
@@ -348,10 +361,11 @@ Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
 
 Send and receive a byte (exchange) via SPI.
 
-#### 1.1.2.11 SPI_TRANSFER_BUFFER
+#### 1.1.2.11 SPI_TRANSFER_BUFFER (Function #10)
 
 **Arguments**
 
+* `D0.L` - 10 (Function code)
 * `A1.L` - Pointer to buffer
 * `D1.L` - Number of bytes
 
@@ -368,11 +382,11 @@ with bytes received at the same time (and returned in the buffer).
 
 Note that the buffer pointer may be modified, so keep a copy locally.
 
-#### 1.1.2.12 SPI_RECV_BYTE
+#### 1.1.2.12 SPI_RECV_BYTE (Function #11)
 
 **Arguments**
 
-* `D1.L` -  None
+* `D0.L` - 11 (Function code)
 
 **Modifies**
 
@@ -383,10 +397,11 @@ Note that the buffer pointer may be modified, so keep a copy locally.
 
 Send and receive a byte (exchange) via SPI.
 
-#### 1.1.2.13 SPI_RECV_BUFFER
+#### 1.1.2.13 SPI_RECV_BUFFER (Function #12)
 
 **Arguments**
 
+* `D0.L` - 12 (Function code)
 * `A1.L` - Pointer to buffer
 * `D1.L` - Number of bytes
 
@@ -401,11 +416,12 @@ Send and receive a byte (exchange) via SPI.
 Receive count (`D1.L`) bytes into the given buffer.
 Note that the buffer pointer may be modified, so keep a copy locally.
 
-#### 1.1.2.14 SPI_SEND_BYTE
+#### 1.1.2.14 SPI_SEND_BYTE (Function #13)
 
 **Arguments**
 
-* `D1.L` -  Byte to send
+* `D0.L` - 13 (Function code)
+* `D1.L` - Byte to send
 
 **Modifies**
 
@@ -416,10 +432,11 @@ Note that the buffer pointer may be modified, so keep a copy locally.
 
 Send and receive a byte (exchange) via SPI.
 
-#### 1.1.2.15 SPI_SEND_BUFFER
+#### 1.1.2.15 SPI_SEND_BUFFER (Function #14)
 
 **Arguments**
 
+* `D0.L` - 14 (Function code)
 * `A1.L` - Pointer to buffer
 * `D1.L` - Number of bytes
 
@@ -433,6 +450,106 @@ Send and receive a byte (exchange) via SPI.
 
 Send count (`D1.L`) bytes from the given buffer.
 Note that the buffer pointer may be modified, so keep a copy locally.
+
+#### 1.1.2.16 CHECK_ATA_SUPPORT (Function #15)
+
+**Arguments**
+
+* `D0.L` - 15 (Function code)
+
+**Modifies**
+
+* `D0.L` - Return value
+
+**Description**
+
+Determine whether ATA support is present in the Firmware.
+
+Where ATA support is available, this will return the magic
+number $1234FEDC in D0.L. 
+
+Any other value indicates that support is not available. In this
+case, none of the ATA routines should be used.
+
+With Firmware 2.0, ATA support is always available. However, this
+routine is retained to allow easy backward-compatibility.
+
+#### 1.1.2.17 ATA_INIT (Function #16)
+
+**Arguments**
+
+* `D0.L` - 16 (Function code)
+* `D1.L` - 0 (ATA Master) or 1 (ATA slave)
+* `A1`   - Pointer to an ATADevice struct
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+
+**Description**
+
+Attempt to initialize an ATA device. 
+
+The memory pointed to by A1 will be a ATADevice structure - see
+ata.h in the standard libraries for details.
+
+The return value in D0.L will be one of the ATAInitStatus
+codes - `ATA_INIT_OK` (ordinal 0) indicates success, while failure 
+is indicated by any other value. Again, see ata.h for details.
+
+#### 1.1.2.18 ATA_READ_SECTORS (Function #17)
+
+**Arguments**
+
+* `D0.L` - 17 (Function code)
+* `D1.L` - LBA sector number to read
+* `D2.L` - Number of sectors to read
+* `A1`   - Pointer to an initialized ATADevice struct
+* `A2`   - Pointer to a (512 * D2.L)-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Read the number of 512-byte sectors (indicated by `D2.L`) from the 
+ATA device into the buffer pointed to by `A2`.
+
+Returns the actual number of sectors read in `D0.L`.
+
+#### 1.1.2.19 ATA_WRITE_SECTORS (Function #18)
+
+**Arguments**
+
+* `D0.L` - 18 (Function code)
+* `D1.L` - LBA sector number to write
+* `D2.L` - Number of sectors to write
+* `A1`   - Pointer to an initialized ATADevice struct
+* `A2`   - Pointer to a (512 * D2.L)-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Write the number of 512-byte sectors (indicated by `D2.L`) from the 
+buffer pointed to by `A2` to the ATA device, starting at the LBA sector
+indicated by `D1.L`.
+
+Returns the actual number of sectors written in `D0.L`.
 
 ## 1.2. Basic IO routines (TRAP 14)
 
@@ -1231,19 +1348,22 @@ must be accessed through the public TRAP functions!
 | 0x454   | FW_SD_WRITE - Write to SD Card                                                                    |
 | 0x458   | FW_SD_REG - Read SD Card register                                                                 |
 | 0x45C   | FW_SPI_INIT - Intialize SPI subsystem                                                             |
-| 0x460   | SPI_ASSERT_CS - Assert SPI chip select 0 or 1                                                     |
-| 0x464   | SPI_DEASSERT_CS - Deassert SPI chip select 0 or 1                                                 |
-| 0x468   | SPI_TRANSFER_BYTE - Transfer (exchange) a byte                                                    |
-| 0x46C   | SPI_TRANSFER_BUFFER - Transfer (exchange) N bytes to/from a buffer                                |
-| 0x470   | SPI_RECV_BYTE - Receive a byte                                                                    |
-| 0x474   | SPI_RECV_BUFFER - Receive N bytes into a buffer                                                   |
-| 0x478   | SPI_SEND_BYTE - Send a byte                                                                       |
-| 0x47C   | SPI_SEND_BUFFER - Send N bytes from a buffer                                                      |
+| 0x460   | FW_SPI_ASSERT_CS - Assert SPI chip select 0 or 1                                                  |
+| 0x464   | FW_SPI_DEASSERT_CS - Deassert SPI chip select 0 or 1                                              |
+| 0x468   | FW_SPI_TRANSFER_BYTE - Transfer (exchange) a byte                                                 |
+| 0x46C   | FW_SPI_TRANSFER_BUFFER - Transfer (exchange) N bytes to/from a buffer                             |
+| 0x470   | FW_SPI_RECV_BYTE - Receive a byte                                                                 |
+| 0x474   | FW_SPI_RECV_BUFFER - Receive N bytes into a buffer                                                |
+| 0x478   | FW_SPI_SEND_BYTE - Send a byte                                                                    |
+| 0x47C   | FW_SPI_SEND_BUFFER - Send N bytes from a buffer                                                   |
+| 0x480   | FW_ATA_INIT - Initialize ATA PIO device                                                           |
+| 0x484   | FW_ATA_READ - Read from ATA device                                                                |
+| 0x488   | FW_ATA_WRITE - Write to ATA device                                                                |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
 
-**Note 2**: The SD and SPI routines arguments, modifies and returns are the same as for the TRAPs they 
+**Note 2**: The SD, SPI and ATA routines arguments, modifies and returns are the same as for the TRAPs they 
 underlie unless otherwise noted. See section 1 for details.
 
 Arguments, modifies and other information for these functions are the same

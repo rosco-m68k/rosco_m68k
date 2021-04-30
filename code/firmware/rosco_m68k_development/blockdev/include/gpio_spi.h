@@ -17,7 +17,7 @@
 #define _ROSCOM68K_GPIO_SPI_H
 
 #include <machine.h>
-#include <gpio.h>
+#include "../../blockdev/include/gpio.h"
 
 // SPI functions are static, so inlining depends on compiler optimization
 // level.  However, you can influence the compiler by defining one of these:

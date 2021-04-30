@@ -13,10 +13,12 @@
  * ------------------------------------------------------------
  */
 
+
 #include <stdbool.h>
-#include <gpio.h>
-#include <gpio_spi.h>
+
 #include "bbspi.h"
+#include "gpio.h"
+#include "gpio_spi.h"
 
 #define CS0     GPIO1
 #define SCK     GPIO2

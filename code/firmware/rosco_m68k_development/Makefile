@@ -44,7 +44,7 @@ WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
 include easy68k/include.mk
-include sdcard/include.mk
+include blockdev/include.mk
 
 ifneq ($(WITH_VDP),false)
 include video9958/include.mk

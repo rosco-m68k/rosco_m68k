@@ -13,11 +13,12 @@
  * ------------------------------------------------------------
  */
 
+
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "bbspi.h"
 #include "bbsd.h"
+#include "bbspi.h"
 
 static bool wait_for_card(uint32_t);
 static void reset_card();
