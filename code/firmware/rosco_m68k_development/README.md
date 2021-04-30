@@ -1,63 +1,29 @@
-# rosco_m68k Firmware v1.2
-## For all Revision 1.2 rosco_m68k main boards
+# rosco_m68k Firmware v2.0
+## For all Revision 1.x rosco_m68k main boards
 
-This is the official firmware for the revision 1.2 rosco_m68k. It provides
-a means of loading code at boot time via Kermit or from SD card. 
+This is the official version 2.0 firmware for the revision 1.2 rosco_m68k. 
+It provides basic machine initialization, a rich API for use by software,
+and a variety of boot loaders to enable flexible loading of code into the
+machine at boot time.
 
-This firmware performs basic initialization of the machine, including
-the MFP and V9958 video board (where fitted). Additionally, it provides a 
-variety of basic input/output routines and runtime support via standard 
-TRAP function interfaces (See InterfaceReference_v1.2.md for details).
+Drivers are included here for the MC68901, MC68681 (and XR68C681), V9958, 
+Xark's Xosera, MarkM's IDE (ATA) interface, and the built-in (bit-banged) 
+SPI and SD Card interfaces, and (where appropriate) a firmware interface 
+to enable easy use is also provided (see InterfaceReference.md).
 
 ## Building
 
-The build supports building 16KB ROMs with **either** Kermit or SD Card
-support - there isn't space to support both. The basic configuration
-includes Kermit only (for backward compatibility).
+The build supports building 64KB ROMs with all options enabled. Note that,
+unlike the 1.x firmware series, no support is provided for 16KB ROMs.
 
-Regardless of ROM size, the basic (TRAP 14) runtime support and Easy68k
-compatibility will always be available. VDP support will be available
-by default, but can be omitted.
-
-### 16KB ROMs
-
-To build the basic firmware:
+To build all options included just `make`, e.g:
 
 ```
 make clean all
 ```
 
-This will build a 16K-targeted ROM (plus odd/even pair) with VDP support,
-Kermit loading and runtime support.
-
-To enable SD Card support (experimental), pass `WITH_SDFAT=true`. In a 
-16KB ROM, this will fail unless you also omit either Kermit or VDP 
-support as there is insufficient space in the ROM.
-
-For example:
-
-```
-WITH_SDFAT=true WITH_KERMIT=false make clean all
-```
-
-Will build a 16KB ROM with SD Card load and VDP support, but no kermit, or:
-
-```
-WITH_SDFAT=true WITH_VDP=false make clean all
-```
-
-Will build a 16KB ROM with SD Card and Kermit load, but no VDP support.
-
-### 64KB ROMs
-
-To build 64KB ROMs with all options included, set `BIGROM=true`, e.g:
-
-```
-BIGROM=true make clean all
-```
-
-When building a 64KB ROM you can still optionally include and exclude 
-things with the options listed above.
+You can optionally include/exclude various things - see the `Makefile` for 
+details.
 
 ### Burning
 
@@ -68,9 +34,8 @@ directly from the Makefile with:
 make clean burn
 ```
 
-This will automatically set the device based on the BIGROM setting to
-either AT28C64B or AT28C256. This can be overriden by passing 
-`ROMDEVICE` on the command line, e.g:
+This will automatically set the device to AT28C256. This can be overriden 
+by passing `ROMDEVICE` on the command line, e.g:
 
 ```
 ROMDEVICE=<SOMEDEVICE> make clean burn
@@ -130,7 +95,7 @@ build code that is compatible with this loader. For now, these notes
 will have to suffice:
 
 * **There is a very simple POC "kernel" at ../poc-kernel** - This shows how to
-  e.g. relocate your code (down to $1000) and how to link for that etc.
+  e.g. relocate your code (down to $2000) and how to link for that etc.
 * Code is loaded at $40000 (somewhat arbitrarily). The loader will jump
   directly to that location after the code is received.
 * This means you are limited to ~860KB with the standard memory configuration.
@@ -140,7 +105,7 @@ will have to suffice:
   alone (exception vectors), other than setting up any vectors your code
   actually wants to handle.
 * If you want to use the standard runtime support stuff (see below), leave the
-  bottom 4KB alone (i.e. $1000-$FFFFF are free for your use). 
+  bottom 8KB alone (i.e. $2000-$FFFFF are free for your use). 
 * The _recommended_ thing to do is to relocate your code after loading,
   so you don't have it stuck in the middle of RAM. This will make your
   life easier later.
@@ -175,7 +140,7 @@ On entry to the loaded code, the system will be in the following state:
 
 ## Runtime Support
 
-See InterfaceReference_v1.2.md for full details of the runtime interfaces,
+See InterfaceReference.md for full details of the runtime interfaces,
 TRAPs and memory layout supported by this firmware, including the 
 Easy68k compatibility layer.
 

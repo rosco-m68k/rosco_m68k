@@ -3,14 +3,13 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_ 
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
-;                     |_____|       firmware v1                 
+;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019 Ross Bamford
+; Copyright (c)2019-2021 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; This is low-level UART stuff and exception handlers for the
-; serial driver. Some of this could probably be moved to C 
-; eventually.
+; MC68901 serial driver.
 ;------------------------------------------------------------
     include "../../../shared/equates.S"
     include "../equates.asm"

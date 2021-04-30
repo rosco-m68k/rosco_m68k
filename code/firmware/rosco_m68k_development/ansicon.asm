@@ -3,9 +3,9 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
-;                     |_____|       firmware v1
+;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2020 Ross Bamford
+; Copyright (c)2020-2021 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; Default ANSI versions of FW_MOVEXY and FW_CLRSCR.
