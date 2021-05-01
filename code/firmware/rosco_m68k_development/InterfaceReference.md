@@ -33,6 +33,7 @@ as possible, and will be kept updated as firmware 2.0 is developed.
       * 1.1.2.17 ATA_INIT (Function #16)
       * 1.1.2.18 ATA_READ_SECTORS (Function #17)
       * 1.1.2.19 ATA_WRITE_SECTORS (Function #18)
+      * 1.1.2.20 ATA_IDENTIFY (Function #19)
   * 1.2. Character device IO routines (TRAP 14)
     * 1.2.1 Example Usage
     * 1.2.2 Functions
@@ -550,6 +551,29 @@ buffer pointed to by `A2` to the ATA device, starting at the LBA sector
 indicated by `D1.L`.
 
 Returns the actual number of sectors written in `D0.L`.
+
+#### 1.1.2.20 ATA_IDENTIFY (Function #19)
+
+**Arguments**
+
+* `D0.L` - 19 (Function code)
+* `A1`   - Pointer to an initialized ATADevice struct
+* `A2`   - Pointer to a 512-byte buffer
+
+**Modifies**
+
+* `D0.L` - Return value (0 = failed, 1 = success)
+* `D1.L` - May be modified arbitrarily
+* `A0`   - Modified arbitrarily
+* `A1`   - May be modified arbitrarily
+* `A2`   - May be modified arbitrarily
+
+**Description**
+
+Issue an ATA `IDENTIFY` command to the specified `ATADevice`, and return
+the results in the supplied buffer.
+
+Returns 1 in `D0.L` if successful, 0 otherwise.
 
 ## 1.2. Basic IO routines (TRAP 14)
 
@@ -1359,6 +1383,7 @@ must be accessed through the public TRAP functions!
 | 0x480   | FW_ATA_INIT - Initialize ATA PIO device                                                           |
 | 0x484   | FW_ATA_READ - Read from ATA device                                                                |
 | 0x488   | FW_ATA_WRITE - Write to ATA device                                                                |
+| 0x48C   | FW_ATA_IDENT - `IDENTIFY` ATA device                                                               |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).

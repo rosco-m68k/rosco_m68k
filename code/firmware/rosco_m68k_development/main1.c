@@ -34,8 +34,9 @@ extern void debug_stub();
 #define MEM_SIZE_SDB_ADDRESS 0x414
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
-#ifdef SDCARD_SUPPORT
-extern void INSTALL_SDCARD_HANDLERS();
+#ifdef BLOCKDEV_SUPPORT
+extern void ata_init();
+extern void INSTALL_BLOCKDEV_HANDLERS();
 #endif
 extern void warm_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
@@ -120,15 +121,16 @@ noreturn void main1() {
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
-#ifdef SDCARD_SUPPORT
-    INSTALL_SDCARD_HANDLERS();
-#endif
-
 #ifdef VIDEO9958_CON
     if (HAVE_V9958()) {
         V9958_CON_INIT();
         V9958_CON_INSTALLHANDLERS();
     }
+#endif
+
+#ifdef BLOCKDEV_SUPPORT
+    ata_init();
+    INSTALL_BLOCKDEV_HANDLERS();
 #endif
 
 #ifdef HAVE_DEBUG_STUB

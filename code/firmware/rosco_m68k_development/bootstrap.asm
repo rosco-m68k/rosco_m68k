@@ -345,15 +345,15 @@ INITDUART_ATBASE:
 
     ; On r1.2, not having a 68681 will generate a bus error. We can look
     ; for this on the first access, and if we get one, just bail immediately.
-    move.b  #0,$504                   ; Zero bus error flag
+    move.b  #0,BERR_FLAG              ; Zero bus error flag
 
-    move.l  $8,$500                   ; Save the original bus error handler
+    move.l  $8,BERR_SAVED             ; Save the original bus error handler
     move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
 
     move.b  #$0,DUART_IMR(A0)         ; Mask all interrupts
 
     ; If the first write generated a bus error, we may as well fail fast...
-    tst.b   $504                      ; Was there a bus error?
+    tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .DONE                     ; Bail now if so...
 
     ; We now know that _something_ is present in the 68681 IO space, and 
@@ -376,13 +376,13 @@ INITDUART_ATBASE:
     bne.s   .DONE                     ; If not as expected, no DUART...
 
     ; If any of that generated a bus error, then it doesn't appear to be a 68681...
-    tst.b   $504                      ; Was there a bus error?
+    tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .DONE                     ; Bail now if so...
 
     ; Looks like we successfully detected a 68681!
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
  .DONE:
-    move.l  $500,$8                   ; Restore bus error handler
+    move.l  BERR_SAVED,$8             ; Restore bus error handler
     rts
     endif
 
@@ -409,10 +409,27 @@ BERR_HANDLER::
     move.w  D0,($C,A7)    
 
 .DONE
-    move.b  #1,$504
+    move.b  #1,BERR_FLAG
     move.w  (A7)+,D0
     rte
     
+
+; Convenience to install temporary BERR handler from C
+; Zeroes bus error flag (at BERR_FLAG) and stores old handler
+; for a subsequent RESTORE_BERR_HANDLER.
+INSTALL_TEMP_BERR_HANDLER::
+    move.b  #0,BERR_FLAG              ; Zero bus error flag
+
+    move.l  $8,BERR_SAVED             ; Save the original bus error handler
+    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
+    rts
+
+; Convenience to restore BERR handler from C, after a
+; call to INSTALL_TEM_BERR_HANDLER.
+RESTORE_BERR_HANDLER::
+    move.l  BERR_SAVED,$8             ; Restore bus error handler
+    rts
+
     
 ;------------------------------------------------------------
 ; Routines for include/machine.h

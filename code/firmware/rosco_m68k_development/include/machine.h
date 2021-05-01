@@ -43,6 +43,12 @@
 #define MFP_TSR       0xf8002D
 #define MFP_UDR       0xf8002F
 
+// Define addresses used by the temporary bus error handler.
+// N.B. These are duplicated in equates.asm, and must be kept in sync!
+#define BERR_SAVED                  0x1180
+#define BERR_FLAG                   0x1184
+
+
 /* 
  * Idle the processor.
  *
@@ -110,6 +116,26 @@ void FW_PRINTLN_C(char *str);
  * on CPU (i.e. clock) speed!
  */
 void BUSYWAIT_C(uint32_t ticks);
+
+/*
+ * Install temporary bus error handler that will set a flag if an error
+ * occurs, and not retry the instruction.
+ *
+ * Saves the existing handler for use by a subsequent RESTORE_BERR_HANDLER.
+ *
+ * Supports various m68k models.
+ *
+ * The flag will be set at BERR_FLAG (defined above). The flag will
+ * be zeroed when this function is called.
+ */
+extern void INSTALL_TEMP_BERR_HANDLER(void);
+
+/*
+ * Restore original bus error handler, saved by a prior call to
+ * INSTALL_TEMP_BERR_HANDLER.
+ */
+extern void RESTORE_BERR_HANDLER(void);
+
 
 #endif
 

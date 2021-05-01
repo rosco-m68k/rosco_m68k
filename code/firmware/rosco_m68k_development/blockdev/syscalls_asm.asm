@@ -24,8 +24,8 @@ TRAP_13_VECTOR_ADDR equ     TRAP_13_VECTOR*4
 ; depend on the specific function - See InterfaceReference.md for details.
 ;
 ; NOTE: Trashes A0, and allowed to modify arguments.
-SDCARD_TRAP_13_HANDLER:
-    cmp.l   #18,D0                      ; Is function code in range?
+BLOCKDEV_TRAP_13_HANDLER:
+    cmp.l   #19,D0                      ; Is function code in range?
     bhi.s   .NOT_IMPLEMENTED            ; Nope, leave...
 
     add.l   D0,D0                       ; Multiply FC...
@@ -53,6 +53,7 @@ SDCARD_TRAP_13_HANDLER:
     dc.l    ATA_INIT                    ; FC == 16
     dc.l    ATA_READ                    ; FC == 17
     dc.l    ATA_WRITE                   ; FC == 18
+    dc.l    ATA_IDENTIFY                ; FC == 19
 .NOT_IMPLEMENTED:
     rte
 
@@ -142,6 +143,11 @@ ATA_READ:
 
 ATA_WRITE:
     move.l  EFP_ATA_WRITE,A0
+    jsr     (A0)
+    rte
+
+ATA_IDENTIFY:
+    move.l  EFP_ATA_IDENT,A0
     jsr     (A0)
     rte
 
@@ -326,7 +332,10 @@ SPI_BUFFER_OP:
 ;  A0   - Modified arbitrarily
 ;  A1   - May be modified arbitrarily
 FW_ATA_INIT:
-    move.l  #1,D0                       ; Just indicate failure for now
+    move.l  A1,-(A7)
+    move.l  D1,-(A7)
+    jsr     ATA_init
+    add.l   #8,A7
     rts
 
 ; Arguments:
@@ -344,7 +353,15 @@ FW_ATA_INIT:
 ;  A1    - May be modified arbitrarily
 ;  A2    - May be modified arbitrarily
 FW_ATA_READ:
-    move.l  #0,D0                       ; Indicate no sectors read for now
+    move.l  #ATA_read_sectors,A0
+
+ATA_XFER_OP:
+    move.l  A1,-(A7)
+    move.l  D2,-(A7)
+    move.l  D1,-(A7)
+    move.l  A2,-(A7)
+    jsr     (A0)
+    add.l   #16,A7
     rts
 
 ; Arguments:
@@ -362,16 +379,36 @@ FW_ATA_READ:
 ;  A1    - May be modified arbitrarily
 ;  A2    - May be modified arbitrarily
 FW_ATA_WRITE:
-    move.l  #0,D0                       ; Indicate no sectors written for now
+    move.l  #ATA_write_sectors,A0
+    bra.s   ATA_XFER_OP
+
+; Arguments:
+;
+;  D0.L - 19 (Function code)
+;  A1   - Pointer to an initialized ATADevice struct
+;  A2   - Pointer to a 512-byte buffer
+;
+; Modifies:
+;
+;  D0.L - Return value (0 = failed, 1 = success)
+;  D1.L - May be modified arbitrarily
+;  A0   - Modified arbitrarily
+;  A1   - May be modified arbitrarily
+;  A2   - May be modified arbitrarily
+FW_ATA_IDENT:
+    move.l  A1,-(A7)
+    move.l  A2,-(A7)
+    jsr     ATA_ident
+    add.l   #8,A7
     rts
 
 * ************************************************************************** *
 * ************************************************************************** *
 ; Called to install the TRAP handlers; Trashes A0
 * ************************************************************************** *
-INSTALL_SDCARD_HANDLERS::
+INSTALL_BLOCKDEV_HANDLERS::
     ; Install TRAP handler
-    move.l  #SDCARD_TRAP_13_HANDLER,TRAP_13_VECTOR_ADDR
+    move.l  #BLOCKDEV_TRAP_13_HANDLER,TRAP_13_VECTOR_ADDR
 
     ; Set up EFP pointers
     move.l  #FW_SD_INIT,EFP_SD_INIT
@@ -390,6 +427,8 @@ INSTALL_SDCARD_HANDLERS::
     move.l  #FW_ATA_INIT,EFP_ATA_INIT
     move.l  #FW_ATA_READ,EFP_ATA_READ
     move.l  #FW_ATA_WRITE,EFP_ATA_WRITE
+    move.l  #FW_ATA_IDENT,EFP_ATA_IDENT
 
     ; And done...
     rts
+

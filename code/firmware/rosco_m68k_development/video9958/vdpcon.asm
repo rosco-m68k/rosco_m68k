@@ -84,15 +84,15 @@ HAVE_V9958::
     move.l  #PORT_RWDATA,A0           ; Use A0 as port base register
 
     ; Install temp bus error handler in case card not installed
-    move.l  $8,$500
+    move.l  $8,BERR_SAVED
     move.l  #BERR_HANDLER,$8
 
     ; Zero Bus Error flag
-    move.b  #0,$504
+    move.b  #0,BERR_FLAG
 
     move.b  #1,(PORT_WREG_SETUP,A0)   ; Write 1 (SR#1)...\
 
-    tst.b   $504                      ; Was there a bus error?
+    tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .NO_9958                  ; Bail now if so...
    
     move.b  #$8F,(PORT_WREG_SETUP,A0) ; ... to register 15 (with high bit set)
@@ -117,7 +117,7 @@ HAVE_V9958::
     move.l  #14,D0                    ; Print the message
     trap    #15
 
-    move.l  $500,$8                   ; Restore bus error handler
+    move.l  BERR_SAVED,$8             ; Restore bus error handler
 
     move.b  D1,D0                     ; Result in D0.B
     movem.l (A7)+,D1/A0-A1

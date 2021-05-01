@@ -59,6 +59,11 @@ EFP_SPI_SEND_M  equ     $47C
 EFP_ATA_INIT    equ     $480
 EFP_ATA_READ    equ     $484
 EFP_ATA_WRITE   equ     $488
+EFP_ATA_IDENT   equ     $48C
+
+; Bits we use in the firmware reserved area (non-BSS).
+BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync
+BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
 
 ; Equates for MC68681 DUART
 ; ------------------------------------------------------------
