@@ -1,4 +1,4 @@
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT("elf32-m68k")
 ENTRY(START)
 kram = 0x00001800;
 phys = 0x00FC0000;

@@ -16,12 +16,15 @@ ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
+OBJCOPY=m68k-elf-objcopy
 RM=rm -f
 
 # Output config
 BINARY_BASENAME=rosco_m68k
 BINARY_EXT=rom
+ELF_EXT=elf
 
+ELF=$(BINARY_BASENAME).$(ELF_EXT)
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 MAP=$(BINARY_BASENAME).map
 STAGE2_DIR=stage2
@@ -67,9 +70,13 @@ export CPU ARCH TUNE
 $(STAGE2) : $(STAGE2_DIR)
 	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
 
-$(BINARY) : $(OBJECTS) $(STAGE2)
+$(ELF) : $(OBJECTS) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
-	chmod a-x $@
+	-chmod a-x $@
+
+$(BINARY) : $(ELF)
+	$(OBJCOPY) -O binary $< $@
+	-chmod a-x $@
 
 $(BINARY_EVEN): $(BINARY)
 	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0
