@@ -20,6 +20,7 @@
 
 #define sendchar mcSendchar
 #define readchar mcReadchar
+#define checkchar mcCheckchar
 
 #define print mcPrint
 #define println mcPrintln
