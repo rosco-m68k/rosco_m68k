@@ -388,29 +388,53 @@ INITDUART_ATBASE:
 
 ; Temporary bus error handler, in case no MC68681 is installed
 BERR_HANDLER::
-    move.w  D0,-(A7)
-    move.w  ($8,A7),D0                ; Get format
+    move.l  D0,-(A7)
+    move.w  ($A,A7),D0                ; Get format
     and.w   #$F000,D0                 ; Mask vector
     cmp.w   #$8000,D0                 ; Is it an 010 BERR frame?
-    bne.w   .LFRAME                   ; Assume it's a longer (later CPU) frame if not
+    bne.w   .NOT010                   ; May be a longer (later CPU) frame if not
                                       ; For 020, this would be either A000 or B000 -
                                       ; for our purposes, they are equivalent. 
                                       ; TODO this might need checking again on later
                                       ; CPUs!
 
-    move.w  ($A,A7),D0                ; If we're here, it's an 010 frame...                
+    move.w  ($C,A7),D0                ; If we're here, it's an 010 frame...                
     bset    #15,D0                    ; ... so just set the RR (rerun) flag
-    move.w  D0,($A,A7)
+    move.w  D0,($C,A7)
+
+    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
+    and.l   #$1FFFFFFF,D0             ; Zero high three bits
+    or.l    #$20000000,D0             ; Set them to indicate 010
+    move.l  D0,SDB_CPUINFO            ; And update the SDB 
+    
     bra.s   .DONE 
 
-.LFRAME:
-    move.w  ($C,A7),D0                ; If we're here, it's an 020 frame...                
+.NOT010:
+    cmp.w   #$A000,D0                 ; Is it an 020 BERR frame?
+    beq.w   .IS020 
+    cmp.w   #$B000,D0
+    beq.w   .IS020 
+
+    ; If we're here, assume it's a 68000.
+    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
+    and.l   #$1FFFFFFF,D0             ; Zero high three bits
+    move.l  D0,SDB_CPUINFO            ; And update the SDB 
+
+    bra.s   .DONE
+
+.IS020
+    move.w  ($E,A7),D0                ; If we're here, it's an 020 frame...                
     bclr    #8,D0                     ; ... we only care about data faults here... Hopefully :D
-    move.w  D0,($C,A7)    
+    move.w  D0,($E,A7)    
+
+    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
+    and.l   #$1FFFFFFF,D0             ; Zero high three bits
+    or.l    #$40000000,D0             ; Set them to indicate 020
+    move.l  D0,SDB_CPUINFO            ; And update the SDB
 
 .DONE
     move.b  #1,BERR_FLAG
-    move.w  (A7)+,D0
+    move.l  (A7)+,D0
     rte
     
 

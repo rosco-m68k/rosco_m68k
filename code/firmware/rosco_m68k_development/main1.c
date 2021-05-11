@@ -40,6 +40,8 @@ extern void INSTALL_BLOCKDEV_HANDLERS();
 #endif
 extern void warm_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
+extern uint32_t cpuspeed(uint8_t model);
+extern void print_unsigned(uint32_t num, uint8_t base);
 
 /*
  * This is what a Stage 2 entry point should look like.
@@ -108,6 +110,35 @@ static void initialize_warm_reboot() {
     *reset_vector_ptr = (uint32_t)warm_boot;
 }
 
+void print_cpu_mem_info() {
+    FW_PRINT_C("MC680");
+    if (sdb->cpu_model == 0) { 
+      FW_PRINT_C("0");
+    } else if (sdb->cpu_model == 1) {
+      FW_PRINT_C("1");
+    } else if (sdb->cpu_model == 2) {
+      FW_PRINT_C("2");
+    } else if (sdb->cpu_model == 3) {
+      FW_PRINT_C("3");
+    } else if (sdb->cpu_model == 4) {
+      FW_PRINT_C("4");
+    } else if (sdb->cpu_model == 6) {
+      FW_PRINT_C("6");
+    } else {
+      FW_PRINT_C("?");
+    }
+
+    uint32_t speed = sdb->cpu_speed / 1000;
+
+    FW_PRINT_C("0 CPU @ ");
+    print_unsigned(speed / 10, 10);
+    FW_PRINT_C(".");
+    print_unsigned(speed % 10, 10);
+    FW_PRINT_C("MHz with ");
+    print_unsigned(sdb->memsize, 10);
+    FW_PRINT_C(" bytes RAM\r\n"); 
+}
+
 /* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
@@ -116,7 +147,6 @@ noreturn void main1() {
     }
 
     // Start the timer tick
-    FW_PRINT_C("Stage 1  initialisation \x1b[1;32mcomplete\x1b[0m; Starting system tick.\r\n");
     START_HEART();
 
     INSTALL_EASY68K_TRAP_HANDLERS();
@@ -127,6 +157,10 @@ noreturn void main1() {
         V9958_CON_INSTALLHANDLERS();
     }
 #endif
+
+    // Now we have tick, we can determine CPU speed
+    sdb->cpu_speed = cpuspeed(sdb->cpu_model);
+    print_cpu_mem_info();
 
 #ifdef BLOCKDEV_SUPPORT
     ata_init();

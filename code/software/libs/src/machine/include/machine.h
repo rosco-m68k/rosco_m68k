@@ -74,6 +74,22 @@
 #endif
 
 /*
+ * The SystemDataBlock is a global reserved structure at _SDB.
+ */
+typedef struct {
+  uint32_t      magic;                /* Magic number B105DA7A */
+  uint32_t      oshi_code;            /* OSHI code, only valid in OSHI condition */
+  uint16_t      heartbeat_counter;    /* Counter used to flash I0 */
+  uint16_t      heartbeat_frequency;  /* Value used to reset heartbeat counter (100 = ~1 beat per second) */
+  uint32_t      upticks;              /* Running counter of the number of ticks the system has been up */
+  uint32_t      e68k_reserved;        /* Reserved for Easy68k */
+  uint32_t      memsize;              /* Size of first contiguous block of RAM */
+  uint32_t      uartbase;             /* Base address of default UART */
+  uint32_t      cpu_model:3;          /* CPU type */
+  uint32_t      cpu_speed:29;         /* CPU speed */
+} __attribute__ ((packed)) SystemDataBlock;
+
+/*
  * Absolute symbols defined in linker script
  */
 extern uint32_t       _INITIAL_STACK;     // firmware stack top (mem top)
@@ -88,6 +104,8 @@ extern uint8_t        _EASY68K_ECHOON;      // Easy68k 'echo on' flag
 extern uint8_t        _EASY68K_PROMPT;      // Easy68k 'prompt on' flag 
 extern uint8_t        _EASY68K_SHOWLF;      // Easy68k 'LF display' flag
 extern uint32_t       _SDB_MEM_SIZE;        // contiguous memory size
+extern uint32_t       _SDB_UART_BASE;       // Default UART base address
+extern uint32_t       _SDB_CPU_INFO;        // CPU info (high 3 bits = model, rest of bits = speed).
 
 // NOTE: These are not generally callable from C
 extern void           (*_EFP_PRINT)();        // ROM EFP vectors

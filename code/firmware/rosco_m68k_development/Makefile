@@ -39,7 +39,8 @@ ifeq ($(NO68681),true)
 DEFINES:=$(DEFINES) -DNO_68681
 endif
 
-OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o warmboot.o main1.o 
+OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
+				cpuspeed.o warmboot.o main1.o 
 
 # Big ROM configuration (enable everything) is now default
 WITH_SDFAT?=true
