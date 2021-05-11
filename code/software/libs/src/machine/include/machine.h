@@ -16,6 +16,7 @@
 #define _ROSCOM68K_MACHINE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdnoreturn.h>
 
 #ifdef REVISION_0
@@ -118,6 +119,7 @@ void mcPrintln(char *str);
 
 void mcSendchar(char c);
 char mcReadchar();
+bool mcCheckchar(); // returns true if char waiting
 
 /*
  * Busywait for a while. The actual time is wholly dependent

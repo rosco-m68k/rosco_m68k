@@ -20,7 +20,7 @@
 mcPrint::
     movem.l D0-D1/A0,-(A7)            ; Save regs
     move.l  (16,A7),A0                ; Get C char* from the stack into A0
-    move.l  #0,D1                     ; Func code is 0
+    move.l  #0,D1                     ; Func code is 0 PRINT
     trap    #14                       ; TRAP to firmware
     movem.l (A7)+,D0-D1/A0            ; Restore regs
     rts                               ; We're done.
@@ -33,7 +33,7 @@ mcPrint::
 mcPrintln::
     movem.l D0-D1/A0,-(A7)            ; Save regs
     move.l  (16,A7),A0                ; Get C char* from the stack into A0
-    move.l  #1,D1                     ; Func code is 1
+    move.l  #1,D1                     ; Func code is 1 PRINTLN
     trap    #14                       ; TRAP to firmware
     movem.l (A7)+,D0-D1/A0            ; Restore regs
     rts                               ; We're done.
@@ -46,7 +46,7 @@ mcPrintln::
 mcSendchar::
     movem.l  D0-D1,-(A7)              ; Save regs
     move.l  (12,A7),D0                ; Get C char from the stack into D0
-    move.l  #2,D1                     ; Func code is 2
+    move.l  #2,D1                     ; Func code is 2 SENDCHAR
     trap    #14                       ; TRAP to firmware
     movem.l (A7)+,D0-D1               ; Restore regs
     rts                               ; We're done.
@@ -59,8 +59,23 @@ mcSendchar::
     section .text.mcReadchar
 mcReadchar::
     move.l  D1,-(A7)                  ; Save regs
-    move.l  #3,D1                     ; Func code is 2
+    move.l  #3,D1                     ; Func code is 3 RECVCHAR
     trap    #14                       ; TRAP to firmware
+    move.l (A7)+,D1                   ; Restore regs
+    rts                               ; We're done.
+
+; Call the CHECKCHAR function of the firmware
+;
+; Trashes: Nothing (MFP_UDR?)
+; Modifies: D0 (return)
+
+    section .text.mcCheckchar
+mcCheckchar::
+    move.l  D1,-(A7)                  ; Save regs
+    move.l  #6,D1                     ; Func code is 6 CHECKCHAR
+    trap    #14                       ; TRAP to firmware
+    ext.w  D0                         ; extend D0.B return for C
+    ext.l  D0
     move.l (A7)+,D1                   ; Restore regs
     rts                               ; We're done.
 
