@@ -58,6 +58,10 @@ ifneq ($(WITH_VDP),false)
 include video9958/include.mk
 endif
 
+ifneq ($(WITH_XVID),false)
+include videoXosera/include.mk
+endif
+
 ifeq ($(WITH_DEBUG_STUB),true)
 include debug_stub/include.mk
 endif
