@@ -60,7 +60,7 @@ XOSERA_CON_INIT::
     ; Clear console data area (Comment this out if not in ROM)
 .CLEARDATA:
     move.l  #CURPOS,A1
-    move.w  #$C80,D1
+    move.w  #$320,D1
     bra.s   .CLEARSTART
 .CLEARLOOP
     move.l  #0,(A1)+
