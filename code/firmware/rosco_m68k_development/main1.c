@@ -158,9 +158,8 @@ noreturn void main1() {
     if (HAVE_XOSERA()) {
         XOSERA_CON_INIT();
         XOSERA_CON_INSTALLHANDLERS();
+        goto skip9958;
     }
-
-    goto skip9958;
 #endif
 
 #ifdef VIDEO9958_CON
