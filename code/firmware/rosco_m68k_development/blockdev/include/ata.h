@@ -104,9 +104,9 @@ typedef struct {
     uint8_t     model_str[40];
 } ATADevice;
 
-void ata_init();
-uint8_t ata_identify(uint8_t *buf, uint8_t drive);
-uint32_t ata_read(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive);
-uint32_t ata_write(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive);
+uint32_t ATA_init(uint32_t drive, ATADevice *dev);
+uint32_t ATA_read_sectors(uint8_t *buf, uint32_t lba, uint32_t num, ATADevice *dev);
+uint32_t ATA_write_sectors(uint8_t *buf, uint32_t lba, uint32_t num, ATADevice *dev);
+uint32_t ATA_ident(uint8_t *buf, ATADevice *dev);
 
 #endif // __ROSCO_M68K_ATA_H

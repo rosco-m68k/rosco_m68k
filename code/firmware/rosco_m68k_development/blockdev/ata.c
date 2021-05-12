@@ -20,7 +20,12 @@
 #include "ata.h"
 #include "ata_identify.h"
 
+#define OP_TIMEOUT 500000
+
 extern void FW_PRINT_C(char *);
+#ifdef ATA_DEBUG
+extern void print_unsigned(uint32_t, uint8_t);
+#endif
 
 static volatile uint16_t *idereg = (volatile uint16_t *)IDE_BASE;
 
@@ -30,6 +35,8 @@ static uint8_t ata_s = 0;
 static uint8_t ata_s_modelnum[41];
 
 static uint8_t ata_buf[512];
+static uint8_t selected_drive = 0xFF;  /* no drive by default */
+
 //static uint16_t *word_buf = (uint16_t*)ata_buf;
 
 //static bool virq = false;
@@ -52,23 +59,44 @@ static uint8_t ata_buf[512];
 //}
 
 static void ata_select_drive(uint8_t i) {
-    if (i == ATA_MASTER)
-        idereg[ATA_REG_WR_DEVSEL] = (uint16_t)0xA0;
-    else
-        idereg[ATA_REG_WR_DEVSEL] = (uint16_t)0xB0;
+    if (i != selected_drive) {
+        if (i == ATA_MASTER) {
+            idereg[ATA_REG_WR_DEVSEL] = (uint16_t)0xA0;
+        } else {
+            idereg[ATA_REG_WR_DEVSEL] = (uint16_t)0xB0;
+        }
+
+        selected_drive = i;
+    }
 }
 
-static void ata_await_ready() {
+static bool ata_await_ready() {
+    uint32_t timeout = 0;
+
     // TODO some kind of timeout here. Currently hanging if IDE interface has no drives...
-    while ((idereg[ATA_REG_RD_ALT_STATUS] & 0x00C0) != 0x0040)
-      continue;
+    while ((idereg[ATA_REG_RD_ALT_STATUS] & 0x00C0) != 0x0040 && timeout++ < OP_TIMEOUT)
+        continue;
+
+    return (timeout < OP_TIMEOUT);
 }
 
+static bool ata_await_not_busy() {
+    uint32_t timeout = 0;
+    
+    while ((idereg[ATA_REG_RD_STATUS] & ATA_SR_BSY) != 0 && timeout++ < OP_TIMEOUT)
+        continue;
+
+    return (timeout < OP_TIMEOUT);
+}
 
 uint8_t ata_identify(uint8_t *buf, uint8_t drive) {
+    uint32_t timeout = 0;
+
     ata_select_drive(drive);
 
-    ata_await_ready();
+    if (!ata_await_ready()) {
+        return 0;
+    }
 
     /* ATA specs say these values must be zero before sending IDENTIFY */
     idereg[ATA_REG_WR_SECTOR_COUNT] = 0;
@@ -83,13 +111,21 @@ uint8_t ata_identify(uint8_t *buf, uint8_t drive) {
     uint16_t status = idereg[ATA_REG_RD_STATUS] & 0xFF;
     if (status) {
         /* Poll until BSY is clear. */
-        while ((idereg[ATA_REG_RD_STATUS] & ATA_SR_BSY) != 0)
-            ;
+        if (!ata_await_not_busy()) {
+            // timeout - return no init
+            return 0;
+        }
+
         pm_stat_read: status =  idereg[ATA_REG_RD_STATUS] & 0xFF;
         if (status & ATA_SR_ERR) {
             // Error - return no init
             return 0;
         }
+
+        if (timeout++ == OP_TIMEOUT) {
+            return 0;
+        }
+
         while (!(status & ATA_SR_DRQ))
             goto pm_stat_read;
 
@@ -112,19 +148,30 @@ static void ata_delay_for_a_bit() {
 
 static uint8_t ata_poll() {
     uint16_t temp;
+    uint32_t timeout = 0;
 
     for (int i = 0; i < 4; i++)
         temp &= idereg[ATA_REG_RD_ALT_STATUS];
 
     retry: ;
+    if (timeout++ > OP_TIMEOUT) {
+        return 0;
+    }
+
     uint8_t status = idereg[ATA_REG_RD_STATUS] & 0xFF;
 
     if (status & ATA_SR_BSY)
         goto retry;
 
+    timeout = 0;
+
     retry2: status = idereg[ATA_REG_RD_STATUS] & 0xFF;
     if (status & ATA_SR_ERR) {
         // ERR set - need some way to signal this maybe...
+        return 0;
+    }
+
+    if (timeout++ > OP_TIMEOUT) {
         return 0;
     }
 
@@ -135,13 +182,32 @@ static uint8_t ata_poll() {
 }
 
 static uint8_t ata_read_one(uint8_t *buf, uint32_t lba, uint8_t drive) {
+
+#ifdef ATA_DEBUG
+    FW_PRINT_C("  S1: ata_read_one @");
+    print_unsigned(lba, 10);
+    FW_PRINT_C(" into buffer at 0x");
+    print_unsigned((uint32_t)buf, 16);
+    FW_PRINT_C(": ");
+#endif
+
     if (drive != ATA_MASTER && drive != ATA_SLAVE) {
+#ifdef ATA_DEBUG
+        FW_PRINT_C("BAD DRIVE #");
+        print_unsigned(drive, 10);
+        FW_PRINT_C("\r\n");
+#endif
         return 0;
     }
 
     uint8_t cmd = (drive == ATA_MASTER ? 0xE0 : 0xF0);
 
-    ata_await_ready();
+    if (!ata_await_ready()) {
+#ifdef ATA_DEBUG
+        FW_PRINT_C("ERROR: ata_await_ready timeout\r\n");
+#endif
+        return 0;
+    }
 
     idereg[ATA_REG_WR_DEVSEL] = (cmd | (uint8_t) ((lba >> 24 & 0x0F)));
     idereg[ATA_REG_WR_SECTOR_COUNT] = 1;
@@ -151,6 +217,9 @@ static uint8_t ata_read_one(uint8_t *buf, uint32_t lba, uint8_t drive) {
     idereg[ATA_REG_WR_COMMAND] =  ATA_CMD_READ_PIO;
 
     if (!ata_poll()) {
+#ifdef ATA_DEBUG
+        FW_PRINT_C("ERROR: ata_poll timeout\r\n");
+#endif
         return 0;
     }
 
@@ -159,10 +228,17 @@ static uint8_t ata_read_one(uint8_t *buf, uint32_t lba, uint8_t drive) {
     }
 
     ata_delay_for_a_bit();
+
+#ifdef ATA_DEBUG
+    FW_PRINT_C("OK\r\n");
+#endif
+
     return 1;
 }
 
-uint32_t ata_read(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive) {
+static uint32_t ata_read(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive) {
+    ata_select_drive(drive);
+
     for (uint32_t i = 0; i < num; i++) {
         if (!ata_read_one(buf, lba + i, drive)) {
             return i;
@@ -179,7 +255,9 @@ static uint8_t ata_write_one(uint8_t *buf, uint32_t lba, uint8_t drive) {
         return 0;
     }
 
-    ata_await_ready();
+    if (!ata_await_ready()) {
+        return 0;
+    }
 
     uint8_t cmd = (drive == ATA_MASTER ? 0xE0 : 0xF0);
 
@@ -202,7 +280,9 @@ static uint8_t ata_write_one(uint8_t *buf, uint32_t lba, uint8_t drive) {
     return 1;
 }
 
-uint32_t ata_write(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive) {
+static uint32_t ata_write(uint8_t *buf, uint32_t lba, uint32_t num, uint8_t drive) {
+    ata_select_drive(drive);
+
     for (uint32_t i = 0; i < num; i++) {
         if (!ata_write_one(buf, lba + i, drive)) {
             return i;
@@ -248,7 +328,7 @@ void ata_init() {
 
     RESTORE_BERR_HANDLER();
 
-    FW_PRINT_C("Initializing ATA... ");
+    FW_PRINT_C("Initializing hard drives... ");
 
     if (!*berr_flag) {
 
@@ -279,7 +359,7 @@ void ata_init() {
             FW_PRINT_C("IDE Slave   : <Not found>\r\n");
         }
     } else {
-        FW_PRINT_C("Done - No ATA interface found\r\n");
+        FW_PRINT_C("No IDE interface found\r\n");
     }
 }
 
@@ -308,6 +388,20 @@ uint32_t ATA_init(uint32_t drive, ATADevice *dev) {
 }
 
 uint32_t ATA_read_sectors(uint8_t *buf, uint32_t lba, uint32_t num, ATADevice *dev) {
+#ifdef ATA_DEBUG
+    FW_PRINT_C("S1: Reading ");
+    print_unsigned(num, 10);
+    FW_PRINT_C(" sector(s) @ ");
+    print_unsigned(lba, 10);
+    FW_PRINT_C(" from drive ");
+    print_unsigned(dev->device_num, 10);
+    FW_PRINT_C(" into buffer at 0x");
+    print_unsigned((uint32_t)buf, 16);
+    FW_PRINT_C(" [device is at 0x");
+    print_unsigned((uint32_t)dev, 16);
+    FW_PRINT_C("]\r\n");
+#endif
+
     return ata_read(buf, lba, num, dev->device_num);
 }
 

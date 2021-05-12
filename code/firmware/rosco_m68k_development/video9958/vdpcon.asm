@@ -106,8 +106,7 @@ HAVE_V9958::
 
 .NO_9958:
     moveq   #0,D1                     ; Stash negative result in D1 for a sec...
-    lea.l   SZNOID,A1                 ; Print "not 9958"
-    bra.s   .DISPLAY_MESSAGE
+    bra.s   .DONE                     ; And leave.
 
 .IS_9958:    
     moveq   #1,D1                     ; Stash positive result
@@ -117,6 +116,7 @@ HAVE_V9958::
     move.l  #14,D0                    ; Print the message
     trap    #15
 
+.DONE
     move.l  BERR_SAVED,$8             ; Restore bus error handler
 
     move.b  D1,D0                     ; Result in D0.B
@@ -699,8 +699,7 @@ SHOWCURSOR    equ       $508
 BUFFER        equ       $50A
 
 ; TODO this should be in .rodata, but same issue as above.
-SZID          dc.b    "Video board identified: V9958", 10, 13, 0
-SZNOID        dc.b    "No video output found", 10, 13, 0
+SZID          dc.b    "Switched to video output: V9958", 10, 13, 0
 SZHEADER      dc.b    "                                ___ ___ _", 13
               dc.b    " ___ ___ ___ __ ___       _____|  _| . | |_",13
               dc.b    "|  _| . |_ -| _| . |     |     | . | . | '_|",13

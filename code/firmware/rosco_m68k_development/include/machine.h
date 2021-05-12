@@ -48,7 +48,6 @@
 #define BERR_SAVED                  0x1180
 #define BERR_FLAG                   0x1184
 
-
 /* 
  * Idle the processor.
  *

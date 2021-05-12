@@ -24,21 +24,19 @@
 #define MOSI    GPIO3
 #define MISO    GPIO4
 
-#define BUF_LEN 82
-#define BUF_MAX BUF_LEN - 2
 
 extern void mcPrint(char *str);
 extern bool BBSD_support_check();
 
 extern uint8_t *kernel_load_ptr;
-
-static uint8_t buf[BUF_LEN];
 static BBSDCard sd;
+
+extern void print_unsigned(uint32_t num, uint8_t base);
 
 // TODO use SDB properly, this address might change in future!
 static volatile uint32_t * const upticks = (volatile uint32_t * const)0x40C;
 
-int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+static int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     if (!sd.initialized) {
         return 0;
     }
@@ -53,38 +51,11 @@ int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     return 1;
 }
 
-int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+static int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     return 0;
 }
 
-static uint8_t digit(unsigned char digit) {
-  if (digit < 10) {
-    return (char)(digit + '0');
-  } else {
-    return (char)(digit - 10 + 'A');
-  }
-}
-
-static void print_unsigned(uint32_t num, uint8_t base) {
-  if (base < 2 || base > 36) {
-    return;
-  }
-
-  unsigned char bp = BUF_MAX;
-
-  if (num == 0) {
-    buf[bp--] = '0';
-  } else {
-    while (num > 0) {
-      buf[bp--] = digit(num % base);
-      num /= base;
-    }
-  }
-
-  mcPrint((char*)&buf[bp+1]);
-}
-
-bool load_kernel() {
+bool sd_load_kernel() {
     if (!BBSD_support_check()) {
         mcPrint("Warning: No SD support in ROM - This may indicate your ROMs are not built correctly!\r\n");
         return false;
@@ -93,16 +64,17 @@ bool load_kernel() {
     if (BBSD_initialize(&sd) == BBSD_INIT_OK) {
         switch (sd.type) {
         case BBSD_CARD_TYPE_V1:
-            mcPrint("Found SD v1 card; ");
+            mcPrint("SD v1 card; ");
             break;
         case BBSD_CARD_TYPE_V2:
-            mcPrint("Found SD v2 card; ");
+            mcPrint("SD v2 card; ");
             break;
         case BBSD_CARD_TYPE_SDHC:
-            mcPrint("Found SDHC card; ");
+            mcPrint("SDHC card; ");
             break;
         default:
-            mcPrint("Found unknown card type ");
+            mcPrint("Ignoring unrecognised SD card");
+            return false;
         }
 
         fl_attach_media(media_read, media_write);
@@ -142,7 +114,7 @@ bool load_kernel() {
                 return true;
             }
         } else {
-            mcPrint("Open failed\r\n");
+            mcPrint(" (not bootable)\r\n");
         }
     }
 

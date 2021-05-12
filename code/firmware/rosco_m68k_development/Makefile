@@ -35,17 +35,21 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=AT28C256
 
-ifeq ($(NO68681),true)
-DEFINES:=$(DEFINES) -DNO_68681
-endif
-
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
 				cpuspeed.o warmboot.o main1.o 
 
 # Big ROM configuration (enable everything) is now default
-WITH_SDFAT?=true
+WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
+
+ifeq ($(NO68681),true)
+DEFINES:=$(DEFINES) -DNO_68681
+endif
+
+ifeq ($(ATA_DEBUG),true)
+DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
 
 include easy68k/include.mk
 include blockdev/include.mk
@@ -58,7 +62,8 @@ ifeq ($(WITH_DEBUG_STUB),true)
 include debug_stub/include.mk
 endif
 
-export WITH_SDFAT
+export ATA_DEBUG
+export WITH_BLOCKDEV
 export WITH_KERMIT
 export CPU ARCH TUNE
 

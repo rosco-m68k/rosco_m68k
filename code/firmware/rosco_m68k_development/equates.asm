@@ -29,7 +29,7 @@ SDB_UPTICKS     equ     $40C
 SDB_E68K_STATE  equ     $410
 SDB_MEMSIZE     equ     $414
 SDB_UARTBASE    equ     $418
-SDB_RESERVED    equ     $41C
+SDB_CPUINFO     equ     $41C
 
 ; EFP table addresses
 EFP_PRINT       equ     $420

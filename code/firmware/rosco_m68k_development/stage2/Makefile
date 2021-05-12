@@ -38,11 +38,15 @@ LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o main2.o
 
+ifeq ($(ATA_DEBUG),true)
+DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
 ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
 endif
-ifeq ($(WITH_SDFAT),true)
+ifeq ($(WITH_BLOCKDEV),true)
 include sdfat/include.mk
+include idehdd/include.mk
 endif
 
 export CFLAGS

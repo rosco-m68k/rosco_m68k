@@ -22,10 +22,13 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
-extern void mcPrint(char *str);
-extern void mcBusywait(uint32_t nops);
+extern void mcPrint(char*);
 extern void mcHalt();
 extern void ENABLE_RECV();
+
+#ifdef KERMIT_LOADER
+extern void mcBusywait(uint32_t);
+#endif
 
 /*
  * This is what a Kernel entry point should look like.
@@ -33,19 +36,26 @@ extern void ENABLE_RECV();
 typedef void (*KMain)(volatile SystemDataBlock * const);
 
 // Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
-
+extern uint32_t _bss_start, _bss_end;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
 // Kernels are loaded at the same address regardless of _how_ they're loaded
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
 static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
 
+#ifdef KERMIT_LOADER
 // This is provided by Kermit
 extern int receive_kernel();
+#endif
 
+#ifdef SDFAT_LOADER
 // This is provided by the SD/FAT loader
-bool load_kernel();
+extern bool sd_load_kernel();
+#endif
+#ifdef IDE_LOADER
+// This is provided by the IDE/FAT loader
+extern bool ide_load_kernel();
+#endif
 
 void linit() {
     // zero .bss
@@ -57,13 +67,22 @@ noreturn void lmain() {
     ENABLE_RECV();
 
 #ifndef MAME_FIRMWARE
-#  ifdef SDFAT_LOADER    
-    mcPrint("Looking for SD card...\r\n");
-    if (load_kernel()) {
+#  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
+    mcPrint("Searching for boot media... ");
+#  endif
+
+#  ifdef SDFAT_LOADER
+    if (sd_load_kernel()) {
         goto have_kernel;
     }
-
-    mcPrint("No SD card, or no kernel found on SD Card, ");
+#  endif
+#  ifdef IDE_LOADER
+    if (ide_load_kernel()) {
+        goto have_kernel;
+    }
+#  endif
+#  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
+    mcPrint(" None found\r\n");
 #  endif
 #  ifdef KERMIT_LOADER
     mcPrint("Ready for Kermit receive...\r\n");
@@ -79,16 +98,18 @@ noreturn void lmain() {
     
     mcPrint("Kernel received okay; Starting...\r\n");
 #  else
-    mcPrint("No bootable code found; Halting...\r\n");
+    mcPrint("No bootable media found & no Kermit support; Halting...\r\n");
     goto halt;
 #  endif
 #else
     mcPrint("Starting MAME Quickload kernel...\r\n");
 #endif
 
-#ifdef SDFAT_LOADER
+#if defined SDFAT_LOADER || defined IDE_LOADER
 have_kernel:
 #endif
+    mcPrint("\r\n");
+
     kmain(sdb);
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");

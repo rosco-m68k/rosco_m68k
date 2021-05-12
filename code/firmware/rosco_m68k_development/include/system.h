@@ -29,8 +29,11 @@ typedef struct {
   uint16_t      heartbeat_counter;    /* Counter used to flash I0 */
   uint16_t      heartbeat_frequency;  /* Value used to reset heartbeat counter (100 = ~1 beat per second) */
   uint32_t      upticks;              /* Running counter of the number of ticks the system has been up */
-  uint32_t      reserved[72];         /* Reserved for system use */
-
+  uint32_t      e68k_reserved;        /* Reserved for Easy68k */
+  uint32_t      memsize;              /* Size of first contiguous block of RAM */
+  uint32_t      uartbase;             /* Base address of default UART */
+  uint32_t      cpu_model:3;          /* CPU type */
+  uint32_t      cpu_speed:29;         /* CPU speed */
 } __attribute__ ((packed)) SystemDataBlock;
 
 #endif

@@ -4,7 +4,7 @@ OBJECTS := $(OBJECTS) sdfat/sdcard.o sdfat/load.o															\
 	sdfat/fat_io_lib/fat_misc.o sdfat/fat_io_lib/fat_string.o										\
 	sdfat/fat_io_lib/fat_table.o sdfat/fat_io_lib/fat_write.o
 
-EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE			\
+EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DFATFS_USE_CUSTOM_OPTS_FILE			\
 		-DSPI_FASTER -DSD_FASTER -DSD_MINIMAL -DSDFAT_LOADER                    	\
 		-Isdfat/include
 
