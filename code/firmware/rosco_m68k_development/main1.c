@@ -21,6 +21,9 @@
 #include "system.h"
 #include "serial.h"
 
+#ifdef XOSERA_CON
+#include "xosera.h"
+#endif
 #ifdef VIDEO9958_CON
 #include "video9958.h"
 #endif
@@ -151,11 +154,23 @@ noreturn void main1() {
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
+#ifdef XOSERA_CON
+    if (HAVE_XOSERA()) {
+        XOSERA_CON_INIT();
+        XOSERA_CON_INSTALLHANDLERS();
+        goto skip9958;
+    }
+#endif
+
 #ifdef VIDEO9958_CON
     if (HAVE_V9958()) {
         V9958_CON_INIT();
         V9958_CON_INSTALLHANDLERS();
     }
+#endif
+
+#ifdef XOSERA_CON
+skip9958:
 #endif
 
     // Now we have tick, we can determine CPU speed
