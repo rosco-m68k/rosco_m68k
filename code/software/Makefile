@@ -6,7 +6,8 @@
 LIBSTARG = clean all install
 SOFTWARETARG = clean all
 
-SOFTWARE := $(subst /.,,$(filter-out libs/.,$(wildcard */.)))
+# NOTE: markm-ide skipped for now (breaks Makefile pattern)
+SOFTWARE := $(subst /.,,$(filter-out markm-ide/.,$(filter-out libs/.,$(wildcard */.))))
 
 all: libs $(SOFTWARE)
 
