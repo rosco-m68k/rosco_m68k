@@ -93,7 +93,7 @@ have_kernel:
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
-#ifndef KERMIT_LOADER
+#if !defined(KERMIT_LOADER) && !defined(MAME_FIRMWARE)
 halt:
 #endif
     while (true) {

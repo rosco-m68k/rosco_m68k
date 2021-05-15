@@ -105,8 +105,10 @@ noreturn void lmain() {
     mcPrint("Starting MAME Quickload kernel...\r\n");
 #endif
 
-#if defined SDFAT_LOADER || defined IDE_LOADER
+#if !defined(MAME_FIRMWARE)
+#  if defined SDFAT_LOADER || defined IDE_LOADER
 have_kernel:
+#  endif
 #endif
     mcPrint("\r\n");
 
