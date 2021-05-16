@@ -377,13 +377,12 @@ static BBSDCardType get_card_type() {
         BBSPI_recv_byte();
         BBSPI_recv_byte();
         BBSPI_recv_byte();
-        BBSPI_recv_byte();
         uint8_t result = BBSPI_recv_byte();
 
         if (result == 0xAA) {
-            return BBSD_CARD_TYPE_UNKNOWN;
-        } else {
             return BBSD_CARD_TYPE_V2;
+        } else {
+            return BBSD_CARD_TYPE_UNKNOWN;
         }
     }
 }
