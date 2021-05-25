@@ -101,7 +101,7 @@ all: $(BINARY_EVEN) $(BINARY_ODD)
 
 clean:
 	make -C $(STAGE2_DIR) clean	
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP)
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
@@ -109,3 +109,6 @@ burn: $(BINARY_EVEN) $(BINARY_ODD)
 tools: 
 	make -C tools/liblzg/src
 
+mame: $(BINARY)
+	srec_cat -output $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 0x00010000
+	
