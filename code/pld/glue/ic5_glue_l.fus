@@ -1,7 +1,7 @@
 
 
-Pin 19 = NC           XOR = 0   AC1 = 0
-  0  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+Pin 19 = DTACK        XOR = 1   AC1 = 1
+  0  ---- ---- ---- ---- ---- ---x ---- ----
   1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -50,8 +50,8 @@ Pin 15 = MFPDS        XOR = 0   AC1 = 1
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = DTACK        XOR = 0   AC1 = 1
- 40  ---- ---- ---- ---- ---- --x- ---- ----
+Pin 14 = PPDTACK      XOR = 0   AC1 = 1
+ 40  ---- ---- ---- ---- ---- ---- ---- ----
  41  ---- ---- ---- ---- ---- ---- -x-- -x--
  42  ---- ---- ---- ---- ---- ---- ---x -x--
  43  ---- ---- ---- ---- -x-- ---- --x- ----
