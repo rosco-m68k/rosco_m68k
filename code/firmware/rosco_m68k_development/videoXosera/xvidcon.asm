@@ -48,16 +48,82 @@ HAVE_XOSERA::
     rts
 
 
+; Delay for D0.w loops...
+; Modifies D0.
+DELAY:
+    bra.s   .DELAYSTART
+.DELAYLOOP
+    nop
+    nop
+    nop
+    nop
+    nop
+.DELAYSTART
+    dbra.w  D0,.DELAYLOOP
+    rts
+
+
 ; Initialize the console
 XOSERA_CON_INIT::
-    movem.l D0-D1/A0-A1,-(A7)
-    move.l  #XVID_BASE,A0                   ; Use A0 as port base register
+    movem.l D1-D2/A0-A1,-(A7)
+    move.l  #XVID_BASE,A0                     ; Use A0 as port base register
 
     ori.w   #$0200,SR                         ; No interrupts during init...
 
     ; TODO Disable display
 
-    ; Clear console data area (Comment this out if not in ROM)
+    move.w  #$B007,D0
+    movep.w D0,(XVID_CONST,A0)                ; Reconfigure Xosera for 848x480 mode
+    move.w  #$8180,D0
+    movep.w D0,(XVID_BLIT_CTRL,A0)
+
+    move.w  #10000,D0                         ; Wait a while
+    bsr.s   DELAY
+
+    movep.w (XVID_CONST,A0),D0
+    cmp.w   #$B007,D0                         ; Check if const is changed
+    bne.s   .MODE_SUCCESS                     ; If so, mode change was a success...
+
+    ; Failed to init mode if here, so fail the init
+    clr.l   D0
+    bra.s   .DONE
+
+.MODE_SUCCESS
+    move.w  #100,D1
+    bra.s   .SYNC_START
+
+.SYNC_LOOP
+    movep.w (XVID_CONST,A0),D2                ; Stash const
+
+    move.w  #$55AA,D0
+    movep.w D0,(XVID_CONST,A0)                ; Do sync checks
+    movep.w (XVID_CONST,A0),D0                
+    cmp.w   #$55AA,D0
+    bne.s   .SYNC_NEXT
+
+    move.w  #$AA55,D0
+    movep.w D0,(XVID_CONST,A0)
+    movep.w (XVID_CONST,A0),D0                
+    cmp.w   #$AA55,D0
+    bne.s   .SYNC_NEXT
+
+    ; If here, we're synced!
+    movep.w D2,(XVID_CONST,A0)                ; Restore const
+    bra.s   .SYNC_DONE
+
+.SYNC_NEXT
+    move.w  #10000,D0                         ; Wait a while
+    bsr.s   DELAY
+    
+.SYNC_START
+    dbra.w  D1,.SYNC_LOOP
+    
+    ; Fell through loop, so sync failed - fail the init
+    clr.l   D0
+    bra.s   .DONE 
+
+.SYNC_DONE
+    ; Clear console data area
 .CLEARDATA:
     move.l  #CURPOS,A1
     move.w  #$320,D1
@@ -86,7 +152,10 @@ XOSERA_CON_INIT::
     bra.s   .PRINTLOOP
 .PRINTDONE
 
-    movem.l (A7)+,D0-D1/A0-A1
+    move.l  #1,D0                             ; Success
+
+.DONE
+    movem.l (A7)+,D1-D2/A0-A1
     rts
 
 

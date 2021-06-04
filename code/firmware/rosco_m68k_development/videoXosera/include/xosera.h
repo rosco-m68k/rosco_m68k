@@ -26,7 +26,7 @@ bool HAVE_XOSERA();
 /**
  * Initialize the Xosera console.
  */
-void XOSERA_CON_INIT();
+bool XOSERA_CON_INIT();
 
 /**
  * Install handlers for syscall PRINT/PRINTLN

@@ -155,8 +155,7 @@ noreturn void main1() {
     INSTALL_EASY68K_TRAP_HANDLERS();
 
 #ifdef XOSERA_CON
-    if (HAVE_XOSERA()) {
-        XOSERA_CON_INIT();
+    if (HAVE_XOSERA() && XOSERA_CON_INIT()) {
         XOSERA_CON_INSTALLHANDLERS();
         goto skip9958;
     }
