@@ -11,7 +11,7 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
        -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
+LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -42,6 +42,13 @@ OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
 WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
+
+ifeq ($(HUGEROM),true)
+LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld
+ROMDEVICE=SST39SF040
+else
+LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld
+endif
 
 ifeq ($(NO68681),true)
 DEFINES:=$(DEFINES) -DNO_68681
