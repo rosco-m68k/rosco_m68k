@@ -1,0 +1,25 @@
+
+
+                                GAL16V8
+
+                          -------\___/-------
+                      A18 |  1           20 | VCC
+                          |                 |
+                      A19 |  2           19 | NC
+                          |                 |
+                      A20 |  3           18 | IACK
+                          |                 |
+                      A21 |  4           17 | EXPSEL
+                          |                 |
+                      A22 |  5           16 | IOSEL
+                          |                 |
+                      A23 |  6           15 | ODDROM
+                          |                 |
+                      UDS |  7           14 | EVENROM
+                          |                 |
+                      LDS |  8           13 | ODDRAM
+                          |                 |
+                     BOOT |  9           12 | EVENRAM
+                          |                 |
+                      GND | 10           11 | AS
+                          -------------------

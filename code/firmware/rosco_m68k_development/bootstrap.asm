@@ -19,7 +19,6 @@
 
     section .text
 
-    org     ROMBASE
 RESET:
     dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
     dc.l    START                       ; 01: Initial PC (start of ROM code)

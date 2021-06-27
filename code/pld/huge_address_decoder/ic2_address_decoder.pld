@@ -1,0 +1,52 @@
+GAL16V8
+DECODER
+
+A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    GND
+AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  NC      VCC
+
+/EVENRAM      = IACK * /AS * /UDS * BOOT * /A23 * /A22 * /A21 * /A20
+/ODDRAM       = IACK * /AS * /LDS * BOOT * /A23 * /A22 * /A21 * /A20
+
+/EVENROM      = IACK * /AS * /UDS * A23 * A22 * A21 * /A20
+              + IACK * /AS * /UDS * /BOOT
+/ODDROM       = IACK * /AS * /LDS * A23 * A22 * A21 * /A20
+              + IACK * /AS * /LDS * /BOOT
+
+/IOSEL        = IACK * /AS * A23 * A22 * A21 * A20
+
+/EXPSEL       = IACK * /AS * /A23 * /A22 * /A21 * A20
+
+DESCRIPTION
+
+HUGEROM IC2 (Address Decoder) for rosco_m68k
+
+This (experimental!) version of IC2 is intended for use with a hardware 
+modification that allows 1MB SST39SF040 Flash ROMs to be used instead of 
+AT28Cxxx EEPROMs. The modification involves removing the standard ROMs,
+and hooking the appropriate lines up to the flash ROMs, with the high 
+four address lines (A16-A19) coming from the expansion connector (or 
+other convenient place).
+
+It requires firmware 2.0, built with the HUGEROM=true option enabled.
+
+Note that the address space used by this is software-incompatible with the
+standard v1 memory map. Briefly:
+
+* Onboard RAM    : $00000000 - $000FFFFF (1MB)
+* Expansion space: $00100000 - $00DFFFFF (14MB)
+* ROM            : $00E00000 - $00EFFFFF (1MB)
+* IO             : $00F00000 - $FFFFFFFF (1MB)
+
+This layout requires the ROM entry point (initial PC vector) to be set
+correctly in the ROM (BOOT operation remains as before). 
+
+No changes to the MFPSEL (IC3) or GLUE (IC5) are required to use this
+modified address layout, and most expansion cards should continue to 
+work with no changes.
+
+The exception is the memory expansion - to use this, you can no longer
+map the expansion RAM to touch the $E00000-$F00000 address space. It
+should continue to work fine mapped below that however.
+
+Copyright (c)2020 Ross Bamford. See LICENSE.
+
