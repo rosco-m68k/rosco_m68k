@@ -91,7 +91,7 @@ START::
     bsr.s   PRINT_BANNER
 
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
-    and.w   #$F0FF,SR                 ; Enable interrupts
+    and.w   #$F2FF,SR                 ; Enable interrupts (except video)
 
     jmp     linit                     ; Init C land, calls through to main1
 
