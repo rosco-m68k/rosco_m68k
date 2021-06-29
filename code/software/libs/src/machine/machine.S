@@ -107,22 +107,33 @@ mcDelaymsec10::
     
     rts
 
-; Disable interrupts
+; Disable interrupts and return previous priority mask
 ;
 ; Trashes: Nothing
-; Modifies: SR
+; Modifies: D0 (return), SR
     section .text.mcDisableInterrupts
 mcDisableInterrupts::
-    or.w    #$0700,SR    
+    move.w  SR,D0                       ; Copy current SR into D0
+    ori.w   #$0700,SR                   ; Disable all maskable interrupts
+    lsr.w   #8,D0                       ; Shift interrupt mask for returning
+    andi.b  #$07,D0                     ; Only keep interrupt mask bits
     rts
 
-; Enable interrupts
+; Enable interrupts with a new priority mask
 ;
 ; Trashes: Nothing
 ; Modifies: SR
     section .text.mcEnableInterrupts
 mcEnableInterrupts::
-    and.w   #$F0FF,SR
+    movem.l D0-D1,-(A7)                 ; Save regs
+    move.l  (12,A7),D0                  ; Get C uint8_t from stack into D0
+    lsl.w   #8,D0                       ; Shift interrupt mask to location in SR
+    andi.w  #$0700,D0                   ; Only keep interrupt mask bits set in D0
+    move.w  SR,D1                       ; Copy current SR into D1
+    andi.w  #$F8FF,D1                   ; Mask out existing interrupt mask in D1
+    or.w    D0,D1                       ; Set interrupt mask in D1 from D0
+    move.w  D1,SR                       ; Update SR from D1
+    movem.l (A7)+,D0-D1                 ; Restore regs
     rts
 
 ; Disable interrupts and halt the machine

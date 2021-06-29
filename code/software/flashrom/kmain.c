@@ -63,14 +63,14 @@ void kmain() {
     printf("\nrosco_m68k Flash EEPROM identifier / write POC\n");
     printf("**********************************************\n\n");
 
-    mcDisableInterrupts();      // ROM is about to become unavailable, so no interrupts!
+    uint8_t intr_mask = mcDisableInterrupts();  // ROM is about to become unavailable, so no interrupts!
 
     SST even, odd;
 
     get_device_info(EROM_BASE, &even);
     get_device_info(OROM_BASE, &odd);
 
-    mcEnableInterrupts();       // ROM should be back now, so re-enable interrupts.
+    mcEnableInterrupts(intr_mask);              // ROM should be back now, so re-enable interrupts.
 
     printf("EVEN ROM is %s [Manufacturer %s]\n", 
             get_device_name(even.device), get_manufacturer_name(even.manufacturer));
