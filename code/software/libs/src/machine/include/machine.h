@@ -154,14 +154,14 @@ void mcBusywait(uint32_t ticks);
 void mcDelaymsec10(uint32_t ticks10ms);
 
 /*
- * Disable all interrupts (except NMI).
+ * Disable all interrupts (except NMI) and return existing priority mask.
  */
-void mcDisableInterrupts();
+uint8_t mcDisableInterrupts();
 
 /*
- * Enable all interrupts.
+ * Enable interrupts according to priority mask.
  */
-void mcEnableInterrupts();
+void mcEnableInterrupts(uint8_t mask);
 
 /*
  * Disable interrupts and halt the machine. The only way to

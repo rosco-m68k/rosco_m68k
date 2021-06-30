@@ -65,7 +65,7 @@ void kmain()
   // blinking, and sadness).  So we disable all interrupts for the short
   // period while we set the MFP interrupt registers (and re-enable them right
   // after).
-  mcDisableInterrupts();
+  uint8_t intr_mask = mcDisableInterrupts();
 
   // NOTE: These use the normal GPIO bit values (from gpio.h)
   MFP(DDR)  &= ~GPIO3;     // clear GPIO3 data direction for input (0=in, 1=out)
@@ -88,7 +88,7 @@ void kmain()
   prev_handler = _MFP_VECTORS[6];   // save old handler (to restore on exit)
  _MFP_VECTORS[6] = gpio3_handler;   // set new GPIP4 interrupt handler
 
-  mcEnableInterrupts();   // re-enable interrupts
+  mcEnableInterrupts(intr_mask);    // re-enable interrupts
 
   println("Done.  Now ready for a GPIO3 interrupt.");
   println("");

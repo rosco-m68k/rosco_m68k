@@ -44,7 +44,7 @@ mcPrintln::
 ; Modifies: Nothing
     section .text.mcSendchar
 mcSendchar::
-    movem.l  D0-D1,-(A7)              ; Save regs
+    movem.l D0-D1,-(A7)               ; Save regs
     move.l  (12,A7),D0                ; Get C char from the stack into D0
     move.l  #2,D1                     ; Func code is 2 SENDCHAR
     trap    #14                       ; TRAP to firmware
@@ -55,28 +55,26 @@ mcSendchar::
 ;
 ; Trashes: MFP_UDR
 ; Modifies: D0 (return)
-
     section .text.mcReadchar
 mcReadchar::
     move.l  D1,-(A7)                  ; Save regs
     move.l  #3,D1                     ; Func code is 3 RECVCHAR
     trap    #14                       ; TRAP to firmware
-    move.l (A7)+,D1                   ; Restore regs
+    move.l  (A7)+,D1                  ; Restore regs
     rts                               ; We're done.
 
 ; Call the CHECKCHAR function of the firmware
 ;
 ; Trashes: Nothing (MFP_UDR?)
 ; Modifies: D0 (return)
-
     section .text.mcCheckchar
 mcCheckchar::
     move.l  D1,-(A7)                  ; Save regs
     move.l  #6,D1                     ; Func code is 6 CHECKCHAR
     trap    #14                       ; TRAP to firmware
-    ext.w  D0                         ; extend D0.B return for C
-    ext.l  D0
-    move.l (A7)+,D1                   ; Restore regs
+    ext.w   D0                        ; extend D0.B return for C
+    ext.l   D0
+    move.l  (A7)+,D1                  ; Restore regs
     rts                               ; We're done.
 
 ; Busywait for a while...
@@ -107,22 +105,33 @@ mcDelaymsec10::
     
     rts
 
-; Disable interrupts
+; Disable interrupts and return previous priority mask
 ;
 ; Trashes: Nothing
-; Modifies: SR
+; Modifies: D0 (return), SR
     section .text.mcDisableInterrupts
 mcDisableInterrupts::
-    or.w    #$0700,SR    
+    move.w  SR,D0                       ; Copy current SR into D0
+    ori.w   #$0700,SR                   ; Disable all maskable interrupts
+    lsr.w   #8,D0                       ; Shift interrupt mask for returning
+    andi.b  #$07,D0                     ; Only keep interrupt mask bits
     rts
 
-; Enable interrupts
+; Enable interrupts with a new priority mask
 ;
 ; Trashes: Nothing
 ; Modifies: SR
     section .text.mcEnableInterrupts
 mcEnableInterrupts::
-    and.w   #$F0FF,SR
+    movem.l D0-D1,-(A7)                 ; Save regs
+    move.l  (12,A7),D0                  ; Get C uint8_t from stack into D0
+    lsl.w   #8,D0                       ; Shift interrupt mask to location in SR
+    andi.w  #$0700,D0                   ; Only keep interrupt mask bits set in D0
+    move.w  SR,D1                       ; Copy current SR into D1
+    andi.w  #$F8FF,D1                   ; Mask out existing interrupt mask in D1
+    or.w    D0,D1                       ; Set interrupt mask in D1 from D0
+    move.w  D1,SR                       ; Update SR from D1
+    movem.l (A7)+,D0-D1                 ; Restore regs
     rts
 
 ; Disable interrupts and halt the machine
