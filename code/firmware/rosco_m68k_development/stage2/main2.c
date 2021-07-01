@@ -25,6 +25,7 @@
 extern void mcPrint(char*);
 extern void mcHalt();
 extern void ENABLE_RECV();
+extern void red_led_off();
 
 #ifdef KERMIT_LOADER
 extern void mcBusywait(uint32_t);
@@ -110,6 +111,7 @@ noreturn void lmain() {
 have_kernel:
 #  endif
 #endif
+    red_led_off();
     mcPrint("\r\n");
 
     kmain(sdb);

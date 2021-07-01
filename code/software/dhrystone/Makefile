@@ -5,22 +5,23 @@
 
 # Hacked by Xark for dhrystone
 
+CPU?=68010
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 DEFINES=-DROSCO_M68K
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror		\
-				-I$(SYSINCDIR) -mcpu=68010 -march=68010 -mtune=68010 -O1				\
-				-mno-align-int -mno-strict-align -Wno-pedantic 									\
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -pedantic -Werror        \
+				-I$(SYSINCDIR) -mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) -O1 \
+				-mno-align-int -mno-strict-align -Wno-pedantic              \
 				-Wno-maybe-uninitialized $(DEFINES)
-GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
-		| grep libraries:\ =																								\
-    | sed 's/libraries: =/-L/g' 																				\
+GCC_LIBS=$(shell $(CC) --print-search-dirs                                  \
+		| grep libraries:\ =                                                \
+    | sed 's/libraries: =/-L/g'                                             \
     | sed 's/:/m68000\/ -L/g')m68000/
 LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
+LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR)     \
 				-Map=$(MAP)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot

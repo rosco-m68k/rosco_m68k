@@ -3,6 +3,7 @@
 # Copyright (c) 2020 Xark
 # MIT LICENSE
 
+CPU?=68010
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=../libs/build/include
@@ -10,13 +11,13 @@ SYSLIBDIR?=../libs/build/lib
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
-				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
+				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
     | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -ldebug_stub -lgcc
-ASFLAGS=-mcpu=68010 -march=68010
+LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
+ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP) --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)

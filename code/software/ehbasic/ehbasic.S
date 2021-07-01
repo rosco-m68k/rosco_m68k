@@ -65,7 +65,7 @@ nobrk		EQU	0				* null response to INPUT causes a break
 
 *************************************************************************************
 
-    include "../../shared/equates.S"
+    include "../../shared/rosco_m68k_public.asm"
   	include	"ehdefs.S"
   
 							* RAM offset definitions
@@ -116,22 +116,22 @@ VEC_OUT:
 * input a character from the console into register d0
 * else return Cb=0 if there's no character available
 
-DUART_SRA      equ     $f80022      ; R register 1
-DUART_RBA      equ     $f80026      ; R register 3
+L_DUART_SRA      equ     $f80022      ; R register 1
+L_DUART_RBA      equ     $f80026      ; R register 3
 
 VEC_IN:
     ifd MC68681
 
 ; MC68681 version
 
-    move.b  DUART_SRA,D0          ; Check DUART status reg A
+    move.b  L_DUART_SRA,D0        ; Check DUART status reg A
     btst    #0,D0                 ; Bit 0
     bne.s   .GOTCHR               ; Notready if zero
     andi.b  #$FE,CCR              ; Else clear the carry flag, no character available
     rts                           ; And return
     
 .GOTCHR
-    move.b  DUART_RBA,D0
+    move.b  L_DUART_RBA,D0
     ori.b   #1,CCR                ; ... and set the carry to flag to indicate we got a char
     rts
 

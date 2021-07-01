@@ -1288,7 +1288,7 @@ exception handlers and TRAP routines.
 | 0x413   | 1    | Easy68k Reserved                                          |
 | 0x414   | 4    | Size of the first block of contiguious memory             |
 | 0x418   | 4    | Default UART base address                                 |
-| 0x41C   | 4    | System Reserved                                           |
+| 0x41C   | 4    | CPU Info (see below)                                      |
 
 For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`.
 
@@ -1325,6 +1325,13 @@ and the system will revert to blinking the red LED as normal in a crash situatio
 
 **Note** also that clearing these bits has no effect on the actual state of the GPIP lines.
 User code should set the lines to a known state after setting this word.
+
+### CPU Info (0x41C)
+
+This four-byte value encodes the CPU type (3 bits indicating the family version number,
+and 29 bits with the approximate multiplied speed measured at boot time).
+
+Where multiple processors are present, this field will refer to the boot CPU.
 
 ## 2.3. Extension Function Pointer Table (EFPT)
 

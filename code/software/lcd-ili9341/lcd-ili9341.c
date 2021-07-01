@@ -43,7 +43,6 @@
 #include <basicio.h>
 #include <machine.h>
 #include <gpio.h>
-#include <debug_stub.h>
 
 // Include GPIO SPI routines
 // NOTE: SPI_FAST makes SPI routines inline (can bloat code size)
@@ -519,8 +518,6 @@ void kmain()
   print(".");
   printuchar(_FIRMWARE_REV);
   println("");
-
-  debug_stub();
 
   println("This is an example of using rosco_m68k GPIO to");
   println("control a common ILI9341/ILI9342 TFT LCD SPI");

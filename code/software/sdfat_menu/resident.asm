@@ -14,7 +14,7 @@
 ; this should be a multiple of 4 and at least ~$800 (for 1st stage)
 resident_size   =       $800                    ; amount of memory to reserve
 
-                include "../../shared/equates.S"
+                include "../../shared/rosco_m68k_public.asm"
 
                 section .text.resident_init
                 align  2

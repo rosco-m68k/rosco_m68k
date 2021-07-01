@@ -3,13 +3,14 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+CPU?=68010
 EXTRA_CFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
-				-nostartfiles -Wall -pedantic -Werror \
-				-mcpu=68010 -march=68010 -mtune=68010 \
+				-nostartfiles -Wall -pedantic -Werror              \
+				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)           \
 				-mno-align-int -mno-strict-align $(DEFINES)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -34,7 +35,6 @@ include src/sdfat/include.mk
 include src/machine/include.mk
 include src/gpio/include.mk
 include src/easy68k/include.mk
-include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk

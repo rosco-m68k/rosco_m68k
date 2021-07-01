@@ -10,8 +10,8 @@
 ;
 ; Block device IO - assembly parts
 ;------------------------------------------------------------
-    include "../../../shared/equates.S"
-    include "equates.asm"
+    include "../../../shared/rosco_m68k_public.asm"
+    include "rosco_m68k_private.asm"
     section .text
 
 TRAP_13_VECTOR      equ     $2D

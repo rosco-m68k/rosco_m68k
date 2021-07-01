@@ -11,7 +11,7 @@
 ; Stubs for calling SD functions in the EFP from C,
 ; using the BBSD prototypes from stage 1.
 ;------------------------------------------------------------
-    include "../../equates.asm"
+    include "../../../../shared/rosco_m68k_public.asm"
 
 BBSD_support_check::
     move.l  #0,D0

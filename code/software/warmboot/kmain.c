@@ -5,7 +5,6 @@
 #include <machine.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <debug_stub.h>
 
 static uint32_t * rom_reset_vector = (uint32_t *)&_FIRMWARE[4];
 
@@ -14,7 +13,6 @@ extern void resident_init();
 
 void kmain()
 {
-  debug_stub();
   mcDelaymsec10(250);
   printf("Example/test of rosco_m68k warm reboot.\n\n");
 
