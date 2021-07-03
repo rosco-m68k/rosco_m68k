@@ -20,8 +20,7 @@ DISPLAYSIZE       equ   LINELENGTH*LINECOUNT
 DWDISPLAYSIZE     equ   DISPLAYSIZE/4
 CURPOS            equ   $500      ; dword
 DISPLAYSTART      equ   $502      ; dword
-BUFFER            equ   $504      ; 3180 bytes
-                                  ; 16 bytes remaining...
+BUFFER            equ   $504
 
     section .text
 
@@ -50,9 +49,10 @@ HAVE_XOSERA::
 
 ; Initialize the console
 XOSERA_CON_INIT::
-    movem.l D1-D2/A0-A1,-(A7)
+    movem.l D1-D3/A0-A1,-(A7)
     move.l  #XVID_BASE,A0                     ; Use A0 as port base register
 
+    move.w  SR,D3                             ; Save SR
     ori.w   #$0200,SR                         ; No interrupts during init...
 
     ; TODO Disable display
@@ -91,8 +91,6 @@ XOSERA_CON_INIT::
 
     ; TODO enable display
 
-    andi.w   #~$0200,SR                       ; Enable interrupts...
-
     move.l  #SZHEADER,A1
 .PRINTLOOP
     move.b  (A1)+,D0
@@ -105,9 +103,9 @@ XOSERA_CON_INIT::
     move.l  #1,D0                             ; Success
 
 .DONE
-    andi.w   #~$0200,SR                       ; Enable interrupts...
+    move.w  D3,SR                             ; Restore SR
 
-    movem.l (A7)+,D1-D2/A0-A1
+    movem.l (A7)+,D1-D3/A0-A1
     rts
 
 
@@ -189,14 +187,17 @@ CLEARBUFFER:
 ; TODO Maybe there's a more efficient way to do this
 ; (rather than doing the whole copy/flip). Look into that.
 XVID_CON_CLRSCR:
+    move.w  D2,-(A7)
     move.w  D1,-(A7)
     move.l  A0,-(A7)
-    ori.w   #$0200,SR                      ; Disable interrupts
-    bsr.s   CLEARBUFFER                    ; Clear
-    andi.w  #~$200,SR                      ; And re-enable...
+    move.w  SR,D2                         ; Save SR
+    ori.w   #$0200,SR                     ; Disable interrupts
+    bsr.s   CLEARBUFFER                   ; Clear
+    move.w  D2,SR                         ; And restore SR
     move.w  #0,CURPOS
     move.l  (A7)+,A0
     move.w  (A7)+,D1
+    move.w  (A7)+,D2
     
     ; Now we've cleared, we need to copy the whole buffer and flip
     lea.l   BUFFER,A1
@@ -251,8 +252,9 @@ XOSERA_CON_INSTALLHANDLERS::
 ;   Nothing
 ;
 BUFFERFLIP:
-    movem.l D0-D2,-(A7)
-    ori.w   #$0200,SR                         ; Cannot be interrupted for a bit...
+    movem.l D0-D3,-(A7)
+    move.w  SR,D3                           ; Save SR
+    ori.w   #$0200,SR                       ; Cannot be interrupted for a bit...
 
     ; TODO disable screen
 
@@ -281,8 +283,8 @@ BUFFERFLIP:
 
     ; TODO re-enable screen
 
-    andi.w  #~$0200,SR                        ; Go for interrupts again...
-    movem.l (A7)+,D0-D2
+    move.w  D3,SR                             ; Restore SR
+    movem.l (A7)+,D0-D3
     rts
 
 
@@ -340,9 +342,9 @@ XVID_CON_PUTCHAR::
     rts
 
 .NOTIGNORED
-    movem.l D1-D2/A0-A1,-(A7)
+    movem.l D1-D3/A0-A1,-(A7)
     
-    move.l  #XVID_BASE,A0               ; Use A0 as Xosera base
+    move.l  #XVID_BASE,A0                 ; Use A0 as Xosera base
     move.w  CURPOS,D1                     ; Load current pointer
  
     ; Is this a carriage-return?
@@ -376,6 +378,7 @@ XVID_CON_PUTCHAR::
     cmp.w   D1,D2                         ; Are we at display start?
     beq.w   .DONE                         ; Yes - Ignore BS
 
+    move.w  SR,D3                         ; Store SR
     ori.w   #$0200,SR                     ; Disable interrupts for a sec
     subq.w  #1,D1                         ; Back a space
 
@@ -384,11 +387,10 @@ XVID_CON_PUTCHAR::
     move.w  #$0A20,D0
     movep.w D0,(XVID_DATA,A0)             ; Overwrite character
 
-    andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
+    move.w  D3,SR                         ; Go ahead with the interrupts...
     move.b  #0,(A1,D1)                    ; Clear from buffer
     move.w  D1,CURPOS                     ; Store new position
 
-    andi.w  #~$0200,SR
     bra.w   .DONE
 
 .NOTBS
@@ -399,13 +401,14 @@ XVID_CON_PUTCHAR::
     move.b  D0,(A1,D1)                    ; Buffer this character
 
 .WRITEVRAM
+    move.w  SR,D3                         ; Store SR
     ori.w   #$0200,SR                     ; No interrupts for a sec...
     bsr.w   SETUP_VRAM_WRITE              ; Setup to write to correct position for D2
 
     and.w   #$00FF,D0
     or.w    #$0A00,D0
     movep.w D0,(XVID_DATA,A0)             ; And write,
-    andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
+    move.w  D3,SR                         ; Go ahead with the interrupts...
     
     addq.w  #1,D1
 
@@ -444,7 +447,7 @@ XVID_CON_PUTCHAR::
     bsr.w   BUFFERFLIP
 
 .DONE
-    movem.l (A7)+,D1-D2/A0-A1
+    movem.l (A7)+,D1-D3/A0-A1
     rts
 
     section .rodata

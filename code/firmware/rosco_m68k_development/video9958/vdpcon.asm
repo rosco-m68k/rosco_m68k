@@ -126,9 +126,10 @@ HAVE_V9958::
 
 ; Initialize the console
 V9958_CON_INIT::
-    movem.l D0-D1/A0-A1,-(A7)
+    movem.l D0-D2/A0-A1,-(A7)
     move.l  #PORT_RWDATA,A0                   ; Use A0 as port base register
-
+    
+    move.w  SR,D2                             ; Store SR
     ori.w   #$0200,SR                         ; No interrupts during init...
 
     ; Clear console data area (Comment this out if not in ROM)
@@ -210,7 +211,7 @@ V9958_CON_INIT::
     move.b  #%01110000,(PORT_WREG_SETUP,A0)   ; Write BL=1,IE0=1,M1=1,M2=0,SI=0,MAG=0
     move.b  #$81,(PORT_WREG_SETUP,A0)         ; To register 1
 
-    andi.w   #~$0200,SR                       ; Enable interrupts...
+    move.w  D2,SR                             ; Restore SR
 
     move.l  #SZHEADER,A1
 .PRINTLOOP
@@ -221,7 +222,7 @@ V9958_CON_INIT::
     bra.s   .PRINTLOOP
 .PRINTDONE
 
-    movem.l (A7)+,D0-D1/A0-A1
+    movem.l (A7)+,D0-D2/A0-A1
     rts
 
 
@@ -254,14 +255,17 @@ CLEARBUFFER:
 ; TODO Maybe there's a more efficient way to do this
 ; (rather than doing the whole copy/flip). Look into that.
 V9958_CON_CLRSCR::
+    move.w  D2,-(A7)
     move.w  D1,-(A7)
     move.l  A0,-(A7)
+    move.w  SR,D2                          ; Store SR
     ori.w   #$0200,SR                      ; Disable interrupts
     bsr.s   CLEARBUFFER                    ; Clear
-    andi.w  #~$200,SR                      ; And re-enable...
+    move.w  D2,SR                          ; And re-enable...
     move.w  #0,CURPOS
     move.l  (A7)+,A0
     move.w  (A7)+,D1
+    move.w  (A7)+,D2
     
     ; Now we've cleared, we need to copy the whole buffer and flip
     lea.l   BUFFER,A1
@@ -347,7 +351,9 @@ V9958_CON_HIDECURSOR::
 ;   Nothing
 ;
 BUFFERFLIP:
+    move.w  D2,-(A7)
     move.l  D1,-(A7)
+    move.w  SR,D2                             ; Store SR
     ori.w   #$0200,SR                         ; Cannot be interrupted for a bit...
 
     ; Set up to write VRAM at 0x0
@@ -394,8 +400,9 @@ BUFFERFLIP:
 .COPY
     dbra.w  D1,.COPYLOOP  
 
-    andi.w  #~$0200,SR                        ; Go for interrupts again...
+    move.w  D2,SR                             ; Go for interrupts again...
     move.l  (A7)+,D1                          ; ... and we're done.  
+    move.w  (A7)+,D2
     rts
 
 
@@ -475,7 +482,7 @@ V9958_CON_PUTCHAR::
     rts
 
 .NOTIGNORED
-    movem.l D1-D2/A0-A1,-(A7)
+    movem.l D1-D3/A0-A1,-(A7)
     
     move.l  #PORT_RWDATA,A0               ; Use A0 as port base register
     move.w  CURPOS,D1                     ; Load current pointer
@@ -511,6 +518,7 @@ V9958_CON_PUTCHAR::
     cmp.w   D1,D2                         ; Are we at display start?
     beq.w   .DONE                         ; Yes - Ignore BS
 
+    move.w  SR,D3                         ; Store SR
     ori.w   #$0200,SR                     ; Disable interrupts for a sec
     subq.w  #1,D1                         ; Back a space
 
@@ -539,12 +547,11 @@ V9958_CON_PUTCHAR::
     nop
     nop
     nop
-
-    andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
+    
+    move.w  D3,SR                         ; Go ahead with the interrupts...
     move.b  #0,(A1,D1)                    ; Clear from buffer
     move.w  D1,CURPOS                     ; Store new position
 
-    andi.w  #~$0200,SR
     bra.w   .DONE
 
 .NOTBS
@@ -555,12 +562,13 @@ V9958_CON_PUTCHAR::
     move.b  D0,(A1,D1)                    ; Buffer this character
 
 .WRITEVRAM
+    move.w  SR,D3                         ; Store SR
     ori.w   #$0200,SR                     ; No interrupts for a sec...
     bsr.w   SETUP_VRAM_WRITE              ; Setup to write to correct position for D2
     move.b  D0,(A0)                       ; And write,
     nop                                   ;   but not too fast!
     nop  
-    andi.w  #~$0200,SR                    ; Go ahead with the interrupts...
+    move.w  D3,SR                         ; Go ahead with the interrupts...
     
     addq.w  #1,D1
 
@@ -601,7 +609,7 @@ V9958_CON_PUTCHAR::
     bsr.w   BUFFERFLIP
 
 .DONE
-    movem.l (A7)+,D1-D2/A0-A1
+    movem.l (A7)+,D1-D3/A0-A1
     rts
 
 
