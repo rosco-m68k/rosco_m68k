@@ -10,15 +10,22 @@
 ;
 ; This is the initialization code for stage 2. 
 ;------------------------------------------------------------
-    include "../../../shared/equates.S"
+    include "../../../shared/rosco_m68k_public.asm"
+    include "../rosco_m68k_private.asm"
 
     section .text.init
     org     $2000
 
 START::
-    move.l  $414,A7                     ; Stack to top of RAM
+    move.l  SDB_MEMSIZE,A7              ; Stack to top of RAM
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0
     jmp     (A0)                        ; Stage 2 is go
 
+red_led_off::
+    move.b  MFP_GPDR,D0                 ; Get GPDR
+    or.b    #2,D0                       ; Turn off I1
+    and.b   D1,D0                       ; Mask with flags
+    move.b  D0,MFP_GPDR                 ; Set GPDR
+    rts

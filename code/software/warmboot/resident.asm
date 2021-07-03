@@ -13,7 +13,7 @@
 
 resident_size   =       $1000                   ; amount of memory to reserve (power of 2)
 
-                include "../../shared/equates.S"
+                include "../../shared/rosco_m68k_public.asm"
 
                 section .text.resident_init
                 align  2

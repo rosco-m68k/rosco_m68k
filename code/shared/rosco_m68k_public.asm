@@ -8,30 +8,42 @@
 ; Copyright (c)2019-2021 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
-; Global equates for firmware code
+; Public equates for rosco_m68k firmware
+;
+; 
 ;------------------------------------------------------------
 
-; Version (embedded into firmware at 0xFC0400)
-; MSW is flags, LSW is split into major (MSB) and minor (LSB)
+; ----------------------------------------------------------------------------
+; Memory layout
 ;
-; Flags:
-; bit 0 - 13: Reserved
-; bit 14    : Requires larger system data area
-; bit 15    : Snapshot version
-RELEASE_VER     equ     $80000200
+RAMBASE     equ     $0                    ; Base address for RAM
+RAMLIMIT    equ     $100000               ; Limit of onboard RAM
+IOBASE      equ     $F80000               ; Base address for IO space
+ROMBASE     equ     $FC0000               ; Base address for ROM space
 
-; SDB layout
-SDB_MAGIC       equ     $400
-SDB_STATUS      equ     $404
-SDB_TICKCNT     equ     $408
-SDB_SYSFLAGS    equ     $40A
-SDB_UPTICKS     equ     $40C
-SDB_E68K_STATE  equ     $410
-SDB_MEMSIZE     equ     $414
-SDB_UARTBASE    equ     $418
-SDB_CPUINFO     equ     $41C
 
-; EFP table addresses
+; ----------------------------------------------------------------------------
+; System Data Block (SDB) layout
+;
+SDB_MAGIC       equ     $400              ; SDB Magic (0xB105D47A)
+SDB_STATUS      equ     $404              ; Status code
+SDB_TICKCNT     equ     $408              ; (Internal) Tick counter
+SDB_SYSFLAGS    equ     $40A              ; Sys Flags (see InterfaceReference)
+SDB_UPTICKS     equ     $40C              ; Upticks counter
+SDB_E68K_STATE  equ     $410              ; (Internal) E68k state
+SDB_MEMSIZE     equ     $414              ; Memory size (first block)
+SDB_UARTBASE    equ     $418              ; Default UART base address
+SDB_CPUINFO     equ     $41C              ; CPU Info (see IntefaceReference)
+
+; ----------------------------------------------------------------------------
+; Extension Function Pointer (EFP) table addresses
+;
+; See InterfaceReference.md for the meaning of the individual pointers
+; and their interface contracts.
+;
+; These are public to allow them to be easily replaced by system software 
+; and drivers. They **must not** be called directly from user code!
+;
 EFP_PRINT       equ     $420
 EFP_PRINTLN     equ     $424
 EFP_PRINTCHAR   equ     $428
@@ -61,9 +73,83 @@ EFP_ATA_READ    equ     $484
 EFP_ATA_WRITE   equ     $488
 EFP_ATA_IDENT   equ     $48C
 
-; Bits we use in the firmware reserved area (non-BSS).
-BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync
-BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
+; MFP Location
+MFPBASE     equ     IOBASE
+
+; Equates for MC68901 Multi Function Peripheral
+;
+; The register layout is different on r0 boards, hence the
+; conditional assembly...
+; ------------------------------------------------------------
+  ifd REVISION_0
+;; MFP Registers on REVISION_0 board
+
+; MFP GPIO Registers
+MFP_GPDR    equ     MFPBASE+$01
+MFP_AER     equ     MFPBASE+$21
+MFP_DDR     equ     MFPBASE+$11
+; MFP Interrupt Controller Registers
+MFP_IERA    equ     MFPBASE+$31
+MFP_IERB    equ     MFPBASE+$09
+MFP_IPRA    equ     MFPBASE+$29
+MFP_IPRB    equ     MFPBASE+$19
+MFP_ISRA    equ     MFPBASE+$39
+MFP_ISRB    equ     MFPBASE+$05
+MFP_IMRA    equ     MFPBASE+$25
+MFP_IMRB    equ     MFPBASE+$15
+MFP_VR      equ     MFPBASE+$35
+; MFP Timer Registers
+MFP_TACR    equ     MFPBASE+$0D
+MFP_TBCR    equ     MFPBASE+$2D
+MFP_TCDCR   equ     MFPBASE+$1D
+MFP_TADR    equ     MFPBASE+$3D
+MFP_TBDR    equ     MFPBASE+$03
+MFP_TCDR    equ     MFPBASE+$23
+MFP_TDDR    equ     MFPBASE+$13
+; MFP USART Registers
+MFP_SCR     equ     MFPBASE+$33
+MFP_UCR     equ     MFPBASE+$0B
+MFP_RSR     equ     MFPBASE+$2B
+MFP_TSR     equ     MFPBASE+$1B
+MFP_UDR     equ     MFPBASE+$3B
+
+  else
+
+;; MFP Registers on "fixed" boards
+; MFP GPIO Registers
+MFP_GPDR    equ     MFPBASE+$01
+MFP_AER     equ     MFPBASE+$03
+MFP_DDR     equ     MFPBASE+$05
+; MFP Interrupt Controller Registers
+MFP_IERA    equ     MFPBASE+$07
+MFP_IERB    equ     MFPBASE+$09
+MFP_IPRA    equ     MFPBASE+$0B
+MFP_IPRB    equ     MFPBASE+$0D
+MFP_ISRA    equ     MFPBASE+$0F
+MFP_ISRB    equ     MFPBASE+$11
+MFP_IMRA    equ     MFPBASE+$13
+MFP_IMRB    equ     MFPBASE+$15
+MFP_VR      equ     MFPBASE+$17
+; MFP Timer Registers
+MFP_TACR    equ     MFPBASE+$19
+MFP_TBCR    equ     MFPBASE+$1B
+MFP_TCDCR   equ     MFPBASE+$1D
+MFP_TADR    equ     MFPBASE+$1F
+MFP_TBDR    equ     MFPBASE+$21
+MFP_TCDR    equ     MFPBASE+$23
+MFP_TDDR    equ     MFPBASE+$25
+; MFP USART Registers
+MFP_SCR     equ     MFPBASE+$27
+MFP_UCR     equ     MFPBASE+$29
+MFP_RSR     equ     MFPBASE+$2B
+MFP_TSR     equ     MFPBASE+$2D
+MFP_UDR     equ     MFPBASE+$2F
+
+  endif
+
+; Base vector for MFP exceptions
+MFP_VECBASE equ     $40
+
 
 ; Equates for MC68681 DUART
 ; ------------------------------------------------------------
@@ -185,3 +271,4 @@ DUART_RBB       equ     R_RXBUF_B
 DUART_TBB       equ     W_TXBUF_B
 DUART_IVR       equ     RW_IVR
 DUART_OPCR      equ     W_OUTPORTCFG
+

@@ -1,6 +1,6 @@
     section .text
 
-    include "../../shared/equates.S"
+    include "../../shared/rosco_m68k_public.asm"
 
 ; Exception handler for transmit error (vector 0x49)
 TX_ERROR_HANDLER:

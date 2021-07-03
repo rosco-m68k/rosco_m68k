@@ -14,8 +14,8 @@
 ; info in the System Data Block, enables interrupts and 
 ; calls the main stage1 loader (in main1.c).
 ;------------------------------------------------------------
-    include "../../shared/equates.S"
-    include "equates.asm"
+    include "../../shared/rosco_m68k_public.asm"
+    include "rosco_m68k_private.asm"
 
     section .text
 
@@ -71,7 +71,7 @@ VERSION:
 START::
     or.w    #$0700,SR                 ; Disable interrupts for now    
     move.l  #VEC_END,A0               ; Start into A0 (source)
-    move.l  #$400,A1                  ; 0x400 into A1 (destination)
+    move.l  #VEC_LIMIT,A1             ; 0x400 into A1 (destination)
 
 .ISR_COPY_LOOP:    
     move.l  A1,D0                     ; Have we reached destination zero?
@@ -92,7 +92,7 @@ START::
 
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
     and.w   #$F2FF,SR                 ; Enable interrupts (except video)
-
+  
     jmp     linit                     ; Init C land, calls through to main1
 
 ; main1 is noreturn, so That's All, Folks(tm).
@@ -185,11 +185,11 @@ EARLY_PRINTLN_DUART:
 ; Initialise System Data Block
 ;
 INITSDB:
-    move.l  #$B105D47A,$400           ; Magic at $400
-    move.l  #$C001C001,$404           ; OK OSHI Code at $404
-    move.w  #50,$408                  ; Heartbeat flash counter at 50 (1 per second)
-    move.w  #$FF00,$40A               ; Initial system flags word (enable LEDs and CTS)
-    move.l  #0,$40C                   ; Zero upticks
+    move.l  #$B105D47A,SDB_MAGIC      ; Magic
+    move.l  #$C001C001,SDB_STATUS     ; OK OSHI Code
+    move.w  #50,SDB_TICKCNT           ; Heartbeat flash counter at 50 (1 per second)
+    move.w  #$FF00,SDB_SYSFLAGS       ; Initial system flags word (enable LEDs and CTS)
+    move.l  #0,SDB_UPTICKS            ; Zero upticks
 
     ifnd NO_68681
     ; Do we have a 68681?
@@ -246,7 +246,7 @@ INITMEMCOUNT:
     bra.s   .LOOP
 
 .DONE
-    move.l  A0,$414
+    move.l  A0,SDB_MEMSIZE
     rts
 
 
@@ -480,18 +480,18 @@ TICK_HANDLER:
     move.l  D1,-(A7)                  ; Save D1
 
     ; Increment upticks
-    move.l  $40C,D0                   ; Read SDB dword at 12
+    move.l  SDB_UPTICKS,D0            ; Read SDB dword at 12
     add.l   #1,D0                     ; Increment
-    move.l  D0,$40C                   ; And write back
+    move.l  D0,SDB_UPTICKS            ; And write back
     
     ; Heartbeat
-    move.w  $408,D0                   ; Read SDB word at 8
+    move.w  SDB_TICKCNT,D0            ; Read SDB word at 8
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
     
     ; counted to zero, so toggle indicator 0 (if allowed) 
     ; and reset counter
-    move.b  $40A,D0                   ; Get sysflags (high byte)
+    move.b  SDB_SYSFLAGS,D0           ; Get sysflags (high byte)
     move.b  MFP_GPDR,D1               ; Get GPDR
     eor.b   #1,D1                     ; Toggle bit 0
     and.b   D0,D1                     ; Mask with flags
@@ -501,7 +501,7 @@ TICK_HANDLER:
 
 .TICK_HANDLER_DONE:
     sub.w   #$1,D0                    ; Decrement counter...
-    move.w  D0,$408                   ; ... and write back to SDB
+    move.w  D0,SDB_TICKCNT            ; ... and write back to SDB
     move.l  (A7)+,D1                  ; Restore D1
     move.l  (A7)+,D0                  ; Restore D0
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
@@ -604,7 +604,7 @@ ILLEGAL_INSTRUCTION_HANDLER:
     rte                               ; Never reached
 
 GENERIC_HANDLER:
-    move.l  #$2BADB105,$404
+    move.l  #$2BADB105,SDB_STATUS
     rte
 
 
@@ -666,7 +666,7 @@ SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
     move.l  D2,-(A7)              ; Save D2
 
-    move.b  $40A,D2               ; Get sysflags (high byte)
+    move.b  SDB_SYSFLAGS,D2       ; Get sysflags (high byte)
     move.b  MFP_GPDR,D1           ; Get GPDR
     or.b    #$80,D1               ; Raise (inhibit) bit 7 (RTS)
     and.b   D2,D1                 ; Mask with flags
@@ -702,7 +702,7 @@ RECVCHAR_DUART:
 
 RECVCHAR_MFP:
     move.l  D1,-(A7)              ; Store D1
-    move.b  $40A,D1               ; Get sysflags (high byte)
+    move.b  SDB_SYSFLAGS,D1       ; Get sysflags (high byte)
     
     move.b  MFP_GPDR,D0           ; Get GPDR
     and.b   #$7F,D0               ; Lower bit 7 (RTS)

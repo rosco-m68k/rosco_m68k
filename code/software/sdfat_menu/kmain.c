@@ -23,12 +23,10 @@
 #include <string.h>
 
 #include <basicio.h>
-#include <debug_stub.h>
 #include <machine.h>
 #include <sdfat.h>
 
 // menu program options
-#define INSTALL_DEBUG_STUB 1 // 1 to trap exceptions (~700 bytes bigger)
 #define ENABLE_LOAD_CRC32  1 // 1 to calc CRC-32 of loaded programs (slight delay)
 
 // number of elements in C array
@@ -939,9 +937,6 @@ void command_prompt()
 // main SD Card Menu function
 void kmain()
 {
-#if INSTALL_DEBUG_STUB
-    debug_stub(); // handle exception vs blinking LED
-#endif
     printf("\nrosco_m68k [FW:%X.%02X%s]: SD Card Menu - (c) 2020 Xark, MIT License\n",
            (_FIRMWARE_REV >> 8) & 0xff, _FIRMWARE_REV & 0xff, _FIRMWARE_REV & (1 << 31) ? "*" : "");
 

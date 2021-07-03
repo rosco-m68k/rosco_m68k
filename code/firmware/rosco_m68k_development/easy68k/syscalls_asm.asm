@@ -13,7 +13,8 @@
 ; Note that when compiled in this code reserves an SDB
 ; DWORD for configuration at 0x410.
 ;------------------------------------------------------------
-    include "../../../shared/equates.S"
+    include "../../../shared/rosco_m68k_public.asm"
+    include "../rosco_m68k_private.asm"
 
     section .text
 

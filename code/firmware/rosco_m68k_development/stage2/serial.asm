@@ -11,8 +11,8 @@
 ; This is low-level UART stuff and exception handlers for the
 ; MC68901 serial driver.
 ;------------------------------------------------------------
-    include "../../../shared/equates.S"
-    include "../equates.asm"
+    include "../../../shared/rosco_m68k_public.asm"
+    include "../rosco_m68k_private.asm"
 
     section .text
 

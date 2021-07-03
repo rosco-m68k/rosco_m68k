@@ -11,8 +11,9 @@
 ; Xosera 106x30 text console.
 ;------------------------------------------------------------
 ;
+    include "../../../shared/rosco_m68k_public.asm"
+    include "../rosco_m68k_private.asm"
     include "xosera_equates.asm"
-    include "../equates.asm"
 
 LINELENGTH        equ   106      
 LINECOUNT         equ   30

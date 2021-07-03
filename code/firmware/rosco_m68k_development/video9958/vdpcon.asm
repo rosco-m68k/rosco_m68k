@@ -25,7 +25,8 @@
 ;
 ;------------------------------------------------------------
 ;
-    include "../equates.asm"
+    include "../../../shared/rosco_m68k_public.asm"
+    include "../rosco_m68k_private.asm"
 
 ; Options - Change these to suit your tastes...
 DISPMODE          equ   DM_NTSC           ; DM_PAL or DM_NTSC
