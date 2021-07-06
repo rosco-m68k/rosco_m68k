@@ -35,6 +35,7 @@ include src/sdfat/include.mk
 include src/machine/include.mk
 include src/gpio/include.mk
 include src/easy68k/include.mk
+include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk
