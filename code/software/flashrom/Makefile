@@ -15,7 +15,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
     | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
+LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc -lsst_flash
 ASFLAGS=-mcpu=68010 -march=68010
 LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP) --gc-sections --oformat=elf32-m68k
