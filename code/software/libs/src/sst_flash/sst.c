@@ -24,7 +24,7 @@
 #define SST_SUBCMD_CHPERASE 0x10
 
 static void write(uint32_t addr, uint8_t data) {
-    uint8_t *p = (uint8_t*)addr;
+    volatile uint8_t *p = (uint8_t*)addr;
     *p = data;
 }
 
@@ -41,16 +41,13 @@ static void wait(uint32_t addr) {
 
 static void unlock(uint32_t rom_base) {
     write(rom_base | SST_UNLOCK_A1, SST_UNLOCK_D1);
-    wait(rom_base);
     write(rom_base | SST_UNLOCK_A2, SST_UNLOCK_D2);
-    wait(rom_base);
 }
 
 bool sst_command(uint32_t rom_base, SST_COMMAND command) {
     unlock(rom_base);
 
     write(rom_base | SST_UNLOCK_A1, command);
-    wait(rom_base);
 
     // TODO Tida etc wait might be needed here. 
     // Guaranteed not needed on r1 @ 10MHz...
