@@ -21,7 +21,6 @@
 #include <sst_flash.h>
 #include <sdfat.h>
 #include <machine.h>
-#include <assert.h>
 
 #define ROM_BASE    0x00e00000
 #define EROM_BASE   ((ROM_BASE))
@@ -188,12 +187,5 @@ void kmain() {
             }
         }
     }
-
-
-//    if (!write_config_area(&new_config_buf)) {
-//        printf("Failed to write config area!\n");
-//    } else {
-//        printf("New data: 0x%08x 0x%08x 0x%08x...\n", config->data[0], config->data[1], config->data[2]);
-//    }
 }
 
