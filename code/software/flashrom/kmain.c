@@ -33,7 +33,7 @@ typedef struct {
     uint32_t data[CONFIG_SIZE / 4];
 } ConfigData;
 
-static ConfigData * volatile config = (ConfigData*)CONFIG_ADDR;
+static volatile ConfigData *config = (ConfigData*)CONFIG_ADDR;
 static ConfigData new_config_buf;
 
 static bool write_config_area(void *buffer) {
