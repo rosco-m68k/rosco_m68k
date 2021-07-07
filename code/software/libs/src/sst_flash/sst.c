@@ -92,12 +92,12 @@ bool sst_write_byte(uint32_t rom_base, uint32_t byte_addr, uint8_t data) {
 }
 
 static uint8_t read_manufacturer_id(uint32_t rom_base) {
-    uint8_t *p = (uint8_t*)rom_base;
+    volatile uint8_t *p = (uint8_t*)rom_base;
     return *p;
 }
 
 static uint8_t read_device_id(uint32_t rom_base) {
-    uint8_t *p = (uint8_t*)(rom_base | 2);
+    volatile uint8_t *p = (uint8_t*)(rom_base | 2);
     return *p;
 }
 
