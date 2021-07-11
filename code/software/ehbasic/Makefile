@@ -24,7 +24,7 @@ endif
 
 $(BINARY) : ehbasic.S ehdefs.S
 	vasmm68k_mot $(ASFLAGS) -L $(LST) -o $(BINARY) ehbasic.S
-	chmod a-x $@
+	-chmod a-x $@
 
 .PHONY: all clean load
 

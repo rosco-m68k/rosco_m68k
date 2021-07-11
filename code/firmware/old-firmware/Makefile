@@ -37,7 +37,7 @@ OBJECTS=bootstrap.o kmain.o api/api.o rtlsupport.o 3rdparty/printf.o \
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@
-	chmod a-x $@
+	-chmod a-x $@
 
 $(BINARY_EVEN): $(BINARY)
 	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0

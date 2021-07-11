@@ -59,7 +59,7 @@ $(ELF) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
-	chmod a-x $@
+	-chmod a-x $@
 
 $(BINARY) : $(ELF)
 	$(OBJCOPY) -O binary $(ELF) $(BINARY)
@@ -100,7 +100,7 @@ mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" > $(TMPDIR)/rosco_screen.sh
-	chmod +x $(TMPDIR)/rosco_screen.sh
+	-chmod +x $(TMPDIR)/rosco_screen.sh
 	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
