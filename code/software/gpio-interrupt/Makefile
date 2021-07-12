@@ -54,7 +54,7 @@ $(ELF) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
-	chmod a-x $@
+	-chmod a-x $@
 
 $(BINARY) : $(ELF)
 	$(OBJCOPY) -O binary $(ELF) $(BINARY)

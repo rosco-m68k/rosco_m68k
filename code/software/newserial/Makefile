@@ -43,7 +43,7 @@ endif
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
-	chmod a-x $@
+	-chmod a-x $@
 
 .PHONY: all clean load
 

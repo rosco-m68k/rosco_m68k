@@ -45,7 +45,7 @@ OBJECTS=kmain.o adventure.o
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
-	chmod a-x $@
+	-chmod a-x $@
 
 .PHONY: all clean dump
 
