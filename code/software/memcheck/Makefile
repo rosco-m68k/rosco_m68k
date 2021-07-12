@@ -7,6 +7,11 @@ EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
+ifeq ($(HUGE),true)
+LINK_SCRIPT=hugerom_rosco_m68k_program.ld
+else
+LINK_SCRIPT=rosco_m68k_program.ld
+endif
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
@@ -17,7 +22,7 @@ DEFINES:=$(DEFINES) -DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mcpu=68010 -march=68010 -mtune=68010					                 	\
 			 -mno-align-int -mno-strict-align -fomit-frame-pointer $(DEFINES)
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
+LDFLAGS=-T $(SYSLIBDIR)/ld/serial/$(LINK_SCRIPT) -L $(SYSLIBDIR) \
 				-Map=$(MAP)
 ASFLAGS=-Felf -m68020 -quiet $(DEFINES)
 CC=m68k-elf-gcc

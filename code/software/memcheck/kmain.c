@@ -54,7 +54,7 @@ typedef uint32_t KRESULT;
 
 #define IS_KFAILURE(result)   (((result & KRESULT_FAILURE) != 0))
 
-static uint32_t* VERSION = (uint32_t*)0xfc0400;
+static uint32_t* VERSION = (uint32_t*)&_FIRMWARE_REV;
 static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
 extern uint32_t GET_CPU_ID();
@@ -69,7 +69,7 @@ static void zeromeminfo(MEMINFO *header) {
 }
 
 static uint32_t count_rom_size() {
-  uint32_t* rom_start = (uint32_t*)0xFC0000;
+  uint32_t* rom_start = (uint32_t*)&_FIRMWARE;
   uint32_t* current = rom_start + 4;
   uint8_t compare_idx = 0;
 
@@ -77,7 +77,7 @@ static uint32_t count_rom_size() {
     if (*current++ == rom_start[compare_idx]) {
       if (compare_idx == 3) {
         // we have a match - current -  16 (the match) bytes of ROM
-        return (uint32_t)current - 0xFC0010;
+        return (uint32_t)current - (((uint32_t)&_FIRMWARE) + 0x10);
       }
 
       if (((uint32_t)current) % 4096 == 0) {
@@ -91,8 +91,12 @@ static uint32_t count_rom_size() {
     }
   }
   
-  // Wow, 256KB of ROM!
-  return 256 << 10;
+  // Wow, maximum ROM!
+  if (((uint32_t)&_FIRMWARE) == 0x00e00000) {
+      return 1024 << 10;
+  } else {
+      return 256 << 10;
+  }
 }
 
 static KRESULT build_memory_map(MEMINFO *header) {
@@ -121,7 +125,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
   while (true) {
     uint32_t current_addr = (uint32_t)((uint8_t*)current);
 
-    if (current_addr >= 0xF80000) {
+    if (current_addr >= (uint32_t)_FIRMWARE || current_addr >= 0xF80000) {
       // Reached IO space, end of RAM. Are we in a block?
       if (block_started) {
         blocks[current_block].block_size = 
@@ -195,7 +199,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
   // MAP ROM
   uint32_t rom_size = count_rom_size();
 
-  blocks[current_block].block_start = 0xFC0000;
+  blocks[current_block].block_start = (uint32_t)_FIRMWARE;
   blocks[current_block].block_size = rom_size;
   blocks[current_block].flags = 
       RAMBLOCK_FLAG_ONBOARD   | 
@@ -310,7 +314,7 @@ static void show_banner() {
   printf("*                                                         *\n");
   printf("*          rosco_m68k SysInfo & MemCheck utility          *\n");
   printf("*        %s CPU with Firmware ", cpu_name);
-  printf("%x.%x", major, minor);
+  printf("%d.%-2d", major, minor);
   if (snapshot) {
     printf(" [SNAPSHOT]");
   } else { 

@@ -81,8 +81,8 @@ PROVIDE(_EFP_ATA_WRITE  = 0x00000488);  /* ATA write                    */
 PROVIDE(_EFP_ATA_IDENT  = 0x0000048C);  /* ATA identify                 */
 
 /* ROM absolute addresses */
-PROVIDE(_FIRMWARE       = 0x00FC0000);  /* firmware address             */
-PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
+PROVIDE(_FIRMWARE       = 0x00E00000);  /* firmware address             */
+PROVIDE(_FIRMWARE_REV   = 0x00E00400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
 PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
