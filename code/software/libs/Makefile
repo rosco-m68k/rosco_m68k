@@ -39,8 +39,8 @@ include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk
-include src/printf/include.mk
 include src/sst_flash/include.mk
+include src/printf/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
