@@ -1,7 +1,9 @@
 # Software
 
 This directory contains various different software programs for the 
-rosco_m68k. 
+rosco_m68k.
+
+> If you are looking for a template project for your own software (including some specific Makefile recommendations), please see the `starter_projects` directory. 
 
 Specifically:
 
@@ -22,8 +24,6 @@ Specifically:
 | sdfat_demo          | Demo code for using firmware SD interface      |
 | sdfat_menu          | **Awesome** SD Card bootload menu (thanks Xark)| 
 | gpiodemo            | Stupid-simple GPIO example                     |
-| starter_c           | A blank C project you can start from           |
-| starter_asm         | A blank assembler project you can start from   |
 | vterm               | ANSI terminal emulation (thanks to mattuna15)  |
  
 ## Getting Started
@@ -84,29 +84,6 @@ program and any specific build instructions.
 
 ## Building your own projects
 
-> If you're building your own programs outside the directory tree of this
-project you might find it more convenient to copy the built libs to
-some other directory, e.g. `cp -r libs/build ~/rosco_m68k`.
-
-If you want to get started with building your own code for the rosco_m68k,
-an easy way to get started is to copy one of the example projects and 
-modify the Makefile to suit your needs. 
-
-There are two starter projects that are design for just this purpose:
-
-* `starter_c` - A basic starter project for C code
-* `starter_asm` - A basic starter project for Assembler
-
-Simply pick which suits your needs, copy the whole directory and 
-add your code as needed. You'll probably also want to edit the Makefile
-to fix paths to the standard libraries and include files depending
-on where you copy the directory to.
-
-> Although pretty empty, these starter projects **do** still depend on
-  the standard libraries having already been built - see the "Getting
-  Started" section for details on that.
-
-When developing your own code, you can of course use any of the standard
-libraries. See the README.md in the `libs` directory for details of 
-each library and what it provides and how to use them.
+There are some template starter projects available in `../starter_projects`,
+take a look at the documentation there for how to use them.
 

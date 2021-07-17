@@ -3,11 +3,14 @@
 # Copyright (c) 2020 Xark
 # MIT LICENSE
 
+ifndef ROSCO_M68K_DIR
+$(error Please set ROSCO_M68K_DIR to the top-level rosco_m68k directory to use for rosco_m68k building)
+endif
+
 CPU?=68010
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
-#EXTRA_VASMFLAGS?=-showopt
-SYSINCDIR?=../libs/build/include
-SYSLIBDIR?=../libs/build/lib
+SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
+SYSLIBDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/lib
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
@@ -91,7 +94,7 @@ load: $(BINARY)
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 
 # This is handy to test on Ubuntu
-test: rle_images.h $(BINARY) $(DISASM)
+test: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
 	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
