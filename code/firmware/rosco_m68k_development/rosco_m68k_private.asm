@@ -15,10 +15,15 @@
 ; MSW is flags, LSW is split into major (MSB) and minor (LSB)
 ;
 ; Flags:
-; bit 0 - 13: Reserved
+; bit 0 - 12: Reserved
+; bit 13    : Flashable ROM (i.e. HUGEROM).
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
-RELEASE_VER     equ     $80000200
+  ifd HUGEROM
+RELEASE_VER     equ     $E0000200
+  else
+RELEASE_VER     equ     $C0000200
+  endif
 
 VEC_LIMIT       equ     $400
 

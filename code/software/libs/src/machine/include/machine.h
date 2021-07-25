@@ -74,6 +74,18 @@
 #endif
 
 /*
+ * The firmware contains a RomVersionInfo at _FIRMWARE_REV.
+ */
+typedef struct {
+    bool is_snapshot: 1;
+    bool is_extdata: 1;
+    bool is_huge: 1;
+    uint16_t reserved: 13;
+    uint8_t major;
+    uint8_t minor;
+} __attribute__((packed)) RomVersionInfo;
+
+/*
  * The SystemDataBlock is a global reserved structure at _SDB.
  */
 typedef struct {

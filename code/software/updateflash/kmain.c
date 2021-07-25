@@ -165,20 +165,37 @@ void kmain() {
                         if (fl_fread(buffer, 1, upgrade_romsize, romfile) != (int)upgrade_romsize) {
                             printf(" failed :( ... Cannot continue with incomplete image...\n");
                         } else {
-                            printf(" success! Proceeding to flash. This may take a while.\n");
-                            printf("No flashing lights is normal - DO NOT TURN OFF YOUR rosco_m68k!\n");
+                            printf(" success; Checking version...\n");
+                            
+                            RomVersionInfo *version_info = (RomVersionInfo*)(buffer + 0x400);
 
-                            mcDisableInterrupts();  // ROM is about to become unavailable, so no interrupts!
+                            if (version_info->major != 0) {
+                                printf("ROM image indicates version %2d.%2d.%s ; Extended system data area: %s\n", 
+                                        version_info->major, version_info->minor,
+                                        version_info->is_snapshot ? "SNAPSHOT" : "RELEASE",
+                                        version_info->is_extdata ? "Required" : "Not required");
 
-                            if (!write_boot_rom(buffer, upgrade_romsize)) {
-                                printf("Oh dear, flash failed. \n");
-                                printf("Honestly, it's a miracle you're even seeing this message...\n");
-                                printf("Trying a reboot, if this fails you may need to reflash your ROMs in an external programmer :(\n");
+                                if (version_info->is_huge) {                                    
+                                    printf(" success! Proceeding to flash. This may take a while.\n");
+                                    printf("No flashing lights is normal - DO NOT TURN OFF YOUR rosco_m68k!\n");
+
+                                    mcDisableInterrupts();  // ROM is about to become unavailable, so no interrupts!
+
+                                    if (!write_boot_rom(buffer, upgrade_romsize)) {
+                                        printf("Oh dear, flash failed. \n");
+                                        printf("Honestly, it's a miracle you're even seeing this message...\n");
+                                        printf("Trying a reboot, if this fails you may need to reflash your ROMs in an external programmer :(\n");
+                                    } else {
+                                        // Cannot print anything here as EFPs may have been moved, or may not exist at all any more.
+                                        // Just try rebooting instead...
+                                        reboot_to_init();
+                                    }
+                                } else {
+                                    printf("ROM does not appear to be a flashable image (i.e. not a HUGEROM build). Cannot continue\n");
+                                }
                             } else {
-                                // Cannot print anything here as EFPs may have been moved, or may not exist at all any more.
-                                // Just try rebooting instead...
-                                reboot_to_init();
-                            }
+                                printf("Oops, version check failed; Quitting while we're ahead...\n");
+                            } 
                         }
                     }
 

@@ -46,6 +46,7 @@ WITH_DEBUG_STUB?=true
 ifeq ($(HUGEROM),true)
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld
 ROMDEVICE=SST39SF040
+DEFINES:=$(DEFINES) -DHUGEROM
 else
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld
 endif
