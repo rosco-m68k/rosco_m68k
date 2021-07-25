@@ -239,7 +239,7 @@ READ_CHAR:
 * ************************************************************************** *
 SEND_CHAR:
     move.l  D1,D0                       ; Platform code expects arg in D0...
-    bsr.w   SENDCHAR
+    bsr.w   FW_PRINTCHAR
     bra.w   EPILOGUE                   
 
 
