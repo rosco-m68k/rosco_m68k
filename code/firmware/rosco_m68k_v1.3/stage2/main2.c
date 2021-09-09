@@ -86,8 +86,10 @@ noreturn void lmain() {
     mcPrint("Starting MAME Quickload kernel...\r\n");
 #endif
 
-#ifdef SDFAT_LOADER
+#ifndef MAME_FIRMWARE
+#    ifdef SDFAT_LOADER
 have_kernel:
+#    endif
 #endif
     kmain(sdb);
 
