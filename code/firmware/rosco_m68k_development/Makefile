@@ -59,6 +59,10 @@ ifeq ($(ATA_DEBUG),true)
 DEFINES:=$(DEFINES) -DATA_DEBUG
 endif
 
+ifeq ($(NO_TICK),true)
+DEFINES:=$(DEFINES) -DNO_TICK
+endif
+
 include easy68k/include.mk
 include blockdev/include.mk
 
