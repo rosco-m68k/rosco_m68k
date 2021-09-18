@@ -3,6 +3,8 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 EXTRA_CFLAGS?=-g -O2 -fomit-frame-pointer
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
@@ -18,8 +20,14 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
     | sed 's/:/m68000\/ -L/g')m68000/
 LIBS=-lcstdlib -lprintf-softfloat -lmachine -lstart_serial -lgpio -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-		-Map=$(MAP) --gc-sections --oformat=elf32-m68k
+
+ifeq ($(ROSCO_M68K_HUGEROM),true)
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
+else
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
+endif
+
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as

@@ -1,7 +1,9 @@
-# Make rosco_m68k example programs
+# N.B. This example is HUGEROM-only
 #
 # Copyright (c) 2020 Xark
 # MIT LICENSE
+
+-include $(ROSCO_M68K_DIR)/user.mk
 
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 #EXTRA_VASMFLAGS?=-showopt
@@ -17,7 +19,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
     | sed 's/:/m68000\/ -L/g')m68000/
 LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc -lsst_flash
 ASFLAGS=-mcpu=68010 -march=68010
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
+LDFLAGS=-T $(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld -L $(SYSLIBDIR) \
 				-Map=$(MAP) --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)
 CC=m68k-elf-gcc

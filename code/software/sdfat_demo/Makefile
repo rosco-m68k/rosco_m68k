@@ -3,6 +3,8 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
@@ -15,8 +17,14 @@ DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mcpu=68010 -march=68010 -mtune=68010 -Wno-unused-function				\
 			 -mno-align-int -mno-strict-align $(DEFINES)
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-				-Map=$(MAP)
+
+ifeq ($(ROSCO_M68K_HUGEROM),true)
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
+else
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
+endif
+
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP)
 ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
