@@ -3,11 +3,13 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
 SYSLIBDIR?=../libs/build/lib
 LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
-ifeq ($(HUGE),true)
+ifeq ($(ROSCO_M68K_HUGEROM),true)
 LINK_SCRIPT=hugerom_rosco_m68k_program.ld
 else
 LINK_SCRIPT=rosco_m68k_program.ld

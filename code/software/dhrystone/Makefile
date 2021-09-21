@@ -5,6 +5,8 @@
 
 # Hacked by Xark for dhrystone
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 CPU?=68010
 EXTRA_CFLAGS?=
 SYSINCDIR?=../libs/build/include
@@ -19,8 +21,14 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs                                  \
     | sed 's/libraries: =/-L/g'                                             \
     | sed 's/:/m68000\/ -L/g')m68000/
 LIBS=-lprintf -lcstdlib -lmachine -lstart_serial -lgcc
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR)     \
-				-Map=$(MAP)
+
+ifeq ($(ROSCO_M68K_HUGEROM),true)
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
+else
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
+endif
+
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld

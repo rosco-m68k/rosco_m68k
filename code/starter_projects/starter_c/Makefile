@@ -7,6 +7,8 @@ ifndef ROSCO_M68K_DIR
 $(error Please set ROSCO_M68K_DIR to the top-level rosco_m68k directory to use for rosco_m68k building)
 endif
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 CPU?=68010
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
@@ -21,8 +23,14 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
     | sed 's/:/m68000\/ -L/g')m68000/
 LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-				-Map=$(MAP) --gc-sections --oformat=elf32-m68k
+
+ifeq ($(ROSCO_M68K_HUGEROM),true)
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
+else
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
+endif
+
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as

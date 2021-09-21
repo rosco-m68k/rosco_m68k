@@ -82,6 +82,12 @@ There is a short `README.md` in each program directory that contains
 documentation specific to that program - see those for detailes of the
 program and any specific build instructions.
 
+> **Note** if your rosco_m68k has the flash ROM adapter and is 
+running a `HUGEROM` build of the firmware, you will need to build the
+examples with `ROSCO_M68K_HUGEROM` set to `true`, e.g. by passing on
+the command line (`ROSCO_M68K_HUGEROM=true make clean all`) or by
+setting an environment variable for a more permanent solution.
+
 ## Building your own projects
 
 There are some template starter projects available in `../starter_projects`,

@@ -3,6 +3,8 @@
 # Copyright (c)2020 Xark
 # MIT LICENSE
 
+-include $(ROSCO_M68K_DIR)/user.mk
+
 EXTRA_CFLAGS?=-g -Os -fomit-frame-pointer
 DEFINES=
 SYSINCDIR?=../libs/build/include
@@ -12,8 +14,15 @@ CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -pedantic -I$(SYSINCDIR) \
 				-mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
 ASFLAGS=-mcpu=68010 -march=68010
-LDFLAGS=-T $(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld -L $(SYSLIBDIR) \
-				-Map=$(MAP) --gc-sections --oformat=elf32-m68k --defsym=_RAM_SIZE=1M
+
+ifeq ($(ROSCO_M68K_HUGEROM),true)
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
+else
+LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
+endif
+
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections   \
+		--oformat=elf32-m68k --defsym=_RAM_SIZE=1M
 VASMFLAGS=-Felf -m68010 -quiet -Lnf -showopt $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as
