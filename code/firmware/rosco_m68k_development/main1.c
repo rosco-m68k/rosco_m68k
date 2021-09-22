@@ -150,7 +150,9 @@ noreturn void main1() {
     }
 
     // Start the timer tick
+#ifndef NO_TICK
     START_HEART();
+#endif
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
@@ -173,7 +175,12 @@ skip9958:
 #endif
 
     // Now we have tick, we can determine CPU speed
+#ifdef NO_TICK
+    sdb->cpu_speed = 0;
+#else
     sdb->cpu_speed = cpuspeed(sdb->cpu_model);
+#endif
+
     print_cpu_mem_info();
 
 #ifdef BLOCKDEV_SUPPORT

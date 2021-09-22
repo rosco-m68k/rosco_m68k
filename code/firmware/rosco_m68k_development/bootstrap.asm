@@ -90,7 +90,12 @@ START::
     bsr.w   INITMEMCOUNT              ; Initialise memory count in SDB    
     bsr.s   PRINT_BANNER
 
-    bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)  
+    ifd NO_TICK
+    bset.b  #1,MFP_GPDR               ; Turn off GPIO #1 (Red LED) as no tick to reset it later..
+    else
+    bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)
+    endif
+
     and.w   #$F2FF,SR                 ; Enable interrupts (except video)
   
     jmp     linit                     ; Init C land, calls through to main1
@@ -270,7 +275,13 @@ INITMFP:
     ; Timer setup - Timer D controls serial clock, C is kernel tick
     move.b  #$B8,MFP_TCDR             ; Timer C count is 184 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
+
+    ifd NO_TICK
+    move.b  #$01,MFP_TCDCR            ; Disable timer C and enable timer D with /4 prescaler
+    else
     move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
+    endif
+
     
     ; USART setup
     move.b  #$88,MFP_UCR              ; /16 clock, async, 8N1
@@ -280,8 +291,12 @@ INITMFP:
     move.l  #MFP_VECBASE,D0           ; Set up the base MFP vector at 0x40 (first 16 user vectors)...
     or.l    #8,D0                     ; ... and set software-end-of-interrupt mode
     move.b  D0,MFP_VR                 ; ... then write to MFP vector register
+
+    ifd NO_TICK
+    bset.b  #0,MFP_GPDR               ; Turn off GPIO #0 (Green LED)
+    else
     or.b    #$20,MFP_IERB             ; Enable Timer C interrupt, but leave it masked for now
-                                      ; (kmain will call START_HEART later)
+    endif
    
     move.l  #MFPBASE,SDB_UARTBASE     ; Default UART starts out as MFP, may get overwritten later... 
     ; Indicate success and return
