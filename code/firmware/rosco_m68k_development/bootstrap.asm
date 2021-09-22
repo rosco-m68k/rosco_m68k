@@ -277,9 +277,9 @@ INITMFP:
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
 
     ifd NO_TICK
-    move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
+    move.b  #$01,MFP_TCDCR            ; Disable timer C and enable timer D with /4 prescaler
     else
-    move.b  #$01,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
+    move.b  #$71,MFP_TCDCR            ; Enable timer C with /200 and D with /4 prescaler
     endif
 
     
