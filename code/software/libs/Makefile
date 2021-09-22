@@ -9,7 +9,7 @@ DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
 				-nostartfiles -Wall -pedantic -Werror              \
 				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)           \
-				-mno-align-int -mno-strict-align $(DEFINES)
+				$(DEFINES)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=
 CC=m68k-elf-gcc
