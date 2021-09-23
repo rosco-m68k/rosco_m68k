@@ -22,9 +22,9 @@
 
 #include "bbspi.h"
 #include "bbsd.h"
-#include "device/block.h"
-#include "fat_access.h"
-#include "fat_filelib.h"
+#include "include/device/block.h"
+#include "fat_io_lib/fat_access.h"
+#include "fat_io_lib/fat_filelib.h"
 
 #define CS      GPIO1
 #define SCK     GPIO2
@@ -187,7 +187,7 @@ void kmain() {
   #ifndef SD_MINIMAL
   #ifdef _ROSCOM68K_STDIO_H
             uint32_t size = BBSD_get_size(&sd);
-            printf("with %d blocks (%d MB)\n", size, size / 2048);
+            printf("with %ld blocks (%ld MB)\n", size, size / 2048);
   #endif
   #else
             printf("(Size unknown in minimal configuration)\n");
@@ -203,7 +203,7 @@ void kmain() {
                 uint32_t open_time = timer_stop();
 
                 if (file != NULL) {
-                    printf("succeeded, time %d msec.\n", open_time);
+                    printf("succeeded, time %ld msec.\n", open_time);
                     printf("Reading \"ROSCODE1.BIN\"");
 
                     int c;
@@ -220,7 +220,7 @@ void kmain() {
                     uint32_t load_time = timer_stop();
 
                     uint32_t bytes = loadptr - loadstartptr;
-                    printf("\nFinished!  Bytes:%d (%0.02f KiB), Time:%0.03f sec., Speed:%0.02f KiB/sec.\n", bytes, bytes / 1024.0f, load_time / 1000.0f, (bytes / 1024.0f) / (load_time / 1000.0f));
+                    printf("\nFinished!  Bytes:%ld (%0.02f KiB), Time:%0.03f sec., Speed:%0.02f KiB/sec.\n", bytes, bytes / 1024.0f, load_time / 1000.0f, (bytes / 1024.0f) / (load_time / 1000.0f));
 #ifdef TEST_CYCLE
 
                     printf("Calculating CRC32...");

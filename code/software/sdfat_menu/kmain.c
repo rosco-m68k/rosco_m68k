@@ -32,7 +32,7 @@
 // number of elements in C array
 #define ELEMENTS(a) ((int)(sizeof(a) / sizeof(*a)))
 
-static uint32_t private_stack[4096]; // 16KB "private" stack
+static unsigned int private_stack[4096]; // 16KB "private" stack
 
 #define MAX_BIN_FILES   26                      // A to Z menu BIN files
 #define MAX_DIR_FILES   10                      // 0 to 9 menu directories
@@ -43,29 +43,29 @@ static int num_menu_files;                              // number of BIN files i
 static int num_dir_files;                               // number of directories in menu
 static char menu_files[MAX_BIN_FILES][MAX_BIN_NAMELEN]; // names of BIN files
 static char dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN];  // names of directories
-static uint32_t bin_sizes[MAX_BIN_FILES];               // sizes of BIN files
+static unsigned int bin_sizes[MAX_BIN_FILES];               // sizes of BIN files
 static char current_dir[MAX_BIN_NAMELEN];               // current dir string (root = "")
 static char buffer[512];                                // file sector buffer
 static char cmd_line[256];                              // prompt command line buffer
 static void * file2;                                    // target fileptr
 static char * cmd_ptr;                                  // ptr to next token in cmd_line
-static uint32_t filesize;                               // current filesize at start of sector
-static uint32_t filecrc;                                // current CRC-32 at start of sector for crc
+static unsigned int filesize;                               // current filesize at start of sector
+static unsigned int filecrc;                                // current CRC-32 at start of sector for crc
 
 // timer helpers
-uint32_t timer_start()
+unsigned int timer_start()
 {
-    uint32_t t;
-    uint32_t ts = _TIMER_100HZ;
+    unsigned int t;
+    unsigned int ts = _TIMER_100HZ;
     // synchronize start to next 100Hz interrupt
     while ((t = _TIMER_100HZ) == ts)
         ;
     return t;
 }
 
-uint32_t timer_stop(uint32_t start_tick)
+unsigned int timer_stop(unsigned int start_tick)
 {
-    uint32_t stop_tick = _TIMER_100HZ;
+    unsigned int stop_tick = _TIMER_100HZ;
     return (stop_tick - start_tick) * 10;
 }
 
@@ -84,9 +84,9 @@ uint32_t timer_stop(uint32_t start_tick)
  * in sys/libkern.h, where it can be inlined.
  */
 
-static uint32_t crc32b(uint32_t crc, const void * buf, size_t size)
+static unsigned int crc32b(unsigned int crc, const void * buf, size_t size)
 {
-    static const uint32_t crc32_tab[] = {
+    static const unsigned int crc32_tab[] = {
         0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f, 0xe963a535, 0x9e6495a3,
         0x0edb8832, 0x79dcb8a4, 0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07, 0x90bf1d91,
         0x1db71064, 0x6ab020f2, 0xf3b97148, 0x84be41de, 0x1adad47d, 0x6ddde4eb, 0xf4d4b551, 0x83d385c7,
@@ -185,10 +185,10 @@ static int prompt_readline(char * buf, int buf_size)
 static void disable_sd_boot()
 {
     extern void resident_init();       // no SD boot resident setup
-    const uint32_t magic = 0xb007c0de; // no SD boot signature (from resident.asm)
+    const unsigned int magic = 0xb007c0de; // no SD boot signature (from resident.asm)
     int32_t reserved = _SDB_MEM_SIZE - _INITIAL_STACK;
     // if no high memory reserved, or no SD signature not detected
-    if (reserved == 0 || *(uint32_t *)_INITIAL_STACK != magic)
+    if (reserved == 0 || *(unsigned int *)_INITIAL_STACK != magic)
     {
         resident_init(); // install no SD hook next next warm-start
     }
@@ -258,10 +258,10 @@ char * next_cmd_token()
 }
 
 // format size to "friendly" 4 char string (e.g, 321B, 4.2K, 42M or 3.1G)
-static char * friendly_size(uint32_t v)
+static char * friendly_size(unsigned int v)
 {
     static char size_str[8]; // friendly string buffer
-    uint32_t units = 1;
+    unsigned int units = 1;
     char unitlabel = 'B';
 
     if (v > 999)
@@ -284,12 +284,12 @@ static char * friendly_size(uint32_t v)
     }
 
     // if single digit, also give tenths
-    uint32_t round = (units / 10) / 2;
-    uint32_t iv = (v + round) / units;
+    unsigned int round = (units / 10) / 2;
+    unsigned int iv = (v + round) / units;
     if (iv < 10 && units > 1)
     {
-        uint32_t tenth_units = units / 10;
-        uint32_t tv = (v + round - (iv * units)) / (tenth_units > 0 ? tenth_units : 1);
+        unsigned int tenth_units = units / 10;
+        unsigned int tv = (v + round - (iv * units)) / (tenth_units > 0 ? tenth_units : 1);
         snprintf(size_str, sizeof(size_str), "%u.%u%c", iv, tv, unitlabel);
     }
     else
@@ -395,11 +395,11 @@ static void show_menu_files()
 {
     char mem_str[16]; // xxxxxK
     char up_str[16];  // xxx:xx
-    uint32_t ts = _TIMER_100HZ;
-    uint32_t tm = ts / (60 * 100);
+    unsigned int ts = _TIMER_100HZ;
+    unsigned int tm = ts / (60 * 100);
     ts = (ts - (tm * (60 * 100))) / 100;
 
-    snprintf(mem_str, sizeof(mem_str), "%uK", (_INITIAL_STACK + 1023) / 1024);
+    snprintf(mem_str, sizeof(mem_str), "%luK", (_INITIAL_STACK + 1023) / 1024);
     snprintf(up_str, sizeof(up_str), "%02u:%02u", tm, ts);
     printf("\nDir: %-34.34s <Mem %-6.6s Uptime %s>\n", fullpath(""), mem_str, up_str);
     bool odd = false;
@@ -429,7 +429,7 @@ static void execute_bin_file(const char * name)
     const char * filename = fullpath(name);
     printf("Loading \"%s\"", filename);
 
-    uint32_t timer = timer_start();
+    unsigned int timer = timer_start();
     void * file = fl_fopen(filename, "r");
 
     if (!file)
@@ -468,8 +468,8 @@ static void execute_bin_file(const char * name)
         }
 
         fl_fclose(file);
-        uint32_t load_time = timer_stop(timer);
-        uint32_t bytes = loadptr - loadstartptr;
+        unsigned int load_time = timer_stop(timer);
+        unsigned int bytes = loadptr - loadstartptr;
 
         if (c == EOF)
         {
@@ -478,7 +478,7 @@ static void execute_bin_file(const char * name)
             printf("\nLoaded %u bytes in %u.%02u sec.; ", bytes, sec, hundredth_sec);
 #if ENABLE_LOAD_CRC32
             printf("CRC-32=");
-            uint32_t crc = crc32b(0, loadstartptr, bytes);
+            unsigned int crc = crc32b(0, loadstartptr, bytes);
             printf("0x%08X; ", crc);
 #endif
             printf("Starting...\n\n");
@@ -538,7 +538,7 @@ static void dir_operation(const char * name)
 {
     int num_files = 0;
     int num_dirs = 0;
-    uint32_t totalsize = 0;
+    unsigned int totalsize = 0;
     FL_DIR dirstat;
 
     const char * filename = fullpath(name);
@@ -551,8 +551,8 @@ static void dir_operation(const char * name)
         {
             if (!dirent.is_dir)
             {
-                printf("%10u  %s\n", dirent.size, dirent.filename);
-                uint32_t old_total = totalsize; // clamp vs wrap
+                printf("%10lu  %s\n", dirent.size, dirent.filename);
+                unsigned int old_total = totalsize; // clamp vs wrap
                 totalsize += dirent.size;
                 if (totalsize < old_total)
                 {
@@ -676,7 +676,7 @@ static void op_dump(char * p, int l)
     {
         return;
     }
-    uint32_t off = filesize;
+    unsigned int off = filesize;
     uint8_t * t = (uint8_t *)p;
     uint8_t * s = t;
     while (l--)
@@ -849,9 +849,9 @@ void command_prompt()
             break;
         case CMD_WRITE:
         {
-            uint32_t crc = 0;
+            unsigned int crc = 0;
             char * filename = fullpath(arg);
-            printf("Writing 512K test file \"%s\"...\n");
+            printf("Writing 512K test file \"%s\"...\n", filename);
             void * file = fl_fopen(filename, "w");
             if (file != NULL)
             {
@@ -937,7 +937,7 @@ void command_prompt()
 // main SD Card Menu function
 void kmain()
 {
-    printf("\nrosco_m68k [FW:%X.%02X%s]: SD Card Menu - (c) 2020 Xark, MIT License\n",
+    printf("\nrosco_m68k [FW:%lX.%02lX%s]: SD Card Menu - (c) 2020 Xark, MIT License\n",
            (_FIRMWARE_REV >> 8) & 0xff, _FIRMWARE_REV & 0xff, _FIRMWARE_REV & (1 << 31) ? "*" : "");
 
     if (!SD_check_support())
@@ -1071,7 +1071,7 @@ void kmain()
 }
 
 // Use custom __kinit (called by serial_start init.S before kmain) to set private stack area and call main
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+extern unsigned int _data_start, _data_end, _code_end, _bss_start, _bss_end;
 
 void __kinit()
 {
@@ -1081,7 +1081,7 @@ void __kinit()
                          : [ private_stack ] "a"(&private_stack[ELEMENTS(private_stack) - 1])
                          :);
     // zero .bss
-    for (uint32_t * dst = &_bss_start; dst < &_bss_end; dst++)
+    for (unsigned int * dst = &_bss_start; dst < &_bss_end; dst++)
     {
         *dst = 0;
     }

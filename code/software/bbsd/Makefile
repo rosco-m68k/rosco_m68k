@@ -11,8 +11,7 @@ SYSLIBDIR?=../libs/build/lib
 DEFINES=-DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE -DSPI_FASTER 					\
 		-DSPI_FAST -DSD_FASTER 
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections			\
-		-Wall -Werror -Wno-unused-function																	\
-		-Iinclude -Ifat_io_lib	-I$(SYSINCDIR)															\
+		-Wall -Werror -Wno-unused-function -I$(SYSINCDIR)										\
 		-msoft-float -mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
