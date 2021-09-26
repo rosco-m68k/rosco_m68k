@@ -129,8 +129,7 @@ extern void           (*_EFP_RECVCHAR)();
 extern void           (*_EFP_CLRSCR)();    
 extern void           (*_EFP_MOVEXY)();    
 extern void           (*_EFP_SETCURSOR)(); 
-extern void           (*_EFP_SETCURSOR)(); 
-extern void           (*_EFP_RESRVD_444)();
+extern void           (*_EFP_CHECKCHAR)();  
 extern void           (*_EFP_PROGLOADER)();
 
 extern char           _FIRMWARE[];          // ROM firmware start address
@@ -138,17 +137,33 @@ extern uint32_t       _FIRMWARE_REV;        // rosco ROM firmware revision
 extern char           _LOAD_ADDRESS[];      // firmware load address
 
 /*
- * Early print null-terminated string.
+ * Print null-terminated string on default console/UART  (may block)
  */
 void mcPrint(char *str);
 
 /*
- * Early print null-terminated string.
+ * Print null-terminated string on default console/UART with newline  (may block)
  */
 void mcPrintln(char *str);
 
+/*
+ * Print character on default console/UART with newline (may block)
+ */
+void mcPrintchar(char c);
+
+/*
+ * Print character on default UART (may block)
+ */
 void mcSendchar(char c);
+
+/*
+ * Read character on default UART  (may block)
+ */
 char mcReadchar();
+
+/*
+ * Check if character waiting on default UART
+ */
 bool mcCheckchar(); // returns true if char waiting
 
 /*
