@@ -18,13 +18,19 @@
 #include <stdint.h>
 #include <machine.h>
 
-#define sendchar mcSendchar
-#define readchar mcReadchar
+/* char ready on default UART */
 #define checkchar mcCheckchar
-
+/* read char from default UART */
+#define readchar mcReadchar
+/* send char to default UART */
+#define sendchar mcSendchar
+/* send char to default console/UART */
+#define printchar mcPrintchar
+/* send string to default console/UART */
 #define print mcPrint
+/* send string to default console/UART with newline */
 #define println mcPrintln
-
+/* busy wait delay (500 ~= 1ms @ 10MHz 68K) */
 #define delay mcBusywait
 
 void printuint(uint32_t num);
