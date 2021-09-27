@@ -6,17 +6,20 @@
 CPU?=68010
 ARCH?=$(CPU)
 TUNE?=$(CPU)
-EXTRA_CFLAGS?=
+EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
-       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
+       -fomit-frame-pointer -mno-align-int $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
 OBJCOPY=m68k-elf-objcopy
+OBJDUMP=m68k-elf-objdump
+SIZE=m68k-elf-size
+NM=m68k-elf-nm
 RM=rm -f
 
 # Output config
@@ -26,6 +29,8 @@ ELF_EXT=elf
 
 ELF=$(BINARY_BASENAME).$(ELF_EXT)
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
+DISASM=$(BINARY_BASENAME).dis
+SYM=$(BINARY_BASENAME).sym
 MAP=$(BINARY_BASENAME).map
 STAGE2_DIR=stage2
 STAGE2_FILE=loader2.bin.zip.o
@@ -44,22 +49,27 @@ WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
 ifeq ($(HUGEROM),true)
+$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld
 ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
+$(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld
 endif
 
 ifeq ($(NO68681),true)
+$(info === Building rosco_m68k firmware with NO_68681 DUART)
 DEFINES:=$(DEFINES) -DNO_68681
 endif
 
 ifeq ($(ATA_DEBUG),true)
+$(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
 DEFINES:=$(DEFINES) -DATA_DEBUG
 endif
 
 ifeq ($(NO_TICK),true)
+$(info === Building rosco_m68k firmware with NO_TICK)
 DEFINES:=$(DEFINES) -DNO_TICK
 endif
 
@@ -67,14 +77,23 @@ include easy68k/include.mk
 include blockdev/include.mk
 
 ifneq ($(WITH_VDP),false)
+$(info === Building rosco_m68k firmware with V9958 VDP)
 include video9958/include.mk
 endif
 
+# only one Xosera console at a time
+ifneq ($(XOSERA_ANSI_CON),false)
+$(info === Building rosco_m68k firmware with Xosera ANSI console)
+include videoXoseraANSI/include.mk
+else
 ifneq ($(WITH_XVID),false)
+$(info === Building rosco_m68k firmware with Xosera console)
 include videoXosera/include.mk
+endif
 endif
 
 ifeq ($(WITH_DEBUG_STUB),true)
+$(info === Building rosco_m68k firmware with DEBUG_STUB)
 include debug_stub/include.mk
 endif
 
@@ -94,11 +113,21 @@ $(STAGE2) : $(STAGE2_DIR)
 
 $(ELF) : $(OBJECTS) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
+	$(NM) --numeric-sort $@ >$(SYM)
+	$(SIZE) $@
 	-chmod a-x $@
 
-$(BINARY) : $(ELF)
+$(BINARY) : $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
+ifeq ($(HUGEROM),true)
+		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
+else
+		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
+endif
+
+$(DISASM) : $(ELF)
+	$(OBJDUMP) --disassemble -S $(ELF) >$(DISASM)
 
 $(BINARY_EVEN): $(BINARY)
 	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0
