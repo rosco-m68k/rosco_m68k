@@ -152,6 +152,11 @@ void mcPrintln(char *str);
 void mcPrintchar(char c);
 
 /*
+ * Show or hide cursor (on devices where possible, otherwise no-op)
+ */
+void mcSetcursor(bool showcursor);
+
+/*
  * Print character on default UART (may block)
  */
 void mcSendchar(char c);
