@@ -120,23 +120,23 @@ XANSI_CON_SETCURSOR::
 
 ; Input:        -
 ; Modified:     D0
-XANSI_CON_RECVCHAR::
-                movem.l d1/a0-a1,-(sp)
+; XANSI_CON_RECVCHAR::
+;                 movem.l d1/a0-a1,-(sp)
 
-                jsr     xansiterm_RECVCHAR
+;                 jsr     xansiterm_RECVCHAR
 
-                movem.l (sp)+,d1/a0-a1
-                rts
+;                 movem.l (sp)+,d1/a0-a1
+;                 rts
 
 ; Input:        -
 ; Modified:     D0
-XANSI_CON_CHECKCHAR::
-                movem.l d1/a0-a1,-(sp)
+; XANSI_CON_CHECKCHAR::
+;                 movem.l d1/a0-a1,-(sp)
 
-                jsr     xansiterm_CHECKCHAR
+;                 jsr     xansiterm_CHECKCHAR
 
-                movem.l (sp)+,d1/a0-a1
-                rts
+;                 movem.l (sp)+,d1/a0-a1
+;                 rts
 
 ; Initialize XANSI console (return zero if Xosera not responding, true on success)
 ; Input:        -
@@ -158,8 +158,8 @@ XANSI_CON_INIT::
                 move.l  #XANSI_CON_PRINTCHAR,EFP_PRINTCHAR.w
                 move.l  #XANSI_CON_SETCURSOR,EFP_SETCURSOR.w
                 ; xansiterm_INIT will have saved previous input handlers (to wrap them)
-                move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
-                move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
+;                move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
+;                move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
 
 .DONE
                 move.w  d3,sr                           ; Restore SR
