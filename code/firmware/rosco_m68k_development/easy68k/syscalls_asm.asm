@@ -407,7 +407,7 @@ READNUM_PROMPT  dc.b        "Input#> ", 0
 
 ; TODO Quite inefficient doing this with sz strings!
 ANSI_START    dc.b        $1B, "[", 0
-ANSI_CLR      dc.b        $1B, "[2J", 0
+ANSI_CLR      dc.b        $1B, "[H", $1B, "[2J" ,0   ; per DEC, [2J does not home cursor, so added [H
 ANSI_SEP      dc.b        ";", 0
 ANSI_XYEND    dc.b        "H", 0
 
