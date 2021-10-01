@@ -401,12 +401,12 @@ static void show_menu_files()
 
     snprintf(mem_str, sizeof(mem_str), "%uK", (_INITIAL_STACK + 1023) / 1024);
     snprintf(up_str, sizeof(up_str), "%02u:%02u", tm, ts);
-    printf("\nDir: %-34.34s <Mem %-6.6s Uptime %s>\n", fullpath(""), mem_str, up_str);
+    printf("\nDir: %-33.33s <Mem %-6.6s Uptime %s>\n", fullpath(""), mem_str, up_str);
     bool odd = false;
     int half = (num_menu_files + 1) / 2;
     for (int i = 0; i < num_menu_files; i++)
     {
-        printf("[%4s] %c - %-28.28s%s", friendly_size(bin_sizes[i]), 'A' + (i / 2) + (odd ? half : 0),
+        printf("[%4s] %c - %-27.27s%s", friendly_size(bin_sizes[i]), 'A' + (i / 2) + (odd ? half : 0),
                menu_files[i], odd ? "\n" : "  ");
         odd = !odd;
     }
@@ -414,7 +414,7 @@ static void show_menu_files()
     half = (num_dir_files + 1) / 2;
     for (int i = 0; i < num_dir_files; i++)
     {
-        printf("<Dir>  %c = %-28.28s%s", '0' + (i / 2) + (i & 1 ? half : 0), dir_files[i], odd ? "\n" : "  ");
+        printf("<Dir>  %c = %-27.27s%s", '0' + (i / 2) + (i & 1 ? half : 0), dir_files[i], odd ? "\n" : "  ");
         odd = !odd;
     }
 
