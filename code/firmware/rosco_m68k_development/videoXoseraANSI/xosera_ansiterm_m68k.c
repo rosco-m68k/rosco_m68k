@@ -110,17 +110,18 @@ typedef struct xansiterm_data
     void * device_recvchar;         // trap handler for console RECVCHAR (wrapped, for asm)
     void * device_checkchar;        // trap handler for console CHECKCHAR (wrapped, for asm)
 #endif
-    uint16_t vram_size;                         // size of text screen in current mode (init clears to allow 8x8 font)
-    uint16_t vram_end;                          // ending address for text screen in current mode
-    uint16_t line_len;                          // user specified line len (normally 0)
-    uint16_t height;                            // user specified screen height (normally 0)
-    uint16_t cursor_save;                       // word under input cursor
-    uint16_t cols, rows;                        // text columns and rows in current mode (zero based)
-    uint16_t x, y;                              // current x and y cursor position (zero based)
-    uint16_t save_x, save_y;                    // storage to save/restore cursor postion
-    uint16_t h_res;                             // horizontal video resolution (set in xansi_reset)
-    uint16_t gfx_ctrl;                          // default graphics mode
-    uint16_t tile_ctrl[4];                      // up to four fonts <ESC>( <ESC>) <ESC>* <ESC>+
+    uint16_t vram_size;             // size of text screen in current mode (init clears to allow 8x8 font)
+    uint16_t vram_end;              // ending address for text screen in current mode
+    uint16_t line_len;              // user specified line len (normally 0)
+    uint16_t height;                // user specified screen height (normally 0)
+    uint16_t cursor_save;           // word saved from under input cursor
+    uint16_t cursor_word;           // input cursor word (used to detect overwrite and prevent "fossil" cursor)
+    uint16_t cols, rows;            // text columns and rows in current mode (zero based)
+    uint16_t x, y;                  // current x and y cursor position (zero based)
+    uint16_t save_x, save_y;        // storage to save/restore cursor postion
+    uint16_t h_res;                 // horizontal video resolution (set in xansi_reset)
+    uint16_t gfx_ctrl;              // default graphics mode
+    uint16_t tile_ctrl[4];          // up to four fonts <ESC>( <ESC>) <ESC>* <ESC>+
     uint16_t csi_parms[MAX_CSI_PARMS];          // CSI parameter storage
     uint8_t  num_parms;                         // number of parsed CSI parameters
     uint8_t  intermediate_char;                 // CSI intermediate character (only one supported)
@@ -134,7 +135,7 @@ typedef struct xansiterm_data
     char     send_buffer[MAX_QUERY_LEN];        // xmit data for query replies
     bool     lcf;                               // flag for delayed last column wrap flag (PITA)
     bool     save_lcf;                          // storeage to save/restore lcf with cursor position
-    bool     cursor_drawn;                      // flag if cursor_save data valid
+    bool     cursor_drawn;                      // flag if cursor_save/cursor_word data valid
 } xansiterm_data;
 
 // high speed small inline functions
@@ -453,7 +454,10 @@ static inline void xansi_draw_cursor(xansiterm_data * td)
             cursor_color ^= 0x8000;        // if match, toggle bright/dim of background
         }
 
-        xm_setw(RW_DATA, (uint16_t)(cursor_color | (uint16_t)(data & 0x00ff)));        // draw char with cursor colors
+        uint16_t newcursor = (uint16_t)(cursor_color | (uint16_t)(data & 0x00ff));
+
+        xm_setw(RW_DATA, newcursor);        // draw char with cursor colors
+        td->cursor_word = newcursor;        // save cursor word (to check for overwrite)
     }
 }
 
@@ -465,8 +469,14 @@ static inline void xansi_erase_cursor(xansiterm_data * td)
         xv_prep();
 
         td->cursor_drawn = false;
-        xm_setw(WR_ADDR, td->cur_addr);
-        xm_setw(DATA, td->cursor_save);
+        xm_setw(RW_INCR, 0x0000);
+        xm_setw(RW_ADDR, td->cur_addr);
+
+        uint16_t cursor_read = xm_getw(RW_DATA);
+        if (cursor_read == td->cursor_word)        // don't erase cursor if it was overwritten
+        {
+            xm_setw(RW_DATA, td->cursor_save);
+        }
     }
 }
 
