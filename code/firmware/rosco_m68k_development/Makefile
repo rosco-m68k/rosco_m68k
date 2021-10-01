@@ -10,7 +10,7 @@ EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
-       -fomit-frame-pointer -mno-align-int $(DEFINES)
+       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -50,17 +50,19 @@ WITH_DEBUG_STUB?=true
 
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld
+LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
 ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
-LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld
+LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 endif
 
 ifeq ($(NO68681),true)
-$(info === Building rosco_m68k firmware with NO_68681 DUART)
+$(info === Building rosco_m68k firmware NO_68681 without DUART)
 DEFINES:=$(DEFINES) -DNO_68681
+else
+$(info === Building rosco_m68k firmware with 68681 DUART support)
 endif
 
 ifeq ($(ATA_DEBUG),true)

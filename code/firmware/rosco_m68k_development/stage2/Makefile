@@ -10,7 +10,7 @@ DEFINES=
 BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     												\
        -fomit-frame-pointer -Wall -Werror -Wpedantic -Wno-unused-function             \
 			 -Ifat_io_lib -Iinclude -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
-			 -mno-align-int $(DEFINES)
+			 -mno-align-int -mno-strict-align $(DEFINES)
 EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os
