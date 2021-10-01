@@ -18,7 +18,7 @@
 
 #include "bbspi.h"
 #include "bbsd.h"
-#include "device/block.h"
+#include "include/device/block.h"
 
 static bool wait_for_card(BBSPI*, uint32_t);
 static void reset_card(BBSPI*);

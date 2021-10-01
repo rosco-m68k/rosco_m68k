@@ -17,7 +17,7 @@
 #define ROSCO_M68K_BBSD_H
 
 #include <stdbool.h>
-#include <device/block.h>
+#include "include/device/block.h"
 
 #ifdef SD_MINIMAL
 #ifndef SD_BLOCK_READ_ONLY      // Minimal config precludes non-block-sized reads...

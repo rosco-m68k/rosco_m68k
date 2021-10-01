@@ -95,7 +95,7 @@ void kmain() {
     printf("  Total size : %d bytes\n", CONFIG_SIZE);
     printf("  Base addr  : 0x%08x\n", CONFIG_ADDR);
 
-    printf("\nOld data: 0x%08x 0x%08x 0x%08x...\n", config->data[0], config->data[1], config->data[2]);
+    printf("\nOld data: 0x%08lx 0x%08lx 0x%08lx...\n", config->data[0], config->data[1], config->data[2]);
 
     uint32_t new_data;
     if (config->data[0] == 0x55AA55AA) {
@@ -111,7 +111,7 @@ void kmain() {
     if (!write_config_area(&new_config_buf)) {
         printf("Failed to write config area!\n");
     } else {
-        printf("New data: 0x%08x 0x%08x 0x%08x...\n", config->data[0], config->data[1], config->data[2]);
+        printf("New data: 0x%08lx 0x%08lx 0x%08lx...\n", config->data[0], config->data[1], config->data[2]);
     }
 }
 

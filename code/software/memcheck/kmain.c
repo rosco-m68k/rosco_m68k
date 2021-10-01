@@ -81,7 +81,7 @@ static uint32_t count_rom_size() {
       }
 
       if (((uint32_t)current) % 4096 == 0) {
-        printf("\rROM: %dK %s", 
+        printf("\rROM: %ldK %s", 
             ((uint32_t)current) / 1024, "[\033[1;32m✔\033[0m]");
       }
 
@@ -177,7 +177,7 @@ static KRESULT build_memory_map(MEMINFO *header) {
     current++;
 
     if (current_addr % 65536 == 0) {
-      printf("\rRAM: %dK %s", 
+      printf("\rRAM: %ldK %s", 
           current_addr / 1024, 
           block_started ? "[\033[1;32m✔\033[0m]" : "[\033[1;31m✗\033[0m]");
     }
@@ -259,14 +259,14 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   
   if (block->block_size >= 65536) {
   
-    printf("%02d: 0x%08x - 0x%08x (%5d KiB  ) ", 
+    printf("%02d: 0x%08lx - 0x%08lx (%5ld KiB  ) ", 
         i, 
         block->block_start, 
         block->block_start + block->block_size - 1, 
         block->block_size / 1024);
   } else {
   
-    printf("%02d: 0x%08x - 0x%08x (%5d bytes) ", 
+    printf("%02d: 0x%08lx - 0x%08lx (%5ld bytes) ", 
         i, 
         block->block_start, 
         block->block_start + block->block_size - 1, 
@@ -322,7 +322,7 @@ static void show_banner() {
   }
   printf("        *\n");
   if (wver >= 0x0120) {
-    printf("* Firmware reports %8d bytes total contiguous memory *\n", *FW_MEMSIZE);
+    printf("* Firmware reports %8ld bytes total contiguous memory *\n", *FW_MEMSIZE);
   }
   printf("*                                                         *\n");
   printf("***********************************************************\n");
@@ -350,7 +350,7 @@ void kmain() {
   KRESULT result = build_memory_map(header);
 
   if (IS_KFAILURE(result)) {
-    printf("Failed to build memory map (0x%04x)\n", result);
+    printf("Failed to build memory map (0x%04lx)\n", result);
   } else {
     printf("Map built successfully\n");
 
@@ -363,7 +363,7 @@ void kmain() {
 
     RESTORE_BERR_HANDLER();
 
-    printf("Complete; Found a total of %d bytes of writeable RAM\n\n", header->ram_total);
+    printf("Complete; Found a total of %ld bytes of writeable RAM\n\n", header->ram_total);
   }
 }
 

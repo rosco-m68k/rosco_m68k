@@ -131,8 +131,8 @@ void kmain() {
     if (logical_romsize == 0) {
         printf("Apologies, but ROMs don't appear to be SST flash, this utility cannot program them.\n");
     } else {
-        printf("\nLogical ROM size is %d bytes\n", logical_romsize);
-        printf("%d bytes available for update file buffer\n\n", buffer_size);
+        printf("\nLogical ROM size is %ld bytes\n", logical_romsize);
+        printf("%ld bytes available for update file buffer\n\n", buffer_size);
 
         if (!SD_check_support()) {
             printf("Sorry, SD Card support is required in ROM, but is not present. Cannot read firmware update files.\n");
@@ -155,11 +155,11 @@ void kmain() {
                         printf("Apologies, but update is too large for logical ROM, cannot flash\n");
                     } else if (upgrade_romsize > buffer_size) {
                         printf("Sorry, update ROM cannot fit in available memory, and I cannot stream it yet. Cannot continue.\n");
-                        printf("(FYI, max update size with current memory configuration is %d bytes\n)", buffer_size);
+                        printf("(FYI, max update size with current memory configuration is %ld bytes\n)", buffer_size);
                     } else if ((upgrade_romsize & 1) == 1) {
                         printf("Sorry, but upgrade file size is odd, assuming invalid image. Cannot continue.\n");
                     } else {
-                        printf("Found an update ROM of %d bytes, Will attempt to flash :)\n", upgrade_romsize);
+                        printf("Found an update ROM of %ld bytes, Will attempt to flash :)\n", upgrade_romsize);
                         printf("Reading file...");
 
                         if (fl_fread(buffer, 1, upgrade_romsize, romfile) != (int)upgrade_romsize) {

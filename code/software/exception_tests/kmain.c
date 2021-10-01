@@ -77,14 +77,14 @@ void kmain() {
   INSTALL_HANDLER();
 
   // Generate a bus fault
-  printf("Bad is 0x%08x\r\n", *bad);
+  printf("Bad is 0x%08lx\r\n", *bad);
 
   if (berr_hit) {
     printf("\nBus Error occurred:\r\n");
-    printf("    Format was 0b%04b     (Indicating 680%d0 CPU)\r\n", fmt, cpuver);
+    printf("    Format was 0x%x       (Indicating 680%d0 CPU)\r\n", fmt, cpuver);
     printf("    VecOfs was 0x%06x   (Exception #%d)\r\n", vec_ofs, vec_ofs / 4);
     printf("    SR     was 0x%04x\r\n", sr);
-    printf("    PC     was 0x%08x\r\n", pc);
+    printf("    PC     was 0x%08lx\r\n", pc);
   } else {
     printf("Bus Error did not occur.\r\n");
   }
