@@ -197,24 +197,24 @@ XANSI_CON_CHECKCHAR::
                 lea.l   _private_xansiterm_data.w,a1
                 endif
 
-                tst.b   2(a2)                   ; check for query (send_index >= 0)
-                bpl.s   .GOTCHAR
+                tst.b   2(a1)                   ; check for query (send_index >= 0)
+                bpl.s   .CHARREADY
 
                 move.l  8(a1),a0                ; a0=checkchar
                 jsr     (a0)                    ; checkchar
                 tst.b   d0
-                bne.s   .GOTCHAR
+                bne.s   .CHARREADY
 
                 jsr     xansiterm_UPDATECURSOR
 
                 moveq.l #0,d0
-                bra.s   .DONE
+                bra.s   .CHECKDONE
 
-.GOTCHAR
+.CHARREADY
                 jsr     xansiterm_ERASECURSOR
 
                 moveq.l #1,d0
-.DONE
+.CHECKDONE
                 movem.l (sp)+,d1/a0-a1
                 rts
 
@@ -230,7 +230,7 @@ XANSI_CON_INIT::
                 jsr     xansiterm_INIT          ; return in d0
 
                 tst.b   d0
-                beq.s   .DONE
+                beq.s   .INITDONE
 
                 ; replace EFP functions
                 move.l  #XANSI_CON_PRINT,EFP_PRINT.w
@@ -241,7 +241,7 @@ XANSI_CON_INIT::
                 move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
                 move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
 
-.DONE
+.INITDONE
                 move.w  d3,sr                   ; restore SR
 
                 movem.l (sp)+,d1-d3/a0-a1

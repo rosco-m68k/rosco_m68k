@@ -1093,7 +1093,6 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                 str_dec(&strptr, td->x + 1);
                 *strptr++ = 'R';
                 *strptr++ = '\0';
-                LOGF("[DSR CPR %d,%d]", td->y + 1, td->x + 1);
                 LOGF("[DSR CPR reply=\"<ESC>%s\"]\n", td->send_buffer + 1);
             }
             else
@@ -1339,21 +1338,21 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                             LOGF("%03u;", rosco_cmd);
                             switch (rosco_cmd)
                             {
-                                // VT: SGR 68;000;<n>;<val>>m   n=0 vram addr, 1=line_len, 2=lines_high
+                                // VT: SGR 68;000;<n>;<val>>m   n=1 vram addr, 2=line_len, 3=lines_high
                                 case 0:
-                                    if (n < 3)        // n valid
+                                    if (n >= 1 && n <= 3)        // n valid
                                     {
-                                        if (n == 0)
+                                        if (n == 1)
                                         {
                                             td->vram_base = parm0;
                                             LOGF(" vram_base=0x%04x", parm0);
                                         }
-                                        else if (n == 1)
+                                        else if (n == 2)
                                         {
                                             td->line_len = parm0;
                                             LOGF(" line_len=0x%04x", parm0);
                                         }
-                                        else if (n == 2)
+                                        else if (n == 3)
                                         {
                                             td->lines_high = parm0;
                                             LOGF(" lines_high=0x%04x", parm0);
@@ -1392,15 +1391,15 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                                         rosco_cmd_good = true;
                                     }
                                     break;
-                                // VT: SGR 68;030;<n>;<val>m        n=0 custom cursor_glyph, 1=custom cursor_glyph mask
+                                // VT: SGR 68;030;<n>;<val>m        n=1 cursor_glyph word, 2=cursor_glyph word mask
                                 case 30:
-                                    if (n == 0)
+                                    if (n == 1)
                                     {
                                         td->cursor_glyph = parm0;
                                         LOGF(" cursor_glyph=0x%04x", parm0);
                                         rosco_cmd_good = true;
                                     }
-                                    else if (n == 1)
+                                    else if (n == 2)
                                     {
                                         td->cursor_mask = parm0;
                                         LOGF(" cursor_mask=0x%04x", parm0);
@@ -1582,8 +1581,7 @@ const char * xansiterm_PRINT(const char * strptr)
             {
                 // otherwise start new CSI/ESC
                 xansi_begin_csi_or_esc(td, cdata);
-                LOGF("%s", td->state == TSTATE_ESC ? "\n<ESC>" : "\n<CSI>");
-                continue;
+                goto nextchar;
             }
             else
             {
@@ -1629,6 +1627,7 @@ const char * xansiterm_PRINT(const char * strptr)
             }
         }
 
+    nextchar:;
 #if DEBUG
         // show altered state in log
         if (initial_state == TSTATE_NORMAL)
@@ -1698,9 +1697,6 @@ void xansiterm_SETCURSOR(bool showcursor)
         LOG("SetCursor(CURSOR HIDE)\n");
         td->flags |= TFLAG_HIDE_CURSOR;
     }
-#if SIMPLE_CURSOR
-    xansi_draw_cursor(td);
-#endif
 }
 
 // terminal read QUERY reply (call when td->send_index >= 0)
