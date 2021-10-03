@@ -130,7 +130,8 @@ XANSI_CON_RECVCHAR::
                 else
                 lea.l   _private_xansiterm_data.w,a2
                 endif
-                tst.b   2(a2)
+
+                tst.b   2(a2)                   ; check if not query (send_index < 0)
                 bmi.s   .NOQUERY
 
                 movem.l d1/a0,-(sp)
@@ -195,6 +196,9 @@ XANSI_CON_CHECKCHAR::
                 else
                 lea.l   _private_xansiterm_data.w,a1
                 endif
+
+                tst.b   2(a2)                   ; check for query (send_index >= 0)
+                bpl.s   .GOTCHAR
 
                 move.l  8(a1),a0                ; a0=checkchar
                 jsr     (a0)                    ; checkchar
