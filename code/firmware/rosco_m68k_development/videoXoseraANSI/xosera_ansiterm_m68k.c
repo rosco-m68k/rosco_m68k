@@ -25,26 +25,22 @@
  * ------------------------------------------------------------
  */
 
-#define SIMPLE_CURSOR 1
-
 #if defined(TEST_FIRMWARE)
+#define DEBUG 0        // set to 1 for test debugging (LOG/LOGF)
+
 #include <assert.h>
 #include <basicio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define DEBUG 0        // set to 1 for debugging (LOG/LOGF)
-
 #else
+
+#define DEBUG 0        // must be zero (no printf in firmware)
 // thse are missing from kernel machine.h
 extern unsigned int _FIRMWARE_REV;        // rosco ROM firmware revision
-#if !SIMPLE_CURSOR
 extern void (*_EFP_RECVCHAR)();
 extern void (*_EFP_CHECKCHAR)();
-#endif
-
-#define DEBUG 0        // must be zero
 
 #endif
 
@@ -85,7 +81,7 @@ enum e_term_flags
     TFLAG_NEWLINE         = 1 << 0,        // LF also does a CR
     TFLAG_NO_AUTOWRAP     = 1 << 1,        // don't wrap to next line at EOL
     TFLAG_HIDE_CURSOR     = 1 << 2,        // don't show a cursor on input
-    TFLAG_UNUSED          = 1 << 3,
+    TFLAG_NOBLINK_CURSOR  = 1 << 3,        // do not blink cursor
     TFLAG_ATTRIB_BRIGHT   = 1 << 4,        // make colors bright
     TFLAG_ATTRIB_DIM      = 1 << 5,        // make colors dim
     TFLAG_ATTRIB_REVERSE  = 1 << 6,        // reverse fore/back colors
@@ -104,24 +100,27 @@ enum e_term_state
 // all storage for terminal (must be at 16-bit memory address [< 32KB])
 typedef struct xansiterm_data
 {
-    uint16_t cur_addr;         // next VRAM address to draw text
-    uint16_t vram_base;        // base VRAM address for text screen
-#if !SIMPLE_CURSOR
-    void * device_recvchar;         // trap handler for console RECVCHAR (wrapped, for asm)
-    void * device_checkchar;        // trap handler for console CHECKCHAR (wrapped, for asm)
-#endif
-    uint16_t vram_size;             // size of text screen in current mode (init clears to allow 8x8 font)
-    uint16_t vram_end;              // ending address for text screen in current mode
-    uint16_t line_len;              // user specified line len (normally 0)
-    uint16_t height;                // user specified screen height (normally 0)
-    uint16_t cursor_save;           // word saved from under input cursor
-    uint16_t cursor_word;           // input cursor word (used to detect overwrite and prevent "fossil" cursor)
-    uint16_t cols, rows;            // text columns and rows in current mode (zero based)
-    uint16_t x, y;                  // current x and y cursor position (zero based)
-    uint16_t save_x, save_y;        // storage to save/restore cursor postion
-    uint16_t h_res;                 // horizontal video resolution (set in xansi_reset)
-    uint16_t gfx_ctrl;              // default graphics mode
-    uint16_t tile_ctrl[4];          // up to four fonts <ESC>( <ESC>) <ESC>* <ESC>+
+    uint16_t cur_addr;                // +0x0: next VRAM address to draw text
+    int8_t   send_index;              // +0x2: index into send_buffer or -1 if no query
+    bool     cursor_drawn;            // +0x3: flag if cursor_save/cursor_word data valid
+    void *   device_recvchar;         // +0x4: trap handler for console RECVCHAR (wrapped, for asm)
+    void *   device_checkchar;        // +0x8: trap handler for console CHECKCHAR (wrapped, for asm)
+    uint16_t vram_base;               // base VRAM address for text screen
+    uint16_t vram_size;               // size of text screen in current mode (init clears to allow 8x8 font)
+    uint16_t vram_end;                // ending address for text screen in current mode
+    uint16_t line_len;                // user specified line len (normally 0)
+    uint16_t lines_high;              // user specified screen lines_high (normally 0)
+    uint16_t cursor_glyph;            // custom cursor color and/or glyph (ignored if zero)
+    uint16_t cursor_mask;             // custom cursor mask (1 bits = use cursor_glyph bits)
+    uint16_t cursor_save;             // word saved from under input cursor
+    uint16_t cursor_word;             // input cursor word (used to detect overwrite and prevent "fossil" cursor)
+    uint16_t cols, rows;              // text columns and rows in current mode (zero based)
+    uint16_t x, y;                    // current x and y cursor position (zero based)
+    uint16_t save_x, save_y;          // storage to save/restore cursor postion
+    uint16_t h_size;                  // horizontal video resolution (set in xansi_reset)
+    uint16_t v_size;                  // vertical video resolution (set in xansi_reset)
+    uint16_t gfx_ctrl;                // default graphics mode
+    uint16_t tile_ctrl[4];            // up to four fonts <ESC>( <ESC>) <ESC>* <ESC>+
     uint16_t csi_parms[MAX_CSI_PARMS];          // CSI parameter storage
     uint8_t  num_parms;                         // number of parsed CSI parameters
     uint8_t  intermediate_char;                 // CSI intermediate character (only one supported)
@@ -131,11 +130,9 @@ typedef struct xansiterm_data
     uint8_t  state;                             // current ANSI parsing state (e_term_state)
     uint8_t  flags;                             // various terminal flags (e_term_flags)
     uint8_t  color;                             // effective current background and forground color (high/low nibble)
-    int8_t   send_index;                        // index into send_buffer or -1 if no query
     char     send_buffer[MAX_QUERY_LEN];        // xmit data for query replies
     bool     lcf;                               // flag for delayed last column wrap flag (PITA)
     bool     save_lcf;                          // storeage to save/restore lcf with cursor position
-    bool     cursor_drawn;                      // flag if cursor_save/cursor_word data valid
 } xansiterm_data;
 
 // high speed small inline functions
@@ -179,24 +176,6 @@ static void xansi_memset(void * str, unsigned int n)
         "           bne.s   secloop\n"
         :
         : [buf] "a"(buf), [end] "a"(end));
-}
-#endif
-
-#if !SIMPLE_CURSOR
-// call EFP function ptr from C(with no args and D0 byte return)
-static char call_EFP_pointer(void * ptr)
-{
-#ifndef __INTELLISENSE__
-    register int r_d0 __asm__("%d0");        // force to EFP return reg
-    __asm__ __volatile(
-        "jsr    (%[ptr])\n"
-        "ext.w  %[r_d0]\n"
-        "ext.l  %[r_d0]\n"
-        : [r_d0] "=d"(r_d0)
-        : [ptr] "a"(ptr));
-
-    return r_d0;
-#endif
 }
 #endif
 
@@ -326,7 +305,7 @@ static inline void xansi_check_lcf(xansiterm_data * td)
 {
     if (td->lcf)
     {
-        td->lcf = 0;
+        td->lcf = false;
         if ((uint16_t)(td->cur_addr - td->vram_base) >= td->vram_size)
         {
             td->cur_addr = td->vram_base + (td->vram_size - td->cols);
@@ -344,7 +323,7 @@ static inline void xansi_drawchar(xansiterm_data * td, char cdata)
     xm_setbh(DATA, td->color);
     xm_setbl(DATA, cdata);
 
-    td->x++;
+    td->x += 1;
     if (td->x >= td->cols)
     {
         if (td->flags & TFLAG_NO_AUTOWRAP)
@@ -355,7 +334,7 @@ static inline void xansi_drawchar(xansiterm_data * td, char cdata)
         else
         {
             td->x = 0;
-            td->y++;
+            td->y += 1;
             if (td->y >= td->rows)
             {
                 td->y = td->rows - 1;
@@ -433,6 +412,16 @@ static inline void xansi_draw_cursor(xansiterm_data * td)
     {
         xv_prep();
 
+        bool gfx_change =
+            (((uint16_t)(td->gfx_ctrl ^ xreg_getw(PA_GFX_CTRL)) & 0x007f) != 0) ||        // gfx_ctrl mode bits changed
+            (td->vram_base != xreg_getw(PA_DISP_ADDR)) ||                                 // display address changed
+            (td->h_size != xreg_getw(VID_HSIZE)) ||                                       // screen video mode H changed
+            (td->v_size != xreg_getw(VID_VSIZE)) ||                                       // screen video mode V changed
+            (xreg_getw(PA_LINE_LEN) != (td->line_len ? td->line_len : td->cols));         // line length changed
+
+        if (gfx_change)
+            return;
+
         td->cursor_drawn = true;
         xm_setw(RW_INCR, 0x0000);
         xm_setw(RW_ADDR, td->cur_addr);
@@ -452,6 +441,14 @@ static inline void xansi_draw_cursor(xansiterm_data * td)
         if ((uint16_t)((cursor_color ^ data) & 0xf000) == 0)
         {
             cursor_color ^= 0x8000;        // if match, toggle bright/dim of background
+        }
+
+        if (td->cursor_mask)        // use custom cursor_glyph if any bits selected
+        {
+            cursor_color = ((uint16_t)(td->cursor_glyph & td->cursor_mask) |
+                            (uint16_t)(cursor_color & (uint16_t)~td->cursor_mask)) &
+                           0xfff00;
+            data = (uint16_t)(td->cursor_glyph & td->cursor_mask) | (uint16_t)(data & (uint16_t)~td->cursor_mask);
         }
 
         uint16_t newcursor = (uint16_t)(cursor_color | (uint16_t)(data & 0x00ff));
@@ -481,7 +478,7 @@ static inline void xansi_erase_cursor(xansiterm_data * td)
 }
 
 // set first 16 colors to default VGA colors
-static void set_default_colors()
+static void set_default_colors(volatile xmreg_t * const xosera_ptr)
 {
     static const uint16_t def_colors16[16] = {0x0000,         // black
                                               0x000a,         // blue
@@ -499,8 +496,6 @@ static void set_default_colors()
                                               0x0f5f,         // light magenta
                                               0x0ff5,         // yellow
                                               0x0fff};        // bright white
-    xv_prep();
-
     xm_setw(XR_ADDR, XR_COLOR_MEM);
     for (uint16_t i = 0; i < 16; i++)
     {
@@ -523,18 +518,25 @@ static void xansi_reset(bool reset_colormap)
     uint16_t tile_ctrl_val = td->tile_ctrl[td->cur_font];
     uint16_t tile_w        = ((!bitmap || bpp < 2) ? 8 : (bpp == 2) ? 4 : 1) * h_rpt;
     uint16_t tile_h        = ((bitmap) ? 1 : ((tile_ctrl_val & 0xf) + 1)) * v_rpt;
-    uint16_t rows          = (xreg_getw(VID_VSIZE) + tile_h - 1) / tile_h;        // calc text rows
-    uint16_t h_res         = xreg_getw(VID_HSIZE);
+    uint16_t h_size        = xreg_getw(VID_HSIZE);
+    uint16_t v_size        = xreg_getw(VID_VSIZE);
+    uint16_t rows          = td->lines_high;
     uint16_t cols          = td->line_len;
+
+    if (rows == 0)
+    {
+        rows = (v_size + tile_h - 1) / tile_h;        // calc text rows
+    }
 
     if (cols == 0)
     {
-        cols = (h_res + tile_w - 1) / tile_w;        // calc text columns
+        cols = (h_size + tile_w - 1) / tile_w;        // calc text columns
     }
 
     uint16_t prev_end = td->vram_end;
 
-    td->h_res     = h_res;
+    td->h_size    = h_size;
+    td->v_size    = v_size;
     td->vram_size = cols * rows;
     td->vram_end  = td->vram_base + td->vram_size;
     td->cols      = cols;
@@ -571,7 +573,7 @@ static void xansi_reset(bool reset_colormap)
 
     if (reset_colormap)
     {
-        set_default_colors();
+        set_default_colors(xosera_ptr);
     }
 
     // only clear any additional VRAM used from previous mode
@@ -582,31 +584,6 @@ static void xansi_reset(bool reset_colormap)
 
     xansi_calc_cur_addr(td);
 }
-
-#if !SIMPLE_CURSOR
-static bool xansi_modechanged(xansiterm_data * td)
-{
-    xv_prep();
-    bool changed = ((uint16_t)(td->gfx_ctrl & 0x0070) != (uint16_t)(xreg_getw(PA_GFX_CTRL) & 0x0070)) ||
-                   (td->vram_base != xreg_getw(PA_DISP_ADDR)) || (td->cols != xreg_getw(PA_LINE_LEN)) ||
-                   (td->h_res != xreg_getw(VID_HSIZE));
-    if (changed)
-    {
-        LOGF(
-            "{xansi_modechanged: gfx_ctrl=%04X != %04X, vram_addr=%04X != %04X, line_len=%04X != %04X, "
-            "h_res=%04lX != %04lX}\n",
-            (unsigned int)(td->gfx_ctrl & 0x0070),
-            (unsigned int)(xreg_getw(PA_GFX_CTRL) & 0x0070),
-            td->vram_base,
-            xreg_getw(PA_DISP_ADDR),
-            td->cols,
-            xreg_getw(PA_LINE_LEN),
-            td->h_res,
-            xreg_getw(VID_HSIZE));
-    }
-    return changed;
-}
-#endif
 
 // invert screen, invert again to restore unless invert flag set
 static void xansi_visualbell(bool invert)
@@ -666,39 +643,39 @@ static void xansi_scroll_down(xansiterm_data * td)
     xansi_do_scroll();
 }
 
-// process normal character (not CSI or ESC sequence)
-static void xansi_processchar(char cdata)
+// process control character
+static void xansi_processctrl(xansiterm_data * td, char cdata)
 {
-    xansiterm_data * td = get_xansi_data();
-
-    if ((uint8_t)cdata >= ' ' || (td->flags & TFLAG_ATTRIB_PASSTHRU))
+    // if auto line length, detect changes
+    if (td->line_len == 0)
     {
-        xansi_drawchar(td, cdata);
-        return;
+        xv_prep();
+
+        if (td->h_size != xreg_getw(VID_HSIZE) || td->v_size != xreg_getw(VID_VSIZE) ||
+            td->cols != xreg_getw(PA_LINE_LEN))
+        {
+            xansi_reset(false);
+        }
     }
 
-
-    // if (xansi_modechanged(td))
-    // {
-    //     xansi_reset(false);
-    // }
-
+    // NOTE: return if cursor Y position unchanged, break otherwise
     switch (cdata)
     {
         case '\a':
             // VT:  \a      BEL ^G alert (visual bell)
             LOG("[BELL]");
             xansi_visualbell(false);
-            return;        // fast out (no lcf clear)
+            return;
         case '\b':
             // VT:  \b      BS  ^H backspace (stops at left margin)
             LOG("[BS]");
+            // NOTE: lcf should never be set when x != 0
             if (td->x > 0)
             {
                 td->x -= 1;
                 td->cur_addr--;
             }
-            break;
+            return;
         case '\t':
             // VT:    \t    HT  ^I  8 char tab EXTENSION: wraps to next line when < 8 chars
             LOG("[TAB]");
@@ -713,14 +690,14 @@ static void xansi_processchar(char cdata)
                 td->cur_addr -= td->x;
                 td->cur_addr += td->cols;
                 td->x = 0;
-                td->y++;
+                td->y += 1;
             }
             break;
         case '\n':
             // VT:  \n  LF  ^J  line feed (or LF+CR in NEWLINE mode)
             LOG("[LF]");
             td->cur_addr += td->cols;
-            td->y++;
+            td->y += 1;
             if (td->flags & TFLAG_NEWLINE)
             {
                 td->cur_addr -= td->x;
@@ -731,7 +708,7 @@ static void xansi_processchar(char cdata)
             // VT:  \v  VT  ^K  vertical tab EXTENSION: reverse LF (VT100 is another LF)
             LOG("[VT]");
             td->cur_addr -= td->cols;
-            td->y--;
+            td->y -= 1;
             if (td->y >= td->rows)
             {
                 td->cur_addr += td->cols;
@@ -743,7 +720,7 @@ static void xansi_processchar(char cdata)
             // VT:  \f  FF  ^L  form feed EXTENSION clear screen and home cursor (VT100 yet another LF)
             LOG("[FF]");
             xansi_cls();
-            break;
+            return;
         case '\r':
             // VT:  \r  CR  ^M  carriage return (move to left margin)
             LOG("[CR]");
@@ -754,13 +731,25 @@ static void xansi_processchar(char cdata)
             return;        // fast out (no cursor change)
     }
 
+    td->lcf = false;
     if (td->y >= td->rows)
     {
-        td->cur_addr -= td->cols;
         td->y -= 1;
-        xansi_scroll_up(td);
+        td->cur_addr = td->vram_base + (td->vram_size - td->cols);
+        xansi_scroll_up();
     }
-    td->lcf = false;
+}
+
+// process normal character (not CSI or ESC sequence)
+static void xansi_processchar(xansiterm_data * td, char cdata)
+{
+    if ((uint8_t)cdata >= ' ' || (td->flags & TFLAG_ATTRIB_PASSTHRU))
+    {
+        xansi_drawchar(td, cdata);
+        return;
+    }
+
+    xansi_processctrl(td, cdata);
 
 #if DEBUG
     xansi_assert_xy_valid(td);
@@ -823,6 +812,7 @@ static inline void xansi_process_esc(xansiterm_data * td, char cdata)
         LOGC(cdata);
     }
 #endif
+    // NOTE: return if cursor position unaffected (or reset), break to recalculate cur_pos
     switch ((uint8_t)cdata)
     {
         case 0x9b:
@@ -867,22 +857,28 @@ static inline void xansi_process_esc(xansiterm_data * td, char cdata)
         case 'D':
             // VT: <ESC>D  IND move cursor down (regardless of NEWLINE mode)
             LOG("=[CDOWN]");
-            uint8_t save_flags = td->flags;        // save flags
-            td->flags &= ~TFLAG_NEWLINE;           // clear NEWLINE
-            xansi_processchar('\n');
-            td->flags = save_flags;        // restore flags
+            td->y += 1;
+            if (td->y >= td->rows)
+            {
+                td->y -= 1;
+                xansi_scroll_up(td);
+            }
             break;
         case 'M':
             // VT: <ESC>M  RI move cursor up
             LOG("=[RI]");
-            xansi_processchar('\v');
+            td->y -= 1;
+            if (td->y >= td->rows)
+            {
+                td->y += 1;
+                xansi_scroll_down(td);
+            }
             break;
         case 'E':
             // VT: <ESC>E  NEL next line
             LOG("=[NEL]");
-            td->y++;
-            td->x   = 0;
-            td->lcf = false;
+            td->x = 0;
+            td->y += 1;
             if (td->y >= td->cols)
             {
                 td->y = td->cols - 1;
@@ -894,11 +890,11 @@ static inline void xansi_process_esc(xansiterm_data * td, char cdata)
             td->send_index = 0;
             str_copy(td->send_buffer, "\x1b[?1;0c");
             LOGF("=[VT101 ID reply=\"<ESC>%s\"]\n", td->send_buffer + 1);
-            break;
+            return;
         case 0x7f:        // ignore DEL and stay in ESC state
             td->state = TSTATE_ESC;
             LOG("=[eaten]");
-            break;
+            return;
         default:
             LOG("=[eaten, bad ESC]");
             return;
@@ -958,6 +954,7 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
             break;
         case 'C':
             // VT: <CSI><n>C  CUF  cursor right (no scroll)
+            td->lcf = false;
             td->x += num;
             if (td->x >= td->cols)
             {
@@ -1035,6 +1032,21 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                     {
                         LOG("[AUTOWRAP ON]");
                         td->flags &= ~TFLAG_NO_AUTOWRAP;
+                    }
+                }
+                else if (num == 12)
+                {
+                    // VT:  <CSI>?12h   ATT160 on  blinking cursor (~1/2 second)
+                    // VT:  <CSI>?12l   ATT160 off non-blinking cursor
+                    if (cdata == 'l')
+                    {
+                        LOG("[CURSOR NOBLINK]");
+                        td->flags |= TFLAG_NOBLINK_CURSOR;
+                    }
+                    else
+                    {
+                        LOG("[CURSOR BLINK]");
+                        td->flags &= ~TFLAG_NOBLINK_CURSOR;
                     }
                 }
                 else if (num == 25)
@@ -1333,7 +1345,7 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                             LOGF("%03u;", rosco_cmd);
                             switch (rosco_cmd)
                             {
-                                // VT: SGR 68;000;<n>;<val>>m   n=0 vram addr, 1=line_len, 2=height (0=auto)
+                                // VT: SGR 68;000;<n>;<val>>m   n=0 vram addr, 1=line_len, 2=lines_high
                                 case 0:
                                     if (n < 3)        // n valid
                                     {
@@ -1349,8 +1361,8 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                                         }
                                         else if (n == 2)
                                         {
-                                            td->height = parm0;
-                                            LOGF(" height=0x%04x", parm0);
+                                            td->lines_high = parm0;
+                                            LOGF(" lines_high=0x%04x", parm0);
                                         }
                                         rosco_cmd_good = true;
                                     }
@@ -1383,6 +1395,21 @@ static inline void xansi_process_csi(xansiterm_data * td, char cdata)
                                     {
                                         td->gfx_ctrl = parm0;
                                         LOGF(" GFX_CTRL=0x%04x", parm0);
+                                        rosco_cmd_good = true;
+                                    }
+                                    break;
+                                // VT: SGR 68;030;<n>;<val>m        n=0 custom cursor_glyph, 1=custom cursor_glyph mask
+                                case 30:
+                                    if (n == 0)
+                                    {
+                                        td->cursor_glyph = parm0;
+                                        LOGF(" cursor_glyph=0x%04x", parm0);
+                                        rosco_cmd_good = true;
+                                    }
+                                    else if (n == 1)
+                                    {
+                                        td->cursor_mask = parm0;
+                                        LOGF(" cursor_mask=0x%04x", parm0);
                                         rosco_cmd_good = true;
                                     }
                                     break;
@@ -1527,9 +1554,6 @@ void xansiterm_PRINTCHAR(char cdata)
         {
             xansi_drawchar(td, 0);
         }
-#if SIMPLE_CURSOR
-        xansi_draw_cursor(td);
-#endif
     }
 }
 
@@ -1557,21 +1581,22 @@ const char * xansiterm_PRINT(const char * strptr)
         // ESC or 8-bit CSI received
         if ((cdata & 0x7f) == '\x1b')
         {
-            // if already in CSI/ESC state and PASSTHRU set, print 2nd CSI/ESC
-            if ((td->flags & TFLAG_ATTRIB_PASSTHRU) && td->state >= TSTATE_ESC)
-            {
-                td->state = TSTATE_NORMAL;
-                xansi_processchar(cdata);
-            }
-            else
+            // if not PASSTHRU mode or not in NORMAL/ILLEGAL state, re-start CSI/ESI
+            if (!(td->flags & TFLAG_ATTRIB_PASSTHRU) || td->state < TSTATE_ESC)
             {
                 // otherwise start new CSI/ESC
                 xansi_begin_csi_or_esc(td, cdata);
+                continue;
+            }
+            else
+            {
+                td->state = TSTATE_NORMAL;        // fall through and print ESC/CSi
             }
         }
-        else if (td->state == TSTATE_NORMAL)
+
+        if (td->state == TSTATE_NORMAL)
         {
-            xansi_processchar(cdata);
+            xansi_processchar(td, cdata);
         }
         else if (cdata == '\x18' || cdata == '\x1A')
         {
@@ -1637,9 +1662,6 @@ const char * xansiterm_PRINT(const char * strptr)
         }
 #endif
     }
-#if SIMPLE_CURSOR
-    xansi_draw_cursor(td);
-#endif
 
     return strptr;
 }
@@ -1666,17 +1688,20 @@ void xansiterm_SETCURSOR(bool showcursor)
         LOG("SetCursor(CURSOR HIDE)\n");
         td->flags |= TFLAG_HIDE_CURSOR;
     }
+#if SIMPLE_CURSOR
     xansi_draw_cursor(td);
+#endif
 }
-#if !SIMPLE_CURSOR
-// terminal read input character (wrapper for console readchar with cursor)
-char xansiterm_RECVCHAR()
+
+// terminal read QUERY reply (call when td->send_index >= 0)
+char xansiterm_RECVQUERY(void)
 {
     xansiterm_data * td = get_xansi_data();
     // sending query
+    char cdata = 0;
     if (td->send_index >= 0)
     {
-        char cdata = td->send_buffer[td->send_index];
+        cdata = td->send_buffer[td->send_index];
         LOGF("<recvchar QUERY[%d] = ", td->send_index);
         LOGC(cdata);
         td->send_index += 1;
@@ -1686,43 +1711,39 @@ char xansiterm_RECVCHAR()
             LOG(" END");
         }
         LOG(">\n");
-        return cdata;
     }
     else
     {
-        // busy loop blinking cursor
-        while (!xansiterm_CHECKCHAR())
-            ;
-        // cursor will be off when char ready
+        LOG("{bad RECVQUERY}\n");
     }
-
-    return call_EFP_pointer(td->device_recvchar);
+    return cdata;
 }
-#endif
 
-#if !SIMPLE_CURSOR
 // terminal check for input character ready (wrapper console checkchar with cursor)
-bool xansiterm_CHECKCHAR()
+void xansiterm_UPDATECURSOR(void)
 {
     xansiterm_data * td = get_xansi_data();
-    xansi_check_lcf(td);        // wrap cursor if needed
-    xv_prep();
 
-    bool char_ready = (td->send_index >= 0) || (call_EFP_pointer(td->device_checkchar) != 0);
     // blink at ~409.6ms (on half the time, but only if cursor not disabled and no char ready)
-    bool show_cursor = !char_ready && (xm_getw(TIMER) & 0x800);
-    if (show_cursor && !xansi_modechanged(td))
+    volatile uint8_t * timer_bh_ptr = (volatile uint8_t *)(XM_BASEADDR + XM_TIMER);
+    bool               cursor_on    = (td->flags & TFLAG_NOBLINK_CURSOR) || (*timer_bh_ptr) & 0x08;
+    xansi_check_lcf(td);        // wrap cursor if needed
+    if (cursor_on)
     {
         xansi_draw_cursor(td);
     }
     else
     {
-        xansi_erase_cursor(td);        // make sure cursor not drawn
+        xansi_erase_cursor(td);
     }
-
-    return char_ready;
 }
-#endif
+
+void xansiterm_ERASECURSOR(void)
+{
+    xansiterm_data * td = get_xansi_data();
+    xansi_erase_cursor(td);
+}
+
 #pragma GCC pop_options        // end -O3
 
 // init function can be small
@@ -1756,8 +1777,8 @@ bool xansiterm_INIT()
     xansiterm_data * td = get_xansi_data();
     xansi_memset(td, sizeof(*td));
     // default values (others will be zero or computed)
-    //    td->device_recvchar  = _EFP_RECVCHAR;
-    //    td->device_checkchar = _EFP_CHECKCHAR;
+    td->device_recvchar  = _EFP_RECVCHAR;
+    td->device_checkchar = _EFP_CHECKCHAR;
     td->gfx_ctrl = MAKE_GFX_CTRL(0x00, 0, 0, 0, 0, 0);        // 16-colors 0-15, 1-BPP tiled, H repeat x1, V repeat x1
     td->tile_ctrl[0] = MAKE_TILE_CTRL(0x0000, 0, 16);         // 1st font in tile RAM 8x16 (initial default)
     td->tile_ctrl[1] = MAKE_TILE_CTRL(0x0800, 0, 8);          // 2nd font in tile RAM 8x8
@@ -1767,7 +1788,6 @@ bool xansiterm_INIT()
     td->send_index   = -1;
 
     xansi_reset(true);
-    // TODO update version and firmware automatically
     char     verstr[10];
     uint16_t ver = xreg_getw(VERSION);
     xansiterm_PRINT(xansiterm_banner);

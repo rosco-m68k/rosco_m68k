@@ -118,25 +118,101 @@ XANSI_CON_SETCURSOR::
                 movem.l (sp)+,d0-d1/a0-a1
                 rts
 
-; Input:        -
-; Modified:     D0
-; XANSI_CON_RECVCHAR::
-;                 movem.l d1/a0-a1,-(sp)
-
-;                 jsr     xansiterm_RECVCHAR
-
-;                 movem.l (sp)+,d1/a0-a1
-;                 rts
 
 ; Input:        -
 ; Modified:     D0
-; XANSI_CON_CHECKCHAR::
-;                 movem.l d1/a0-a1,-(sp)
+; NOTE: XANSI_CON_RECVCHAR needs to be fast for 115.2Kbaud kermit, so in asm
+XANSI_CON_RECVCHAR::
+                movem.l d2/a1-a2,-(sp)
 
-;                 jsr     xansiterm_CHECKCHAR
+                ifnd    TEST_FIRMWARE
+                lea.l   XANSI_CON_DATA.w,a2
+                else
+                lea.l   _private_xansiterm_data.w,a2
+                endif
+                tst.b   2(a2)
+                bmi.s   .NOQUERY
 
-;                 movem.l (sp)+,d1/a0-a1
-;                 rts
+                movem.l d1/a0,-(sp)
+                jsr     xansiterm_RECVQUERY     ; return char in d0
+                movem.l (sp)+,d1/a0
+
+                movem.l (sp)+,d2/a1-a2
+                rts
+.NOQUERY
+                moveq.l #32,d2                  ; check 32 times before updating cursor
+                move.l  8(a2),a1                ; a1=checkchar
+.CHECKLOOPFAST
+                jsr     (a1)                    ; checkchar
+                tst.b   d0
+                bne.s   .GOTCHARFAST
+
+                subq.l  #1,d2
+                bne.s   .CHECKLOOPFAST
+
+.CHECKSLOW
+                movem.l d1/a0,-(sp)
+                jsr     xansiterm_UPDATECURSOR
+                movem.l (sp)+,d1/a0
+
+                moveq.l #32,d2                  ; update cursor every 32 checks
+                move.l  8(a2),a1                ; a1=checkchar
+.CHECKLOOP
+                jsr     (a1)                    ; checkchar
+                tst.b   d0
+                bne.s   .GOTCHAR
+
+                subq.l  #1,d2
+                bne.s   .CHECKLOOP
+
+                bra.s   .CHECKSLOW
+
+.GOTCHAR
+                move.l  4(a2),a1                ; a1=recvchar
+                jsr     (a1)                    ; recvchar
+
+                movem.l d0-d1/a0,-(sp)
+                jsr     xansiterm_ERASECURSOR
+                movem.l (sp)+,d0-d1/a0
+
+                movem.l (sp)+,d2/a1-a2
+                rts
+
+.GOTCHARFAST
+                move.l  4(a2),a1                ; a1=recvchar
+                jsr     (a1)                    ; recvchar
+
+                movem.l (sp)+,d2/a1-a2
+                rts
+
+; Input:        -
+; Modified:     D0
+XANSI_CON_CHECKCHAR::
+                movem.l d1/a0-a1,-(sp)
+
+                ifnd    TEST_FIRMWARE
+                lea.l   XANSI_CON_DATA.w,a1
+                else
+                lea.l   _private_xansiterm_data.w,a1
+                endif
+
+                move.l  8(a1),a0                ; a0=checkchar
+                jsr     (a0)                    ; checkchar
+                tst.b   d0
+                bne.s   .GOTCHAR
+
+                jsr     xansiterm_UPDATECURSOR
+
+                moveq.l #0,d0
+                bra.s   .DONE
+
+.GOTCHAR
+                jsr     xansiterm_ERASECURSOR
+
+                moveq.l #1,d0
+.DONE
+                movem.l (sp)+,d1/a0-a1
+                rts
 
 ; Initialize XANSI console (return zero if Xosera not responding, true on success)
 ; Input:        -
@@ -144,10 +220,10 @@ XANSI_CON_SETCURSOR::
 XANSI_CON_INIT::
                 movem.l d1-d3/a0-a1,-(sp)
 
-                move.w  sr,d3                           ; Save SR
-                ori.w   #$0200,sr                       ; No interrupts during init...
+                move.w  sr,d3                   ; save SR
+                ori.w   #$0200,sr               ; no interrupts during init...
 
-                jsr     xansiterm_INIT                  ; return in D0
+                jsr     xansiterm_INIT          ; return in d0
 
                 tst.b   d0
                 beq.s   .DONE
@@ -158,11 +234,11 @@ XANSI_CON_INIT::
                 move.l  #XANSI_CON_PRINTCHAR,EFP_PRINTCHAR.w
                 move.l  #XANSI_CON_SETCURSOR,EFP_SETCURSOR.w
                 ; xansiterm_INIT will have saved previous input handlers (to wrap them)
-;                move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
-;                move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
+                move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
+                move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
 
 .DONE
-                move.w  d3,sr                           ; Restore SR
+                move.w  d3,sr                   ; restore SR
 
                 movem.l (sp)+,d1-d3/a0-a1
                 rts
