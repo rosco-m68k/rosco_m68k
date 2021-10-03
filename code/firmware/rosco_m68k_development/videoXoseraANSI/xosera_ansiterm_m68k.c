@@ -402,7 +402,7 @@ static __attribute__((noinline)) void xansi_do_scroll()
 // draw input cursor (trying to make it visible)
 static inline void xansi_draw_cursor(xansiterm_data * td)
 {
-    if (!(td->flags & TFLAG_HIDE_CURSOR) && !td->cursor_drawn)
+    if (!td->cursor_drawn)
     {
         xv_prep();
 
@@ -1729,6 +1729,12 @@ char xansiterm_RECVQUERY(void)
 void xansiterm_UPDATECURSOR(void)
 {
     xansiterm_data * td = get_xansi_data();
+
+    // if cursor is hidden, don't do lcf scroll
+    if (td->flags & TFLAG_HIDE_CURSOR)
+    {
+        return;
+    }
 
     // blink at ~409.6ms (on half the time, but only if cursor not disabled and no char ready)
     volatile uint8_t * timer_bh_ptr = (volatile uint8_t *)(XM_BASEADDR + XM_TIMER);
