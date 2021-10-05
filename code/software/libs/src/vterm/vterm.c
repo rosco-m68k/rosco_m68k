@@ -30,12 +30,12 @@ void vt_nsend (char* seq, int len)
     int i = 0;
 
     /* Print the escape sequence to the terminal file stream */
-    mcSendchar(ASCII_ESC);
+    mcPrintchar(ASCII_ESC);
 
     for (i = 0; i < len; i++)
     { 
         if (seq[i] == 0) { break; }
-        mcSendchar(seq[i]);
+        mcPrintchar(seq[i]);
     }
 }
 
@@ -111,14 +111,14 @@ void vt_move_cursor_xy (char* x, char* y)
 
 void vt_scroll_up (void)
 {
-    mcSendchar(ASCII_ESC);
-    mcSendchar('D');
+    mcPrintchar(ASCII_ESC);
+    mcPrintchar('D');
 }
 
 void vt_scroll_down (void)
 {
-    mcSendchar(ASCII_ESC);
-    mcSendchar('M');
+    mcPrintchar(ASCII_ESC);
+    mcPrintchar('M');
 }
 
 void vt_clear_line (void)
@@ -376,14 +376,14 @@ void vt_backspace (void)
      * output file stream, then sending the cursor back a space again. */
 
     vt_nsend("[1D", 3);
-    mcSendchar(' ');
+    mcPrintchar(' ');
     vt_nsend("[1D", 3);
 }
 
 void vt_clear_space (void)
 {
     /* Cheat by sending a space then sending the cursor back one */
-    mcSendchar(' ');
+    mcPrintchar(' ');
     vt_nsend("[1D", 3);
 }
 
@@ -393,13 +393,14 @@ void vt_fill_screen (char c)
     vt_vec2 *screen_size = vt_get_screen_size(); 
     int num_spaces = screen_size->x * screen_size->y;
 
-    mcSendchar('\n');
+    mcPrintchar('\r');
+    mcPrintchar('\n');
     
     for (i = 0; i < num_spaces; i++)
-    { mcSendchar(c); }
+    { mcPrintchar(c); }
 }
 
 void vt_bell (void)
 {
-    mcSendchar('\a');
+    mcPrintchar('\a');
 }
