@@ -66,7 +66,7 @@ nobrk		EQU	0				* null response to INPUT causes a break
 *************************************************************************************
 
     include "../../shared/rosco_m68k_public.asm"
-  	include	"ehdefs.S"
+  	include	"ehdefs.inc"
   
 							* RAM offset definitions
 
@@ -119,10 +119,41 @@ VEC_OUT:
 L_DUART_SRA      equ     $f80022      ; R register 1
 L_DUART_RBA      equ     $f80026      ; R register 3
 
+    ifd FIRMWARE_IO
+; use rosco_m68k firmware calls
 VEC_IN:
+    movem.l d1-d7/a0-a6,-(sp)   ; overkill, but just D1 was not enough
+
+    move.l  #6,D1               ; CHECKCHAR trap function code
+    trap    #14
+
+    tst.b   D0
+    bne     .GOTKEY
+
+    movem.l (sp)+,d1-d7/a0-a6
+    andi.b  #$FE,CCR              ; Else clear the carry flag, no character available
+    rts                           ; And return
+
+.GOTKEY
+    move.l  #3,D1               ; RECVCHAR trap function code
+    trap    #14
+
+		cmp.b		#$7F,D0							; is it DEL key?
+		bne			.NOTDEL
+
+		move.b	#$08,D0							; change into BS
+
+.NOTDEL
+    movem.l (sp)+,d1-d7/a0-a6
+    ori.b   #1,CCR                ; ... and set the carry to flag to indicate we got a char
+    rts
+
+    else
+
     ifd MC68681
 
 ; MC68681 version
+VEC_IN:
 
     move.b  L_DUART_SRA,D0        ; Check DUART status reg A
     btst    #0,D0                 ; Bit 0
@@ -138,6 +169,7 @@ VEC_IN:
     else
 
 ; MFP UART version
+VEC_IN:
 
     move.b  MFP_RSR,D0            ; Get RSR
     btst    #7,D0                 ; Is buffer_full bit set?
@@ -158,6 +190,8 @@ VEC_IN:
     ori.b   #1,CCR                ; Set the carry to flag we got a char
     rts
     
+    endif
+
     endif
 
 *************************************************************************************
@@ -188,8 +222,18 @@ kmain::
 * to tell EhBASIC where and how much RAM it has pass the address in a0 and the size
 * in d0. these values are at the end of the .inc file
 
-	MOVEA.l	#ram_addr,a0	* tell BASIC where RAM starts
-	MOVE.l	#ram_size,d0	* tell BASIC how big RAM is
+	MOVEA.l	#ram_addr,a0		* tell BASIC where RAM starts
+
+  ifd     ROSCO_M68K					* Xark - calculate rosco_m68k memory size
+
+  MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
+	SUB.l		#ram_addr+$4000,d0	* minus starting RAM address and 16K stack
+
+  else
+
+	MOVE.l	#ram_size,d0		* tell BASIC how big RAM is
+
+  endif
 
 * end of simulator specific code
 
@@ -261,7 +305,16 @@ LAB_COLD
 	MOVE.w	d0,prg_strt-2(a3)		* clear start word
 	MOVE.w	d0,BHsend(a3)		* clear value to string end word
 
+	ifd	ROSCO_M68K
+
+	MOVE.b	#$0,TWidth(a3)		* Xark - use unlimited witdh on rosco_m68k
+
+	else
+
 	MOVE.b	#$4F,TWidth(a3)		* default terminal width (should be width - 1)
+
+	endif
+
 	MOVE.b	#$0E,TabSiz(a3)		* save default tab size = 14
 
 	MOVE.b	#$38,Iclim(a3)		* default limit for TAB = 14 for simulator
@@ -349,7 +402,7 @@ LAB_UVER
 	ADD.l		d0,d0				* .......$ .......& ........ .......0
 	SWAP		d0				* ........ .......0 .......$ .......&
 	ROR.b		#1,d0				* ........ .......0 .......$ &.......
-	LSR.w		#1,d0				* ........ .......0 0....... $&.....­.
+	LSR.w		#1,d0				* ........ .......0 0....... $&.....ï¿½.
 	AND.b		#$C0,d0			* mask the type bits
 	MOVE.b	d0,Dtypef(a3)		* save the data type
 
@@ -3368,7 +3421,7 @@ LAB_1DD7
 	ADD.l		d1,d1				* .......$ .......& ........ .......0
 	SWAP		d1				* ........ .......0 .......$ .......&
 	ROR.b		#1,d1				* ........ .......0 .......$ &.......
-	LSR.w		#1,d1				* ........ .......0 0....... $&.....­.
+	LSR.w		#1,d1				* ........ .......0 0....... $&.....ï¿½.
 	AND.b		#$C0,d1			* mask the type bits
 	MOVE.b	d1,Dtypef(a3)		* save the data type
 

@@ -2,10 +2,15 @@
 
 *       ORG     $0			* start of RAM
 
+        ifnd ROSCO_M68K
 ram_strt	equ	0
+        else
+ram_strt	equ	$0400       * $0400 used by firmware on rosco_m68k, move up to $0800
+        endif
 					* for any BASIC program that doesn't do something
 					* silly, it could even be much less.
 ram_base	equ	$0400
+
 LAB_WARM	equ	$0400		* BASIC warm start entry point
 Wrmjpv		equ	$0402		* BASIC warm start jump vector
 
