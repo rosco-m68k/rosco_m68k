@@ -1020,6 +1020,12 @@ void sdfat_menu()
         _WARM_BOOT();
     }
 
+    // clear pending input character, if it was a 'k' pending, assume kermit wants to upload
+    if (checkchar() && readchar() == 'k')
+    {
+        warm_boot(true);
+    }
+
     while (true)
     {
         check_sd_card();
@@ -1074,7 +1080,7 @@ void sdfat_menu()
                             key = rawkey;
                             break;
                         }
-                        retry  = 0;
+                        retry = 0;
                     }
                 }
             }
