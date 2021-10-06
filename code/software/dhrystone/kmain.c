@@ -1,46 +1,36 @@
 /*
+ * vim: set et ts=4 sw=4
  *------------------------------------------------------------
- *                                  ___ ___ _   
- *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ *                                  ___ ___ _
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
- * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+ *                     |_____|
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * This is the entry point for dhrystone benchmark.
+ * rosco_m68k "kernel main" for bare-metal programs
  * ------------------------------------------------------------
  */
 
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <basicio.h>
+#include <machine.h>
 
-extern void main(void);
+extern void main(int argc, char **argv);
 
-static long *upticks = (long*)0x40C;
-
+// time function for rosco_m68k
 long time() {
-  return *upticks / 100;
+  return _TIMER_100HZ / 100;
 }
 
-void kmain() {
-  printf("dhrystone benchmark\n");
-#ifndef TIME
-#ifndef TIMES
-  // Run dhrystone benchmark!
-
-  printf("Get your stopwatch ready...");
-  delay(1000000);
-#endif
-#endif
-
-  main();
-
-  // Warm-reboot machine when quit
-  __asm__ __volatile__ (
-      "moveal 0xfc0004.l, %a0\n\t"
-      "jmp %a0@\n\t"
-  );
+void kmain()
+{
+    main(0, NULL);
 }
-
