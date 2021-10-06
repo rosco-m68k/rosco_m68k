@@ -94,7 +94,9 @@ bool checkLinkage() {
   } else {
     print("\033[1;31mFAIL:\033[1;37m ");
   }
-  println("Linkage checks complete\033[0m");
+  println("Linkage checks complete, press a key\033[0m");
+
+  readchar();
 
   return result;
 }
