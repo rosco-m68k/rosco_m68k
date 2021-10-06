@@ -16,15 +16,18 @@ MFP_ISRB    equ     MFPBASE+$11
 
 ; Entry point here!
 kmain::
+    moveq.l   #1,D1                   ; PRINTLN function code
+    lea.l     TESTMSG,A0              ; String to print in A0
+    trap      #14                     ; Firmware trap
+
     move.w  #$2700,SR                 ; Disable interrupts
     movea.l #$20000,A0                ; Use $20000 as vector base...
     movec.l A0,VBR                    ; ... and load into VBR
     move.l  #TICK_HANDLER,$20114      ; Set up tick handler
-    move.w  #$2000,SR                 ; Re-enable interrupts
+    and.w   #$F2FF,SR                 ; Enable interrupts (except video)
 
 .LOOP
     bra.s   .LOOP
-
 
 GENERIC_HANDLER:
     rte
@@ -46,3 +49,10 @@ TICK_HANDLER:
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     rte                               ; We're done
 
+TESTMSG:
+    dc.b  "68010-test - Test for 68010 vector base register (VBR)",$D,$A,$D,$A
+    dc.b  " - If you have a 68010 the green LED (I0) should flash quickly",$D,$A
+    dc.b  " - If you have a 68000 the red LED (I1) should flash in groups of 3",$D,$A,$D,$A
+
+    dc.b  "(reset to restart system)",$D,$A
+    dc.b  0
