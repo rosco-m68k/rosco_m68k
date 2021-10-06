@@ -222,18 +222,19 @@ kmain::
 * to tell EhBASIC where and how much RAM it has pass the address in a0 and the size
 * in d0. these values are at the end of the .inc file
 
+
+    ifd     ROSCO_M68K					* Xark - calculate rosco_m68k memory size
+
+	MOVEA.l	#FREE_MEM,a0		* tell BASIC where RAM starts
+  	MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
+	SUB.l	a0,d0	            * minus starting RAM address
+
+    else
+
 	MOVEA.l	#ram_addr,a0		* tell BASIC where RAM starts
-
-  ifd     ROSCO_M68K					* Xark - calculate rosco_m68k memory size
-
-  MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
-	SUB.l		#ram_addr+$4000,d0	* minus starting RAM address and 16K stack
-
-  else
-
 	MOVE.l	#ram_size,d0		* tell BASIC how big RAM is
 
-  endif
+    endif
 
 * end of simulator specific code
 
@@ -9235,7 +9236,10 @@ LAB_SMSG
 * MID$	. MID$(<sexpr>,<nexpr>[,<nexpr>])				* done
 * USING$	. USING$(<sexpr>,<nexpr>[,<nexpr>]...])			* done
 
-
+	section .data
+    align   12
+FREE_MEM:
+	
 *************************************************************************************
 
 	END	code_start
