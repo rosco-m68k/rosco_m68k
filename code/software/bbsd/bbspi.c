@@ -134,7 +134,7 @@ void BBSPI_send_byte(BBSPI *spi, uint8_t byte_out) {
 #ifndef SPI_FASTER
     if (spi->initialized) {
 #endif
-        return spi_send_byte(byte_out);
+        spi_send_byte(byte_out);
 #ifndef SPI_FASTER
     }
 #endif

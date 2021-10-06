@@ -1,23 +1,32 @@
-# Make rosco_m68k programs
-# 
+# Make bbsd SD card test/proof-of-concept for rosco_m68k
+#
 # Copyright (c)2020 Ross Bamford
-# See LICENSE
+# See top-level LICENSE.md for licence information.
+
+ifndef ROSCO_M68K_DIR
+$(info NOTE: ROSCO_M68K_DIR not set, using libs: ../../../code/software/libs)
+ROSCO_M68K_DIR=../../..
+else
+$(info NOTE: Using ROSCO_M68K_DIR libs in: $(ROSCO_M68K_DIR))
+endif
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
-EXTRA_CFLAGS?=-g -O2 -fomit-frame-pointer
-SYSINCDIR?=../libs/build/include
-SYSLIBDIR?=../libs/build/lib
+EXTRA_CFLAGS?=-g -O2 -fomit-frame-pointer -msoft-float -Wno-unused-function -Wno-unused-parameter #-DTEST_CYCLE
+EXTRA_LIBS=-lprintf-softfloat -lm
+#EXTRA_VASMFLAGS?=-showopt
+SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
+SYSLIBDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/lib
 DEFINES=-DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE -DSPI_FASTER 					\
-		-DSPI_FAST -DSD_FASTER 
-CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections			\
-		-Wall -Werror -Wno-unused-function -I$(SYSINCDIR)										\
-		-msoft-float -mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
-GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
-		| grep libraries:\ =																								\
-    | sed 's/libraries: =/-L/g' 																				\
-    | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lcstdlib -lprintf-softfloat -lmachine -lstart_serial -lgpio -lgcc
+		-DSPI_FAST -DSD_FASTER
+CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
+ -Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
+ -mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
+GCC_LIBS=$(shell $(CC) --print-search-dirs \
+ | grep libraries:\ = \
+ | sed 's/libraries: =/-L/g' \
+ | sed 's/:/m68000\/ -L/g')m68000/
+LIBS= $(EXTRA_LIBS) -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
 
 ifeq ($(ROSCO_M68K_HUGEROM),true)
@@ -43,7 +52,7 @@ SERIAL?=/dev/modem
 BAUD?=9600
 
 # Output config (assume name of directory)
-PROGRAM_BASENAME=bbsd-test
+PROGRAM_BASENAME=$(shell basename $(CURDIR))
 
 # Set other output files using output basname
 ELF=$(PROGRAM_BASENAME).elf
@@ -53,17 +62,14 @@ MAP=$(PROGRAM_BASENAME).map
 SYM=$(PROGRAM_BASENAME).sym
 
 # Assume source files in Makefile directory are source files for project
-CSOURCES=$(wildcard *.c) $(wildcard fat_io_lib/*.c)
+CSOURCES=$(wildcard *.c)
+CINCLUDES=$(wildcard *.h)
 SSOURCES=$(wildcard *.S)
 ASMSOURCES=$(wildcard *.asm)
 SOURCES=$(CSOURCES) $(SSOURCES) $(ASMSOURCES)
 
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
-
-ifeq ($(TEST_CYCLE),true)
-CFLAGS:=$(CFLAGS) -DTEST_CYCLE
-endif
 
 all: $(BINARY) $(DISASM)
 
@@ -81,7 +87,7 @@ $(DISASM) : $(ELF)
 
 $(OBJECTS): Makefile
 
-%.o : %.c
+%.o : %.c $(CINCLUDES)
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
 %.o : %.asm
@@ -99,7 +105,37 @@ dump: $(BINARY)
 
 # upload binary to rosco (if ready and kermit present)
 load: $(BINARY)
-	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+
+# Linux (gnome): Upload binary with kermit, connect with "screen" terminal
+# (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
+linuxtest: $(BINARY) $(DISASM)
+	-killall screen && sleep 1
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
+
+# Linux (gnome): Connect with "screen" terminal
+linuxterm:
+	-killall screen && sleep 1
+	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
+
+# macOS: Upload binary with kermit, connect with "screen" terminal
+# (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
+mactest: $(BINARY) $(DISASM)
+	-killall screen && sleep 1
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
+	-chmod +x $(TMPDIR)/rosco_screen.sh
+	sleep 1
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+
+macterm:
+	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
+	-chmod +x $(TMPDIR)/rosco_screen.sh
+	sleep 1
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
-.PHONY: all clean dump disasm load
+.PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm
