@@ -1,7 +1,7 @@
 # Make dhrystone classic benchmark program for rosco_m68k
 #
 # Copyright (c) 2020 Xark
-# See top-level LICENSE.md for licence information.
+# See LICENSE
 
 ifndef ROSCO_M68K_DIR
 $(info NOTE: ROSCO_M68K_DIR not set, using libs: ../../../code/software/libs)

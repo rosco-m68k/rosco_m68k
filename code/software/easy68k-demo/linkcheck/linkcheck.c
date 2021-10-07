@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <basicio.h>
-#include "linkcheck.h"
+#include "include/linkcheck.h"
 
 uint32_t d = 0x12345678;
 static uint8_t stb[15];

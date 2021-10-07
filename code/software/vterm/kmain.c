@@ -10,7 +10,7 @@
  * Copyright (c) 2021 Xark
  * MIT License
  *
- * rosco_m68k "kernel main" for baremetal programs
+ * rosco_m68k "kernel main" for bare-metal programs
  * ------------------------------------------------------------
  */
 

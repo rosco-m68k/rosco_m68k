@@ -12,7 +12,7 @@ endif
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
-EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
+EXTRA_CFLAGS?=-g -O2 -fomit-frame-pointer
 EXTRA_LIBS=-lsdfat 
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
