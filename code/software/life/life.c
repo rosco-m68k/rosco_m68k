@@ -7,6 +7,7 @@
 #define w	((106)/2)
 #define h	(30-1)
 
+static int generation;
 static bool last[h][w];
 static bool univ[h][w];
 static bool new[h][w];
@@ -17,7 +18,7 @@ static bool new[h][w];
 
 static void show()
 {
-	print("\033[H");
+	print("\033[H\033[m");
 	bool last = !univ[0][0];
 	for_y {
 		for_x {
@@ -29,7 +30,7 @@ static void show()
 		}
       printf("\n");
 	}
-   print("\033[E");
+   printf("\033[0;36mConway's Game of Life\t\t\t\033[mGeneration: \033[93m%d\033[E", generation);
 }
 
 static void seed_game()
@@ -40,10 +41,14 @@ static void seed_game()
 		unsigned int n = rand();
 		univ[y][x] = n < (RAND_MAX/10) ? 1 : 0;
 	}
+
+	generation = 0;
 }
 
 static bool evolve()
 {
+	generation += 1;
+
 	for_y for_x {
 		uint16_t n = 0;
 		for (int16_t y1 = y - 1; y1 <= y + 1; y1++)
