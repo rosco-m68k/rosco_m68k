@@ -7,7 +7,13 @@
 #define w	((106)/2)
 #define h	(30-1)
 
-static int generation;
+static int game_number;		// game played
+static int generation;		// current generation count
+static int max_generation;	// maximum generation count this run
+static int static_death;	// population was static (unchanging)
+static int toggle_death;	// population toggled between two states
+static int extinct_death;	// population all died
+
 static bool last[h][w];
 static bool univ[h][w];
 static bool new[h][w];
@@ -16,7 +22,7 @@ static bool new[h][w];
 #define for_y for (int16_t y = 0; y < h; y++)
 #define for_xy for_x for_y
 
-static void show()
+static void show(void)
 {
 	print("\033[H\033[m");
 	bool last = !univ[0][0];
@@ -30,22 +36,34 @@ static void show()
 		}
       printf("\n");
 	}
-   printf("\033[0;36mConway's Game of Life\t\t\t\033[mGeneration: \033[93m%d\033[E", generation);
+	printf("\033[0;36mGame of Life  \033[mGen:\033[93m%d\033[m  Max:\033[93m%d\033[m  (Games:\033[93m%d\033[m Static:\033[93m%d\033[m Toggle:\033[93m%d\033[m Extinct:\033[93m%d\033[m)\033[K",
+		generation, max_generation, game_number, static_death, toggle_death, extinct_death);
 }
 
-static void seed_game()
+static void seed_game(void)
 {
-	srand(_TIMER_100HZ + 42);
-
-	for_xy {
-		unsigned int n = rand();
-		univ[y][x] = n < (RAND_MAX/10) ? 1 : 0;
+	// save if previous was record
+	if (max_generation < generation) {
+		max_generation = generation;
 	}
+    generation = 0;
 
-	generation = 0;
+	// seed random with uptime
+    srand(_TIMER_100HZ + rand());
+
+	// random density n out of 2 to 30
+    unsigned int density = rand() / (RAND_MAX / 100);
+	if (density == 0) {
+		density = 1;
+	}
+    for_xy {
+        unsigned int n = rand();
+        univ[y][x]     = n < (RAND_MAX / density);
+    }
+	for_y for_x last[y][x] = univ[y][x];
 }
 
-static bool evolve()
+static void evolve(void)
 {
 	generation += 1;
 
@@ -62,28 +80,71 @@ static bool evolve()
 	}
 
 	bool unchanged = true;
+
 	for_y for_x {
 		if (last[y][x] != new[y][x]) {
 			unchanged = false;
-			goto changed;
+			goto early_out;
 		}
 	}
-	changed:
+	early_out:
 
-	for_y for_x last[y][x] = univ[y][x];
-	for_y for_x univ[y][x] = new[y][x];
+	if (unchanged)
+	{
+		bool extinct = true;
+		for_y for_x {
+			if (new[y][x]) {
+				extinct = false;
+			}
+		}
 
-	return unchanged;
+		if (extinct)
+		{
+			extinct_death += 1;
+		}
+		else
+		{
+			bool toggle = false;
+			for_y for_x {
+				if (univ[y][x] != last[y][x]) {
+					toggle = true;
+					goto early_out2;
+				}
+			}
+			early_out2:
+			if (toggle)	{
+				toggle_death += 1;
+			}
+			else {
+				static_death += 1;
+			}
+		}
+
+		game_number += 1;
+		seed_game();
+	}
+	else {
+		for_y for_x last[y][x] = univ[y][x];
+		for_y for_x univ[y][x] = new[y][x];
+	}
 }
 
-static void game()
+static void game(void)
 {
-	seed_game(univ);
+	seed_game();
 
-	while (!checkchar()) {
-		show(univ);
-		if (evolve(univ)) {
-			seed_game(univ);
+	while (true) {
+		show();
+		evolve();
+
+		if (checkchar()) {
+			char c = readchar();
+			if (c == 'r' || c == 'R') {
+				seed_game();
+			}
+			else {
+				break;
+			}
 		}
 	}
 }
@@ -93,13 +154,13 @@ int main(int argc, char **argv)
 	(void)argc;
 	(void)argv;
 
-	print("\033[H\033[2J");
-
-	print("\033[?7l");	// autowrap off
+	print("\033[H\033[2J");	// home, clear screen
+	print("\033[?7l");		// autowrap off
+	print("\033[?25l");		// hide cursor
 
 	game();
 
-	print("\033c");
+	print("\033c");			// reset terminal
 
 	return 0;
 }
