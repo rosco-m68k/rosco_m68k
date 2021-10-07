@@ -70,7 +70,10 @@ SOURCES=$(CSOURCES) $(SSOURCES) $(ASMSOURCES)
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 
-all: $(BINARY) $(DISASM)
+all: images $(BINARY) $(DISASM)
+
+images:
+	$(MAKE) -C images
 
 $(ELF) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
@@ -84,7 +87,7 @@ $(BINARY) : $(ELF)
 $(DISASM) : $(ELF)
 	$(OBJDUMP) --disassemble -S $(ELF) >$(DISASM)
 
-$(OBJECTS): Makefile
+$(OBJECTS): images Makefile
 
 %.o : %.c $(CINCLUDES)
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -137,4 +140,4 @@ macterm:
 	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
-.PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm
+.PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm images
