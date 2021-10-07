@@ -10,13 +10,10 @@ Specifically:
 | Filename            | Description                                    |
 |:-------------------:|------------------------------------------------|
 | 2dmaze              | A 2d maze demo of libm (thanks to mattuna15)   |
-| 68010-test          | A simple program we use to test suspect CPUs   |
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
-| bbsd                | Bit-banged SD demo. Obsoleted by firmware      |
 | dhrystone           | Dhrystone benchmark (thanks to Xark)           |
 | easy68k-demo        | Demo of the easy68k firmware interface         |
 | ehbasic             | Lee Davison's ehBASIC (rosco_m68k port)        |
-| exception_tests     | Examples of using the exception std libraries  |
 | lcd-ili9341         | SPI demo with ILI9341 LCD (thanks to Xark)     |
 | libs                | All shared functions are built as libraries.   |
 | life                | Conway's Game of Life (thanks to mattuna15)    |
