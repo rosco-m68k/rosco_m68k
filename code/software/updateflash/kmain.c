@@ -7,10 +7,10 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
  *                     |_____|
  * ------------------------------------------------------------
- * Copyright (c) 2021 Xark
- * MIT License
+ * Copyright (c)2020 Ross Bamford
+ * See top-level LICENSE.md for licence information.
  *
- * rosco_m68k "kernel main" for baremetal programs
+ * rosco_m68k "kernel main" for bare-metal programs
  * ------------------------------------------------------------
  */
 

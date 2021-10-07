@@ -1,7 +1,7 @@
-# Make sdfat_menu example program for rosco_m68k
+# Make updateflash program to update rosco_m68k firmware
 #
-# Copyright (c) 2020 Xark
-# MIT LICENSE
+# Copyright (c)2020 Ross Bamford
+# See LICENSE
 
 ifndef ROSCO_M68K_DIR
 $(info NOTE: ROSCO_M68K_DIR not set, using libs: ../../../code/software/libs)
@@ -12,7 +12,7 @@ endif
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
-EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
+EXTRA_CFLAGS?=-g -O2 -fomit-frame-pointer
 EXTRA_LIBS=-lsdfat -lsst_flash
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
