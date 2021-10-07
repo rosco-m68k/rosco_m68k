@@ -1,3 +1,3 @@
-CFLAGS := $(CFLAGS) -DPERFORM_LINKAGE_CHECK -Ilinkcheck/include
-OBJECTS := $(OBJECTS) linkcheck/linkcheck.o
-
+CFLAGS := $(CFLAGS) -DPERFORM_LINKAGE_CHECK -Ilinkcheck
+CSOURCES+=$(wildcard linkcheck/*.c)
+CINCLUDES+=$(wildcard linkcheck/include/*.h)

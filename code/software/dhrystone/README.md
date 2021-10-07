@@ -2,18 +2,14 @@
 
 ## Building
 
-If compiling for FW 1.01, you'll have to use a stopwatch for the timing.
 Just build with:
 
-```
+```bash
 make clean all
 ```
 
-If you're compiling for FW 1.1+, the timing can be done automatically.
-Compile like:
+NOTE: If compiling for FW earlier than 1.1, you'll have to use a stopwatch for the timing and compile like:
 
+```bash
+HAVE_TIMER=false make clean all
 ```
-HAVE_TIMER=true make clean all
-```
-
-

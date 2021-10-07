@@ -38,6 +38,32 @@ mcPrintln::
     movem.l (A7)+,D0-D1/A0            ; Restore regs
     rts                               ; We're done.
 
+; Call the PRINTCHAR function of the firmware
+;
+; Trashes: MFP_UDR
+; Modifies: Nothing
+    section .text.mcPrintchar
+mcPrintchar::
+    movem.l D0-D1,-(A7)               ; Save regs
+    move.l  (12,A7),D0                ; Get C char from the stack into D0
+    move.l  #4,D1                     ; Func code is 4 PRINTCHAR
+    trap    #14                       ; TRAP to firmware
+    movem.l (A7)+,D0-D1               ; Restore regs
+    rts                               ; We're done.
+
+; Call the SETCURSOR function of the firmware
+;
+; Trashes:  -
+; Modifies: - (does not)
+    section .text.mcSetcursor
+mcSetcursor::
+    move.l  D1,-(A7)                  ; Save regs
+    move.l  (8,A7),D0                 ; Get C bool into D0 (0=cursor off/cursor on)
+    move.l  #5,D1                     ; Func code is 4 SETCURSOR
+    trap    #14                       ; TRAP to firmware
+    move.l  (A7)+,D1                  ; Restore regs
+    rts                               ; We're done.
+
 ; Call the SENDCHAR function of the firmware
 ;
 ; Trashes: MFP_UDR

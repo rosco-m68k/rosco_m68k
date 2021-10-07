@@ -1,69 +1,31 @@
 /*
+ * vim: set et ts=4 sw=4
  *------------------------------------------------------------
- *                                  ___ ___ _   
- *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ *                                  ___ ___ _
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
- * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+ *                     |_____|
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * Extremely simple example of GPIO programming.
+ * rosco_m68k "kernel main" for bare-metal programs
  * ------------------------------------------------------------
  */
 
-#include <stdnoreturn.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <basicio.h>
-#include <gpio.h>
+#include <machine.h>
 
-static void initGPIOs() {
-  pinMode(GPIO1, OUTPUT);
-  pinMode(GPIO2, OUTPUT);
-  pinMode(GPIO3, OUTPUT);
-  pinMode(GPIO4, OUTPUT);
-  pinMode(GPIO5, OUTPUT);
+extern void main(int argc, char **argv);
+
+void kmain()
+{
+    main(0, NULL);
 }
-
-static void setGPIOs(bool g1, bool g2, bool g3, bool g4, bool g5) {
-  digitalWrite(GPIO1, g1);
-  digitalWrite(GPIO2, g2);
-  digitalWrite(GPIO3, g3);
-  digitalWrite(GPIO4, g4);
-  digitalWrite(GPIO5, g5);
-}
-
-noreturn void kmain() {
-  print("\033[2J");
-  println("GPIO Toggle Demo");
-
-  initGPIOs();
-
-  while (true) {
-    print("💡 ");
-    setGPIOs(true, false, false, false, false);
-    delay(50000);
-
-    print("💡 ");
-    setGPIOs(true, true, false, false, false);
-    delay(50000);
-
-    print("💡 ");
-    setGPIOs(true, true, true, false, false);
-    delay(50000);
-
-    print("💡 ");
-    setGPIOs(true, true, true, true, false);
-    delay(50000);
-
-    print("💡");
-    setGPIOs(true, true, true, true, true);
-    delay(50000);
-    
-    print("\033[80D\033[K");
-    setGPIOs(false, false, false, false, false);
-    delay(50000);
-  }
-}
-

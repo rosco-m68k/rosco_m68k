@@ -1,51 +1,42 @@
 /*
  *------------------------------------------------------------
- *                                  ___ ___ _   
- *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
+ *                                  ___ ___ _
+ *  ___ ___ ___ ___ ___       _____|  _| . | |_
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
- * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+ *                     |_____|
  * ------------------------------------------------------------
  * Copyright (c)2020 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
- * This is the entry point for the POC "kernel".
+ * rosco_m68k "kernel main" for bare-metal programs
  * ------------------------------------------------------------
  */
 
-#include <stdint.h>
-#include <stdnoreturn.h>
 #include <stdbool.h>
-#include <machine.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <basicio.h>
+#include <machine.h>
 
 #ifdef PERFORM_LINKAGE_CHECK
-#include "linkcheck.h"
+#include "include/linkcheck.h"
 #endif
 
 extern void easy68k_example();
 
-static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
-static char readline_buf[1024];
+void kmain() {
 
-noreturn void kmain() {
-  print("\033[2J");
-  println("Hello, World from the \"kernel\"!");
+  print("\033[H\033[2J"); // home & clear screen (VT100)
 
 #ifdef PERFORM_LINKAGE_CHECK
   checkLinkage();
 #endif
 
+  print("\033[H\033[2J"); // home & clear screen (VT100)
+
   easy68k_example();
-
-  println("Now going into readline/echo loop");
-
-  while (true) {
-    *(mfp_gpdr) ^= 2;
-
-    if (readline(readline_buf, 1024) > 0) {
-      println(readline_buf);
-    }
-  }
 }
-
