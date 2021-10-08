@@ -1,0 +1,29 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A6       | Clock/Input
+   2   | A7       | Input
+   3   | A8       | Input
+   4   | A9       | Input
+   5   | A10      | Input
+   6   | A11      | Input
+   7   | A12      | Input
+   8   | A13      | Input
+   9   | A14      | Input
+  10   | A15      | Input
+  11   | A16      | Input
+  12   | GND      | GND
+  13   | NC       | Input
+  14   | NC       | NC
+  15   | NC       | NC
+  16   | A17      | Input
+  17   | A18      | Input
+  18   | LDS      | Input
+  19   | IOSEL    | Input
+  20   | DUASEL   | Output
+  21   | NC       | NC
+  22   | NC       | NC
+  23   | NC       | NC
+  24   | VCC      | VCC
+

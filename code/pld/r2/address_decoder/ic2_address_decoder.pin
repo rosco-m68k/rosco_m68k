@@ -1,0 +1,29 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A18      | Clock/Input
+   2   | A19      | Input
+   3   | A20      | Input
+   4   | A21      | Input
+   5   | A22      | Input
+   6   | A23      | Input
+   7   | UDS      | Input
+   8   | LDS      | Input
+   9   | BOOT     | Input
+  10   | LGEXP    | Input
+  11   | RW       | Input
+  12   | GND      | GND
+  13   | AS       | Input
+  14   | EVENRAM  | Output
+  15   | ODDRAM   | Output
+  16   | EVENROM  | Output
+  17   | ODDROM   | Output
+  18   | IOSEL    | Output
+  19   | EXPSEL   | Output
+  20   | IACK     | Input
+  21   | PPDTACK  | Output
+  22   | DTACK    | Output
+  23   | WR       | Output
+  24   | VCC      | VCC
+

@@ -1,0 +1,29 @@
+
+
+                                GAL22V10
+
+                          -------\___/-------
+                      A18 |  1           24 | VCC
+                          |                 |
+                      A19 |  2           23 | WR
+                          |                 |
+                      A20 |  3           22 | DTACK
+                          |                 |
+                      A21 |  4           21 | PPDTACK
+                          |                 |
+                      A22 |  5           20 | IACK
+                          |                 |
+                      A23 |  6           19 | EXPSEL
+                          |                 |
+                      UDS |  7           18 | IOSEL
+                          |                 |
+                      LDS |  8           17 | ODDROM
+                          |                 |
+                     BOOT |  9           16 | EVENROM
+                          |                 |
+                    LGEXP | 10           15 | ODDRAM
+                          |                 |
+                       RW | 11           14 | EVENRAM
+                          |                 |
+                      GND | 12           13 | AS
+                          -------------------
