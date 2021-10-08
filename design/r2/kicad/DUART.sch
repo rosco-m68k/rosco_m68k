@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 5
+Sheet 4 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
 Date "2021-10-08"
 Rev "2.0"
@@ -26,10 +26,10 @@ F 3 "~" H 7900 3150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:C C3
+L Device:C C1
 U 1 1 5EDD83D0
 P 7550 3850
-F 0 "C3" H 7665 3896 50  0000 L CNN
+F 0 "C1" H 7665 3896 50  0000 L CNN
 F 1 "7pF" H 7665 3805 50  0000 L CNN
 F 2 "Capacitor_THT:C_Rect_L7.0mm_W2.0mm_P5.00mm" H 7588 3700 50  0001 C CNN
 F 3 "~" H 7550 3850 50  0001 C CNN
@@ -37,10 +37,10 @@ F 3 "~" H 7550 3850 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Device:C C5
+L Device:C C2
 U 1 1 5EDD8A07
 P 8200 3850
-F 0 "C5" H 8315 3896 50  0000 L CNN
+F 0 "C2" H 8315 3896 50  0000 L CNN
 F 1 "7pF" H 8315 3805 50  0000 L CNN
 F 2 "Capacitor_THT:C_Rect_L7.0mm_W2.0mm_P5.00mm" H 8238 3700 50  0001 C CNN
 F 3 "~" H 8200 3850 50  0001 C CNN
@@ -80,7 +80,7 @@ D6
 Text GLabel 4400 3800 0    50   BiDi ~ 0
 D7
 Text GLabel 4400 2600 0    50   Input ~ 0
-RnW
+RW
 Text GLabel 6400 2400 2    50   Input ~ 0
 RESET
 Text GLabel 4400 2700 0    50   3State ~ 0
@@ -97,10 +97,10 @@ A3
 Text GLabel 4400 2400 0    50   Input ~ 0
 A4
 $Comp
-L Connector:Conn_01x06_Male J2
+L Connector:Conn_01x06_Male J1
 U 1 1 5EE19F70
 P 1250 5850
-F 0 "J2" H 1358 6231 50  0000 C CNN
+F 0 "J1" H 1358 6231 50  0000 C CNN
 F 1 "UART_A" H 1358 6140 50  0000 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 1250 5850 50  0001 C CNN
 F 3 "~" H 1250 5850 50  0001 C CNN
@@ -108,10 +108,10 @@ F 3 "~" H 1250 5850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_01x06_Male J3
+L Connector:Conn_01x06_Male J2
 U 1 1 5EE1B2ED
 P 1250 6700
-F 0 "J3" H 1358 7081 50  0000 C CNN
+F 0 "J2" H 1358 7081 50  0000 C CNN
 F 1 "UART_B" H 1358 6990 50  0000 C CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 1250 6700 50  0001 C CNN
 F 3 "~" H 1250 6700 50  0001 C CNN
@@ -126,12 +126,11 @@ Text GLabel 1450 6050 2    50   Input ~ 0
 TXDA
 Text GLabel 1450 5950 2    50   Output ~ 0
 RXDA
-NoConn ~ 1450 6150
-Text GLabel 10550 5350 2    50   UnSpc ~ 0
+Text GLabel 10650 5200 2    50   UnSpc ~ 0
 VCC
-Text GLabel 8750 5450 0    50   UnSpc ~ 0
+Text GLabel 9500 5200 0    50   UnSpc ~ 0
 VCCUA
-Text GLabel 8750 5350 0    50   UnSpc ~ 0
+Text GLabel 9500 5650 0    50   UnSpc ~ 0
 VCCUB
 Text GLabel 1450 5850 2    50   UnSpc ~ 0
 VCCUA
@@ -145,7 +144,6 @@ Text GLabel 1450 6900 2    50   Input ~ 0
 TXDB
 Text GLabel 1450 6800 2    50   Output ~ 0
 RXDB
-NoConn ~ 1450 7000
 Text GLabel 6400 3100 2    50   Output ~ 0
 SPICS
 Text GLabel 6400 3200 2    50   Output ~ 0
@@ -168,10 +166,10 @@ RXDA
 Text GLabel 6400 2900 2    50   Output ~ 0
 TXDA
 $Comp
-L Device:C C8
+L Device:C C28
 U 1 1 5EF9C0B2
 P 1250 1450
-F 0 "C8" V 998 1450 50  0000 C CNN
+F 0 "C28" V 998 1450 50  0000 C CNN
 F 1 "100nF" V 1089 1450 50  0000 C CNN
 F 2 "rosco_m68k:C2.5-3" H 1288 1300 50  0001 C CNN
 F 3 "~" H 1250 1450 50  0001 C CNN
@@ -179,42 +177,18 @@ F 3 "~" H 1250 1450 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:C C9
+L Device:C C29
 U 1 1 5EF9CBDA
 P 1250 1900
-F 0 "C9" V 998 1900 50  0000 C CNN
+F 0 "C29" V 998 1900 50  0000 C CNN
 F 1 "100nF" V 1089 1900 50  0000 C CNN
 F 2 "rosco_m68k:C2.5-3" H 1288 1750 50  0001 C CNN
 F 3 "~" H 1250 1900 50  0001 C CNN
 	1    1250 1900
 	0    1    1    0   
 $EndComp
-$Comp
-L Device:CP C13
-U 1 1 5EF9DA6F
-P 1250 3800
-F 0 "C13" V 1505 3800 50  0000 C CNN
-F 1 "220uF" V 1414 3800 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 1288 3650 50  0001 C CNN
-F 3 "~" H 1250 3800 50  0001 C CNN
-	1    1250 3800
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:CP C14
-U 1 1 5EF9E65A
-P 1250 4250
-F 0 "C14" V 1505 4250 50  0000 C CNN
-F 1 "220uF" V 1414 4250 50  0000 C CNN
-F 2 "Capacitor_THT:CP_Radial_D6.3mm_P2.50mm" H 1288 4100 50  0001 C CNN
-F 3 "~" H 1250 4250 50  0001 C CNN
-	1    1250 4250
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	1000 1100 1000 1450
-Wire Wire Line
-	1000 4250 1100 4250
 Wire Wire Line
 	1500 1450 1500 1900
 Wire Wire Line
@@ -230,22 +204,9 @@ Connection ~ 1000 1900
 Wire Wire Line
 	1400 1900 1500 1900
 Connection ~ 1500 1900
-Wire Wire Line
-	1400 3800 1500 3800
-Wire Wire Line
-	1500 3800 1500 4250
-Wire Wire Line
-	1100 3800 1000 3800
-Wire Wire Line
-	1000 3800 1000 4250
-Wire Wire Line
-	1400 4250 1500 4250
-Connection ~ 1500 4250
-Wire Wire Line
-	1500 4250 1500 4500
 Text GLabel 1000 1100 1    50   UnSpc ~ 0
 VCC
-Text GLabel 1500 4500 3    50   UnSpc ~ 0
+Text GLabel 1500 2500 3    50   UnSpc ~ 0
 GND
 Text GLabel 6400 1800 2    50   UnSpc ~ 0
 VCC
@@ -256,79 +217,29 @@ CTSA
 Text GLabel 4400 3100 0    50   Output ~ 0
 CTSB
 $Comp
-L Device:C C10
+L Device:C C30
 U 1 1 5EE63A78
 P 1250 2350
-F 0 "C10" V 998 2350 50  0000 C CNN
+F 0 "C30" V 998 2350 50  0000 C CNN
 F 1 "100nF" V 1089 2350 50  0000 C CNN
 F 2 "rosco_m68k:C2.5-3" H 1288 2200 50  0001 C CNN
 F 3 "~" H 1250 2350 50  0001 C CNN
 	1    1250 2350
 	0    1    1    0   
 $EndComp
-$Comp
-L Device:C C11
-U 1 1 5EE644CC
-P 1250 2800
-F 0 "C11" V 998 2800 50  0000 C CNN
-F 1 "100nF" V 1089 2800 50  0000 C CNN
-F 2 "rosco_m68k:C2.5-3" H 1288 2650 50  0001 C CNN
-F 3 "~" H 1250 2800 50  0001 C CNN
-	1    1250 2800
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:C C12
-U 1 1 5EE7105F
-P 1250 3250
-F 0 "C12" V 998 3250 50  0000 C CNN
-F 1 "100nF" V 1089 3250 50  0000 C CNN
-F 2 "rosco_m68k:C2.5-3" H 1288 3100 50  0001 C CNN
-F 3 "~" H 1250 3250 50  0001 C CNN
-	1    1250 3250
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	1000 1900 1000 2350
-Connection ~ 1000 3800
 Wire Wire Line
 	1500 1900 1500 2350
-Connection ~ 1500 3800
-Wire Wire Line
-	1400 3250 1500 3250
-Connection ~ 1500 3250
-Wire Wire Line
-	1500 3250 1500 3800
-Wire Wire Line
-	1100 3250 1000 3250
-Connection ~ 1000 3250
-Wire Wire Line
-	1000 3250 1000 3800
-Wire Wire Line
-	1100 2800 1000 2800
-Connection ~ 1000 2800
-Wire Wire Line
-	1000 2800 1000 3250
-Wire Wire Line
-	1400 2800 1500 2800
-Connection ~ 1500 2800
-Wire Wire Line
-	1500 2800 1500 3250
 Wire Wire Line
 	1400 2350 1500 2350
-Connection ~ 1500 2350
-Wire Wire Line
-	1500 2350 1500 2800
 Wire Wire Line
 	1100 2350 1000 2350
-Connection ~ 1000 2350
-Wire Wire Line
-	1000 2350 1000 2800
 $Comp
-L rosco_m68k-rescue:XR68C681CJTR-F-XR68C681 IC1
+L rosco_m68k-rescue:XR68C681CJTR-F-XR68C681 IC4
 U 1 1 603DDDD7
 P 4400 1800
-F 0 "IC1" H 5400 2293 60  0000 C CNN
+F 0 "IC4" H 5400 2293 60  0000 C CNN
 F 1 "XR68C681CJTR-F" H 5400 2187 60  0000 C CNN
 F 2 "Package_LCC:PLCC-44_THT-Socket" H 5400 2040 60  0001 C CNN
 F 3 "https://www.maxlinear.com/ds/xr68c681v210.pdf" H 5400 2081 60  0000 C CNN
@@ -345,36 +256,8 @@ Wire Wire Line
 	6400 2600 7550 2600
 Wire Wire Line
 	8200 2500 6400 2500
-$Comp
-L Connector_Generic:Conn_02x05_Odd_Even JP1-5
-U 1 1 60587A30
-P 9750 5450
-F 0 "JP1-5" H 9800 5867 50  0000 C CNN
-F 1 "Conn_02x05_Odd_Even" H 9800 5776 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical" H 9750 5450 50  0001 C CNN
-F 3 "~" H 9750 5450 50  0001 C CNN
-	1    9750 5450
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	10550 5350 10300 5350
-Wire Wire Line
-	10050 5450 10300 5450
-Wire Wire Line
-	10300 5450 10300 5350
-Connection ~ 10300 5350
-Wire Wire Line
-	10300 5350 10050 5350
-Wire Wire Line
-	8750 5450 9550 5450
-Wire Wire Line
-	9550 5350 8750 5350
-Wire Wire Line
-	10050 5650 10550 5650
-Wire Wire Line
-	10050 5550 10550 5550
 Text GLabel 6400 3800 2    50   3State ~ 0
-IPL3
+IPL2
 NoConn ~ 4400 3200
 NoConn ~ 4400 3300
 NoConn ~ 4400 3400
@@ -419,8 +302,8 @@ L power:VCC #PWR?
 U 1 1 61644BCE
 P 3200 6450
 AR Path="/5E53BC83/61644BCE" Ref="#PWR?"  Part="1" 
-AR Path="/61622E90/61644BCE" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 3200 6300 50  0001 C CNN
+AR Path="/61622E90/61644BCE" Ref="#PWR0101"  Part="1" 
+F 0 "#PWR0101" H 3200 6300 50  0001 C CNN
 F 1 "VCC" H 3217 6623 50  0000 C CNN
 F 2 "" H 3200 6450 50  0001 C CNN
 F 3 "" H 3200 6450 50  0001 C CNN
@@ -432,8 +315,8 @@ L power:GND #PWR?
 U 1 1 61644BD4
 P 3200 6750
 AR Path="/5E53BC83/61644BD4" Ref="#PWR?"  Part="1" 
-AR Path="/61622E90/61644BD4" Ref="#PWR?"  Part="1" 
-F 0 "#PWR?" H 3200 6500 50  0001 C CNN
+AR Path="/61622E90/61644BD4" Ref="#PWR0102"  Part="1" 
+F 0 "#PWR0102" H 3200 6500 50  0001 C CNN
 F 1 "GND" H 3205 6577 50  0000 C CNN
 F 2 "" H 3200 6750 50  0001 C CNN
 F 3 "" H 3200 6750 50  0001 C CNN
@@ -448,4 +331,46 @@ Wire Wire Line
 	3750 6650 3200 6650
 Wire Wire Line
 	3200 6650 3200 6750
+Wire Wire Line
+	1500 2350 1500 2500
+Connection ~ 1500 2350
+$Comp
+L Device:Jumper JP2
+U 1 1 616FCABD
+P 10000 5650
+F 0 "JP2" H 10000 5914 50  0000 C CNN
+F 1 "Jumper" H 10000 5823 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 10000 5650 50  0001 C CNN
+F 3 "~" H 10000 5650 50  0001 C CNN
+	1    10000 5650
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:Jumper JP1
+U 1 1 616FD293
+P 10000 5200
+F 0 "JP1" H 10000 5464 50  0000 C CNN
+F 1 "Jumper" H 10000 5373 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 10000 5200 50  0001 C CNN
+F 3 "~" H 10000 5200 50  0001 C CNN
+	1    10000 5200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9500 5200 9700 5200
+Wire Wire Line
+	10300 5200 10500 5200
+Wire Wire Line
+	10300 5650 10500 5650
+Wire Wire Line
+	10500 5650 10500 5200
+Connection ~ 10500 5200
+Wire Wire Line
+	10500 5200 10650 5200
+Wire Wire Line
+	9500 5650 9700 5650
+Text GLabel 1450 6150 2    50   Input ~ 0
+RTSA
+Text GLabel 1450 7000 2    50   Input ~ 0
+RTSB
 $EndSCHEMATC
