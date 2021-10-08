@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 4 7
+Sheet 3 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
 Date "2021-10-08"
 Rev "2.0"
@@ -31,7 +31,7 @@ U 1 1 5EDD83D0
 P 7550 3850
 F 0 "C1" H 7665 3896 50  0000 L CNN
 F 1 "7pF" H 7665 3805 50  0000 L CNN
-F 2 "Capacitor_THT:C_Rect_L7.0mm_W2.0mm_P5.00mm" H 7588 3700 50  0001 C CNN
+F 2 "rosco_m68k:C2.5-3" H 7588 3700 50  0001 C CNN
 F 3 "~" H 7550 3850 50  0001 C CNN
 	1    7550 3850
 	-1   0    0    1   
@@ -42,7 +42,7 @@ U 1 1 5EDD8A07
 P 8200 3850
 F 0 "C2" H 8315 3896 50  0000 L CNN
 F 1 "7pF" H 8315 3805 50  0000 L CNN
-F 2 "Capacitor_THT:C_Rect_L7.0mm_W2.0mm_P5.00mm" H 8238 3700 50  0001 C CNN
+F 2 "rosco_m68k:C2.5-3" H 8238 3700 50  0001 C CNN
 F 3 "~" H 8200 3850 50  0001 C CNN
 	1    8200 3850
 	1    0    0    -1  
@@ -102,7 +102,7 @@ U 1 1 5EE19F70
 P 1250 5850
 F 0 "J1" H 1358 6231 50  0000 C CNN
 F 1 "UART_A" H 1358 6140 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 1250 5850 50  0001 C CNN
+F 2 "rosco_m68k:1X06" H 1250 5850 50  0001 C CNN
 F 3 "~" H 1250 5850 50  0001 C CNN
 	1    1250 5850
 	1    0    0    -1  
@@ -113,7 +113,7 @@ U 1 1 5EE1B2ED
 P 1250 6700
 F 0 "J2" H 1358 7081 50  0000 C CNN
 F 1 "UART_B" H 1358 6990 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x06_P2.54mm_Vertical" H 1250 6700 50  0001 C CNN
+F 2 "rosco_m68k:1X06" H 1250 6700 50  0001 C CNN
 F 3 "~" H 1250 6700 50  0001 C CNN
 	1    1250 6700
 	1    0    0    -1  
@@ -261,10 +261,6 @@ IPL2
 NoConn ~ 4400 3200
 NoConn ~ 4400 3300
 NoConn ~ 4400 3400
-Text GLabel 6400 1900 2    50   UnSpc ~ 0
-GND
-Text GLabel 6400 2000 2    50   UnSpc ~ 0
-GND
 Text GLabel 4400 2000 0    50   UnSpc ~ 0
 GND
 $Comp
@@ -340,7 +336,7 @@ U 1 1 616FCABD
 P 10000 5650
 F 0 "JP2" H 10000 5914 50  0000 C CNN
 F 1 "Jumper" H 10000 5823 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 10000 5650 50  0001 C CNN
+F 2 "rosco_m68k:1X02" H 10000 5650 50  0001 C CNN
 F 3 "~" H 10000 5650 50  0001 C CNN
 	1    10000 5650
 	1    0    0    -1  
@@ -351,7 +347,7 @@ U 1 1 616FD293
 P 10000 5200
 F 0 "JP1" H 10000 5464 50  0000 C CNN
 F 1 "Jumper" H 10000 5373 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 10000 5200 50  0001 C CNN
+F 2 "rosco_m68k:1X02" H 10000 5200 50  0001 C CNN
 F 3 "~" H 10000 5200 50  0001 C CNN
 	1    10000 5200
 	1    0    0    -1  
@@ -373,4 +369,102 @@ Text GLabel 1450 6150 2    50   Input ~ 0
 RTSA
 Text GLabel 1450 7000 2    50   Input ~ 0
 RTSB
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R?
+U 1 1 6161B40D
+P 6850 1300
+AR Path="/6161B40D" Ref="R?"  Part="1" 
+AR Path="/5E53B952/6161B40D" Ref="R?"  Part="1" 
+AR Path="/60FBFA5C/6161B40D" Ref="R?"  Part="1" 
+AR Path="/61043B8D/6161B40D" Ref="R?"  Part="1" 
+AR Path="/6162E38E/6161B40D" Ref="R?"  Part="1" 
+AR Path="/61622E90/6161B40D" Ref="R10"  Part="1" 
+F 0 "R10" V 6991 1350 59  0000 L BNN
+F 1 "330R" V 6880 1350 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 6850 1300 50  0001 C CNN
+F 3 "" H 6850 1300 50  0001 C CNN
+	1    6850 1300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:LED5MM LED?
+U 1 1 6161B413
+P 6850 1600
+AR Path="/6161B413" Ref="LED?"  Part="1" 
+AR Path="/5E53B952/6161B413" Ref="LED?"  Part="1" 
+AR Path="/60FBFA5C/6161B413" Ref="LED?"  Part="1" 
+AR Path="/61043B8D/6161B413" Ref="LED?"  Part="1" 
+AR Path="/6162E38E/6161B413" Ref="LED?"  Part="1" 
+AR Path="/61622E90/6161B413" Ref="LED1"  Part="1" 
+F 0 "LED1" H 7100 1700 59  0000 R TNN
+F 1 "GREEN" H 7200 1600 59  0000 R TNN
+F 2 "rosco_m68k:LED5MM" H 6850 1600 50  0001 C CNN
+F 3 "" H 6850 1600 50  0001 C CNN
+	1    6850 1600
+	1    0    0    -1  
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R?
+U 1 1 6161C7AA
+P 7350 1300
+AR Path="/6161C7AA" Ref="R?"  Part="1" 
+AR Path="/5E53B952/6161C7AA" Ref="R?"  Part="1" 
+AR Path="/60FBFA5C/6161C7AA" Ref="R?"  Part="1" 
+AR Path="/61043B8D/6161C7AA" Ref="R?"  Part="1" 
+AR Path="/6162E38E/6161C7AA" Ref="R?"  Part="1" 
+AR Path="/61622E90/6161C7AA" Ref="R11"  Part="1" 
+F 0 "R11" V 7491 1350 59  0000 L BNN
+F 1 "330R" V 7380 1350 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 7350 1300 50  0001 C CNN
+F 3 "" H 7350 1300 50  0001 C CNN
+	1    7350 1300
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:LED5MM LED?
+U 1 1 6161C7B0
+P 7350 1600
+AR Path="/6161C7B0" Ref="LED?"  Part="1" 
+AR Path="/5E53B952/6161C7B0" Ref="LED?"  Part="1" 
+AR Path="/60FBFA5C/6161C7B0" Ref="LED?"  Part="1" 
+AR Path="/61043B8D/6161C7B0" Ref="LED?"  Part="1" 
+AR Path="/6162E38E/6161C7B0" Ref="LED?"  Part="1" 
+AR Path="/61622E90/6161C7B0" Ref="LED2"  Part="1" 
+F 0 "LED2" H 7600 1700 59  0000 R TNN
+F 1 "RED" H 7700 1600 59  0000 R TNN
+F 2 "rosco_m68k:LED5MM" H 7350 1600 50  0001 C CNN
+F 3 "" H 7350 1600 50  0001 C CNN
+	1    7350 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 1900 6850 1900
+Wire Wire Line
+	6850 1900 6850 1800
+Wire Wire Line
+	6400 2000 7350 2000
+Wire Wire Line
+	7350 2000 7350 1800
+$Comp
+L power:VCC #PWR04
+U 1 1 6161F2BF
+P 7100 800
+F 0 "#PWR04" H 7100 650 50  0001 C CNN
+F 1 "VCC" H 7117 973 50  0000 C CNN
+F 2 "" H 7100 800 50  0001 C CNN
+F 3 "" H 7100 800 50  0001 C CNN
+	1    7100 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 1100 6850 950 
+Wire Wire Line
+	6850 950  7100 950 
+Wire Wire Line
+	7100 950  7100 800 
+Wire Wire Line
+	7350 1100 7350 950 
+Wire Wire Line
+	7350 950  7100 950 
+Connection ~ 7100 950 
 $EndSCHEMATC

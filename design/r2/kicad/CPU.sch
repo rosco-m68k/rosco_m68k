@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 6 7
+Sheet 5 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
 Date "2021-10-08"
 Rev "2.0"
@@ -58,7 +58,7 @@ AR Path="/5E53B4B8/8B1E8DB7" Ref="IC1"  Part="1"
 F 0 "IC1" H 3950 5775 59  0000 L BNN
 F 1 "MC68010P10" H 3950 1750 59  0001 L BNN
 F 2 "rosco_m68k:DIL64" H 4450 3850 50  0001 C CNN
-F 3 "" H 4450 3850 50  0001 C CNN
+F 3 "https://github.com/rosco-m68k/hardware-projects/blob/master/datasheets/MC68000UM.pdf" H 4450 3850 50  0001 C CNN
 	1    4450 3850
 	1    0    0    -1  
 $EndComp

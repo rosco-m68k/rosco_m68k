@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 7
+Sheet 2 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
 Date "2021-10-08"
 Rev "2.0"
@@ -408,20 +408,6 @@ F 3 "" H 2450 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L rosco_m68k-eagle-import:7401N IC?
-U 5 1 5F6CD650
-P 7500 5250
-AR Path="/5F6CD650" Ref="IC?"  Part="5" 
-AR Path="/5E53B952/5F6CD650" Ref="IC?"  Part="5" 
-AR Path="/5E53BC83/5F6CD650" Ref="IC9"  Part="5" 
-F 0 "IC9" H 7475 5225 59  0000 L BNN
-F 1 "74LS01N" H 7600 5050 59  0001 L BNN
-F 2 "Package_DIP:DIP-14_W7.62mm_Socket_LongPads" H 7500 5250 50  0001 C CNN
-F 3 "" H 7500 5250 50  0001 C CNN
-	5    7500 5250
-	1    0    0    -1  
-$EndComp
-$Comp
 L rosco_m68k-eagle-import:C2,5-3 C?
 U 1 1 5F6CD656
 P 6300 5150
@@ -511,11 +497,7 @@ Wire Wire Line
 	2900 5750 3350 5750
 Wire Wire Line
 	3450 5750 3750 5750
-Wire Wire Line
-	7500 5750 7500 5550
 Connection ~ 3450 5750
-Wire Wire Line
-	7500 4950 7500 4650
 Connection ~ 3450 4650
 Wire Wire Line
 	3750 5050 3750 4650
@@ -611,17 +593,16 @@ $EndComp
 $Comp
 L power:GND #PWR0109
 U 1 1 5F7D403D
-P 7500 6050
-F 0 "#PWR0109" H 7500 5800 50  0001 C CNN
-F 1 "GND" H 7505 5877 50  0000 C CNN
-F 2 "" H 7500 6050 50  0001 C CNN
-F 3 "" H 7500 6050 50  0001 C CNN
-	1    7500 6050
+P 6850 6050
+F 0 "#PWR0109" H 6850 5800 50  0001 C CNN
+F 1 "GND" H 6855 5877 50  0000 C CNN
+F 2 "" H 6850 6050 50  0001 C CNN
+F 3 "" H 6850 6050 50  0001 C CNN
+	1    6850 6050
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	7500 6050 7500 5750
-Connection ~ 7500 5750
+	6850 6050 6850 5750
 Wire Wire Line
 	750  4300 750  4650
 Connection ~ 750  4650
@@ -646,12 +627,7 @@ Wire Wire Line
 	6300 4650 6850 4650
 Connection ~ 6300 4650
 Wire Wire Line
-	6850 4650 7500 4650
-Connection ~ 6850 4650
-Wire Wire Line
 	6850 5350 6850 5750
-Wire Wire Line
-	6850 5750 7500 5750
 Wire Wire Line
 	6850 5750 6300 5750
 Connection ~ 6850 5750

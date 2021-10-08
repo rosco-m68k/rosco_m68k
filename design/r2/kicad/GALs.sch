@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 8 7
+Sheet 7 7
 Title "rosco_m68k Pro (030) Prototype"
 Date "2021-10-01"
 Rev "0"
@@ -50,7 +50,7 @@ AR Path="/6103896C/616269B3" Ref="C12"  Part="1"
 AR Path="/617D19F3/616269B3" Ref="C12"  Part="1" 
 F 0 "C12" H 5910 3715 59  0000 L BNN
 F 1 "100nF" H 5910 3515 59  0000 L BNN
-F 2 "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 5850 3700 50  0001 C CNN
+F 2 "rosco_m68k:C2.5-3" H 5850 3700 50  0001 C CNN
 F 3 "" H 5850 3700 50  0001 C CNN
 	1    5850 3700
 	1    0    0    -1  
@@ -88,7 +88,7 @@ AR Path="/6103896C/616BA5ED" Ref="C30"  Part="1"
 AR Path="/617D19F3/616BA5ED" Ref="C31"  Part="1" 
 F 0 "C31" H 8060 3715 59  0000 L BNN
 F 1 "100nF" H 8060 3515 59  0000 L BNN
-F 2 "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 8000 3700 50  0001 C CNN
+F 2 "rosco_m68k:C2.5-3" H 8000 3700 50  0001 C CNN
 F 3 "" H 8000 3700 50  0001 C CNN
 	1    8000 3700
 	1    0    0    -1  
@@ -114,8 +114,8 @@ AR Path="/5E53B952/6161CAA3" Ref="IC?"  Part="1"
 AR Path="/617D19F3/6161CAA3" Ref="IC5"  Part="1" 
 F 0 "IC5" H 6950 4786 59  0000 C CNN
 F 1 "ATF16V8BQL-15PU" H 6950 4681 59  0000 C CNN
-F 2 "rosco_m68k:DIL20" H 6950 3900 50  0001 C CNN
-F 3 "" H 6950 3900 50  0001 C CNN
+F 2 "Package_DIP:DIP-24_W7.62mm_Socket_LongPads" H 6950 3900 50  0001 C CNN
+F 3 "https://www.mouser.com/datasheet/2/268/doc0735-1369018.pdf" H 6950 3900 50  0001 C CNN
 	1    6950 3900
 	1    0    0    -1  
 $EndComp
@@ -181,8 +181,8 @@ AR Path="/5E53B952/6161CADA" Ref="IC?"  Part="1"
 AR Path="/617D19F3/6161CADA" Ref="IC2"  Part="1" 
 F 0 "IC2" H 2500 4786 59  0000 C CNN
 F 1 "ATF16V8BQL-15PU" H 2500 4681 59  0000 C CNN
-F 2 "rosco_m68k:DIL20" H 2500 3900 50  0001 C CNN
-F 3 "" H 2500 3900 50  0001 C CNN
+F 2 "Package_DIP:DIP-24_W7.62mm_Socket_LongPads" H 2500 3900 50  0001 C CNN
+F 3 "https://www.mouser.com/datasheet/2/268/doc0735-1369018.pdf" H 2500 3900 50  0001 C CNN
 	1    2500 3900
 	1    0    0    -1  
 $EndComp
@@ -347,7 +347,7 @@ AR Path="/6103896C/61687A3B" Ref="C?"  Part="1"
 AR Path="/617D19F3/61687A3B" Ref="C10"  Part="1" 
 F 0 "C10" H 10360 3715 59  0000 L BNN
 F 1 "100nF" H 10360 3515 59  0000 L BNN
-F 2 "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 10300 3700 50  0001 C CNN
+F 2 "rosco_m68k:C2.5-3" H 10300 3700 50  0001 C CNN
 F 3 "" H 10300 3700 50  0001 C CNN
 	1    10300 3700
 	1    0    0    -1  
