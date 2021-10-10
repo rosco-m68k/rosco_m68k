@@ -119,7 +119,7 @@ D6
 Text GLabel 3000 1950 2    50   BiDi ~ 0
 D7
 Text GLabel 1800 3250 0    50   Input ~ 0
-RW
+ROM_RW
 Text GLabel 1800 3550 0    50   Input ~ 0
 WR
 Text GLabel 1800 1250 0    50   Input ~ 0
@@ -213,7 +213,7 @@ A18
 Text GLabel 1800 6750 0    50   Input ~ 0
 A19
 Text GLabel 1800 6950 0    50   Input ~ 0
-RW
+ROM_RW
 Text GLabel 1800 7250 0    50   Input ~ 0
 WR
 $Comp
@@ -505,4 +505,52 @@ Text GLabel 8700 1500 0    50   Input ~ 0
 WR
 Text GLabel 5300 1500 0    50   Input ~ 0
 WR
+$Comp
+L Device:Jumper JP3
+U 1 1 6162CC16
+P 4800 5700
+F 0 "JP3" H 4800 5964 50  0000 C CNN
+F 1 "Jumper" H 4800 5873 50  0000 C CNN
+F 2 "rosco_m68k:1X02" H 4800 5700 50  0001 C CNN
+F 3 "~" H 4800 5700 50  0001 C CNN
+	1    4800 5700
+	1    0    0    -1  
+$EndComp
+Text GLabel 4200 5700 0    50   Input ~ 0
+RW
+Text GLabel 5750 5700 2    50   Output ~ 0
+ROM_RW
+Wire Wire Line
+	4200 5700 4500 5700
+Wire Wire Line
+	5100 5700 5350 5700
+$Comp
+L Device:R R11
+U 1 1 6162E070
+P 5350 5100
+F 0 "R11" H 5420 5146 50  0000 L CNN
+F 1 "10K" H 5420 5055 50  0000 L CNN
+F 2 "rosco_m68k:0207_10" V 5280 5100 50  0001 C CNN
+F 3 "~" H 5350 5100 50  0001 C CNN
+	1    5350 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0114
+U 1 1 6162EC39
+P 5350 4750
+F 0 "#PWR0114" H 5350 4600 50  0001 C CNN
+F 1 "VCC" H 5367 4923 50  0000 C CNN
+F 2 "" H 5350 4750 50  0001 C CNN
+F 3 "" H 5350 4750 50  0001 C CNN
+	1    5350 4750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5350 4750 5350 4950
+Wire Wire Line
+	5350 5250 5350 5700
+Connection ~ 5350 5700
+Wire Wire Line
+	5350 5700 5750 5700
 $EndSCHEMATC
