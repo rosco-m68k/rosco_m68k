@@ -5,15 +5,15 @@
                           -------\___/-------
                        AS |  1           24 | VCC
                           |                 |
-                       NC |  2           23 | DUIACK
+                    IOSEL |  2           23 | DUIACK
                           |                 |
                     HWRST |  3           22 | ANYIACK
                           |                 |
-                      FC0 |  4           21 | BOOT
+                      FC2 |  4           21 | BOOT
                           |                 |
                       FC1 |  5           20 | BQ2
                           |                 |
-                      FC2 |  6           19 | BQ1
+                      FC0 |  6           19 | BQ1
                           |                 |
                        A1 |  7           18 | BQ0
                           |                 |

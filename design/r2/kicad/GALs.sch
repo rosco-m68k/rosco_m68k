@@ -97,11 +97,11 @@ Wire Wire Line
 	8000 3900 8000 4850
 Wire Wire Line
 	8000 3200 8000 3600
-Text GLabel 6450 3700 0    47   Input ~ 0
+Text GLabel 6450 3900 0    47   Input ~ 0
 FC0
 Text GLabel 6450 3800 0    47   Input ~ 0
 FC1
-Text GLabel 6450 3900 0    47   Input ~ 0
+Text GLabel 6450 3700 0    47   Input ~ 0
 FC2
 Text GLabel 7450 3400 2    47   Output ~ 0
 DUAIACK
@@ -241,23 +241,19 @@ Wire Wire Line
 Connection ~ 2500 3200
 Wire Wire Line
 	1400 3950 1400 4850
-Text GLabel 2900 6850 2    50   BiDi ~ 0
-DTACK
 Text GLabel 1800 6850 0    50   BiDi ~ 0
 DTACK
 Text GLabel 1800 7000 0    50   Input ~ 0
-LGEXP
-Text GLabel 2900 7000 2    50   Output ~ 0
 LGEXP
 Wire Wire Line
 	1800 6850 2550 6850
 Wire Wire Line
 	1800 7000 2200 7000
 $Comp
-L Device:R R1
+L Device:R R8
 U 1 1 61653F75
 P 2200 6200
-F 0 "R1" H 2270 6246 50  0000 L CNN
+F 0 "R8" H 2270 6246 50  0000 L CNN
 F 1 "4K7" H 2270 6155 50  0000 L CNN
 F 2 "rosco_m68k:0207_10" V 2130 6200 50  0001 C CNN
 F 3 "~" H 2200 6200 50  0001 C CNN
@@ -265,10 +261,10 @@ F 3 "~" H 2200 6200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:R R2
+L Device:R R21
 U 1 1 61654750
 P 2550 6200
-F 0 "R2" H 2620 6246 50  0000 L CNN
+F 0 "R21" H 2620 6246 50  0000 L CNN
 F 1 "1K2" H 2620 6155 50  0000 L CNN
 F 2 "rosco_m68k:0207_10" V 2480 6200 50  0001 C CNN
 F 3 "~" H 2550 6200 50  0001 C CNN
@@ -300,14 +296,8 @@ Wire Wire Line
 Connection ~ 2400 5700
 Wire Wire Line
 	2200 6350 2200 7000
-Connection ~ 2200 7000
-Wire Wire Line
-	2200 7000 2900 7000
 Wire Wire Line
 	2550 6350 2550 6850
-Connection ~ 2550 6850
-Wire Wire Line
-	2550 6850 2900 6850
 Text GLabel 6450 3600 0    50   Input ~ 0
 HWRST
 Text GLabel 6450 4000 0    50   Input ~ 0
@@ -328,9 +318,9 @@ NoConn ~ 7450 3900
 Text GLabel 7450 4000 2    50   Output ~ 0
 RUNLED
 Text GLabel 7450 4100 2    50   3State ~ 0
-I_RESET
+RESET
 Text GLabel 7450 4200 2    50   3State ~ 0
-I_HALT
+HALT
 NoConn ~ 7450 3700
 NoConn ~ 7450 4300
 NoConn ~ 7450 4400
@@ -475,4 +465,36 @@ Wire Wire Line
 Text Notes 4450 5000 0    50   ~ 0
 DUART_SEL.PLD
 NoConn ~ 9700 4100
+$Comp
+L Device:Jumper JP3
+U 1 1 617668AC
+P 2900 7000
+F 0 "JP3" H 2900 7264 50  0000 C CNN
+F 1 "Jumper" H 2900 7173 50  0000 C CNN
+F 2 "rosco_m68k:1X02" H 2900 7000 50  0001 C CNN
+F 3 "~" H 2900 7000 50  0001 C CNN
+	1    2900 7000
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2200 7000 2600 7000
+Connection ~ 2200 7000
+$Comp
+L power:GND #PWR?
+U 1 1 61767A5B
+P 3500 7150
+AR Path="/5E53B630/61767A5B" Ref="#PWR?"  Part="1" 
+AR Path="/5E53B952/61767A5B" Ref="#PWR?"  Part="1" 
+AR Path="/617D19F3/61767A5B" Ref="#PWR05"  Part="1" 
+F 0 "#PWR05" H 3500 6900 50  0001 C CNN
+F 1 "GND" H 3505 6977 50  0000 C CNN
+F 2 "" H 3500 7150 50  0001 C CNN
+F 3 "" H 3500 7150 50  0001 C CNN
+	1    3500 7150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3200 7000 3500 7000
+Wire Wire Line
+	3500 7000 3500 7150
 $EndSCHEMATC

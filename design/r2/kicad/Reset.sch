@@ -34,8 +34,6 @@ Wire Wire Line
 	2450 2900 2450 3800
 Wire Wire Line
 	2450 3800 3050 3800
-Text GLabel 9650 4800 2    67   Output ~ 0
-HALT
 Wire Wire Line
 	7450 3700 7450 3500
 Wire Wire Line
@@ -62,8 +60,6 @@ Wire Wire Line
 	2050 3400 2050 4000
 Connection ~ 2050 3400
 Connection ~ 2350 4900
-Text GLabel 9650 5300 2    67   Output ~ 0
-RESET
 $Comp
 L rosco_m68k-eagle-import:555N IC?
 U 1 1 6104F00C
@@ -120,8 +116,8 @@ AR Path="/6104F030" Ref="R?"  Part="1"
 AR Path="/5E53B952/6104F030" Ref="R?"  Part="1" 
 AR Path="/60FBFA5C/6104F030" Ref="R?"  Part="1" 
 AR Path="/61043B8D/6104F030" Ref="R30"  Part="1" 
-AR Path="/6162E38E/6104F030" Ref="R30"  Part="1" 
-F 0 "R30" V 8191 2850 59  0000 L BNN
+AR Path="/6162E38E/6104F030" Ref="R14"  Part="1" 
+F 0 "R14" V 8191 2850 59  0000 L BNN
 F 1 "330R" V 8080 2850 59  0000 L BNN
 F 2 "rosco_m68k:0207_10" H 8050 2800 50  0001 C CNN
 F 3 "" H 8050 2800 50  0001 C CNN
@@ -159,38 +155,6 @@ F 2 "rosco_m68k:0207_10" H 9150 2800 50  0001 C CNN
 F 3 "" H 9150 2800 50  0001 C CNN
 	1    9150 2800
 	0    -1   -1   0   
-$EndComp
-$Comp
-L rosco_m68k-eagle-import:R-EU_0207_10 R?
-U 1 1 6104F042
-P 7450 2800
-AR Path="/6104F042" Ref="R?"  Part="1" 
-AR Path="/5E53B952/6104F042" Ref="R?"  Part="1" 
-AR Path="/60FBFA5C/6104F042" Ref="R?"  Part="1" 
-AR Path="/61043B8D/6104F042" Ref="R29"  Part="1" 
-AR Path="/6162E38E/6104F042" Ref="R29"  Part="1" 
-F 0 "R29" V 7591 2850 59  0000 L BNN
-F 1 "330R" V 7480 2850 59  0000 L BNN
-F 2 "rosco_m68k:0207_10" H 7450 2800 50  0001 C CNN
-F 3 "" H 7450 2800 50  0001 C CNN
-	1    7450 2800
-	0    -1   -1   0   
-$EndComp
-$Comp
-L rosco_m68k-eagle-import:C2,5-3 C?
-U 1 1 6104F048
-P 2450 2700
-AR Path="/6104F048" Ref="C?"  Part="1" 
-AR Path="/5E53B952/6104F048" Ref="C?"  Part="1" 
-AR Path="/60FBFA5C/6104F048" Ref="C?"  Part="1" 
-AR Path="/61043B8D/6104F048" Ref="C21"  Part="1" 
-AR Path="/6162E38E/6104F048" Ref="C13"  Part="1" 
-F 0 "C13" H 2510 2715 59  0000 L BNN
-F 1 "100nF" H 2510 2515 59  0000 L BNN
-F 2 "Capacitor_THT:C_Rect_L4.0mm_W2.5mm_P2.50mm" H 2450 2700 50  0001 C CNN
-F 3 "" H 2450 2700 50  0001 C CNN
-	1    2450 2700
-	1    0    0    -1  
 $EndComp
 $Comp
 L rosco_m68k-eagle-import:10-XX S?
@@ -347,9 +311,6 @@ Wire Wire Line
 	9150 3000 9150 5300
 Wire Wire Line
 	8500 3000 8500 4800
-Connection ~ 8500 4800
-Wire Wire Line
-	8500 4800 9650 4800
 Wire Wire Line
 	7450 2500 8050 2500
 Wire Wire Line
@@ -359,9 +320,6 @@ Wire Wire Line
 	8050 2500 8500 2500
 Wire Wire Line
 	8050 3000 8050 3200
-Connection ~ 9150 5300
-Wire Wire Line
-	9150 5300 9650 5300
 Wire Wire Line
 	8500 2500 9150 2500
 Wire Wire Line
@@ -414,13 +372,45 @@ Wire Wire Line
 Wire Wire Line
 	6100 3700 7450 3700
 Text GLabel 6100 5300 0    50   3State ~ 0
-I_RESET
+RESET
 Text GLabel 6100 4800 0    50   3State ~ 0
-I_HALT
+HALT
 Text GLabel 6100 3700 0    50   Input ~ 0
 RUNLED
 Wire Wire Line
 	2350 5200 2950 5200
 Wire Wire Line
 	3350 5200 3550 5200
+$Comp
+L rosco_m68k-eagle-import:R-EU_0207_10 R?
+U 1 1 6104F042
+P 7450 2800
+AR Path="/6104F042" Ref="R?"  Part="1" 
+AR Path="/5E53B952/6104F042" Ref="R?"  Part="1" 
+AR Path="/60FBFA5C/6104F042" Ref="R?"  Part="1" 
+AR Path="/61043B8D/6104F042" Ref="R29"  Part="1" 
+AR Path="/6162E38E/6104F042" Ref="R13"  Part="1" 
+F 0 "R13" V 7591 2850 59  0000 L BNN
+F 1 "330R" V 7480 2850 59  0000 L BNN
+F 2 "rosco_m68k:0207_10" H 7450 2800 50  0001 C CNN
+F 3 "" H 7450 2800 50  0001 C CNN
+	1    7450 2800
+	0    -1   -1   0   
+$EndComp
+$Comp
+L rosco_m68k-eagle-import:C2,5-3 C?
+U 1 1 6104F048
+P 2450 2700
+AR Path="/6104F048" Ref="C?"  Part="1" 
+AR Path="/5E53B952/6104F048" Ref="C?"  Part="1" 
+AR Path="/60FBFA5C/6104F048" Ref="C?"  Part="1" 
+AR Path="/61043B8D/6104F048" Ref="C21"  Part="1" 
+AR Path="/6162E38E/6104F048" Ref="C13"  Part="1" 
+F 0 "C13" H 2510 2715 59  0000 L BNN
+F 1 "100nF" H 2510 2515 59  0000 L BNN
+F 2 "rosco_m68k:C2.5-3" H 2450 2700 50  0001 C CNN
+F 3 "" H 2450 2700 50  0001 C CNN
+	1    2450 2700
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC

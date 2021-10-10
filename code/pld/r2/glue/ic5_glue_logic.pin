@@ -3,11 +3,11 @@
  Pin # | Name     | Pin Type
 -----------------------------
    1   | AS       | Clock/Input
-   2   | NC       | Input
+   2   | IOSEL    | Input
    3   | HWRST    | Input
-   4   | FC0      | Input
+   4   | FC2      | Input
    5   | FC1      | Input
-   6   | FC2      | Input
+   6   | FC0      | Input
    7   | A1       | Input
    8   | A2       | Input
    9   | A3       | Input

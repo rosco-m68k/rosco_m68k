@@ -27,7 +27,7 @@ Text Notes 2550 3500 0    59   ~ 0
 ODD
 Text Notes 6200 3900 0    59   ~ 0
 ODD
-Text Notes 3800 7600 0    59   ~ 0
+Text Notes 2550 7250 0    59   ~ 0
 EVEN
 Text Notes 9600 3900 0    59   ~ 0
 EVEN
@@ -216,8 +216,6 @@ Text GLabel 1800 6950 0    50   Input ~ 0
 RW
 Text GLabel 1800 7250 0    50   Input ~ 0
 WR
-Text GLabel 1800 7150 0    47   Input ~ 0
-ODDROMSEL
 $Comp
 L power:VCC #PWR0105
 U 1 1 61798ECA

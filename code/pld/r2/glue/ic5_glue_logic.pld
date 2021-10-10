@@ -1,7 +1,7 @@
 GAL22V10
 GLUE
 
-AS   IOSEL   HWRST  FC0    FC1     FC2   A1    A2    A3     A19      NC     GND
+AS   IOSEL   HWRST  FC2    FC1     FC0   A1    A2    A3     A19      NC     GND
 NC   NC      HALT   RESET  RUNLED  BQ0   BQ1   BQ2   BOOT   ANYIACK  DUIACK VCC
 
 HALT.T  =  GND
