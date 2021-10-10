@@ -719,4 +719,23 @@ Wire Wire Line
 	5500 4650 6300 4650
 Wire Wire Line
 	5500 5750 6300 5750
+$Comp
+L Connector:Conn_01x04_Male J6
+U 1 1 61646A1A
+P 3750 3650
+F 0 "J6" H 3858 3931 50  0000 C CNN
+F 1 "Conn_01x04_Male" H 3858 3840 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 3750 3650 50  0001 C CNN
+F 3 "~" H 3750 3650 50  0001 C CNN
+	1    3750 3650
+	1    0    0    -1  
+$EndComp
+Text GLabel 3950 3550 2    50   Input ~ 0
+A20
+Text GLabel 3950 3650 2    50   Input ~ 0
+A21
+Text GLabel 3950 3750 2    50   Input ~ 0
+A22
+Text GLabel 3950 3850 2    50   Input ~ 0
+A23
 $EndSCHEMATC
