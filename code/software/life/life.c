@@ -140,6 +140,7 @@ static void game(void)
 		if (checkchar()) {
 			char c = readchar();
 			if (c == 'r' || c == 'R') {
+				generation = 0;	// don't count restarts
 				seed_game();
 			}
 			else {
