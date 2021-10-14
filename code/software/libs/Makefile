@@ -42,6 +42,7 @@ include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk
 include src/sst_flash/include.mk
+include src/shmall/include.mk
 include src/printf/include.mk
 
 %.o : %.c

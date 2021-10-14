@@ -1,5 +1,5 @@
-LIB=cstdlib
-LIBOBJECTS=$(DIR)/string.o $(DIR)/fgets.o $(DIR)/stdlib.o
+LIB=heap
+LIBOBJECTS=$(DIR)/heap.o $(DIR)/llist.o $(DIR)/rosco_m68k.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---
