@@ -1576,16 +1576,16 @@ const char * xansiterm_PRINT(const char * strptr)
         // ESC or 8-bit CSI received
         if ((cdata & 0x7f) == '\x1b')
         {
-            // if not PASSTHRU mode or not in NORMAL/ILLEGAL state, re-start CSI/ESI
-            if (!(td->flags & TFLAG_ATTRIB_PASSTHRU) || td->state < TSTATE_ESC)
+            // if already ESC/CSI and in PASSTHRU mode
+            if (td->state >= TSTATE_ESC && (td->flags & TFLAG_ATTRIB_PASSTHRU))
+            {
+                td->state = TSTATE_NORMAL;        // fall through and print ESC/CSi
+            }
+            else
             {
                 // otherwise start new CSI/ESC
                 xansi_begin_csi_or_esc(td, cdata);
                 goto nextchar;
-            }
-            else
-            {
-                td->state = TSTATE_NORMAL;        // fall through and print ESC/CSi
             }
         }
 
