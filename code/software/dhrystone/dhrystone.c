@@ -480,6 +480,8 @@ void Proc8();
 
 int main()
 {
+	printf("Running dhrystone benchmark...\n");
+
 	Proc0();
 #if !defined(ROSCO_M68K)
 	exit(0);
@@ -572,6 +574,7 @@ void Proc0()
 		Proc4();
 		IntLoc1 = 2;
 		IntLoc2 = 3;
+		IntLoc3 = 0;	// Xark: m68k-elf-gcc -O1 forces this (with -O2 it figures it out)
 		strcpy(String2Loc, "DHRYSTONE PROGRAM, 2'ND STRING");
 		EnumLoc = Ident2;
 		BoolGlob = ! Func2(String1Loc, String2Loc);

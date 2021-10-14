@@ -300,7 +300,7 @@ number itemIsHere(char *item)
     for (i = 1; i <= LastItem; i++) {
         if (!strcasecmp(item, DescriptionOfItem[i])) {
             /* Found it, but is it here? */
-            if (locationOfItem[i] == currentLocation) {
+            if ((number)locationOfItem[i] == currentLocation) {
                 return 1;
             } else {
                 return 0;
@@ -343,7 +343,7 @@ void doLook()
     seen = 0;
     printf("You see:\n");
     for (i = 1; i <= LastItem; i++) {
-        if (locationOfItem[i] == currentLocation) {
+        if ((number)locationOfItem[i] == currentLocation) {
             printf("  %s\n", DescriptionOfItem[i]);
             seen = 1;
         }
@@ -429,7 +429,7 @@ void doTake()
     for (i = 1; i <= LastItem; i++) {
         if (!strcasecmp(item, DescriptionOfItem[i])) {
             /* Found it, but is it here? */
-            if (locationOfItem[i] == currentLocation) {
+            if ((number)locationOfItem[i] == currentLocation) {
             /* It is here. Add to inventory. */
             for (j = 0; j < MAXITEMS; j++) {
                 if (Inventory[j] == 0) {

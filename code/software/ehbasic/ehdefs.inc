@@ -6,6 +6,7 @@ ram_strt	equ	0
 					* for any BASIC program that doesn't do something
 					* silly, it could even be much less.
 ram_base	equ	$0400
+
 LAB_WARM	equ	$0400		* BASIC warm start entry point
 Wrmjpv		equ	$0402		* BASIC warm start jump vector
 

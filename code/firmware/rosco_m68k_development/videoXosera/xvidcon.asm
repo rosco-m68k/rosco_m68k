@@ -30,8 +30,8 @@ HAVE_XOSERA::
     move.l  A0,-(A7)
     jsr     INSTALL_TEMP_BERR_HANDLER
 
-    move.l  #XVID_BASE,A0
-    move.b  (XVID_DATA,A0),D0
+    move.l  #XM_BASEADDR,A0
+    move.b  (XM_DATA,A0),D0
 
     tst.b   BERR_FLAG
     bne.s   .NOXVID
@@ -51,7 +51,7 @@ HAVE_XOSERA::
 ; Initialize the console
 XOSERA_CON_INIT::
     movem.l D1-D3/A0-A1,-(A7)
-    move.l  #XVID_BASE,A0                     ; Use A0 as port base register
+    move.l  #XM_BASEADDR,A0                   ; Use A0 as port base register
 
     move.w  SR,D3                             ; Save SR
     ori.w   #$0200,SR                         ; No interrupts during init...
@@ -63,10 +63,8 @@ XOSERA_CON_INIT::
     tst.w   D0
     beq.s   .DONE 
 
-    move.w  #$B007,D0                         ; set special constant
-    movep.w D0,(XVID_CONST,A0)
-    move.w  #$8180,D0                         ; Reconfigure Xosera for config #1 (848x480)
-    movep.w D0,(XVID_BLIT_CTRL,A0)
+    move.w  #$A000,D0                         ; Reconfigure Xosera for config #1 (848x480)
+    movep.w D0,(XM_SYS_CTRL,A0)
 
     bsr.s   XVID_SYNC                         ; detect Xosera responding again
     ; if sync failed - fail the init
@@ -135,14 +133,14 @@ XVID_SYNC:
 
 .SYNC_LOOP
     move.w  #$55AA,D0
-    movep.w D0,(XVID_CONST,A0)                ; Do sync checks
-    movep.w (XVID_CONST,A0),D0                
+    movep.w D0,(XM_XR_ADDR,A0)                ; Do sync checks
+    movep.w (XM_XR_ADDR,A0),D0                
     cmp.w   #$55AA,D0
     bne.s   .SYNC_NEXT
 
     move.w  #$AA55,D0
-    movep.w D0,(XVID_CONST,A0)
-    movep.w (XVID_CONST,A0),D0                
+    movep.w D0,(XM_XR_ADDR,A0)
+    movep.w (XM_XR_ADDR,A0),D0                
     cmp.w   #$AA55,D0
     bne.s   .SYNC_NEXT
     rts                                       ; return D0 non-zero
@@ -261,7 +259,7 @@ BUFFERFLIP:
 
     ; Set up to write VRAM at 0x0
     clr.w   D1
-    movep.w D1,(XVID_WR_ADDR,A0)            ; Setup VRAM write
+    movep.w D1,(XM_WR_ADDR,A0)              ; Setup VRAM write
     
 .GOGOGO    
     move.w  DISPLAYSTART,D0
@@ -272,7 +270,7 @@ BUFFERFLIP:
     clr.w   D2
     move.b  (A1,D0),D2
     or.w    #$0A00,D2
-    movep.w D2,(XVID_DATA,A0)
+    movep.w D2,(XM_DATA,A0)
     addq.w  #1,D0
     cmpi.w  #DISPLAYSIZE,D0
     bne.s   .COPY
@@ -316,7 +314,7 @@ SETUP_VRAM_WRITE:
     addi.w  #DISPLAYSIZE,D3
 
 .WRITEVRAM
-    movep.w D3,(XVID_WR_ADDR,A0)       ; Setup VRAM write
+    movep.w D3,(XM_WR_ADDR,A0)       ; Setup VRAM write
     move.w  (A7)+,D3
     rts
 
@@ -345,7 +343,7 @@ XVID_CON_PUTCHAR::
 .NOTIGNORED
     movem.l D1-D3/A0-A1,-(A7)
     
-    move.l  #XVID_BASE,A0                 ; Use A0 as Xosera base
+    move.l  #XM_BASEADDR,A0                 ; Use A0 as Xosera base
     move.w  CURPOS,D1                     ; Load current pointer
  
     ; Is this a carriage-return?
@@ -386,7 +384,7 @@ XVID_CON_PUTCHAR::
     bsr.w   SETUP_VRAM_WRITE              ; Clear from VRAM
 
     move.w  #$0A20,D0
-    movep.w D0,(XVID_DATA,A0)             ; Overwrite character
+    movep.w D0,(XM_DATA,A0)             ; Overwrite character
 
     move.w  D3,SR                         ; Go ahead with the interrupts...
     move.b  #0,(A1,D1)                    ; Clear from buffer
@@ -408,7 +406,7 @@ XVID_CON_PUTCHAR::
 
     and.w   #$00FF,D0
     or.w    #$0A00,D0
-    movep.w D0,(XVID_DATA,A0)             ; And write,
+    movep.w D0,(XM_DATA,A0)             ; And write,
     move.w  D3,SR                         ; Go ahead with the interrupts...
     
     addq.w  #1,D1

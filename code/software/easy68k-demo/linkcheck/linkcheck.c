@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <basicio.h>
-#include "linkcheck.h"
+#include "include/linkcheck.h"
 
 uint32_t d = 0x12345678;
 static uint8_t stb[15];
@@ -94,7 +94,9 @@ bool checkLinkage() {
   } else {
     print("\033[1;31mFAIL:\033[1;37m ");
   }
-  println("Linkage checks complete\033[0m");
+  println("Linkage checks complete, press a key\033[0m");
+
+  readchar();
 
   return result;
 }

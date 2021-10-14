@@ -29,6 +29,7 @@ Last updated 20/11/2020 by roscopeco
  * VAX 11/780   -               UNIX 5.0.1      cc 4.1.1.31     1650    1640
  * Ridge 32C V1 -               ROS 3.3         Ridge C (older) 1628    1695
  * Gould PN6005 -               UTX 1.1c+ (4.2) cc              1732    1884
+ * rosco_m68k   68010-10Mhz     ROM             gcc-10.2.0       -      2173 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-7.5.0        -      2604 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2860 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2941 (-O1 -mtune=68020)
