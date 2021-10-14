@@ -21,7 +21,10 @@
 #include "system.h"
 #include "serial.h"
 
-#ifdef XOSERA_CON
+// only one Xosera console at a time
+#if defined(XOSERA_ANSI_CON)
+#include "xosera_ansiterm_m68k.h"
+#elif defined(XOSERA_CON)
 #include "xosera.h"
 #endif
 #ifdef VIDEO9958_CON
@@ -156,6 +159,12 @@ noreturn void main1() {
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
+#if defined(XOSERA_ANSI_CON)
+    if (XANSI_HAVE_XOSERA() && XANSI_CON_INIT()) {
+        goto skip9958;
+    }
+#endif
+
 #ifdef XOSERA_CON
     if (HAVE_XOSERA() && XOSERA_CON_INIT()) {
         XOSERA_CON_INSTALLHANDLERS();
@@ -170,7 +179,7 @@ noreturn void main1() {
     }
 #endif
 
-#ifdef XOSERA_CON
+#if defined(XOSERA_ANSI_CON) || defined(XOSERA_CON)
 skip9958:
 #endif
 

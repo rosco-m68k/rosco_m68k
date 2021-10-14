@@ -8,6 +8,13 @@ MEMORY
   ROM : org = phys, l = 64K
 }
 
+/* minimal items for XANSI in C */
+PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
+PROVIDE(_EFP_CHECKCHAR  = 0x00000444);  /* Check char ready from UART   */
+PROVIDE(XANSI_CON_DATA  = 0x00000500);  /* XANSI data ($0500-$057F)     */
+
+PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
+
 SECTIONS
 {
   .bss kram :
