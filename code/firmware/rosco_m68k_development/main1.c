@@ -24,8 +24,6 @@
 // only one Xosera console at a time
 #if defined(XOSERA_ANSI_CON)
 #include "xosera_ansiterm_m68k.h"
-#elif defined(XOSERA_CON)
-#include "xosera.h"
 #endif
 #ifdef VIDEO9958_CON
 #include "video9958.h"
@@ -165,13 +163,6 @@ noreturn void main1() {
     }
 #endif
 
-#ifdef XOSERA_CON
-    if (HAVE_XOSERA() && XOSERA_CON_INIT()) {
-        XOSERA_CON_INSTALLHANDLERS();
-        goto skip9958;
-    }
-#endif
-
 #ifdef VIDEO9958_CON
     if (HAVE_V9958()) {
         V9958_CON_INIT();
@@ -179,7 +170,7 @@ noreturn void main1() {
     }
 #endif
 
-#if defined(XOSERA_ANSI_CON) || defined(XOSERA_CON)
+#if defined(XOSERA_ANSI_CON)
 skip9958:
 #endif
 
