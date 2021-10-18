@@ -99,7 +99,7 @@ Pin 18 = BQ0          S0 = 1   S1 = 0
 
 Pin 17 = RUNLED       S0 = 1   S1 = 0
  83  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 84  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
+ 84  ---- ---- ---- ---- ---- ---- ---- ---- ---x ---- ----
  85  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  86  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  87  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
