@@ -199,12 +199,9 @@ EARLY_PRINTLN_DUART:
 INITSDB:
     move.l  #$B105D47A,SDB_MAGIC      ; Magic
     move.l  #$C001C001,SDB_STATUS     ; OK OSHI Code
-    ifd REVISION1X
     move.w  #50,SDB_TICKCNT           ; Heartbeat flash counter at 50 (1 per second)
-    else
-    move.w  #100,SDB_TICKCNT          ; Heartbeat flash counter at 50 (1 per second)
-    endif
     move.w  #$FF00,SDB_SYSFLAGS       ; Initial system flags word (enable LEDs and CTS)
+    move.b  #0,SDB_INTFLAGS           ; Initial internal flags
     move.l  #0,SDB_UPTICKS            ; Zero upticks
 
     ifnd NO_68681
