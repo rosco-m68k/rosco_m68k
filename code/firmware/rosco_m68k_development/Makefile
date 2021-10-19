@@ -87,11 +87,6 @@ endif
 ifneq ($(XOSERA_ANSI_CON),false)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)
 include videoXoseraANSI/include.mk
-else
-ifneq ($(WITH_XVID),false)
-$(info === Building rosco_m68k firmware with Xosera console)
-include videoXosera/include.mk
-endif
 endif
 
 ifeq ($(WITH_DEBUG_STUB),true)
