@@ -25,7 +25,6 @@ TRAP_15_VECTOR_ADDR equ     TRAP_15_VECTOR*4
 ECHO_ON             equ     $410
 PROMPT_ON           equ     $411
 LF_DISPLAY          equ     $412
-RESERVED            equ     $413
 
 
 ; TRAP 15 provides access to Easy68K-compatible tasks
@@ -247,9 +246,12 @@ SEND_CHAR:
 ; TODO This is directly interfacing the the MFP - It should go through to the
 ; default UART instead...
 CHECK_RECV:
+    ifd REVISION1X
     move.b  MFP_RSR,D0                  ; Get RSR
     btst    #7,D0                       ; Is buffer_full bit set?
     bne.s   .TRUE                       ; Yes - Go to set true
+    endif
+    ; TODO else for r2X
 
     move.b  #0,D1                       ; Else no - so false
     bra.w   EPILOGUE2                   

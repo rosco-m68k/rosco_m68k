@@ -81,7 +81,9 @@ START::
     bra.s   .ISR_COPY_LOOP            ; Next iteration
 
 .ISR_COPY_DONE:
+    ifd REVISION1X 
     bsr.w   INITMFP                   ; Initialise MC68901
+    endif
 
     ifnd NO_68681
     bsr.w   INITDUART                 ; Initialise MC68681
@@ -90,10 +92,12 @@ START::
     bsr.w   INITMEMCOUNT              ; Initialise memory count in SDB    
     bsr.s   PRINT_BANNER
 
+    ifd REVISION1X
     ifd NO_TICK
     bset.b  #1,MFP_GPDR               ; Turn off GPIO #1 (Red LED) as no tick to reset it later..
     else
     bclr.b  #1,MFP_GPDR               ; Turn on GPIO #1 (Red LED)
+    endif
     endif
 
     and.w   #$F2FF,SR                 ; Enable interrupts (except video)
@@ -124,6 +128,7 @@ PRINT_BANNER:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
+    ifd REVISION1X
 EARLY_PRINT_MFP:
     move.b  (A0)+,D0                  ; Get next character
     beq.s   .PRINT_DONE               ; ... we're done if null.
@@ -136,7 +141,7 @@ EARLY_PRINT_MFP:
     bra.s   EARLY_PRINT_MFP           ; and loop
 .PRINT_DONE:    
     rts                               ; We're done
-    
+    endif
 
     ifnd NO_68681
 EARLY_PRINT_DUART:
@@ -165,6 +170,7 @@ EARLY_PRINT_DUART:
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
+    ifd REVISION1X
 EARLY_PRINTLN_MFP:
     bsr.s   EARLY_PRINT_MFP           ; Print callers message
     move.l  A0,-(A7)                  ; Stash A0 to restore later
@@ -174,6 +180,7 @@ EARLY_PRINTLN_MFP:
         
     move.l  (A7)+,A0                  ; Restore A0
     rts
+    endif
 
     ifnd NO_68681
 EARLY_PRINTLN_DUART:
@@ -192,14 +199,21 @@ EARLY_PRINTLN_DUART:
 INITSDB:
     move.l  #$B105D47A,SDB_MAGIC      ; Magic
     move.l  #$C001C001,SDB_STATUS     ; OK OSHI Code
+    ifd REVISION1X
     move.w  #50,SDB_TICKCNT           ; Heartbeat flash counter at 50 (1 per second)
+    else
+    move.w  #100,SDB_TICKCNT          ; Heartbeat flash counter at 50 (1 per second)
+    endif
     move.w  #$FF00,SDB_SYSFLAGS       ; Initial system flags word (enable LEDs and CTS)
     move.l  #0,SDB_UPTICKS            ; Zero upticks
 
     ifnd NO_68681
+
+    ifd REVISION1X
     ; Do we have a 68681?
     tst.b   D5
     beq.s   .USEMFP
+    endif
 
     ; Setup default implementations in EFP table.
 .USEDUART:
@@ -209,10 +223,13 @@ INITSDB:
     move.l  #SENDCHAR_DUART,EFP_SENDCHAR
     move.l  #RECVCHAR_DUART,EFP_RECVCHAR
     move.l  #CHECKCHAR_DUART,EFP_CHECKCHAR
+    ifd REVISION1X
     bra.s   .COMMON
+    endif
     
     endif
 
+    ifd REVISION1X
 .USEMFP:
     move.l  #EARLY_PRINT_MFP,EFP_PRINT
     move.l  #EARLY_PRINTLN_MFP,EFP_PRINTLN
@@ -220,7 +237,10 @@ INITSDB:
     move.l  #SENDCHAR_MFP,EFP_SENDCHAR
     move.l  #RECVCHAR_MFP,EFP_RECVCHAR
     move.l  #CHECKCHAR_MFP,EFP_CHECKCHAR
-    
+    endif
+
+; TODO default implementations if R2x and no DUART compiled in?
+
 .COMMON
     move.l  #HALT,EFP_HALT
     move.l  #ANSI_MOVEXY,EFP_MOVEXY
@@ -236,7 +256,13 @@ INITSDB:
 INITMEMCOUNT:
 .TESTVALUE equ $12345678
 .BLOCKSIZE equ $80000
+
+    ifd REVISION1X
 .MEMTOP    equ $F80000
+    else
+.MEMTOP    equ $E00000
+    endif
+
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
@@ -255,6 +281,7 @@ INITMEMCOUNT:
     rts
 
 
+    ifd REVISION1X
 ; Initialise MFP
 ;
 ; Notes on MFP_TDDR value and baud-rate:
@@ -266,13 +293,17 @@ INITMEMCOUNT:
 ; Whether they work will depend on your USB<->Serial converter and OS.
 ; Minicom doesn't support them, Picocom does. C-Kermit doesn't.
 ;
+; An alternative scheme (thanks to @robg on Discord) is to replace the 3.6864MHz
+; crystal with a 2.4576MHz part, and set the MFP_TDDR count to 1 - this will
+; give a (standard) baud-rate of 19200 (assuming the /4 prescaler is still used).
+;
 ; Trashes: D0
 ; Modifies: MFP Regs
 INITMFP:
     ; GPIOs
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
     
-    ; Timer setup - Timer D controls serial clock, C is kernel tick
+    ; Timer setup - Timer D controls serial clock, C is system tick
     move.b  #$B8,MFP_TCDR             ; Timer C count is 184 for 50Hz (interrupt on rise and fall so 100Hz)
     move.b  #$03,MFP_TDDR             ; Timer D count is 3 for 307.2KHz, divided to 9600 baud
 
@@ -301,7 +332,7 @@ INITMFP:
     move.l  #MFPBASE,SDB_UARTBASE     ; Default UART starts out as MFP, may get overwritten later... 
     ; Indicate success and return
     rts
-
+    endif
 
     ifnd NO_68681
 ; Initialise MC68681 DUART if present
@@ -310,13 +341,24 @@ INITMFP:
 ; This is used to signal INITSDB that it should use the DUART vectors instead of
 ; the MFP ones.
 INITDUART:
-    ; Let's try the r2 DUART board first...
+    ifnd REVISION1X
+    ; Building for r2.x mainboard, try onboard DUART first
+    move.l  #0,SDB_UARTBASE           ; On r2 main board, start UARTBASE at 0...
+
+    move.l  #DUART_BASE_MBR2,A0
+    bsr.w   INITDUART_ATBASE          ; Try detect / and basic init
+    tst.b   D5                        ; Did we find it?
+    bne.s   .INIT_R2                  ; If yes, initialize it
+    endif 
+
+    ; Let's try the r2 DUART board...
     move.l  #DUART_BASE_R2,A0         ; Set R2 the base address
     bsr.s   INITDUART_ATBASE          ; Try detect / and basic init
     tst.b   D5                        ; Did we find it?
     beq.s   .TRY_R1                   ; If no, try the R1 instead.
 
-    ; Else, we found an r2. Set it up for 115200
+.INIT_R2
+    ; Else, we found an r2 (XR68C681). Set it up for 115200
     move.b  #$A0,DUART_CRA(A0)        ; Enable extended TX rates
     move.b  #$80,DUART_CRA(A0)        ; Enable extended RX rates
     move.b  #$80,DUART_ACR(A0)        ; Select bit rate set 2
@@ -329,7 +371,7 @@ INITDUART:
     tst.b   D5                        ; Did we find it?
     beq.s   .DONE                     ; If no, we don't have a 68681
 
-    ; Else, we found an r1. Set it up for 115200
+    ; Else, we found an r1 (MC68681). Set it up for 115200
     move.b  #$60,DUART_ACR(A0)        ; Set 0, Counter, X1/X2, /16
     move.b  DUART_CRA(A0),D0          ; Enable undocumented rates
     move.b  #$66,DUART_CSRA(A0)       ; 1200 per spec, uses counter instead
@@ -348,8 +390,19 @@ INITDUART:
     ;move.b  #%00000010,DUART_OPCR(A0)  ; RxCA (1x) on OP2, TxCA (1x) on OP3
     move.b  #%00000000,DUART_OPCR(A0)  ; All output port disabled
 
-    move.b  #%00000101,DUART_CRA(A0)   ; Enable TX/RX
+    move.b  #%00000101,DUART_CRA(A0)   ; Enable TX/RX port A
 
+    ifnd REVISION1X
+    ; System timer / interrupt setup
+    move.b  #$B0,DUART_ACR(A0)        ; Enable counter XCLK/16
+    move.b  #$45,DUART_IVR(A0)        ; Use vector 0x45
+
+    ; Counter will run at ~100Hz: 3686400 / 16 / 2304 = 100  
+    move.b  #$09,DUART_CTUR(A0)       ; Counter MSB is 0x09
+    move.b  #$00,DUART_CTLR(A0)       ; Counter LSB is 0x00
+
+    move.b  R_STARTCNTCMD(A0),D0      ; Issue START COUNTER command 
+    endif
 .DONE
     rts
 
@@ -394,6 +447,11 @@ INITDUART_ATBASE:
     bne.s   .DONE                     ; Bail now if so...
 
     ; Looks like we successfully detected a 68681!
+    
+    ifnd REVISION1X
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Enable red LED on r2.x boards
+    endif
+
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
  .DONE:
     move.l  BERR_SAVED,$8             ; Restore bus error handler
@@ -481,11 +539,21 @@ SET_INTR::
     rts
 
 START_HEART::
+    ifd REVISION1X
     bset.b  #5,MFP_IMRB               ; Unmask Timer C interrupt
+    else
+    move.l  SDB_UARTBASE,A0
+    move.b  #$08,DUART_IMR(A0)        ; Unmask counter interrupt
+    endif
     rts
 
 STOP_HEART::
+    ifd REVISION1X
     bclr.b  #5,MFP_IMRB               ; Mask Timer C interrupt
+    else
+    move.l  SDB_UARTBASE,A0
+    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
+    endif
     rts
 
 ;------------------------------------------------------------
@@ -500,6 +568,8 @@ TICK_HANDLER:
     move.l  D0,SDB_UPTICKS            ; And write back
     
     ; Heartbeat
+; ============
+    ifd REVISION1X
     move.w  SDB_TICKCNT,D0            ; Read SDB word at 8
     tst.w   D0                        ; Is it zero?
     bne.s   .TICK_HANDLER_DONE        ; Done if not
@@ -507,19 +577,67 @@ TICK_HANDLER:
     ; counted to zero, so toggle indicator 0 (if allowed) 
     ; and reset counter
     move.b  SDB_SYSFLAGS,D0           ; Get sysflags (high byte)
+
     move.b  MFP_GPDR,D1               ; Get GPDR
     eor.b   #1,D1                     ; Toggle bit 0
     and.b   D0,D1                     ; Mask with flags
     move.b  D1,MFP_GPDR               ; Set GPDR
-    
+
     move.w  #50,D0                    ; Reset counter
 
+; ============
+    else
+; ============
+
+    move.l  A0,-(A7)                  ; Save A0
+    move.l  SDB_UARTBASE,A0           ; And fetch UART base pointer
+
+    move.w  SDB_TICKCNT,D0            ; Read SDB word at 8
+    tst.w   D0                        ; Is LSB zero?
+    bne.s   .TICK_HANDLER_DONE        ; Done if not
+    
+    ; counted to zero, so toggle indicator 0 (if allowed) 
+    ; and reset counter
+    ;move.b  SDB_SYSFLAGS,D0           ; Get sysflags (high byte)
+    ;btst    #1,D0                     ; Is sysflag bit 1 set?
+    ;beq.s   .LEDDONE                  ; bail now if not...
+
+    move.b  SDB_INTFLAGS,D1
+    tst     D1                        ; Is INTFLAGS zero?
+    beq.s   .TURNON                   ; If so, go to turn on
+    
+    ; If here, LED is already on, turn it off
+    move.b  #$20,W_OPR_RESETCMD(A0)   ; Turn it off
+    move.b  #0,D1
+    bra.s   .LEDDONE                  ; And we're done
+
+.TURNON
+    ; LED is off, turn it on
+    move.b  #$20,W_OPR_SETCMD(A0)     ; Turn it on
+    move.b  #1,D1
+    
+.LEDDONE
+    move.b  D1,SDB_INTFLAGS
+    move.w  #50,D0                    ; Reset counter
+    
+    endif
+; ============
+
 .TICK_HANDLER_DONE:
+    ifnd REVISION1X
+    move.b  R_STARTCNTCMD(A0),D1      ; Reissue START COUNTER command
+    move.l  (A7)+,A0                  ; Restore A0
+    endif
+
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,SDB_TICKCNT            ; ... and write back to SDB
     move.l  (A7)+,D1                  ; Restore D1
     move.l  (A7)+,D0                  ; Restore D0
+    
+    ifd REVISION1X
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
+    endif
+
     rte                               ; We're done
 
     
@@ -531,6 +649,7 @@ BUSYWAIT_C::
 BUS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
 
+    ifd REVISION1X
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
@@ -543,6 +662,9 @@ BUS_ERROR_HANDLER:
     bsr.s   BUSYWAIT
 
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    endif
+    ; TODO else for r2X
+    
     move.l  #200000,D0                ; Wait a while
     bsr.s   BUSYWAIT
     bra.s   BUS_ERROR_HANDLER
@@ -561,6 +683,7 @@ BUSYWAIT:
 ADDRESS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
     
+    ifd REVISION1X
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
@@ -578,6 +701,9 @@ ADDRESS_ERROR_HANDLER:
     bsr.w   BUSYWAIT
 
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    endif
+    ; TODO else for r2X
+
     move.l  #200000,D0                ; Wait a while
     bsr.w   BUSYWAIT
     bra.s   ADDRESS_ERROR_HANDLER
@@ -587,6 +713,7 @@ ADDRESS_ERROR_HANDLER:
 ILLEGAL_INSTRUCTION_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
 
+    ifd REVISION1X
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
@@ -612,6 +739,9 @@ ILLEGAL_INSTRUCTION_HANDLER:
     bsr.w   BUSYWAIT
 
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    endif
+    ; TODO else for r2X
+
     move.l  #200000,D0                ; Wait a while
     bsr.w   BUSYWAIT
     bra.w   ILLEGAL_INSTRUCTION_HANDLER
@@ -655,10 +785,12 @@ CHECKCHAR_DUART:
     rts
     endif
 
+    ifd REVISION1X
 CHECKCHAR_MFP:
     move.b  MFP_RSR,D0            ; Get RSR
     andi.b  #$80,D0               ; And with buffer full bit
     rts
+    endif
 
 
 ; Send a single character via UART
@@ -677,6 +809,7 @@ SENDCHAR_DUART:
     rts
     endif
 
+    ifd REVISION1X
 SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
     move.l  D2,-(A7)              ; Save D2
@@ -696,6 +829,7 @@ SENDCHAR_MFP:
     move.l  (A7)+,D2              ; Restore D2
     move.l  (A7)+,D1              ; Restore D1
     rts
+    endif
 
 
 ; Receive a single character via UART.
@@ -715,6 +849,7 @@ RECVCHAR_DUART:
     rts
     endif
 
+    ifd REVISION1X
 RECVCHAR_MFP:
     move.l  D1,-(A7)              ; Store D1
     move.b  SDB_SYSFLAGS,D1       ; Get sysflags (high byte)
@@ -745,6 +880,7 @@ RECVCHAR_MFP:
     move.b  MFP_UDR,D0            ; Get the data
     move.l  (A7)+,D1              ; Restore D1
     rts
+    endif
 
 
 ;------------------------------------------------------------

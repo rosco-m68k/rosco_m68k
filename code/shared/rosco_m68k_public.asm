@@ -31,6 +31,7 @@ SDB_TICKCNT     equ     $408              ; (Internal) Tick counter
 SDB_SYSFLAGS    equ     $40A              ; Sys Flags (see InterfaceReference)
 SDB_UPTICKS     equ     $40C              ; Upticks counter
 SDB_E68K_STATE  equ     $410              ; (Internal) E68k state
+SDB_INTFLAGS    equ     $413              ; (Internal) Flags
 SDB_MEMSIZE     equ     $414              ; Memory size (first block)
 SDB_UARTBASE    equ     $418              ; Default UART base address
 SDB_CPUINFO     equ     $41C              ; CPU Info (see IntefaceReference)
@@ -76,6 +77,7 @@ EFP_ATA_IDENT   equ     $48C
 ; MFP Location
 MFPBASE     equ     IOBASE
 
+  ifd REVISION1X
 ; Equates for MC68901 Multi Function Peripheral
 ;
 ; The register layout is different on r0 boards, hence the
@@ -145,10 +147,11 @@ MFP_RSR     equ     MFPBASE+$2B
 MFP_TSR     equ     MFPBASE+$2D
 MFP_UDR     equ     MFPBASE+$2F
 
-  endif
+  endif     ; REVISION_0
 
 ; Base vector for MFP exceptions
 MFP_VECBASE equ     $40
+  endif     ; REVISION1X
 
 
 ; Equates for MC68681 DUART
@@ -193,9 +196,13 @@ MFP_VECBASE equ     $40
 
 DUART_BASE_R1   equ     $f80008
 DUART_BASE_R2   equ     $f800a8
+    ifnd REVISION1X
+DUART_BASE_MBR2 equ     $f00001
+    endif
 
 ; For reference to the datasheet, the MC68681 register number is listed below.
 ;
+    ifd REVISION1X
 RW_MODE_A       equ     $18           ; RW register 0
 
 R_STATUS_A      equ     $1a           ; R register 1
@@ -242,6 +249,59 @@ W_OPR_SETCMD    equ     $14           ; W register 14
 R_STOPCNTCMD    equ     $16           ; R register 15
 W_OPR_RESETCMD  equ     $16           ; W register 15
 
+
+    else
+
+
+RW_MODE_A       equ     $0            ; RW register 0
+
+R_STATUS_A      equ     $2            ; R register 1
+W_CLKSEL_A      equ     $2            ; W register 1
+
+; R is DO NOT READ on MC part, MISR on XR68C681
+R_MISR          equ     $4            ; R register 2
+W_COMMAND_A     equ     $4            ; W register 2
+
+R_RXBUF_A       equ     $6            ; R register 3
+W_TXBUF_A       equ     $6            ; W register 3
+
+R_INPORTCHG     equ     $8            ; R register 4
+W_AUXCTLREG     equ     $8            ; W register 4
+
+R_ISR           equ     $a            ; R register 5
+W_IMR           equ     $a            ; W register 5
+
+R_COUNTERMSB    equ     $c            ; R register 6
+W_COUNTERMSB    equ     $c            ; W register 6
+
+R_COUNTERLSB    equ     $e            ; R register 7
+W_COUNTERLSB    equ     $e            ; W register 7
+
+RW_MODE_B       equ     $10           ; RW register 8
+
+R_STATUS_B      equ     $12           ; R register 9
+W_CLKSEL_B      equ     $12           ; W register 9
+
+; R is DO NOT ACCESS on both legacy and modern parts
+W_COMMAND_B     equ     $14           ; W register 10
+
+R_RXBUF_B       equ     $16           ; R register 11
+W_TXBUF_B       equ     $16           ; W register 11
+
+RW_IVR          equ     $18           ; RW register 12
+
+R_INPUTPORT     equ     $1a           ; R register 13
+W_OUTPORTCFG    equ     $1a           ; W register 13
+
+R_STARTCNTCMD   equ     $1c           ; R register 14
+W_OPR_SETCMD    equ     $1c           ; W register 14
+
+R_STOPCNTCMD    equ     $1e           ; R register 15
+W_OPR_RESETCMD  equ     $1e           ; W register 15
+
+    endif
+
+;
 ; For convenience, also define the mnemonics used in the datasheet...
 ;
 ; These are *not* defined (by the datasheet) for all registers!
