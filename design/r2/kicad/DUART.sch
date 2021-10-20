@@ -121,7 +121,7 @@ $EndComp
 Text GLabel 1450 5650 2    50   UnSpc ~ 0
 GND
 Text GLabel 1450 5750 2    50   Output ~ 0
-CTSA
+RTSA
 Text GLabel 1450 6050 2    50   Input ~ 0
 TXDA
 Text GLabel 1450 5950 2    50   Output ~ 0
@@ -139,7 +139,7 @@ VCCUB
 Text GLabel 1450 6500 2    50   UnSpc ~ 0
 GND
 Text GLabel 1450 6600 2    50   Output ~ 0
-CTSB
+RTSB
 Text GLabel 1450 6900 2    50   Input ~ 0
 TXDB
 Text GLabel 1450 6800 2    50   Output ~ 0
@@ -151,9 +151,9 @@ SPICLK
 Text GLabel 6400 3300 2    50   Output ~ 0
 SPIMOSI
 Text GLabel 4400 2500 0    50   Input ~ 0
-RTSA
+CTSA
 Text GLabel 4400 2200 0    50   Input ~ 0
-RTSB
+CTSB
 Text GLabel 6400 2200 2    50   Input ~ 0
 SPIMISO
 Connection ~ 8200 3150
@@ -213,9 +213,9 @@ VCC
 Text GLabel 4400 3900 0    50   UnSpc ~ 0
 GND
 Text GLabel 6400 3000 2    50   Output ~ 0
-CTSA
+RTSA
 Text GLabel 4400 3100 0    50   Output ~ 0
-CTSB
+RTSB
 $Comp
 L Device:C C30
 U 1 1 5EE63A78
@@ -365,9 +365,9 @@ Wire Wire Line
 Wire Wire Line
 	9500 5650 9700 5650
 Text GLabel 1450 6150 2    50   Input ~ 0
-RTSA
+CTSA
 Text GLabel 1450 7000 2    50   Input ~ 0
-RTSB
+CTSB
 $Comp
 L rosco_m68k-eagle-import:R-EU_0207_10 R?
 U 1 1 6161B40D
