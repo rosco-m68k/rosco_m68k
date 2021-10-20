@@ -5,7 +5,7 @@ AR
 
 Pin 23 = DUIACK       S0 = 0   S1 = 0
   1  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
-  2  -x-- ---- ---- x--- x--- x--- -x-- -x-- x--- x--- ----
+  2  -x-- ---- -x-- x--- x--- x--- -x-- -x-- x--- x--- ----
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   4  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   5  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -16,7 +16,7 @@ Pin 23 = DUIACK       S0 = 0   S1 = 0
 
 Pin 22 = ANYIACK      S0 = 0   S1 = 0
  10  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 11  ---- ---- ---- x--- x--- x--- ---- ---- ---- x--- ----
+ 11  ---- ---- -x-- x--- x--- x--- ---- ---- ---- x--- ----
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  13  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  14  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

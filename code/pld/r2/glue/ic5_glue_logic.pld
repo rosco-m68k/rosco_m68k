@@ -17,8 +17,8 @@ BQ1.R   = /HWRST * BQ0          ; High after two memory cycles
 BQ2.R   = /HWRST * BQ1          ; High after three memory cycles
 BOOT.R  = /HWRST * BQ2          ; High after four memory cycles
 
-/ANYIACK= FC0 * FC1 * FC2 * A19
-/DUIACK = FC0 * FC1 * FC2 * /AS * /A1 * /A2 * A3 * A19
+/ANYIACK= /HWRST * FC0 * FC1 * FC2 * A19
+/DUIACK = /HWRST * FC0 * FC1 * FC2 * /AS * /A1 * /A2 * A3 * A19
 
 DESCRIPTION
 
