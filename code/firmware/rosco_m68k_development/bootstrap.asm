@@ -380,8 +380,13 @@ INITDUART:
 .COMMON_INIT
     move.l  A0,SDB_UARTBASE           ; Store the base address in SDB
 
-    move.b  #$13,DUART_MR1A(A0)       ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
+    ifd REVISION1X
+    move.b  #$13,DUART_MR1A(A0)       ; (No RTS, RxRDY, Char, No parity, 8 bits)
     move.b  #$07,DUART_MR2A(A0)       ; (Normal, No TX CTS/RTS, 1 stop bit)
+    else
+    move.b  #$93,DUART_MR1A(A0)       ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
+    move.b  #$17,DUART_MR2A(A0)       ; (Normal, TX CTS/No TX RTS, 1 stop bit)
+    endif
 
     ; Debug - output clocks on OP2 for scope
     ;move.b  #%00000010,DUART_OPCR(A0)  ; RxCA (1x) on OP2, TxCA (1x) on OP3
@@ -647,20 +652,35 @@ BUS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
 
     ifd REVISION1X
+; ============
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
-
-    move.b  #0,MFP_IERA
-    move.b  #0,MFP_IERB
-
+    
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
+; ============
+    else
+; ============
+    move.l  SDB_UARTBASE,A0
+    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
+    move.b  #$00,DUART_OPCR(A0)       ; All GPIOs are output
+
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
+    endif
+
     move.l  #100000,D0                ; Wait a while
     bsr.s   BUSYWAIT
 
+    ifd REVISION1X
+; ============
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
     endif
-    ; TODO else for r2X
     
     move.l  #200000,D0                ; Wait a while
     bsr.s   BUSYWAIT
@@ -681,25 +701,61 @@ ADDRESS_ERROR_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
     
     ifd REVISION1X
+; ============
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
     
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
+; ============
+    else
+; ============
+    move.l  SDB_UARTBASE,A0
+    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
+    move.b  #$00,DUART_OPCR(A0)       ; All GPIOs are output
+
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
+    endif
+
     move.l  #50000,D0                 ; Wait a while
     bsr.s   BUSYWAIT
 
+    ifd REVISION1X
+; ============
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
+    endif
+
     move.l  #50000,D0                 ; Wait a while
     bsr.s   BUSYWAIT
-    
+
+    ifd REVISION1X    
+; ============
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
+    endif
+
     move.l  #50000,D0                 ; Wait a while
     bsr.w   BUSYWAIT
 
+    ifd REVISION1X    
+; ============
     move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
     endif
-    ; TODO else for r2X
 
     move.l  #200000,D0                ; Wait a while
     bsr.w   BUSYWAIT
@@ -711,33 +767,87 @@ ILLEGAL_INSTRUCTION_HANDLER:
     or.w    #0700,SR                  ; Disable exceptions
 
     ifd REVISION1X
+; ============
     move.b  #0,MFP_IERA               ; Disable MFP interrupts
     move.b  #0,MFP_IERB               
     move.b  #$FF,MFP_DDR              ; All GPIOs are output
 
     move.b  #$FD,MFP_GPDR             ; Turn on red LED
-    move.l  #50000,D0                 ; Wait a while
-    bsr.w   BUSYWAIT
+; ============
+    else
+; ============
+    move.l  SDB_UARTBASE,A0
+    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
+    move.b  #$00,DUART_OPCR(A0)       ; All GPIOs are output
 
-    move.b  #$FF,MFP_GPDR             ; Turn off red LED
-    move.l  #50000,D0                 ; Wait a while
-    bsr.w   BUSYWAIT
-    
-    move.b  #$FD,MFP_GPDR             ; Turn on red LED
-    move.l  #50000,D0                 ; Wait a while
-    bsr.w   BUSYWAIT
-
-    move.b  #$FF,MFP_GPDR             ; Turn off red LED
-    move.l  #50000,D0                 ; Wait a while
-    bsr.w   BUSYWAIT
-    
-    move.b  #$FD,MFP_GPDR             ; Turn on red LED
-    move.l  #50000,D0                 ; Wait a while
-    bsr.w   BUSYWAIT
-
-    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
     endif
-    ; TODO else for r2X
+
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    ifd REVISION1X
+; ============
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
+    endif
+
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+    
+    ifd REVISION1X
+; ============
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
+    endif
+
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    ifd REVISION1X
+; ============
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
+    endif
+
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+    
+    ifd REVISION1X
+; ============
+    move.b  #$FD,MFP_GPDR             ; Turn on red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_SETCMD(A0)     ; Turn on red LED on r2.x boards
+; ============
+    endif
+
+    move.l  #50000,D0                 ; Wait a while
+    bsr.w   BUSYWAIT
+
+    ifd REVISION1X
+; ============
+    move.b  #$FF,MFP_GPDR             ; Turn off red LED
+; ============
+    else
+; ============
+    move.b  #$08,W_OPR_RESETCMD(A0)   ; Turn off red LED on r2.x boards
+; ============
+    endif
 
     move.l  #200000,D0                ; Wait a while
     bsr.w   BUSYWAIT
@@ -888,7 +998,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;30m  Firmware 2.0.DEV", $1B, "[0m", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m   Classic ", $1B, "[1;30m2.0.DEV", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 
