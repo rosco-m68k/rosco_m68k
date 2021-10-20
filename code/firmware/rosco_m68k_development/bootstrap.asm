@@ -260,20 +260,28 @@ INITMEMCOUNT:
 .MEMTOP    equ $E00000
     endif
 
+    move.b  #0,BERR_FLAG              ; Zero bus error flag
+    move.l  $8,BERR_SAVED             ; Save the original bus error handler
+    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
     move.l  (A0),D0
-    cmp.l   #.TESTVALUE,D0
-    bne.s   .DONE
 
-    cmp.l   #.MEMTOP,A0
-    beq.s   .DONE
+    tst.b   BERR_FLAG                 ; Was there a bus error?
+    bne.s   .DONE                     ; Fail fast if so...
 
-    add.l   #.BLOCKSIZE,A0
-    bra.s   .LOOP
+    cmp.l   #.TESTVALUE,D0            ; Did we get test value back?
+    bne.s   .DONE                     ; Fail fast if not...
+
+    cmp.l   #.MEMTOP,A0               ; Are we at the top of memory?
+    beq.s   .DONE                     ; We're done if so...
+
+    add.l   #.BLOCKSIZE,A0            ; Failing all that...
+    bra.s   .LOOP                     ; ... continue testing.
 
 .DONE
+    move.l  BERR_SAVED,$8             ; Restore bus error handler
     move.l  A0,SDB_MEMSIZE
     rts
 
@@ -350,7 +358,7 @@ INITDUART:
 
     ; Let's try the r2 DUART board...
     move.l  #DUART_BASE_R2,A0         ; Set R2 the base address
-    bsr.s   INITDUART_ATBASE          ; Try detect / and basic init
+    bsr.w   INITDUART_ATBASE          ; Try detect / and basic init
     tst.b   D5                        ; Did we find it?
     beq.s   .TRY_R1                   ; If no, try the R1 instead.
 
@@ -386,6 +394,7 @@ INITDUART:
     else
     move.b  #$93,DUART_MR1A(A0)       ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
     move.b  #$17,DUART_MR2A(A0)       ; (Normal, TX CTS/No TX RTS, 1 stop bit)
+    move.b  #$01,W_OPR_SETCMD(A0)     ; Assert RTS to begin with...
     endif
 
     ; Debug - output clocks on OP2 for scope
