@@ -75,8 +75,9 @@ $(info === Building rosco_m68k firmware with NO_TICK)
 DEFINES:=$(DEFINES) -DNO_TICK
 endif
 
-include easy68k/include.mk
+ifneq ($(WITH_BLOCKDEV),false)
 include blockdev/include.mk
+endif
 
 ifneq ($(WITH_VDP),false)
 $(info === Building rosco_m68k firmware with V9958 VDP)
@@ -93,6 +94,8 @@ ifeq ($(WITH_DEBUG_STUB),true)
 $(info === Building rosco_m68k firmware with DEBUG_STUB)
 include debug_stub/include.mk
 endif
+
+include easy68k/include.mk
 
 export ATA_DEBUG
 export WITH_BLOCKDEV
