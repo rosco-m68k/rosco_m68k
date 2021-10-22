@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 5 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
-Date "2021-10-08"
-Rev "2.0"
+Date "2021-10-22"
+Rev "2.1"
 Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
@@ -149,14 +149,6 @@ D14
 Text GLabel 3750 5750 0    50   BiDi ~ 0
 D15
 Wire Wire Line
-	7400 4300 7200 4300
-Wire Wire Line
-	7200 4300 6800 4300
-Wire Wire Line
-	6800 4300 6400 4300
-Wire Wire Line
-	6400 4300 6400 4600
-Wire Wire Line
 	7400 4300 7600 4300
 Wire Wire Line
 	7600 4300 8000 4300
@@ -168,25 +160,8 @@ Wire Wire Line
 	8000 4600 8000 4300
 Wire Wire Line
 	7600 4600 7600 4300
-Wire Wire Line
-	7200 4600 7200 4300
-Wire Wire Line
-	6800 4600 6800 4300
-Connection ~ 7400 4300
 Connection ~ 8000 4300
 Connection ~ 7600 4300
-Connection ~ 7200 4300
-Connection ~ 6800 4300
-Wire Wire Line
-	6400 5800 6400 5000
-Wire Wire Line
-	6800 5800 6800 5000
-Text GLabel 6800 5800 3    70   UnSpc ~ 0
-IPL1
-Wire Wire Line
-	7200 5800 7200 5000
-Text GLabel 7200 5800 3    70   UnSpc ~ 0
-IPL0
 Wire Wire Line
 	8000 5800 8000 5000
 Text GLabel 8000 5800 3    70   UnSpc ~ 0
@@ -199,34 +174,6 @@ Wire Wire Line
 	8400 5800 8400 5000
 Text GLabel 8400 5800 3    70   UnSpc ~ 0
 BERR
-$Comp
-L rosco_m68k-eagle-import:R-EU_0207_10 R?
-U 1 1 616E1A5C
-P 6400 4800
-AR Path="/616E1A5C" Ref="R?"  Part="1" 
-AR Path="/5E53B952/616E1A5C" Ref="R?"  Part="1" 
-AR Path="/5E53B4B8/616E1A5C" Ref="R4"  Part="1" 
-F 0 "R4" V 6250 4859 59  0000 L BNN
-F 1 "4K7" V 6430 4850 59  0000 L BNN
-F 2 "rosco_m68k:0207_10" H 6400 4800 50  0001 C CNN
-F 3 "" H 6400 4800 50  0001 C CNN
-	1    6400 4800
-	0    -1   -1   0   
-$EndComp
-$Comp
-L rosco_m68k-eagle-import:R-EU_0207_10 R?
-U 1 1 616E1A68
-P 7200 4800
-AR Path="/616E1A68" Ref="R?"  Part="1" 
-AR Path="/5E53B952/616E1A68" Ref="R?"  Part="1" 
-AR Path="/5E53B4B8/616E1A68" Ref="R6"  Part="1" 
-F 0 "R6" V 7050 4859 59  0000 L BNN
-F 1 "4K7" V 7230 4850 59  0000 L BNN
-F 2 "rosco_m68k:0207_10" H 7200 4800 50  0001 C CNN
-F 3 "" H 7200 4800 50  0001 C CNN
-	1    7200 4800
-	0    -1   -1   0   
-$EndComp
 $Comp
 L rosco_m68k-eagle-import:R-EU_0207_10 R?
 U 1 1 616E1A6E
@@ -284,8 +231,6 @@ F 3 "" H 7400 3900 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	7400 3900 7400 4300
-Text GLabel 6400 5800 3    70   UnSpc ~ 0
-IPL2
 Text GLabel 7750 2350 2    50   Output ~ 0
 CLK
 Wire Wire Line
@@ -407,18 +352,4 @@ Wire Wire Line
 	6850 2350 6950 2350
 Connection ~ 8150 1650
 Connection ~ 8150 3000
-$Comp
-L rosco_m68k-eagle-import:R-EU_0207_10 R?
-U 1 1 616E1A62
-P 6800 4800
-AR Path="/616E1A62" Ref="R?"  Part="1" 
-AR Path="/5E53B952/616E1A62" Ref="R?"  Part="1" 
-AR Path="/5E53B4B8/616E1A62" Ref="R5"  Part="1" 
-F 0 "R5" V 6650 4859 59  0000 L BNN
-F 1 "4K7" V 6830 4850 59  0000 L BNN
-F 2 "rosco_m68k:0207_10" H 6800 4800 50  0001 C CNN
-F 3 "" H 6800 4800 50  0001 C CNN
-	1    6800 4800
-	0    -1   -1   0   
-$EndComp
 $EndSCHEMATC

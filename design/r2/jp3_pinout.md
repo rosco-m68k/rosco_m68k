@@ -1,11 +1,13 @@
 # rosco_m68k JP3 (Expansion) Pinout (revision 1)
 
-> **Note** this applies to revision 1 (and higher, unless otherwise specified)
-  boards **only**. This pinout is **not** compatible with early revision zero boards!
+> **Note** this applies to revision 2 (and higher, unless otherwise specified)
+  boards **only**. This pinout has changed since the revision one boards (but 
+  for most practical purposes it should be compatible - see the new IRQ pins 
+  for the differences). This pinout is **not** compatible with earlier revision
+  zero boards (which were never released to production anyway)!
 
-JP3 (split into JP3 and JP4 in the schematic but joined as a single 2x32 pin header on the PCB)
-provides peripheral access to the full address, data and control buses in the system, plus
-VCC (5V) and GND. These signals are unbuffered and have no built-in protection, so are
+JP3 provides peripheral access to the full address, data and control buses in the system, 
+plus VCC (5V) and GND. These signals are unbuffered and have no built-in protection, so are
 not suitable for direct use as a bus, but could be made so with a relativelty simple 
 expansion-to-bus conversion board. 
 
@@ -16,23 +18,19 @@ and should not be used to directly drive e.g. LEDs. If LEDs are to be driven, th
 a transistor must be used, or the circuit set up such that the pins sink current.
 
 In all cases, see the datasheets for the relevant IC driving a given line (either the
-MC68010, MC68901 or, for the decoder signals, the ATF16V8BQLs) for the absolute maximum ratings.
+MC68010, MC68901 or, for the decoder signals, the ATF22V10Cs) for the absolute maximum ratings.
 
-The recommended maximum current draw on the VCC line is 250mA. The board _should_ be
-able to supply more than this, but as power supplies are so variable you should take
-care if drawing more than this from this pin. A better solution should you need might
-be to separately power your peripheral from the supply and share common ground.
-
-Although it is possible with the current design to power the board by the VCC and GND
-pins, this is not recommended. If you do decide to do this you might consider additional
-filtering.
+The absolute maximum current draw on the VCC line is 1A. Recommended maximum is 500mA.
+The board _may_ be able to supply more than this, but as power supplies are so variable 
+you should take care if drawing more than this from this pin. A better solution should 
+you need might be to separately power your peripheral from the supply and share common ground.
 
 | Pin | Signal | Description                                  | Active | I/O |
 |-----|--------|----------------------------------------------|--------|-----|
 | 1   | A1     | MC68010 Address line 1                       | High   | O   |
-| 2   | VCC    | +5V (Recommend 250mA max depending on PSU)   | N/A    | O   |
+| 2   | VCC    | +5V (Recommend 1A max)                       | N/A    | O   |
 | 3   | A2     | MC68010 Address line 2                       | High   | O   |
-| 4   | CLK    | Main system clock (8MHz, 50% duty cycle)     | N/A    | O   |
+| 4   | CLK    | Main system clock (10MHz, 50% duty cycle)    | N/A    | O   |
 | 5   | A3     | MC68010 Address line 3                       | High   | O   |
 | 6   | GND    | Ground                                       | N/A    | O   |
 | 7   | A4     | MC68010 Address line 4                       | High   | O   |
@@ -42,7 +40,7 @@ filtering.
 | 11  | A6     | MC68010 Address line 6                       | High   | O   |
 | 12  | VMA    | MC68010 Legacy peripheral VMA (*5)           | Low    | O   |
 | 13  | A7     | MC68010 Address line 7                       | High   | O   |
-| 14  | IEO    | MC68901 Interrupt-Enable-Out (*7)            | Low    | O   |
+| 14  | IRQ3   | IRQ3 line (*3)                               | Low    | I   |
 | 15  | A8     | MC68010 Address line 8                       | High   | O   |
 | 16  | IOS    | IOSEL line from decoder (*1)                 | Low    | O   |
 | 17  | A9     | MC68010 Address line 9                       | High   | O   |
@@ -54,11 +52,11 @@ filtering.
 | 23  | A12    | MC68010 Address line 12                      | High   | O   |
 | 24  | FC2    | MC68010 Function Code 2 (*2)                 | High   | O   |
 | 25  | A13    | MC68010 Address line 13                      | High   | O   |
-| 26  | IPL0   | MC68010 Interrupt Priority Level Bit 0 (*3)  | Low    | I   |
+| 26  | IPL0   | IRQ5 line (*3)                               | Low    | I   |
 | 27  | A14    | MC68010 Address line 14                      | High   | O   |
-| 28  | IPL1   | MC68010 Interrupt Priority Level Bit 1 (*3)  | Low    | I   |
+| 28  | IPL1   | IRQ2 Line (*3)                               | Low    | I   |
 | 29  | A15    | MC68010 Address line 15                      | High   | O   |
-| 30  | IPL2   | MC68010 Interrupt Priority Level Bit 2 (*3)  | Low    | I   |
+| 30  | IPL2   | IRQ6 Line *3)                                | Low    | I   |
 | 31  | A16    | MC68010 Address line 16                      | High   | O   |
 | 32  | LDS    | MC68010 Lower Data Strobe                    | Low    | O   |
 | 33  | A17    | MC68010 Address line 17                      | High   | O   |
@@ -98,9 +96,8 @@ filtering.
  
  1. If used to drive LEDs, the circuit should be configured such that these pins sink current.
  2. If all three function code pins are high the CPU is asserting IACK.
- 3. Interrupt 4 (100b) is reserved for the MC68901.
- 4. Wire-or, open-collector.
+ 3. Active low, open-collector IRQ lines for peripherals (4K7 pullups included, do not add more). 
+ 4. Wire-or, open-collector. Pullup is already provided.
  5. See MC68010 user manual. Using these lines alters bus cycle timing.
  6. This line has a built-in 10k pull-up.
- 7. Supports daisy-chained interrupt controllers. The on-board 68901 is wired as highest-priority.
 

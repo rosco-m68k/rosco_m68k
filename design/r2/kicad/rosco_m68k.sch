@@ -5,8 +5,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 7
 Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
-Date "2021-10-08"
-Rev "2.0"
+Date "2021-10-22"
+Rev "2.1"
 Comp "The Really Old-School Company Limited"
 Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
 Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"

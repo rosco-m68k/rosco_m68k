@@ -4,14 +4,14 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 4 7
-Title "rosco_m68k Pro (030) Prototype"
-Date "2021-10-01"
-Rev "0"
+Title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER"
+Date "2021-10-22"
+Rev "2.1"
 Comp "The Really Old-School Company Limited"
-Comment1 "Copyright ©2021 The Really Old-School Company Limited"
-Comment2 "Open Source Hardware (CERN OHL)"
-Comment3 "Prototype Hardware! Not suitable for general use!"
-Comment4 ""
+Comment1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)"
+Comment2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt"
+Comment3 "Open Source Hardware licenced under CERN Open Hardware Licence"
+Comment4 "Copyright 2019-2021 Ross Bamford and Contributors"
 $EndDescr
 Wire Wire Line
 	3050 4000 3050 4600
