@@ -12,6 +12,7 @@ RESET.E =  HWRST
 
 RUNLED  = /HALT
 
+AR      = HWRST
 BQ0.R   = /HWRST                ; High after one memory cycle
 BQ1.R   = /HWRST * BQ0          ; High after two memory cycles
 BQ2.R   = /HWRST * BQ1          ; High after three memory cycles
