@@ -46,7 +46,7 @@
 #define MFP_TSR       0xf8001B
 #define MFP_UDR       0xf8003B
 #else
-// DEFINEs for MFP registers on "fixed" boards
+// DEFINEs for MFP registers on "fixed" (r1.x) boards
 #define MFP_GPDR      0xf80001
 #define MFP_AER       0xf80003
 #define MFP_DDR       0xf80005
@@ -71,6 +71,87 @@
 #define MFP_RSR       0xf8002B
 #define MFP_TSR       0xf8002D
 #define MFP_UDR       0xf8002F
+#endif
+
+// DEFINEs for DUART registers on r2.x boards
+#ifndef REVISION1X
+#define DUART_BASE              0xf00001
+#define DUART_RW_MODE_A         DUART_BASE+0  // RW register 0
+
+#define DUART_R_STATUS_A        DUART_BASE+2  // R register 1
+#define DUART_W_CLKSEL_A        DUART_BASE+2  // W register 1
+
+// R is DO NOT READ on MC part, MISR on XR68C681
+#define DUART_R_MISR            DUART_BASE+4  // R register 2
+#define DUART_W_COMMAND_A       DUART_BASE+4  // W register 2
+
+#define DUART_R_RXBUF_A         DUART_BASE+6  // R register 3
+#define DUART_W_TXBUF_A         DUART_BASE+6  // W register 3
+
+#define DUART_R_INPORTCHG       DUART_BASE+8  // R register 4
+#define DUART_W_AUXCTLREG       DUART_BASE+8  // W register 4
+
+#define DUART_R_ISR             DUART_BASE+a  // R register 5
+#define DUART_W_IMR             DUART_BASE+a  // W register 5
+
+#define DUART_R_COUNTERMSB      DUART_BASE+c  // R register 6
+#define DUART_W_COUNTERMSB      DUART_BASE+c  // W register 6
+
+#define DUART_R_COUNTERLSB      DUART_BASE+e  // R register 7
+#define DUART_W_COUNTERLSB      DUART_BASE+e  // W register 7
+
+#define DUART_RW_MODE_B         DUART_BASE+10 // RW register 8
+
+#define DUART_R_STATUS_B        DUART_BASE+12 // R register 9
+#define DUART_W_CLKSEL_B        DUART_BASE+12 // W register 9
+
+// R is DO NOT ACCESS on both legacy and modern parts
+#define DUART_W_COMMAND_B       DUART_BASE+14 // W register 10
+
+#define DUART_R_RXBUF_B         DUART_BASE+16 // R register 11
+#define DUART_W_TXBUF_B         DUART_BASE+16 // W register 11
+
+#define DUART_RW_IVR            DUART_BASE+18 // RW register 12
+
+#define DUART_R_INPUTPORT       DUART_BASE+1a // R register 13
+#define DUART_W_OUTPORTCFG      DUART_BASE+1a // W register 13
+
+#define DUART_R_STARTCNTCMD     DUART_BASE+1c // R register 14
+#define DUART_W_OPR_SETCMD      DUART_BASE+1c // W register 14
+
+#define DUART_R_STOPCNTCMD      DUART_BASE+1e // R register 15
+#define DUART_W_OPR_RESETCMD    DUART_BASE+1e // W register 15
+
+//
+// For convenience, also define the mnemonics used in the datasheet...
+//
+// These are *not* defined (by the datasheet) for all registers!
+//
+#define DUART_MR1A    RW_MODE_A
+#define DUART_MR2A    RW_MODE_A
+#define DUART_SRA     R_STATUS_A
+#define DUART_CSRA    W_CLKSEL_A
+#define DUART_MISR    R_MISR
+#define DUART_CRA     W_COMMAND_A
+#define DUART_RBA     R_RXBUF_A
+#define DUART_TBA     W_TXBUF_A
+#define DUART_IPCR    R_INPORTCHG
+#define DUART_ACR     W_AUXCTLREG
+#define DUART_ISR     R_ISR
+#define DUART_IMR     W_IMR
+#define DUART_CUR     R_COUNTERMSB
+#define DUART_CTUR    W_COUNTERMSB
+#define DUART_CLR     R_COUNTERLSB
+#define DUART_CTLR    W_COUNTERLSB
+#define DUART_MR1B    RW_MODE_B
+#define DUART_MR2B    RW_MODE_B
+#define DUART_SRB     R_STATUS_B
+#define DUART_CSRB    W_CLKSEL_B
+#define DUART_CRB     W_COMMAND_B
+#define DUART_RBB     R_RXBUF_B
+#define DUART_TBB     W_TXBUF_B
+#define DUART_IVR     RW_IVR
+#define DUART_OPCR    W_OUTPORTCFG
 #endif
 
 /*
