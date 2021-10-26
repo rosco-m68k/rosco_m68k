@@ -1,25 +1,36 @@
 # rosco_m68k Firmware v2.0
-## For all Revision 1.x rosco_m68k main boards
+## For all Revision 1.x & Revision 2.x rosco_m68k Classic main boards
 
-This is the official version 2.0 firmware for the revision 1.2 rosco_m68k. 
+This is the official version 2.0 firmware for all rosco_m68k Classic boards.
+
 It provides basic machine initialization, a rich API for use by software,
 and a variety of boot loaders to enable flexible loading of code into the
 machine at boot time.
 
-Drivers are included here for the MC68901, MC68681 (and XR68C681), V9958, 
-Xark's Xosera, MarkM's IDE (ATA) interface, and the built-in (bit-banged) 
-SPI and SD Card interfaces, and (where appropriate) a firmware interface 
-to enable easy use is also provided (see InterfaceReference.md).
+Drivers are included here for the MC68901 (Revision 1.x only), MC68681 
+(and XR68C681), V9958, Xark's Xosera, MarkM's IDE (ATA) interface, and 
+the built-in (bit-banged) SPI and SD Card interfaces, and (where 
+appropriate) a firmware interface to enable easy use is also provided 
+(see InterfaceReference.md).
 
 ## Building
 
-The build supports building 64KB ROMs with all options enabled. Note that,
-unlike the 1.x firmware series, no support is provided for 16KB ROMs.
+The build supports building either 1MB (for Revision 2.x mainboards) or 
+64KB ROMs (for Revision 1.x mainboards). Selected options will vary depending
+on the ROM size being built. 
 
-To build all options included just `make`, e.g:
+Note that, unlike the 1.x firmware series, no support is provided for 16KB ROMs.
+
+To build all options included for revision 2.x boards, just `make`, e.g:
 
 ```
 make clean all
+```
+
+If you wish to build for revision 1.x boards, build with REVISION1X=true, e.g.
+
+```
+REVISION1X=true make clean all
 ```
 
 You can optionally include/exclude various things - see the `Makefile` for 
@@ -31,11 +42,12 @@ If you are using a TL866II+ programmer, you can burn your ROMs
 directly from the Makefile with:
 
 ```
-make clean burn
+make burn
 ```
 
-This will automatically set the device to AT28C256. This can be overriden 
-by passing `ROMDEVICE` on the command line, e.g:
+This will automatically set the device to whatever is appropriate for the
+ROM size you built (SST39SF040 for R2.x, AT28C256 for R1.x). This can be 
+overriden by passing `ROMDEVICE` on the command line, e.g:
 
 ```
 ROMDEVICE=<SOMEDEVICE> make clean burn

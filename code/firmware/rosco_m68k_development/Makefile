@@ -38,8 +38,7 @@ STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-ROMDEVICE?=AT28C256
-
+ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
 				cpuspeed.o warmboot.o main1.o 
 
@@ -51,16 +50,25 @@ WITH_DEBUG_STUB?=true
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board)
 DEFINES:=$(DEFINES) -DREVISION1X
+HUGEROM?=false
+ROMDEVICE=AT28C256
+else
+$(info === Building rosco_m68k firmware for revision 2.x board)
+HUGEROM?=true
 endif
 
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
-ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
+ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
+ROMDEVICE=AT28C256
+else
+$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
+endif
 endif
 
 ifeq ($(NO68681),true)
