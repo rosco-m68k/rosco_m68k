@@ -914,4 +914,7 @@ Connection ~ 5000 2800
 Wire Wire Line
 	5850 2900 5300 2900
 Connection ~ 5300 2900
+Wire Wire Line
+	5300 2000 6350 2000
+Connection ~ 5300 2000
 $EndSCHEMATC
