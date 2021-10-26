@@ -10,7 +10,7 @@ EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K_SDCARD -DSD_BLOCK_READ_ONLY -DBLOCK
 
 ifeq ($(HUGEROM),true)
 BD_CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
-          -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
+          -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -O3         \
           -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
 
 blockdev/mfp_gpio.o: blockdev/mfp_gpio.c
