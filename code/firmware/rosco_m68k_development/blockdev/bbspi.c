@@ -17,51 +17,49 @@
 #include <stdbool.h>
 
 #include "bbspi.h"
-#include "gpio.h"
-#include "gpio_spi.h"
 
-#define CS0     GPIO1
-#define SCK     GPIO2
-#define MOSI    GPIO3
-#define MISO    GPIO4
-#define CS1     GPIO5
+#ifdef REVISION1X
+#include "mfp_gpio_spi.h"
+#else
+#include "dua_gpio_spi.h"
+#endif
 
 bool BBSPI_initialize() {
-    pinMode(CS0, OUTPUT);
-    pinMode(CS1, OUTPUT);
-    pinMode(SCK, OUTPUT);
-    pinMode(MOSI, OUTPUT);
-    pinMode(MISO, INPUT);
+    pinMode(SPI_CS, OUTPUT);
+    pinMode(SPI_CS1, OUTPUT);
+    pinMode(SPI_SCK, OUTPUT);
+    pinMode(SPI_COPI, OUTPUT);
+    pinMode(SPI_CIPO, INPUT);
 
     return true;
 }
 
 void BBSPI_assert_cs0() {
-    digitalWrite(CS0, false);
+    digitalWrite(SPI_CS, false);
 }
 
 void BBSPI_deassert_cs0() {
-    digitalWrite(CS0, true);
+    digitalWrite(SPI_CS, true);
 }
 
 void BBSPI_assert_cs1() {
-    digitalWrite(CS1, false);
+    digitalWrite(SPI_CS1, false);
 }
 
 void BBSPI_deassert_cs1() {
-    digitalWrite(CS1, true);
+    digitalWrite(SPI_CS1, true);
 }
 
 void BBSPI_write_mosi(bool state) {
-    digitalWrite(MOSI, state);
+    digitalWrite(SPI_COPI, state);
 }
 
 void BBSPI_write_sck(bool state) {
-    digitalWrite(SCK, state);
+    digitalWrite(SPI_SCK, state);
 }
 
 bool BBSPI_read_miso() {
-    return digitalRead(MISO);
+    return digitalRead(SPI_CIPO);
 }
 
 uint8_t BBSPI_transfer_byte(uint8_t byte_out) {

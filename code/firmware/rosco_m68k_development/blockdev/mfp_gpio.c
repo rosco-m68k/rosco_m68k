@@ -17,7 +17,7 @@
 #include <stdbool.h>
 #include <machine.h>
 
-#include "gpio.h"
+#include "mfp_gpio.h"
 
 static volatile uint8_t * const mfp_gpdr = (uint8_t * const)MFP_GPDR;
 static volatile uint8_t * const mfp_ddr = (uint8_t * const)MFP_DDR;
@@ -30,14 +30,14 @@ void pinMode(GPIO pin, PINMODE mode) {
   }
 }
 
-bool digitalRead(GPIO pin) {
-  return (*mfp_gpdr & pin) == pin;
-}
-
 void digitalWrite(GPIO pin, bool value) {
   if (value) {
     *mfp_gpdr |= pin; 
   } else {
     *mfp_gpdr &= ~pin;
   }
+}
+
+bool digitalRead(GPIO pin) {
+  return (*mfp_gpdr & pin) == pin;
 }

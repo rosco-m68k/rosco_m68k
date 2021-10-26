@@ -20,8 +20,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../../blockdev/include/gpio.h"
-
 bool BBSPI_initialize();
 void BBSPI_write_mosi(bool state);
 void BBSPI_write_sck(bool state);

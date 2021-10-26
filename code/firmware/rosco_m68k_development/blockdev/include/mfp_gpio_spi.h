@@ -17,7 +17,7 @@
 #define _ROSCOM68K_GPIO_SPI_H
 
 #include <machine.h>
-#include "../../blockdev/include/gpio.h"
+#include "mfp_gpio.h"
 
 // SPI functions are static, so inlining depends on compiler optimization
 // level.  However, you can influence the compiler by defining one of these:
@@ -46,6 +46,9 @@
 #if !defined(SPI_CIPO_B)
 #define SPI_CIPO_B    GPIO4_B
 #endif
+#if !defined(SPI_CS1_B)
+#define SPI_CS1_B     GPIO5_B
+#endif
 
 // SPI active LEDs - LEDs to set during buffer transfers
 // NOTE: Normal rosco_m68k LED blinking overridden during transfers
@@ -58,6 +61,7 @@
 #define SPI_SCK       (1<<SPI_SCK_B)
 #define SPI_COPI      (1<<SPI_COPI_B)
 #define SPI_CIPO      (1<<SPI_CIPO_B)
+#define SPI_CS1       (1<<SPI_CS1_B)
 
 // send one SPI byte, ignore received byte
 static SPI_INLINE void spi_send_byte(int byte) __attribute__ ((used));

@@ -48,6 +48,11 @@ WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
+ifeq ($(REVISION1X),true)
+$(info === Building rosco_m68k firmware for revision 1.x board)
+DEFINES:=$(DEFINES) -DREVISION1X
+endif
+
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
@@ -65,18 +70,18 @@ else
 $(info === Building rosco_m68k firmware with 68681 DUART support)
 endif
 
-ifeq ($(ATA_DEBUG),true)
-$(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
-DEFINES:=$(DEFINES) -DATA_DEBUG
-endif
-
 ifeq ($(NO_TICK),true)
 $(info === Building rosco_m68k firmware with NO_TICK)
 DEFINES:=$(DEFINES) -DNO_TICK
 endif
 
 ifneq ($(WITH_BLOCKDEV),false)
+$(info === Building rosco_m68k firmware with block device support)
 include blockdev/include.mk
+ifeq ($(ATA_DEBUG),true)
+$(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
+DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
 endif
 
 ifneq ($(WITH_VDP),false)
@@ -101,6 +106,7 @@ export ATA_DEBUG
 export WITH_BLOCKDEV
 export WITH_KERMIT
 export CPU ARCH TUNE
+export REVISION1X
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
