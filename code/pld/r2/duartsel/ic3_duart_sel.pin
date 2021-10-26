@@ -15,7 +15,7 @@
   11   | A16      | Input
   12   | GND      | GND
   13   | NC       | Input
-  14   | NC       | NC
+  14   | A19      | Input
   15   | NC       | NC
   16   | A17      | Input
   17   | A18      | Input

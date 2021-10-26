@@ -403,7 +403,6 @@ NoConn ~ 5250 3600
 NoConn ~ 5250 3500
 NoConn ~ 5250 3400
 NoConn ~ 5250 4200
-NoConn ~ 5250 4300
 NoConn ~ 5250 4400
 Connection ~ 8000 3200
 Connection ~ 8000 4850
@@ -497,4 +496,6 @@ Wire Wire Line
 	3200 7000 3500 7000
 Wire Wire Line
 	3500 7000 3500 7150
+Text GLabel 5250 4300 2    50   Input ~ 0
+A19
 $EndSCHEMATC
