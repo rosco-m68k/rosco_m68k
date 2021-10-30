@@ -1,4 +1,4 @@
-# rosco_m68k JP3 (Expansion) Pinout (revision 1)
+# rosco_m68k JP3 (Expansion) Pinout (revision 2)
 
 > **Note** this applies to revision 2 (and higher, unless otherwise specified)
   boards **only**. This pinout has changed since the revision one boards (but 
