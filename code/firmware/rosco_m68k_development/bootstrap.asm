@@ -388,13 +388,10 @@ INITDUART:
 .COMMON_INIT
     move.l  A0,SDB_UARTBASE           ; Store the base address in SDB
 
-    ifd REVISION1X
     move.b  #$13,DUART_MR1A(A0)       ; (No RTS, RxRDY, Char, No parity, 8 bits)
     move.b  #$07,DUART_MR2A(A0)       ; (Normal, No TX CTS/RTS, 1 stop bit)
-    else
-    move.b  #$93,DUART_MR1A(A0)       ; (Rx RTS, RxRDY, Char, No parity, 8 bits)
-    move.b  #$17,DUART_MR2A(A0)       ; (Normal, TX CTS/No TX RTS, 1 stop bit)
-    move.b  #$01,W_OPR_SETCMD(A0)     ; Assert RTS to begin with...
+    ifnd REVISION1X
+    move.b  #$01,W_OPR_SETCMD(A0)     ; Assert RTS from startup
     endif
 
     ; Debug - output clocks on OP2 for scope
