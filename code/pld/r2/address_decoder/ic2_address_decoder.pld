@@ -12,7 +12,7 @@ AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  PPDTACK DT
 /ODDROM   =  IACK  * /AS * /LDS * A23 * A22 * A21 * /A20
           +  IACK  * /AS * /LDS * /BOOT
 
-/IOSEL    =  IACK  * /AS * A23 * A22 * A21 * A20
+/IOSEL    =  IACK  * A23 * A22 * A21 * A20
 
 /EXPSEL   =  IACK  * /AS * A23 * /A21
           +  IACK  * /AS * /A23 * A22

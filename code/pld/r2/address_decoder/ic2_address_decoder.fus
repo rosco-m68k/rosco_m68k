@@ -80,7 +80,7 @@ Pin 19 = EXPSEL       S0 = 0   S1 = 0
 
 Pin 18 = IOSEL        S0 = 0   S1 = 0
  66  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 67  ---- ---- x--- x-x- x--- x--- ---- ---- ---- ---- ---x
+ 67  ---- ---- x--- x-x- x--- x--- ---- ---- ---- ---- ----
  68  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  69  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  70  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
