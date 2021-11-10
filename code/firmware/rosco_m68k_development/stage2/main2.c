@@ -27,7 +27,7 @@ extern void mcHalt();
 extern void ENABLE_RECV();
 extern void red_led_off();
 
-#ifdef KERMIT_LOADER
+#if defined(KERMIT_LOADER) || defined(ZMODEM_LOADER)
 extern void mcBusywait(uint32_t);
 #endif
 
@@ -44,9 +44,13 @@ static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
 static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
 
-#ifdef KERMIT_LOADER
+#ifdef ZMODEM_LOADER
+extern int zm_receive_kernel();
+#else
+#  ifdef KERMIT_LOADER
 // This is provided by Kermit
-extern int receive_kernel();
+extern int km_receive_kernel();
+#  endif
 #endif
 
 #ifdef SDFAT_LOADER
@@ -85,12 +89,12 @@ noreturn void lmain() {
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
     mcPrint(" None found\r\n");
 #  endif
-#  ifdef KERMIT_LOADER
-    mcPrint("Ready for Kermit receive...\r\n");
+#  ifdef ZMODEM_LOADER
+    mcPrint("Ready for ZMODEM receive...\r\n");
 
     mcBusywait(100000);
 
-    while (!receive_kernel()) {
+    while (!zm_receive_kernel()) {
         mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
     }
 
@@ -98,9 +102,25 @@ noreturn void lmain() {
     mcBusywait(400000);
     
     mcPrint("Kernel received okay; Starting...\r\n");
+
 #  else
-    mcPrint("No bootable media found & no Kermit support; Halting...\r\n");
+#    ifdef KERMIT_LOADER
+    mcPrint("Ready for Kermit receive...\r\n");
+
+    mcBusywait(100000);
+
+    while (!km_receive_kernel()) {
+        mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
+    }
+
+    // Wait a short while for the user's terminal to come back...
+    mcBusywait(400000);
+    
+    mcPrint("Kernel received okay; Starting...\r\n");
+#    else
+    mcPrint("No bootable media found & no transfer support; Halting...\r\n");
     goto halt;
+#    endif
 #  endif
 #else
     mcPrint("Starting MAME Quickload kernel...\r\n");
@@ -118,7 +138,7 @@ have_kernel:
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
-#ifndef KERMIT_LOADER
+#if !defined(KERMIT_LOADER) && !defined(ZMODEM_LOADER)
 halt:
 #endif
     while (true) {

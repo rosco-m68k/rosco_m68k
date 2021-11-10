@@ -44,6 +44,15 @@ size_t strlen(const char *s) {
     return i;
 }
 
+int strcmp(const char *s1, const char *s2) {
+  while (*s1 == *s2 && *s1 != '\0') {
+    s1++;
+    s2++;
+  }
+
+  return (*s1 > *s2) - (*s1 < *s2);
+}
+
 unsigned long divmod(unsigned long num, unsigned long den, int mod) {
     unsigned long bit = 1;
     unsigned long res = 0;

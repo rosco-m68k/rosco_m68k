@@ -44,6 +44,7 @@ OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
+WITH_ZMODEM?=false
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
@@ -113,6 +114,7 @@ include easy68k/include.mk
 export ATA_DEBUG
 export WITH_BLOCKDEV
 export WITH_KERMIT
+export WITH_ZMODEM
 export CPU ARCH TUNE
 export REVISION1X
 

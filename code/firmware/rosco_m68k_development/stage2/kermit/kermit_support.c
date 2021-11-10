@@ -101,7 +101,7 @@ static int closefile(struct k_data * k, UCHAR c, int mode) {
     return X_OK;
 }
 
-int receive_kernel() {
+int km_receive_kernel() {
     int status, rx_len;
     uint8_t *inbuf;
     short r_slot;
