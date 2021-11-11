@@ -112,6 +112,22 @@ SECTIONS
     *(.rodata*)
     _code_end = .;
   } > RAM
+  
+  .ctors ALIGN(4) : 
+  {
+      _ctors = .;
+      KEEP(*(.ctors))           /* Run in reverse order, so non-priority ones go first  */
+      KEEP(*(SORT(.ctors.*)))   /* followed by ctors with priority */
+      _ctors_end = .;
+  } > RAM
+
+  .dtors ALIGN(4) : 
+  {
+      _dtors = .;
+      KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first, highest to lowest */
+      KEEP(*(.dtors))           /* Followed by non-priority ones */
+      _dtors_end = .;
+  } > RAM
 
   .data ALIGN(4) :
   {

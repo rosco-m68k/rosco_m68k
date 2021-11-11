@@ -3,10 +3,7 @@
 # Copyright (c) 2020 Xark
 # MIT LICENSE
 
-ifndef ROSCO_M68K_DIR
-$(error Please set ROSCO_M68K_DIR to the top-level rosco_m68k directory to use for rosco_m68k building)
-endif
-
+ROSCO_M68K_DIR?=../../../..
 -include $(ROSCO_M68K_DIR)/user.mk
 
 CPU?=68010
