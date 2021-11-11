@@ -14,9 +14,11 @@ EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
 SYSLIBDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/lib
 DEFINES=-DROSCO_M68K
-CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
+FLAGS=-ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
 				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
+CFLAGS=-std=c11 $(FLAGS)
+CXXFLAGX=-std=c++20 $(FLAGS)
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
@@ -33,6 +35,7 @@ endif
 LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
 VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)
 CC=m68k-elf-gcc
+CXX=m68k-elf-g++
 AS=m68k-elf-as
 LD=m68k-elf-ld
 NM=m68k-elf-nm
@@ -58,9 +61,10 @@ SYM=$(PROGRAM_BASENAME).sym
 
 # Assume source files in Makefile directory are source files for project
 CSOURCES=$(wildcard *.c)
+CXXSOURCES=$(wildcard *.cpp)
 SSOURCES=$(wildcard *.S)
 ASMSOURCES=$(wildcard *.asm)
-SOURCES=$(CSOURCES) $(SSOURCES) $(ASMSOURCES)
+SOURCES=$(CSOURCES) $(CXXSOURCES) $(SSOURCES) $(ASMSOURCES)
 
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
@@ -83,6 +87,9 @@ $(OBJECTS): Makefile
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+
+%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) -o $@ $<
 
 %.o : %.asm
 	$(VASM) $(VASMFLAGS) $(EXTRA_VASMFLAGS) -L $(basename $@).lst -o $@ $<
