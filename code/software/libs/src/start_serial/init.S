@@ -68,7 +68,7 @@ PREMAIN:
     bsr.s   CALL_CTORS            ; Call global constructors
     lea.l   kmain,A0
     jsr     (A0)                  ; Fly user program, Fly!
-    move.l  #0,-(A7)              ; Call __cxa_atexit with NULL dso_handle
+    move.l  #0,-(A7)              ; Call __cxa_finalize with NULL dso_handle
     lea.l   __cxa_finalize,A0
     jsr     (A0)
     add.l   #4,A7
