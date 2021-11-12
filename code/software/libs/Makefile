@@ -26,6 +26,8 @@ INSTALL_DIR=./build
 INSTALL_LIB=$(INSTALL_DIR)/lib
 INSTALL_INC=$(INSTALL_DIR)/include
 
+UBERLIB=librosco_m68k.a
+
 # Avoid plain "make" building only the first target encountered, causing confusion
 decoy:
 	@echo Please use \"make all\" to build all the libraries.
@@ -53,18 +55,23 @@ include src/printf/include.mk
 
 .PHONY: all install clean clobber
 
-all: $(LIBS)
+all: $(UBERLIB) $(LIBS)
 
-install: $(LIBS)
+$(UBERLIB): $(filter-out **/printf-*.o, $(OBJECTS))
+	$(AR)	$(ARFLAGS) rs $@ $^
+	$(RANLIB) $@
+
+install: $(UBERLIB) $(LIBS)
 	$(MKDIR_P) $(INSTALL_INC)
 	$(MKDIR_P) $(INSTALL_LIB)
 	$(MKDIR_P) $(INSTALL_LIB)/ld/serial
 	$(CP_R) $(INCLUDES) $(INSTALL_INC)
 	$(CP_R) $(LIBS) $(INSTALL_LIB)
+	$(CP_R) $(UBERLIB) $(INSTALL_LIB)
 	$(CP_R) src/start_serial/link_scripts/* $(INSTALL_LIB)/ld/serial
 
 clean: 
-	$(RM_F) $(OBJECTS) $(LIBS)
+	$(RM_F) $(OBJECTS) $(LIBS) $(UBERLIB)
 
 clobber: clean
 	$(RM_RF)	$(INSTALL_DIR)
