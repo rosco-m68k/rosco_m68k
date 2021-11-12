@@ -15,7 +15,7 @@ FLAGS=-ffreestanding -ffunction-sections -fdata-sections \
 				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
 				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
 CFLAGS=-std=c11 $(FLAGS)
-CXXFLAGX=-std=c++20 $(FLAGS)
+CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
