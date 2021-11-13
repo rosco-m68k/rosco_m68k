@@ -3,10 +3,10 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
-;                     |_____|    firmware v1.2
+;                     |_____|           stdlibs
 ;------------------------------------------------------------
-; Copyright (c)2020 Ross Bamford See top-level LICENSE.md for licence
-; information.
+; Copyright (c)2020-2021 Ross Bamford See top-level LICENSE.md 
+; for licence information.
 ;
 ; This is the initialization code. The loader jumps into this code after the
 ; "program" is received via serial.
@@ -21,6 +21,9 @@
 ;
 ; All of this is depending on a bit of linker magic - see rosco_m68k_kernel.ld
 ; to see how that works.
+;
+; GCC global constructors/destructors (with attributes and 
+; __cxa_atexit) are supported here, too.
 ;------------------------------------------------------------
     include "../../shared/rosco_m68k_public.asm"
 
@@ -60,9 +63,57 @@ POSTINIT:                         ; running from copied run addr location
     dbra    D1,.COPY_LOOP         ; outer loop
 
 PREMAIN:
-    move.l  $0004,-(A7)           ; push (soft) reset vector if kmain returns
     lea.l   __kinit,A0
     jsr     (A0)                  ; prepare C environment
+    bsr.s   CALL_CTORS            ; Call global constructors
     lea.l   kmain,A0
-    jmp     (A0)                  ; Fly user program, Fly!
+    jsr     (A0)                  ; Fly user program, Fly!
+    move.l  #0,-(A7)              ; Call __cxa_finalize with NULL dso_handle
+    lea.l   __cxa_finalize,A0
+    jsr     (A0)
+    add.l   #4,A7
+    bsr.s   CALL_DTORS            ; Call global destructors
+    move.l  $0004,A0              ; And jump to soft reset
+    jmp     (A0) 
 
+CALL_CTORS::
+    movem.l A2-A4,-(A7)
+
+    move.l  #_ctors,A2
+    move.l  #_ctors_end,A3
+
+.LOOP
+    sub.l   #4,A3
+
+    cmp.l   A2,A3
+    bcs.s   .DONE
+
+    move.l  (A3),A4
+    jsr     (A4)
+
+    bra.s   .LOOP
+
+.DONE
+    movem.l (A7)+,A2-A4
+    rts
+
+
+CALL_DTORS::
+    movem.l A2-A4,-(A7)
+
+    move.l  #_dtors,A2
+    move.l  #_dtors_end,A3
+
+.LOOP
+    cmp.l   A3,A2
+    beq.s   .DONE
+
+    move.l  (A2),A4
+    jsr     (A4)
+
+    add.l   #4,A2
+    bra.s   .LOOP
+
+.DONE
+    movem.l (A7)+,A2-A4
+    rts

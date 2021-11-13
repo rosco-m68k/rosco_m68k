@@ -3,10 +3,7 @@
 # Copyright (c) 2020 Xark
 # MIT LICENSE
 
-ifndef ROSCO_M68K_DIR
-$(error Please set ROSCO_M68K_DIR to the top-level rosco_m68k directory to use for rosco_m68k building)
-endif
-
+ROSCO_M68K_DIR?=../../../..
 -include $(ROSCO_M68K_DIR)/user.mk
 
 CPU?=68010
@@ -23,7 +20,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 		| grep libraries:\ =																								\
     | sed 's/libraries: =/-L/g' 																				\
     | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lrosco_m68k -lgcc
+LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
 
 ifeq ($(ROSCO_M68K_HUGEROM),true)
