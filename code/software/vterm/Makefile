@@ -25,7 +25,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs \
  | grep libraries:\ = \
  | sed 's/libraries: =/-L/g' \
  | sed 's/:/m68000\/ -L/g')m68000/
-LIBS= $(EXTRA_LIBS) -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
+LIBS= $(EXTRA_LIBS) -lheap -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
 
 ifeq ($(ROSCO_M68K_HUGEROM),true)

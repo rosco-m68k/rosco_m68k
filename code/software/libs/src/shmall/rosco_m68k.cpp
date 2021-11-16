@@ -59,6 +59,26 @@ void* malloc(size_t size) {
     return heap_alloc(current_heap, size);
 }
 
+// TODO this could be significantly more efficient
+void* calloc(size_t num, size_t size) {
+    size_t total = num * size;
+    void *mem = malloc(total);
+
+    if (mem != NULL) {
+        uint8_t *bmem = (uint8_t*)mem;
+        for (size_t i = 0; i < total; i++) {
+            bmem[i] = 0;
+        }
+    }
+
+    return mem;
+}
+
+// TODO this needs implementing!
+void* realloc(void *ptr, size_t new_size) {
+    return NULL;
+}
+
 void free(void* ptr) {
     heap_free(current_heap, ptr);
 }
