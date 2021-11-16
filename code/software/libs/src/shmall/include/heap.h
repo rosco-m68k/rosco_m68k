@@ -25,10 +25,6 @@
 #ifndef __ROSCO_M68K_HEAP_H
 #define __ROSCO_M68K_HEAP_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdint.h>
 #include <stddef.h>
 
@@ -84,18 +80,5 @@ void rh_switch_heap(heap_t *heap);
  * automatically).
  */
 void rh_default_heap();
-
-#ifdef __cplusplus
-}
-
-#include <cstdlib>
-
-inline void* operator new(size_t, void* p)      { return p; }
-inline void* operator new[](size_t, void* p)    { return p; }
-inline void* operator new(size_t size)          { return ::malloc(size); }
-
-inline void operator delete(void* p)            { ::free(p); }
-inline void operator delete(void* p, size_t)    { ::free(p); }
-#endif
 
 #endif//__ROSCO_M68K_HEAP_H
