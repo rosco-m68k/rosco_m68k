@@ -2,8 +2,6 @@
  * Copyright (c) 2020 You (you@youremail.com)
  */
 
-#include <heap.h>
-
 int bclass_count = 0;
 
 class BClass {

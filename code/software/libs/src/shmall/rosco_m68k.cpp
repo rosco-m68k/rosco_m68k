@@ -13,7 +13,10 @@
  * ------------------------------------------------------------
  */
 
-#include <stdio.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include "heap.h"
 
@@ -52,7 +55,7 @@ void rh_default_heap() {
     current_heap = &__ROSCO_DEFAULT_HEAP;
 }
 
-void* malloc(uint32_t size) {
+void* malloc(size_t size) {
     return heap_alloc(current_heap, size);
 }
 
@@ -60,3 +63,18 @@ void free(void* ptr) {
     heap_free(current_heap, ptr);
 }
 
+#ifdef __cplusplus
+}
+
+// Argument types of std::size_t are replaced with size_t
+// Overloads that use std::align_val_t or std::nothrow_t are not included.
+
+void* operator new  (size_t count)  { return ::malloc(count); }
+void* operator new[](size_t count)  { return operator new  (count); }
+
+void operator delete  (void* ptr) noexcept          { ::free(ptr); }
+void operator delete[](void* ptr) noexcept          { operator delete  (ptr); }
+void operator delete  (void* ptr, size_t) noexcept  { operator delete  (ptr); }
+void operator delete[](void* ptr, size_t) noexcept  { operator delete[](ptr); }
+
+#endif
