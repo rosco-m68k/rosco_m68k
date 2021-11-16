@@ -8,9 +8,9 @@ EXTRA_CFLAGS?=-g -O2
 EXTRA_CXXFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
 FLAGS=-ffreestanding -ffunction-sections -fdata-sections	\
-				-nostartfiles -Wall -pedantic -Werror       \
-				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    \
-				$(DEFINES)
+			-nostartfiles -Wall -pedantic -Werror       				\
+			-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    				\
+			$(DEFINES)
 CFLAGS=-std=c11 $(FLAGS)
 CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
