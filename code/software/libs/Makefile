@@ -5,14 +5,18 @@
 
 CPU?=68010
 EXTRA_CFLAGS?=-g -O2
+EXTRA_CXXFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
-CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
-				-nostartfiles -Wall -pedantic -Werror              \
-				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)           \
-				$(DEFINES)
+FLAGS=-ffreestanding -ffunction-sections -fdata-sections	\
+			-nostartfiles -Wall -pedantic -Werror       				\
+			-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    				\
+			$(DEFINES)
+CFLAGS=-std=c11 $(FLAGS)
+CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=
 CC=m68k-elf-gcc
+CXX=m68k-elf-g++
 LD=m68k-elf-ld
 AR=m68k-elf-ar
 RANLIB=m68k-elf-ranlib
@@ -42,10 +46,14 @@ include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk
 include src/sst_flash/include.mk
+include src/shmall/include.mk
 include src/printf/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+
+%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) -o $@ $<
 
 %.o : %.S
 	$(AS) $(ASFLAGS) -o $@ $<

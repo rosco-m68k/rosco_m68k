@@ -6,16 +6,18 @@ subdirectories of the `src` directory.
 
 Specifically:
 
-| Filename            | Description                                    |
-|:-------------------:|------------------------------------------------|
-| cstdlib             | Bare-minimum C stdlib required for examples    |
-| easy68k             | C interface to the Easy68k compatibility layer |
-| gpio                | Functions for intefacing with the GPIOs & SPI  |
-| machine             | Low-level functions and basic IO               |
-| printf              | An implementation of `printf`                  |
-| rtlsupport          | Replacement for some GCC math routines         |
-| sdfat               | Exposes firmware SD support (where available)  |
-| start_serial        | Link scripts and start files for programs      |
+| Filename            | Description                                    | Use with         |
+|:-------------------:|------------------------------------------------|------------------|
+| cstdlib             | Bare-minimum C stdlib required for examples    | `-lcstdlib`      |
+| debug_stub          | Provides handy crash reports on exceptions     | `-ldebug_stub`   |
+| easy68k             | C interface to the Easy68k compatibility layer | `-leasy68k`      |
+| gpio                | Functions for intefacing with the GPIOs & SPI  | `-lgpio`         |
+| machine             | Low-level functions and basic IO               | `-lmachine`      |
+| printf              | An implementation of `printf`                  | `-lprintf`(2)    |
+| sdfat               | Exposes firmware SD support (where available)  | `-lsdfat`        |
+| shmall              | A small third-party heap allocator             | `-lheap`         |
+| sst_flash           | Routines to interface with SST39SF0x0 Flash    | `-lsst_flash`    |
+| start_serial        | Link scripts and start files for programs      | `-lstart_serial` |
 
 **Note 1**: The `printf` lib provides two versions of the library, 
 one with support for software floating point, and the other without.
