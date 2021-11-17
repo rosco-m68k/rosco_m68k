@@ -568,6 +568,21 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER:
     move.l  D0,-(A7)                  ; Save D0
+
+    ifnd REVISION1X
+    move.l  A0,-(A7)                  ; Check if this is a counter interrupt...
+    move.l  SDB_UARTBASE,A0
+    move.b  R_ISR(A0),D0
+    btst    #3,D0   
+    bne.s   .COUNTER                  ; Continue if so,
+    
+    move.l  (A7)+,A0                  ; Else restore regs...
+    move.l  (A7)+,D0
+    rte                               ; ...and bail.
+
+.COUNTER
+    endif
+
     move.l  D1,-(A7)                  ; Save D1
 
     ; Increment upticks
@@ -597,7 +612,6 @@ TICK_HANDLER:
     else
 ; ============
 
-    move.l  A0,-(A7)                  ; Save A0
     move.l  SDB_UARTBASE,A0           ; And fetch UART base pointer
 
     move.w  SDB_TICKCNT,D0            ; Read SDB word at 8
@@ -634,19 +648,23 @@ TICK_HANDLER:
 ; ============
 
 .TICK_HANDLER_DONE:
-    ifnd REVISION1X
-    move.b  R_STARTCNTCMD(A0),D1      ; Reissue START COUNTER command
-    move.l  (A7)+,A0                  ; Restore A0
-    endif
 
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,SDB_TICKCNT            ; ... and write back to SDB
     move.l  (A7)+,D1                  ; Restore D1
-    move.l  (A7)+,D0                  ; Restore D0
-    
-    ifd REVISION1X
+
+    ifnd REVISION1X
+; ============
+    move.b  R_STARTCNTCMD(A0),D0      ; Reissue START COUNTER command
+    move.l  (A7)+,A0                  ; Restore A0
+; ============
+    else
+; ============
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
+; ============
     endif
+    
+    move.l  (A7)+,D0                  ; Restore D0
 
     rte                               ; We're done
 
