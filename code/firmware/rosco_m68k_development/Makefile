@@ -38,8 +38,7 @@ STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
-ROMDEVICE?=AT28C256
-
+ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
 				cpuspeed.o warmboot.o main1.o 
 
@@ -48,14 +47,28 @@ WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
+ifeq ($(REVISION1X),true)
+$(info === Building rosco_m68k firmware for revision 1.x board)
+DEFINES:=$(DEFINES) -DREVISION1X
+HUGEROM?=false
+ROMDEVICE=AT28C256
+else
+$(info === Building rosco_m68k firmware for revision 2.x board)
+HUGEROM?=true
+endif
+
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
-ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
+ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
+ROMDEVICE=AT28C256
+else
+$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
+endif
 endif
 
 ifeq ($(NO68681),true)
@@ -65,18 +78,19 @@ else
 $(info === Building rosco_m68k firmware with 68681 DUART support)
 endif
 
-ifeq ($(ATA_DEBUG),true)
-$(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
-DEFINES:=$(DEFINES) -DATA_DEBUG
-endif
-
 ifeq ($(NO_TICK),true)
 $(info === Building rosco_m68k firmware with NO_TICK)
 DEFINES:=$(DEFINES) -DNO_TICK
 endif
 
-include easy68k/include.mk
+ifneq ($(WITH_BLOCKDEV),false)
+$(info === Building rosco_m68k firmware with block device support)
 include blockdev/include.mk
+ifeq ($(ATA_DEBUG),true)
+$(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
+DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
+endif
 
 ifneq ($(WITH_VDP),false)
 $(info === Building rosco_m68k firmware with V9958 VDP)
@@ -94,10 +108,13 @@ $(info === Building rosco_m68k firmware with DEBUG_STUB)
 include debug_stub/include.mk
 endif
 
+include easy68k/include.mk
+
 export ATA_DEBUG
 export WITH_BLOCKDEV
 export WITH_KERMIT
 export CPU ARCH TUNE
+export REVISION1X
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<

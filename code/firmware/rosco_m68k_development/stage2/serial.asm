@@ -39,23 +39,32 @@ RECVCHAR::
     move.l  (A7)+,A1
     rts
 
+; TODO Fix these for r2x, or remove them!
 ; Enable the transmitter
 ENABLE_XMIT::
+    ifd REVISION1X
     bset.b  #0,MFP_TSR
+    endif
     rts
 
 ; Disable the transmitter
 DISABLE_XMIT::
+    ifd REVISION1X
     bclr.b  #0,MFP_TSR
+    endif
     rts
 
 ; Enable the receiver
 ENABLE_RECV::
-    bset.b  #0,MFP_RSR        
+    ifd REVISION1X
+    bset.b  #0,MFP_RSR
+    endif 
     rts
 
 ; Disable the receiver
 DISABLE_RECV::
+    ifd REVISION1X
     bclr.b  #0,MFP_RSR
+    endif
     rts
 

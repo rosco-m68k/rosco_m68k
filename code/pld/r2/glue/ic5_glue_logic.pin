@@ -1,0 +1,29 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | AS       | Clock/Input
+   2   | IOSEL    | Input
+   3   | HWRST    | Input
+   4   | FC2      | Input
+   5   | FC1      | Input
+   6   | FC0      | Input
+   7   | A1       | Input
+   8   | A2       | Input
+   9   | A3       | Input
+  10   | A19      | Input
+  11   | NC       | Input
+  12   | GND      | GND
+  13   | NC       | Input
+  14   | NC       | NC
+  15   | HALT     | Output
+  16   | RESET    | Output
+  17   | RUNLED   | Output
+  18   | BQ0      | Output
+  19   | BQ1      | Output
+  20   | BQ2      | Output
+  21   | BOOT     | Output
+  22   | ANYIACK  | Output
+  23   | DUIACK   | Output
+  24   | VCC      | VCC
+

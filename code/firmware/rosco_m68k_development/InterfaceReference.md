@@ -1285,7 +1285,7 @@ exception handlers and TRAP routines.
 | 0x410   | 1    | Easy68k 'echo on' flag                                    |
 | 0x411   | 1    | Easy68k 'prompt on' flag                                  |
 | 0x412   | 1    | Easy68k 'LF display' flag                                 |
-| 0x413   | 1    | Easy68k Reserved                                          |
+| 0x413   | 1    | Internal flags used by timer tick handler                 |
 | 0x414   | 4    | Size of the first block of contiguious memory             |
 | 0x418   | 4    | Default UART base address                                 |
 | 0x41C   | 4    | CPU Info (see below)                                      |

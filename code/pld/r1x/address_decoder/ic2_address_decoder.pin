@@ -1,0 +1,25 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | A18      | Input
+   2   | A19      | Input
+   3   | A20      | Input
+   4   | A21      | Input
+   5   | A22      | Input
+   6   | A23      | Input
+   7   | UDS      | Input
+   8   | LDS      | Input
+   9   | BOOT     | Input
+  10   | GND      | GND
+  11   | AS       | Input
+  12   | EVENRAM  | Output
+  13   | ODDRAM   | Output
+  14   | EVENROM  | Output
+  15   | ODDROM   | Output
+  16   | IOSEL    | Output
+  17   | EXPSEL   | Output
+  18   | IACK     | Input
+  19   | NC       | NC
+  20   | VCC      | VCC
+

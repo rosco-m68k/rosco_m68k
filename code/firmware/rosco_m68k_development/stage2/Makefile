@@ -48,6 +48,9 @@ ifeq ($(WITH_BLOCKDEV),true)
 include sdfat/include.mk
 include idehdd/include.mk
 endif
+ifeq ($(REVISION1X),true)
+DEFINES:=$(DEFINES) -DREVISION1X
+endif
 
 export CFLAGS
 

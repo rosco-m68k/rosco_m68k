@@ -1,0 +1,33 @@
+GAL22V10
+GLUE
+
+AS   IOSEL   HWRST  FC2    FC1     FC0   A1    A2    A3     A19      NC     GND
+NC   NC      HALT   RESET  RUNLED  BQ0   BQ1   BQ2   BOOT   ANYIACK  DUIACK VCC
+
+HALT.T  =  GND
+HALT.E  =  HWRST
+
+RESET.T =  GND
+RESET.E =  HWRST
+
+RUNLED  = /HALT
+
+AR      = HWRST
+BQ0.R   = /HWRST                ; High after one memory cycle
+BQ1.R   = /HWRST * BQ0          ; High after two memory cycles
+BQ2.R   = /HWRST * BQ1          ; High after three memory cycles
+BOOT.R  = /HWRST * BQ2          ; High after four memory cycles
+
+/ANYIACK= /HWRST * FC0 * FC1 * FC2 * A19
+/DUIACK = /HWRST * FC0 * FC1 * FC2 * /AS * /A1 * /A2 * A3 * A19
+
+DESCRIPTION
+
+rosco_m68k glue for Classic board 2.0
+
+Copyright (c)2021 Ross Bamford & Contributors
+See LICENSE.md for licence details (spoiler: CERN / MIT).
+
+This IC provides general reset and glue logic for rosco_m68k 
+classic 2.0. It is broadly based on the reset glue from the pro.
+

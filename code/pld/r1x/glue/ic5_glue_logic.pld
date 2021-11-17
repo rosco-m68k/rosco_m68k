@@ -1,0 +1,29 @@
+GAL16V8
+GLUE
+
+FC0   FC1   FC2    ODDROM    EVENROM   ODDRAM    EVENRAM   IOSEL   IODTACK   GND
+A19   MFPDS IACK   PPDTACK   EXPSEL    RAMOE     RW        LDS     DTACK     VCC
+
+/IACK     = A19 * FC0 * FC1 * FC2
+/PPDTACK  = /IOSEL * /IODTACK
+          + /IACK * /IODTACK
+          + IACK * /EVENROM
+          + IACK * /ODDROM
+          + IACK * /EVENRAM
+          + IACK * /ODDRAM
+          + IACK * /EXPSEL
+
+/MFPDS    = /LDS 
+          + /IACK
+
+/RAMOE    = RW
+
+DTACK.T   = GND
+DTACK.E   = /PPDTACK
+
+DESCRIPTION
+
+IC5 (DTACK and MFP Glue Logic for rosco_m68k)
+ 
+Copyright (c)2020 Ross Bamford. See LICENSE.
+

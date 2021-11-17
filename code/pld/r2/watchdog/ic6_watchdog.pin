@@ -1,0 +1,29 @@
+
+
+ Pin # | Name     | Pin Type
+-----------------------------
+   1   | CLK      | Clock/Input
+   2   | AS       | Input
+   3   | IACK     | Input
+   4   | NC       | Input
+   5   | NC       | Input
+   6   | NC       | Input
+   7   | NC       | Input
+   8   | NC       | Input
+   9   | NC       | Input
+  10   | NC       | Input
+  11   | NC       | Input
+  12   | GND      | GND
+  13   | /OE      | Input
+  14   | AX4M     | Output
+  15   | AX2M     | Output
+  16   | AX1M     | Output
+  17   | WDQ0     | Output
+  18   | WDQ1     | Output
+  19   | WDQ2     | Output
+  20   | WDQ3     | Output
+  21   | WDEN     | Output
+  22   | PBERR    | Output
+  23   | BERR     | Output
+  24   | VCC      | VCC
+
