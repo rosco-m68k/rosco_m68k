@@ -37,7 +37,7 @@ static uint16_t cxa_atexit_count;
 
 void *__dso_handle;
 
-void __kinit() {
+__attribute__((weak)) void __kinit() {
   // zero .bss
   for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst++ = 0);
 }

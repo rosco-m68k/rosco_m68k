@@ -106,5 +106,6 @@ RESTORE_BERR_HANDLER::
     rts
 
     section .data
+    align   2
 SAVEDHANDLER    dc.l  0
 
