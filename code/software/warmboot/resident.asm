@@ -66,7 +66,7 @@ loader_test:    moveq.l #1,d1
                 move.l  prev_loader(pc),a0
                 jmp     (a0)
 
-recvchar_test:  bchg.b  #1,MFP_GPDR             ; toggle red LED each char received
+recvchar_test:  ; NO MFP bchg.b  #1,MFP_GPDR             ; toggle red LED each char received
                 move.l  prev_recvchar(pc),-(a7)
                 rts
 
