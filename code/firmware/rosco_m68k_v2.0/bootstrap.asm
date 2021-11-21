@@ -1024,7 +1024,7 @@ SZ_BANNER0      dc.b    $D, $A, $1B, "[1;33m                                 ___
 SZ_BANNER1      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER2      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER3      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m   Classic ", $1B, "[1;30m2.0.DEV", $1B, "[0m", $D, $A, 0
+SZ_BANNER4      dc.b    "                    |_____|", $1B, "[1;37m   Classic     ", $1B, "[1;30m2.0", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF         dc.b    $D, $A, 0
 
