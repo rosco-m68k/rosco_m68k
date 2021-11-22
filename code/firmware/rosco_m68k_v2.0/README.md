@@ -57,7 +57,16 @@ Where `<SOMEDEVICE>` is a Minipro-recognised device string.
 
 ## SD Card 
 
-Documentation TODO
+The SD Card connects to the dedicated SD card connector on the r2 and
+r1.2 mainboards. See https://github.com/rosco-m68k/rosco_m68k/blob/develop/SDCardGuide.md
+for further details.
+
+SD Cards must be FAT formatted, and will be recognised and scanned 
+at boot. If a file named `ROSCODE1.BIN` is found in the root directory,
+it will be loaded automatically. 
+
+Binaries built with the `start_serial` standard library (which includes
+all example programs) will work from SD card without modification.
 
 ## Serial Loader (Kermit)
 
@@ -74,6 +83,10 @@ you should be able to install from your package manager (try `ckermit` or
 and ports probably has it too. On Windows YMMV, but if you're successfully
 building this on Windows then you've probably already done a lot of work to
 get a cross-compiler and so on working, so I'm sure you'll figure it out.
+
+If you are having problems getting Kermit to work on Linux (especially
+Debian or derivatives) you may find that building this patched version
+from source helps: https://github.com/rosco-m68k/ckermit
 
 ### Kermit Settings
 
@@ -102,22 +115,36 @@ can skip the carrier-detect setting...
  
 ## Code
 
-TODO There will eventually be some documentation here on how to write and
-build code that is compatible with this loader. For now, these notes
-will have to suffice:
+For details of the standard libraries and how to use them to write your
+own code, see the examples and the README in the software directory:
+https://github.com/rosco-m68k/rosco_m68k/blob/develop/code/software/README.md
 
-* **There is a very simple POC "kernel" at ../poc-kernel** - This shows how to
-  e.g. relocate your code (down to $2000) and how to link for that etc.
+You will also find some template projects that get you started with 
+either C/C++ or Assembly development at 
+https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/starter_projects
+
+The primary reference for the software interfaces provided by the 
+firmware can be found here: 
+https://github.com/rosco-m68k/rosco_m68k/blob/develop/code/firmware/rosco_m68k_v1.3/InterfaceReference.md
+
 * Code is loaded at $40000 (somewhat arbitrarily). The loader will jump
   directly to that location after the code is received.
 * This means you are limited to ~860KB with the standard memory configuration.
 * (It's actually slightly more, but the stack is at the top of RAM!)
 * Once your code is loaded, all of RAM is yours.
+* If you use the `heap` standard library, most of this memory will be dedicated
+  to your heap, with 32KB being reserved for stack.
 * Depending how much setup you want to do, you might leave the lowest 1KB 
   alone (exception vectors), other than setting up any vectors your code
   actually wants to handle.
 * If you want to use the standard runtime support stuff (see below), leave the
-  bottom 8KB alone (i.e. $2000-$FFFFF are free for your use). 
+  bottom 8KB alone (i.e. $2000-$FFFFF are free for your use).
+
+Most of the following things are taken care of automatically if you use the
+`start_serial` library (and link using the provided link script). 
+
+The starter projects linked above take care of this for you.
+ 
 * The _recommended_ thing to do is to relocate your code after loading,
   so you don't have it stuck in the middle of RAM. This will make your
   life easier later.
@@ -133,22 +160,23 @@ On entry to the loaded code, the system will be in the following state:
 * CPU will be in supervisor mode
 * PC will be at $40000
 * VBR will point to $0
-* Supervisor stack will be at $100000, SSP could be anywhere and can be reset
+* Supervisor stack will be at the top of RAM, SSP could be anywhere and can be reset
 * Registers will be undefined, and can all be trashed.
 * Exception table will be set up (with mostly no-op handlers) from $0 - $3FF 
 * Some (very) basic system data will exist between $400-$4FF. You can trash this if you don't need it
   * Some of the default exception handlers **do** write to this area, however!
   * So replace them if you're going to use this area for your own purposes!
-* Interrupts will be enabled 
-* Bus error, address error and illegal instruction will have default handlers (that flash I1 1, 2 or 3 times in a loop)
-* MFP Timer C will be driving a 100Hz system tick
+* Interrupts (level 2 and above) will be enabled  
+* A default exception handler (that will print some debugging information) will
+  be installed.
+* The system timer will be driving a 100Hz system tick
 * System tick will be vectored to CPU vector 0x45, default handler flashes I0.
-* MFP Interrupts other than Timer C will be disabled
-* TRAP#14 will be hooked by the firmware to provide some basic IO (see next section)
+* DUART/MFP Interrupts other than Timer C will be disabled
+* TRAP#13, TRAP#14, TRAP#15 will be hooked by the firmware to provide some basic 
+  IO.
 * UART TX and RX will be enabled, but their interrupts won't be 
   * you'll either have to enable (and handle) them or use polling
   * If you _do_ enable them, don't use the TRAP#14 IO routines any more or sadness is likely to ensue.
-* CTS (MFP GPIO #7) **will be low** (i.e. asserted). 
 
 ## Runtime Support
 
