@@ -20,9 +20,9 @@
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
   ifd HUGEROM
-RELEASE_VER     equ     $60000200
+RELEASE_VER     equ     $E000020A
   else
-RELEASE_VER     equ     $40000200
+RELEASE_VER     equ     $C000020A
   endif
 
 VEC_LIMIT       equ     $400
