@@ -3,17 +3,17 @@
 ;  ___ ___ ___ ___ ___       _____|  _| . | |_
 ; |  _| . |_ -|  _| . |     |     | . | . | '_|
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
-;                     |_____|    firmware v1.2
+;                     |_____|           stdlibs
 ;------------------------------------------------------------
-; Copyright (c)2020 Ross Bamford See top-level LICENSE.md for licence
-; information.
+; Copyright (c)2020-2021 Ross Bamford See top-level LICENSE.md 
+; for licence information.
 ;
 ; This is the initialization code. The loader jumps into this code after the
 ; "program" is received via serial.
 ;
 ; The first section is position independent, but will be loaded by the
-; firmware loader at $00040000 (or $00028000 prior to firmware 1.2). This
-; section copies the rest of the loaded code to $1000, and then jumps to it.
+; firmware loader at $00040000. This section copies the rest of the loaded 
+; code to $2000, and then jumps to it.
 ;
 ; The second section (after RELOCATED_START) is executed next, based at $1000.
 ; This just calls out to __kinit to initialize .data and .bss, and then does a
@@ -21,21 +21,18 @@
 ;
 ; All of this is depending on a bit of linker magic - see rosco_m68k_kernel.ld
 ; to see how that works.
+;
+; GCC global constructors/destructors (with attributes and 
+; __cxa_atexit) are supported here, too.
 ;------------------------------------------------------------
-    include "../../shared/equates.S"
+    include "../../shared/rosco_m68k_public.asm"
 
     section .init
 
-; NOTE: Loaded at $00040000 (or $00028000 in firmware prior to r1.2), but init
-; code is position-independent.
-
+; NOTE: Loaded at $00040000 but init code is position-independent.
 
 START::                           ; position-independent load addr
-    move.b  MFP_GPDR,D0           ; Get GPDR
-    or.b    #2,D0                 ; Turn off I1
-    and.b   D1,D0                 ; Mask with flags
-    move.b  D0,MFP_GPDR           ; Set GPDR
-    move.l  $414,A7               ; Reset stack to top of memory
+    move.l  SDB_MEMSIZE,A7        ; Reset stack to top of memory
 
     lea.l   START(PC),A0          ; PC-rel source addr (load addr)
     lea.l   _init,A1              ; absolute dest addr (run addr)
@@ -66,8 +63,57 @@ POSTINIT:                         ; running from copied run addr location
     dbra    D1,.COPY_LOOP         ; outer loop
 
 PREMAIN:
-    move.l  $0004,-(A7)           ; push (soft) reset vector if kmain returns
     lea.l   __kinit,A0
     jsr     (A0)                  ; prepare C environment
+    bsr.s   CALL_CTORS            ; Call global constructors
     lea.l   kmain,A0
-    jmp     (A0)                  ; Fly user program, Fly!
+    jsr     (A0)                  ; Fly user program, Fly!
+    move.l  #0,-(A7)              ; Call __cxa_finalize with NULL dso_handle
+    lea.l   __cxa_finalize,A0
+    jsr     (A0)
+    add.l   #4,A7
+    bsr.s   CALL_DTORS            ; Call global destructors
+    move.l  $0004,A0              ; And jump to soft reset
+    jmp     (A0) 
+
+CALL_CTORS::
+    movem.l A2-A4,-(A7)
+
+    move.l  #_ctors,A2
+    move.l  #_ctors_end,A3
+
+.LOOP
+    sub.l   #4,A3
+
+    cmp.l   A2,A3
+    bcs.s   .DONE
+
+    move.l  (A3),A4
+    jsr     (A4)
+
+    bra.s   .LOOP
+
+.DONE
+    movem.l (A7)+,A2-A4
+    rts
+
+
+CALL_DTORS::
+    movem.l A2-A4,-(A7)
+
+    move.l  #_dtors,A2
+    move.l  #_dtors_end,A3
+
+.LOOP
+    cmp.l   A3,A2
+    beq.s   .DONE
+
+    move.l  (A2),A4
+    jsr     (A4)
+
+    add.l   #4,A2
+    bra.s   .LOOP
+
+.DONE
+    movem.l (A7)+,A2-A4
+    rts

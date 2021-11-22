@@ -1,20 +1,19 @@
 # Software
 
 This directory contains various different software programs for the 
-rosco_m68k. 
+rosco_m68k.
+
+> If you are looking for a template project for your own software (including some specific Makefile recommendations), please see the `starter_projects` directory. 
 
 Specifically:
 
 | Filename            | Description                                    |
 |:-------------------:|------------------------------------------------|
 | 2dmaze              | A 2d maze demo of libm (thanks to mattuna15)   |
-| 68010-test          | A simple program we use to test suspect CPUs   |
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
-| bbsd                | Bit-banged SD demo. Obsoleted by firmware      |
 | dhrystone           | Dhrystone benchmark (thanks to Xark)           |
 | easy68k-demo        | Demo of the easy68k firmware interface         |
 | ehbasic             | Lee Davison's ehBASIC (rosco_m68k port)        |
-| exception_tests     | Examples of using the exception std libraries  |
 | lcd-ili9341         | SPI demo with ILI9341 LCD (thanks to Xark)     |
 | libs                | All shared functions are built as libraries.   |
 | life                | Conway's Game of Life (thanks to mattuna15)    |
@@ -22,8 +21,6 @@ Specifically:
 | sdfat_demo          | Demo code for using firmware SD interface      |
 | sdfat_menu          | **Awesome** SD Card bootload menu (thanks Xark)| 
 | gpiodemo            | Stupid-simple GPIO example                     |
-| starter_c           | A blank C project you can start from           |
-| starter_asm         | A blank assembler project you can start from   |
 | vterm               | ANSI terminal emulation (thanks to mattuna15)  |
  
 ## Getting Started
@@ -82,31 +79,14 @@ There is a short `README.md` in each program directory that contains
 documentation specific to that program - see those for detailes of the
 program and any specific build instructions.
 
+> **Note** if your rosco_m68k has the flash ROM adapter and is 
+running a `HUGEROM` build of the firmware, you will need to build the
+examples with `ROSCO_M68K_HUGEROM` set to `true`, e.g. by passing on
+the command line (`ROSCO_M68K_HUGEROM=true make clean all`) or by
+setting an environment variable for a more permanent solution.
+
 ## Building your own projects
 
-> If you're building your own programs outside the directory tree of this
-project you might find it more convenient to copy the built libs to
-some other directory, e.g. `cp -r libs/build ~/rosco_m68k`.
-
-If you want to get started with building your own code for the rosco_m68k,
-an easy way to get started is to copy one of the example projects and 
-modify the Makefile to suit your needs. 
-
-There are two starter projects that are design for just this purpose:
-
-* `starter_c` - A basic starter project for C code
-* `starter_asm` - A basic starter project for Assembler
-
-Simply pick which suits your needs, copy the whole directory and 
-add your code as needed. You'll probably also want to edit the Makefile
-to fix paths to the standard libraries and include files depending
-on where you copy the directory to.
-
-> Although pretty empty, these starter projects **do** still depend on
-  the standard libraries having already been built - see the "Getting
-  Started" section for details on that.
-
-When developing your own code, you can of course use any of the standard
-libraries. See the README.md in the `libs` directory for details of 
-each library and what it provides and how to use them.
+There are some template starter projects available in `../starter_projects`,
+take a look at the documentation there for how to use them.
 

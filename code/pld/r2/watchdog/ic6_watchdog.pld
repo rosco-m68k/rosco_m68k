@@ -1,0 +1,57 @@
+GAL22V10
+WATCHDOG
+
+CLK    AS     IACK   NC     NC      NC      NC      NC     NC     NC     NC     GND
+/OE    AX4M   AX2M   AX1M   WDQ0    WDQ1    WDQ2    WDQ3   WDEN   PBERR  BERR   VCC
+
+AX4M.R  = /AX4M
+
+AX2M.R  = /AX4M *  AX2M
+        +  AX4M * /AX2M
+
+AX1M.R  =  AX1M * /AX2M
+        +  AX1M * /AX4M
+        + /AX1M *  AX2M *  AX4M
+
+WDEN    = /AS   
+        + /IACK
+
+WDQ0.R  =  WDEN *  WDQ0 * /AX1M
+        +  WDEN *  WDQ0 * /AX2M
+        +  WDEN *  WDQ0 * /AX4M
+        +  WDEN * /WDQ0 *  AX1M *  AX2M *  AX4M
+
+WDQ1.R  =  WDEN *  WDQ1 * /WDQ0
+        +  WDEN *  WDQ1 * /AX1M
+        +  WDEN *  WDQ1 * /AX2M
+        +  WDEN *  WDQ1 * /AX4M
+        +  WDEN * /WDQ1 *  WDQ0 *  AX1M *  AX2M *  AX4M
+
+WDQ2.R  =  WDEN *  WDQ2 * /WDQ1
+        +  WDEN *  WDQ2 * /WDQ0
+        +  WDEN *  WDQ2 * /AX1M
+        +  WDEN *  WDQ2 * /AX2M
+        +  WDEN *  WDQ2 * /AX4M
+        +  WDEN * /WDQ2 *  WDQ1 *  WDQ0 *  AX1M *  AX2M *  AX4M
+
+WDQ3.R  =  WDEN *  WDQ3 * /WDQ2
+        +  WDEN *  WDQ3 * /WDQ1
+        +  WDEN *  WDQ3 * /WDQ0
+        +  WDEN *  WDQ3 * /AX1M
+        +  WDEN *  WDQ3 * /AX2M
+        +  WDEN *  WDQ3 * /AX4M
+        +  WDEN * /WDQ3 *  WDQ2 *  WDQ1 *  WDQ0 *  AX1M *  AX2M *  AX4M
+
+PBERR.R =  WDEN *  WDQ3
+        +  WDEN *  PBERR
+
+BERR.T  = GND
+BERR.E  = PBERR
+
+DESCRIPTION
+
+rosco_m68k Classic watchdog generator 
+
+Copyright (c)2021 Ross Bamford & Contributors
+See LICENSE.md for licence details (spoiler: CERN / MIT).
+

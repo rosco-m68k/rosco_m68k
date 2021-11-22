@@ -1,31 +1,22 @@
 # C Game of Life for rosco_m68k
 
-Based on code from this site: https://rosettacode.org/wiki/Conway%27s_Game_of_Life
+Based on code from this site: <https://rosettacode.org/wiki/Conway%27s_Game_of_Life>
 
-Dependent on new code in this version of stdlib. https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/software/libs
 
 ## Building
 
-```
+```bash
 make clean all
 ```
 
-This will build `life.bin`, which can be uploaded to a board that
-is running the `serial-receive` firmware.
+This will build `life.bin`, which can be uploaded to a board that is running the
+`serial-receive` firmware.
 
-If you're feeling adventurous (and have ckermit installed), you
-can try:
+If you're feeling adventurous (and have ckermit installed), you can try:
 
-```
+```bash
 SERIAL=/dev/some-serial-device make load
 ```
 
-which will attempt to send the binary directly to your board (which
-must obviously be connected and waiting for the upload).
-
-This sample uses UTF-8. It's recommended to run minicom with colour
-and UTF-8 enabled, for example:
-
-```
-minicom -D /dev/your-device -c on -R utf-8
-```
+which will attempt to send the binary directly to your board (which must
+obviously be connected and waiting for the upload).

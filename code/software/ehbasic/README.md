@@ -21,16 +21,24 @@ References:
 
 ## Building
 
-### Standard board (No MC68681 Dual UART expansion)
+### Standard board (Revision 1.x with Firmware 1.3+, or revision 2.x)
 
 Just run `make` to build, with the standard toolchain.
 
+### Standard board (No MC68681 Dual UART expansion, Firmware 1.2 or below)
+
+To work with the with the onboard MC68901, you must pass `FIRMWARE_IO=false`
+option to the make command:
+
+`FIRMWARE_IO=false make clean all`
+
 ### With MC68681 Dual UART expansion board
 
-To work with the MC68681 expansion, you must pass `MC68681=true` to the make
-command:
+To work with the MC68681 expansion on older mainboards (without Firmware
+1.3 or above), you must pass `FIRMWARE_IO=false` and `MC68681=true` 
+options to the make command:
 
-`MC68681=true make clean all`
+`FIRMWARE_IO=false MC68681=true make clean all`
 
 ------------------------------------------------------------------------
 

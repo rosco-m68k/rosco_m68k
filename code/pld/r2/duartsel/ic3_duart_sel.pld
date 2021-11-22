@@ -1,0 +1,14 @@
+GAL22V10
+DUARTSEL
+
+A6    A7    A8    A9    A10   A11   A12    A13     A14   A15    A16   GND
+NC    A19   NC    A17   A18   LDS   IOSEL  DUASEL  NC    NC     NC    VCC
+
+/DUASEL     = /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
+
+DESCRIPTION
+
+IC3 (DUART Selection Logic for rosco_m68k)
+
+Copyright (c)2021 Ross Bamford. See LICENSE.
+

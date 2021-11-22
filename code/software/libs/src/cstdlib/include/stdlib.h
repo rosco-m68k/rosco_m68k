@@ -22,7 +22,7 @@
 
 #include <stddef.h>
 
-#define RAND_MAX 32767
+#define RAND_MAX 0x7FFFFFFF
 
 void exit(int status);
 void abort(void);
@@ -30,6 +30,7 @@ void *malloc(size_t size);
 void free(void *ptr);
 void *realloc(void *ptr, size_t size);
 void *calloc(size_t nitems, size_t size);
+void srand(unsigned int seed);
 int rand(void);
 char *  
 utoa (unsigned value,

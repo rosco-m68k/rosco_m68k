@@ -19,7 +19,7 @@ when touching JP5 lightly with my finger).
 
 ## Building
 
-```
+```text
 make clean all
 ```
 
@@ -66,10 +66,9 @@ a small-ish ~100 ohm resistor to protect rosco, electrically).
 If you're feeling adventurous (and have `ckermit` installed), you
 can try:
 
-```
+```text
 SERIAL=/dev/some-serial-device make load
 ```
 
 which will attempt to send the binary directly to your board (which
 must obviously be connected and waiting for the upload).
-

@@ -1,7 +1,7 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the Master branch, which contains the latest release - **Revision 1.23** and **Firmware 1.3**. If you are using Firmware 1.3, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
+> **Note**: This is the Master branch, which contains the latest release - **Revision 2.1** and **Firmware 2.0**. If you are using Firmware 2.0, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.3, please use the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3). For firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
 
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
@@ -23,18 +23,18 @@ on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
 
 ## Specifications
 
-![Prototype board](images/mainboard-1.2.jpg)
+![Current main board](images/mainboard-2.1.jpg)
 
 ### Hardware
 
 The hardware specifications for the rosco_m68k are:
 
-* MC68010P10 at 10MHz, /DTACK no longer grounded but still zero-wait-state for RAM/ROM accesses.
-* MC68901 MFP provides UART, Timers and Interrupt vectoring
+* MC68010P10 at 10MHz.
+* XR68C681P provides UART, Timers and SD Card / SPI / GPIO
 * 1MB RAM (0x0 - 0xFFFFF)
-* Up to 64KB ROM supported (at 0xFC0000, 256KB reserved for ROM up to 0xFFFFFF)
-* 256KB IO space (0xF80000 - 0xFBFFFF)
-* High-speed decode and glue logic handled by ATF16V8BQL PLDs.
+* 1MB ROM (0xE00000 - 0xEFFFFF)
+* 1MB IO space (0xF00000 - 0xFFFFFF)
+* High-speed decode and glue logic handled by Atmel F22V10C PLDs.
 * Comprehensive expansion and IO connectors allow the system to be easily expanded!
 
 ### Software
@@ -42,9 +42,10 @@ The hardware specifications for the rosco_m68k are:
 * A serial bootloader that can load software via the UART (with Kermit protocol)
 * Lots of example code and community projects
 * Rich firmware interface for with serial and video console for easy programming
+* Programmable in assembly, C and (a limited subset of) C++.
 * Easy68K-compatible* TRAP 15 (IO) handler
 * A growing collection of system libraries and utility code
-* Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 7.5.
+* Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 10.2.
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
 

@@ -9,6 +9,14 @@
 ; See top-level LICENSE.md for licence information.
 ;
 ; EQUates for Rosco_m68k
+;
+; NOTE: This file is deprecated, and remains here for 
+; backward-compatiblity purposes only. It is no longer
+; used for building the latest firmware versions, and 
+; will not be updated.
+;
+; Any changes should be made to `rosco_m68k_public.asm`.
+; This file should be considered frozen.
 ;------------------------------------------------------------
 
 ; Memory layout

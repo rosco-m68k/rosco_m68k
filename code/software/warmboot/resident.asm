@@ -13,7 +13,7 @@
 
 resident_size   =       $1000                   ; amount of memory to reserve (power of 2)
 
-                include "../../shared/equates.S"
+                include "../../shared/rosco_m68k_public.asm"
 
                 section .text.resident_init
                 align  2
@@ -66,7 +66,7 @@ loader_test:    moveq.l #1,d1
                 move.l  prev_loader(pc),a0
                 jmp     (a0)
 
-recvchar_test:  bchg.b  #1,MFP_GPDR             ; toggle red LED each char received
+recvchar_test:  ; NO MFP bchg.b  #1,MFP_GPDR             ; toggle red LED each char received
                 move.l  prev_recvchar(pc),-(a7)
                 rts
 

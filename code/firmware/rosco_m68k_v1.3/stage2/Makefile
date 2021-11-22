@@ -61,7 +61,7 @@ common.o: common.c
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
-	chmod a-x $@
+	-chmod a-x $@
 
 $(BINARY_ZIP): $(BINARY) $(LZG)
 	$(LZG) -9 $< $@

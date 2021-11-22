@@ -86,14 +86,16 @@ noreturn void lmain() {
     mcPrint("Starting MAME Quickload kernel...\r\n");
 #endif
 
-#ifdef SDFAT_LOADER
+#ifndef MAME_FIRMWARE
+#    ifdef SDFAT_LOADER
 have_kernel:
+#    endif
 #endif
     kmain(sdb);
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
-#ifndef KERMIT_LOADER
+#if !defined(KERMIT_LOADER) && !defined(MAME_FIRMWARE)
 halt:
 #endif
     while (true) {

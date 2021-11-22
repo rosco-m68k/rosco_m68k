@@ -2,8 +2,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-static volatile uint32_t * const upticks = (volatile uint32_t * const)0x40C;
-
 #define LONG_MIN -2147483648
 #define LONG_MAX 2147483647
 
@@ -25,19 +23,18 @@ void abort(void)
   );
 }
 
-int rand(void) 
+static unsigned int rand_seed = 42;
+void srand(unsigned int seed)
 {
-        long k;
-        long s = *upticks;
-        if (s == 0)
-          s = 0x12345987;
-        k = s / 127773;
-        s = 16807 * (s - k * 127773) - 2836 * k;
-        if (s < 0)
-          s += 2147483647;
-        //(*seed) = (unsigned int)s;
-        return (int)(s & RAND_MAX);
+	rand_seed = seed;
 }
+
+int rand(void)
+{
+	rand_seed = rand_seed * 1103515245 + 12345;
+	return (rand_seed & RAND_MAX);
+}
+
 long
 strtol (const char *__restrict s,
 	char **__restrict ptr,

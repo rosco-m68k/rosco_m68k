@@ -1,0 +1,43 @@
+GAL22V10
+DECODER
+
+A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    LGEXP  RW    GND
+AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    IACK  PPDTACK DTACK  WR    VCC
+
+/EVENRAM  =  IACK  * /AS * /UDS * BOOT * /A23 * /A22 * /A21 * /A20
+/ODDRAM   =  IACK  * /AS * /LDS * BOOT * /A23 * /A22 * /A21 * /A20
+
+/EVENROM  =  IACK  * /AS * /UDS * A23 * A22 * A21 * /A20
+          +  IACK  * /AS * /UDS * /BOOT
+/ODDROM   =  IACK  * /AS * /LDS * A23 * A22 * A21 * /A20
+          +  IACK  * /AS * /LDS * /BOOT
+
+/IOSEL    =  IACK  * A23 * A22 * A21 * A20
+
+/EXPSEL   =  IACK  * /AS * A23 * /A21
+          +  IACK  * /AS * /A23 * A22
+          +  IACK  * /AS * /A23 * A20
+          +  IACK  * /AS * /A22 * A21
+
+/PPDTACK  =  IACK  * /EVENROM
+          +  IACK  * /ODDROM
+          +  IACK  * /EVENRAM
+          +  IACK  * /ODDRAM
+          +  IACK  * /LGEXP * /EXPSEL
+
+/WR       = RW
+
+DTACK.T   = GND
+DTACK.E   = /PPDTACK
+
+DESCRIPTION
+
+IC2 (Address Decoder) for rosco_m68k r2
+
+* Onboard RAM    : $00000000 - $000FFFFF (1MB)
+* Expansion space: $00100000 - $00DFFFFF (14MB)
+* ROM            : $00E00000 - $00EFFFFF (1MB)
+* IO             : $00F00000 - $FFFFFFFF (1MB)
+
+Copyright (c)2021 Ross Bamford. See LICENSE.
+

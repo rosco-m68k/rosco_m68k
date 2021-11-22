@@ -3,15 +3,20 @@
 # Copyright (c)2020 Ross Bamford
 # See LICENSE
 
+CPU?=68010
 EXTRA_CFLAGS?=-g -O2
+EXTRA_CXXFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
-CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
-				-nostartfiles -Wall -pedantic -Werror \
-				-mcpu=68010 -march=68010 -mtune=68010 \
-				-mno-align-int -mno-strict-align $(DEFINES)
-ASFLAGS=-Felf -m68010 -quiet $(DEFINES)
+FLAGS=-ffreestanding -ffunction-sections -fdata-sections	\
+			-nostartfiles -Wall -pedantic -Werror       				\
+			-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    				\
+			$(DEFINES)
+CFLAGS=-std=c11 $(FLAGS)
+CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=
 CC=m68k-elf-gcc
+CXX=m68k-elf-g++
 LD=m68k-elf-ld
 AR=m68k-elf-ar
 RANLIB=m68k-elf-ranlib
@@ -24,6 +29,8 @@ CP_R=cp -r
 INSTALL_DIR=./build
 INSTALL_LIB=$(INSTALL_DIR)/lib
 INSTALL_INC=$(INSTALL_DIR)/include
+
+UBERLIB=librosco_m68k.a
 
 # Avoid plain "make" building only the first target encountered, causing confusion
 decoy:
@@ -38,10 +45,15 @@ include src/debug_stub/include.mk
 include src/start_serial/include.mk
 include src/vterm/include.mk
 include src/libm/include.mk
+include src/sst_flash/include.mk
+include src/shmall/include.mk
 include src/printf/include.mk
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+
+%.o : %.cpp
+	$(CXX) -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) -o $@ $<
 
 %.o : %.S
 	$(AS) $(ASFLAGS) -o $@ $<
@@ -51,18 +63,23 @@ include src/printf/include.mk
 
 .PHONY: all install clean clobber
 
-all: $(LIBS)
+all: $(UBERLIB) $(LIBS)
 
-install: $(LIBS)
+$(UBERLIB): $(filter-out **/printf-*.o, $(OBJECTS))
+	$(AR)	$(ARFLAGS) rs $@ $^
+	$(RANLIB) $@
+
+install: $(UBERLIB) $(LIBS)
 	$(MKDIR_P) $(INSTALL_INC)
 	$(MKDIR_P) $(INSTALL_LIB)
 	$(MKDIR_P) $(INSTALL_LIB)/ld/serial
 	$(CP_R) $(INCLUDES) $(INSTALL_INC)
 	$(CP_R) $(LIBS) $(INSTALL_LIB)
+	$(CP_R) $(UBERLIB) $(INSTALL_LIB)
 	$(CP_R) src/start_serial/link_scripts/* $(INSTALL_LIB)/ld/serial
 
 clean: 
-	$(RM_F) $(OBJECTS) $(LIBS)
+	$(RM_F) $(OBJECTS) $(LIBS) $(UBERLIB)
 
 clobber: clean
 	$(RM_RF)	$(INSTALL_DIR)
