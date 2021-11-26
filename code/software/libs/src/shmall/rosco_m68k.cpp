@@ -57,7 +57,6 @@ __attribute__((constructor)) void __init_default_heap() {
     current_heap = &__ROSCO_DEFAULT_HEAP;
 }
 
-
 void rh_switch_heap(heap_t *heap) {
     current_heap = heap;
 }
@@ -133,8 +132,8 @@ static void mem_copy(void *dst, const void *src, size_t count) {
 
     // Handle the platform-specific case
 #if __m68k__
-    // If the destination and source have different chunk alignment offsets, then
-    // this code will be less efficient than the naive implementation, so skip to that
+    // If the destination and source have different chunk alignment offsets,
+    // the fast code can't be used
     if ((uintptr_t) bdst % alignof(chunk_type) != (uintptr_t) bsrc % alignof(chunk_type)) {
         goto platform_done;
     }
@@ -188,9 +187,10 @@ void* realloc(void *ptr, size_t new_size) {
     void *new_ptr = malloc(new_size);
 
     if (ptr != NULL && new_ptr != NULL && new_size > 0) {
-        // This will copy from past the end of ptr if the new size is greater than the old one
-        // TODO: This will break if we try to copy from non-existent memory
-        mem_copy(new_ptr, ptr, new_size);
+        node_t *old_node = get_head(ptr);
+        size_t old_size = old_node->size;
+        size_t copy_size = old_size < new_size ? old_size : new_size;
+        mem_copy(new_ptr, ptr, copy_size);
         free(ptr);
     }
 

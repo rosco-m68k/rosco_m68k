@@ -106,7 +106,7 @@ void heap_free(heap_t *heap, void *p) {
     bin_t *list;
     footer_t *new_foot, *old_foot;
 
-    node_t *head = (node_t *) ((char *) p - offset);
+    node_t *head = get_head(p);
     if (head == (node_t *) (uintptr_t) heap->start) {
         head->hole = 1; 
         add_node(heap->bins[get_bin_index(head->size)], head);
@@ -145,6 +145,10 @@ void heap_free(heap_t *heap, void *p) {
 
     head->hole = 1;
     add_node(heap->bins[get_bin_index(head->size)], head);
+}
+
+node_t *get_head(void *p) {
+    return (node_t *) ((char *) p - offset);
 }
 
 /* *** HACK (needed when using C++ and libgcc) *** */

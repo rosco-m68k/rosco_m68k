@@ -81,4 +81,9 @@ void rh_switch_heap(heap_t *heap);
  */
 void rh_default_heap();
 
+/*
+ * Get the header of a block
+ */
+node_t *get_head(void *p);
+
 #endif//__ROSCO_M68K_HEAP_H
