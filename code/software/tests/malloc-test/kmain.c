@@ -29,20 +29,21 @@ extern int getBNum();
 extern int deleteB();
 
 void calloc_check(size_t count, size_t size) {
+    printf("calloc zero check      : starting\n");
     size_t total = count * size;
     bool success = true;
 
     for (unsigned loop = 0; loop < 10 && success; ++loop) {
         unsigned char *check_tmp = calloc(count, size);
         if (!check_tmp) {
-            printf("calloc zero-check      : failed to calloc(0x%zX, 0x%zX)\n", count, size);
+            printf("calloc zero check      : failed to calloc(0x%zX, 0x%zX)\n", count, size);
             success = false;
             break;
         }
 
         for (size_t i = 0; i < total; ++i) {
             if (check_tmp[i] != 0) {
-                printf("calloc zero-check      : failed zero-check at loop %u byte 0x%zX\n", loop, i);
+                printf("calloc zero check      : failed at loop %u byte 0x%zX\n", loop, i);
                 success = false;
                 break;
             }
@@ -52,7 +53,7 @@ void calloc_check(size_t count, size_t size) {
     }
 
     if (success) {
-        printf("calloc zero-check      : succeeded\n");
+        printf("calloc zero check      : succeeded\n");
     }
 }
 
@@ -61,10 +62,10 @@ void calloc_benchmark(size_t count, size_t size) {
     bool success = true;
     unsigned start_ticks = _TIMER_100HZ;
 
-    for (unsigned loop = 0; loop < 0x400; ++loop) {
+    for (unsigned loop = 0; loop < 0x80; ++loop) {
         void *ptr = calloc(count, size);
         if (!ptr) {
-            printf("calloc benchmark       : failed to allocate\n");
+            printf("calloc benchmark       : failed to calloc(0x%zX, 0x%zX)\n", count, size);
             success = false;
             break;
         }
@@ -78,6 +79,7 @@ void calloc_benchmark(size_t count, size_t size) {
 }
 
 void realloc_check(size_t size) {
+    printf("realloc copy check     : starting\n");
     bool success = true;
     void *current_ptr = NULL;
 
@@ -113,10 +115,10 @@ void realloc_benchmark(size_t size) {
     unsigned start_ticks = _TIMER_100HZ;
 
     current_ptr = NULL;
-    for (unsigned loop = 0; loop < 0x400; ++loop) {
+    for (unsigned loop = 0; loop < 0x80; ++loop) {
         void *new_ptr = realloc(current_ptr, size);
         if (!new_ptr) {
-            printf("realloc benchmark      : failed to allocate\n");
+            printf("realloc benchmark      : failed to realloc(%p, 0x%zX)\n", current_ptr, size);
             success = false;
             break;
         }
@@ -143,18 +145,16 @@ void kmain() {
     printf("success\n");
 
     size_t calloc_count = 0x1000;
-    size_t calloc_size = 0x8;
+    size_t calloc_size = 0x40;
     calloc_check(calloc_count, calloc_size);
     calloc_benchmark(calloc_count, calloc_size);
 
-    size_t realloc_size = 0x4000;
+    size_t realloc_size = 0x40000;
     realloc_check(realloc_size);
     realloc_benchmark(realloc_size);
 
     printf("Malloc stress test starting, will run until interrupted...\n");
-
     uint32_t allocs = 0;
-
     while (true) {
         char *str = malloc(33);
 

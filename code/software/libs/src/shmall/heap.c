@@ -51,7 +51,7 @@ static void create_foot(node_t *head) {
 void init_heap(heap_t *heap, long start, long size) {
     node_t *init_region = (node_t *) start;
     init_region->hole = 1;
-    init_region->size = (HEAP_INIT_SIZE) - sizeof(node_t) - sizeof(footer_t);
+    init_region->size = size - sizeof(node_t) - sizeof(footer_t);
 
     create_foot(init_region);
 

@@ -28,10 +28,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define HEAP_INIT_SIZE 0x10000
-#define HEAP_MAX_SIZE 0xF0000
-#define HEAP_MIN_SIZE 0x10000
-
 #define MIN_ALLOC_SZ 4
 
 #define MIN_WILDERNESS 0x2000
