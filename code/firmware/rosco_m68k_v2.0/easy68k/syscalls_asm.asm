@@ -10,8 +10,8 @@
 ;
 ; Easy68K-compatible system calls - assembly parts
 ;
-; Note that when compiled in this code reserves an SDB
-; DWORD for configuration at 0x410.
+; Note that when compiled in this code reserves three SDB
+; bytes for configuration at 0x410-0x412.
 ;------------------------------------------------------------
     include "../../../shared/rosco_m68k_public.asm"
     include "../rosco_m68k_private.asm"
