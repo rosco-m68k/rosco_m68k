@@ -27,8 +27,8 @@ extern "C" {
 #if __m68k__
 #define PLATFORM_THRESHOLD 16
 // Data unit used by fast loop
-typedef uint16_t chunk_type;    // The type of each data unit, matches CHUNK_LETTER
-#define CHUNK_LETTER "w"        // The m68k instruction suffix, matches chunk_type
+typedef uint32_t chunk_type;    // The type of each data unit, matches CHUNK_LETTER
+#define CHUNK_LETTER "l"        // The m68k instruction suffix, matches chunk_type
 #else
 #define PLATFORM_THRESHOLD 0
 #endif
