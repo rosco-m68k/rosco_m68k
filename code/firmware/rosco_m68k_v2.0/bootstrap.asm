@@ -625,7 +625,7 @@ TICK_HANDLER:
     beq.s   .TICKRESET                ; bail now if not...
 
     move.b  SDB_INTFLAGS,D1
-    tst     D1                        ; Is INTFLAGS zero?
+    tst.b   D1                        ; Is INTFLAGS zero?
     beq.s   .TURNON                   ; If so, go to turn on
     
     ; If here, LED is already on, turn it off
