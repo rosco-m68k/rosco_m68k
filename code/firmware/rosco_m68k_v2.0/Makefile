@@ -47,6 +47,8 @@ WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
+all: $(BINARY_EVEN) $(BINARY_ODD)
+
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board)
 DEFINES:=$(DEFINES) -DREVISION1X
@@ -116,6 +118,7 @@ export WITH_KERMIT
 export CPU ARCH TUNE
 export REVISION1X
 
+
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
@@ -151,7 +154,6 @@ $(BINARY_ODD): $(BINARY)
 
 .PHONY: all clean dump tools
 
-all: $(BINARY_EVEN) $(BINARY_ODD)
 
 clean:
 	make -C $(STAGE2_DIR) clean	
