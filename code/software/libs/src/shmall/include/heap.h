@@ -28,10 +28,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#define HEAP_INIT_SIZE 0x10000
-#define HEAP_MAX_SIZE 0xF0000
-#define HEAP_MIN_SIZE 0x10000
-
 #define MIN_ALLOC_SZ 4
 
 #define MIN_WILDERNESS 0x2000
@@ -80,5 +76,10 @@ void rh_switch_heap(heap_t *heap);
  * automatically).
  */
 void rh_default_heap();
+
+/*
+ * Get the header of a block
+ */
+node_t *get_head(void *p);
 
 #endif//__ROSCO_M68K_HEAP_H
