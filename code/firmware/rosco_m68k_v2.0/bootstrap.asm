@@ -402,12 +402,12 @@ INITDUART:
 
     ifnd REVISION1X
     ; System timer / interrupt setup
-    move.b  #$B0,DUART_ACR(A0)        ; Enable counter XCLK/16
+    move.b  #$F0,DUART_ACR(A0)        ; Enable timer XCLK/16
     move.b  #$45,DUART_IVR(A0)        ; Use vector 0x45
 
-    ; Counter will run at ~100Hz: 3686400 / 16 / 2304 = 100  
-    move.b  #$09,DUART_CTUR(A0)       ; Counter MSB is 0x09
-    move.b  #$00,DUART_CTLR(A0)       ; Counter LSB is 0x00
+    ; Timer will run at ~100Hz: 3686400 / 16 / (1152 * 2) = 100
+    move.b  #$04,DUART_CTUR(A0)       ; Counter MSB is 0x04
+    move.b  #$80,DUART_CTLR(A0)       ; Counter LSB is 0x80
 
     move.b  R_STARTCNTCMD(A0),D0      ; Issue START COUNTER command 
     endif
@@ -655,7 +655,7 @@ TICK_HANDLER:
 
     ifnd REVISION1X
 ; ============
-    move.b  R_STARTCNTCMD(A0),D0      ; Reissue START COUNTER command
+    move.b  R_STOPCNTCMD(A0),D0       ; Clear ISR[3]
     move.l  (A7)+,A0                  ; Restore A0
 ; ============
     else
