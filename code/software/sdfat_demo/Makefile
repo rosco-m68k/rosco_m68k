@@ -18,7 +18,7 @@ CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
 			 -mcpu=68010 -march=68010 -mtune=68010 -Wno-unused-function				\
 			 -mno-align-int -mno-strict-align $(DEFINES)
 
-ifeq ($(ROSCO_M68K_HUGEROM),true)
+ifneq ($(ROSCO_M68K_HUGEROM),false)
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
 else
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
