@@ -58,6 +58,8 @@ WITH_KERMIT?=true
 WITH_DEBUG_STUB?=false
 endif
 
+all: $(BINARY_EVEN) $(BINARY_ODD)
+
 include easy68k/include.mk
 include sdcard/include.mk
 
@@ -96,8 +98,6 @@ $(BINARY_ODD): $(BINARY)
 	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
 
 .PHONY: all clean dump tools
-
-all: $(BINARY_EVEN) $(BINARY_ODD)
 
 clean:
 	make -C $(STAGE2_DIR) clean	
