@@ -110,7 +110,7 @@ static void initialize_warm_reboot() {
 /* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
     if (sdb->magic != 0xB105D47A) {
-        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch! Stop.\r\n");
         HALT();
     }
 
