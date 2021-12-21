@@ -53,12 +53,12 @@ static unsigned int filecrc;                                           // curren
 // timer helpers
 unsigned int timer_start()
 {
-    //unsigned int t;
+    unsigned int t;
     unsigned int ts = _TIMER_100HZ;
     // synchronize start to next 100Hz interrupt
-//    while ((t = _TIMER_100HZ) == ts)
-//        ;
-    return ts;
+    while ((t = _TIMER_100HZ) == ts)
+        ;
+    return t;
 }
 
 unsigned int timer_stop(unsigned int start_tick)
