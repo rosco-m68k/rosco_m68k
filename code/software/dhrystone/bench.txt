@@ -33,6 +33,7 @@ Last updated 20/11/2020 by roscopeco
  * rosco_m68k   68020-12Mhz     ROM             gcc-7.5.0        -      2604 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2860 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2941 (-O1 -mtune=68020)
+ * rosco_pro    68030-20Mhz     ROM             gcc-10.2.0       -      4545 (-O1 -mtune=68030)
  * Gould PN9080 custom ECL      UTX-32 1.1C     cc              4745    4992
  * VAX-784      -               Mach/4.3        cc              5263    5555 &4
  * VAX 8600     -               4.3 BSD         cc              6329    6423
