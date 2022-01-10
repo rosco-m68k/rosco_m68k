@@ -78,55 +78,55 @@ F 3 "" H 10150 4750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H?
+L Mechanical:MountingHole_Pad H?
 U 1 1 5FDB083A
 P 1250 3100
 AR Path="/5E53BCCF/5FDB083A" Ref="H?"  Part="1" 
 AR Path="/5E53BC83/5FDB083A" Ref="H1"  Part="1" 
 F 0 "H1" H 1250 3300 50  0000 C CNN
-F 1 "MountingHole" H 1250 3225 50  0000 C CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 1250 3100 50  0001 C CNN
+F 1 "MountingHole" H 1250 3225 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1250 3100 50  0001 C CNN
 F 3 "~" H 1250 3100 50  0001 C CNN
 	1    1250 3100
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H?
+L Mechanical:MountingHole_Pad H?
 U 1 1 5FDB0840
-P 1250 3450
+P 1500 3100
 AR Path="/5E53BCCF/5FDB0840" Ref="H?"  Part="1" 
 AR Path="/5E53BC83/5FDB0840" Ref="H2"  Part="1" 
-F 0 "H2" H 1250 3650 50  0000 C CNN
-F 1 "MountingHole" H 1250 3575 50  0000 C CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 1250 3450 50  0001 C CNN
-F 3 "~" H 1250 3450 50  0001 C CNN
-	1    1250 3450
+F 0 "H2" H 1500 3300 50  0000 C CNN
+F 1 "MountingHole" H 1500 3225 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1500 3100 50  0001 C CNN
+F 3 "~" H 1500 3100 50  0001 C CNN
+	1    1500 3100
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H?
+L Mechanical:MountingHole_Pad H?
 U 1 1 5FDB0846
-P 1250 3800
+P 1800 3100
 AR Path="/5E53BCCF/5FDB0846" Ref="H?"  Part="1" 
 AR Path="/5E53BC83/5FDB0846" Ref="H3"  Part="1" 
-F 0 "H3" H 1250 4000 50  0000 C CNN
-F 1 "MountingHole" H 1250 3925 50  0000 C CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 1250 3800 50  0001 C CNN
-F 3 "~" H 1250 3800 50  0001 C CNN
-	1    1250 3800
+F 0 "H3" H 1800 3300 50  0000 C CNN
+F 1 "MountingHole" H 1800 3225 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1800 3100 50  0001 C CNN
+F 3 "~" H 1800 3100 50  0001 C CNN
+	1    1800 3100
 	1    0    0    -1  
 $EndComp
 $Comp
-L Mechanical:MountingHole H?
+L Mechanical:MountingHole_Pad H?
 U 1 1 5FDB084C
-P 1250 4150
+P 2050 3100
 AR Path="/5E53BCCF/5FDB084C" Ref="H?"  Part="1" 
 AR Path="/5E53BC83/5FDB084C" Ref="H4"  Part="1" 
-F 0 "H4" H 1250 4350 50  0000 C CNN
-F 1 "MountingHole" H 1250 4275 50  0000 C CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3" H 1250 4150 50  0001 C CNN
-F 3 "~" H 1250 4150 50  0001 C CNN
-	1    1250 4150
+F 0 "H4" H 2050 3300 50  0000 C CNN
+F 1 "MountingHole" H 2050 3225 50  0001 C CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2050 3100 50  0001 C CNN
+F 3 "~" H 2050 3100 50  0001 C CNN
+	1    2050 3100
 	1    0    0    -1  
 $EndComp
 Text GLabel 9750 2000 2    50   Input ~ 0
@@ -917,4 +917,36 @@ Connection ~ 5300 2900
 Wire Wire Line
 	5300 2000 6350 2000
 Connection ~ 5300 2000
+Wire Wire Line
+	1250 3200 1250 3300
+Wire Wire Line
+	1250 3300 1500 3300
+Wire Wire Line
+	1650 3300 1650 3400
+Connection ~ 1650 3300
+Wire Wire Line
+	2050 3200 2050 3300
+Wire Wire Line
+	1650 3300 1800 3300
+Wire Wire Line
+	1800 3200 1800 3300
+Connection ~ 1800 3300
+Wire Wire Line
+	1800 3300 2050 3300
+Wire Wire Line
+	1500 3200 1500 3300
+Connection ~ 1500 3300
+Wire Wire Line
+	1500 3300 1650 3300
+$Comp
+L power:GND #PWR?
+U 1 1 61DE23F1
+P 1650 3400
+F 0 "#PWR?" H 1650 3150 50  0001 C CNN
+F 1 "GND" H 1655 3227 50  0000 C CNN
+F 2 "" H 1650 3400 50  0001 C CNN
+F 3 "" H 1650 3400 50  0001 C CNN
+	1    1650 3400
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
