@@ -4,9 +4,9 @@ This utility allows rosco_m68k models fitted with a FLASH ROM
 expansion (and ultimately rosco-pro models) to have their firmware 
 updated from a single ROM image placed on SD card.
 
-**Note**: This is only compatible with the r1.x rosco_m68k where 
-the HUGEROM hack is in place (i.e. IC2 is programmed to base ROM
-at 0x00e00000) and the flash ROM adapter is fitted.
+**Note**: This is only compatible with the r2.x rosco_m68k (or r1.x 
+where the HUGEROM hack is in place, i.e. IC2 is programmed to base ROM
+at 0x00e00000 and the flash ROM adapter is fitted).
 
 In order to use this utility, you will need:
 
