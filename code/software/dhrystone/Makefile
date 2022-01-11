@@ -17,6 +17,9 @@ ifneq ($(HAVE_TIMER),false)
 EXTRA_CFLAGS+=-DTIME
 endif
 
+CPU?=68010
+ARCH?=$(CPU)
+TUNE?=$(CPU)
 EXTRA_LIBS=
 #EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
@@ -24,22 +27,22 @@ SYSLIBDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/lib
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
  -Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
- -mcpu=68010 -march=68010 -mtune=68010 $(DEFINES)
+ -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) $(DEFINES)
 GCC_LIBS=$(shell $(CC) --print-search-dirs \
  | grep libraries:\ = \
  | sed 's/libraries: =/-L/g' \
  | sed 's/:/m68000\/ -L/g')m68000/
 LIBS= $(EXTRA_LIBS) -lheap -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
-ASFLAGS=-mcpu=68010 -march=68010
+ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 
-ifeq ($(ROSCO_M68K_HUGEROM),true)
+ifneq ($(ROSCO_M68K_HUGEROM),false)
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
 else
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
 endif
 
 LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
-VASMFLAGS=-Felf -m68010 -quiet -Lnf $(DEFINES)
+VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 CC=m68k-elf-gcc
 AS=m68k-elf-as
 LD=m68k-elf-ld

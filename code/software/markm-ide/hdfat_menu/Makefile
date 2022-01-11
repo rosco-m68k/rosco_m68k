@@ -21,7 +21,7 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
 LIBS=-lsdfat -lprintf -lcstdlib -lmachine -lstart_serial -ldebug_stub -lgcc
 ASFLAGS=-mcpu=68010 -march=68010
 
-ifeq ($(ROSCO_M68K_HUGEROM),true)
+ifneq ($(ROSCO_M68K_HUGEROM),false)
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
 else
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/rosco_m68k_program.ld
