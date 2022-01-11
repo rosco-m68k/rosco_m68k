@@ -177,19 +177,16 @@ int main(int argc, char **argv) {
                         if (fl_fread(buffer, 1, upgrade_romsize, romfile) != (int)upgrade_romsize) {
                             printf(" failed :( ... Cannot continue with incomplete image...\n");
                         } else {
-                            printf(" success; Checking version...\n");
-                            
                             RomVersionInfo *version_info = (RomVersionInfo*)(buffer + 0x400);
 
                             if (version_info->major != 0) {
-                                printf("ROM image indicates version %2d.%2d.%s ; Extended system data area: %s\n", 
+                                printf("ROM image indicates version %2x.%02x.%s ; Extended system data area: %s\n", 
                                         version_info->major, version_info->minor,
                                         version_info->is_snapshot ? "SNAPSHOT" : "RELEASE",
                                         version_info->is_extdata ? "Required" : "Not required");
 
                                 if (version_info->is_huge) {                                    
-                                    printf(" success!\n\n");
-                                    printf("Ready to flash your rosco_m68k. This process should only take a few seconds.\n");
+                                    printf("\nReady to flash your rosco_m68k. This process should only take a few seconds.\n");
                                     printf("\n\nNo flashing lights is normal - DO NOT TURN OFF YOUR rosco_m68k!\n\n");
                                     printf("After the update is complete, your rosco_m68k should reboot automatically using\n");
                                     printf("the newly updated flash.\n");

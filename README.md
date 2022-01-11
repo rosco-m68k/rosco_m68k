@@ -1,7 +1,7 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> Note: This is the Version 2.0 release branch. If you are using Firmware 2.0 (regardless of base board revision), this is the branch you should be using to build the standard libraries and example programs.
+> Note: This is the Version 2.1 release branch. If you are using Firmware 2.1 (regardless of base board revision), this is the branch you should be using to build the standard libraries and example programs.
 
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
