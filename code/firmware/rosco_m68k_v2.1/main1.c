@@ -32,10 +32,11 @@
 extern void debug_stub();
 #endif
 
-#define INIT_STACK_VEC_ADDRESS 0x0
-#define RESET_VEC_ADDRESS 0x4
-#define PROGRAM_LOADER_EFP_ADDRESS 0x448
-#define MEM_SIZE_SDB_ADDRESS 0x414
+#define INIT_STACK_VEC_ADDRESS      0x0
+#define RESET_VEC_ADDRESS           0x4
+#define PROGRAM_LOADER_EFP_ADDRESS  0x448
+#define PROGRAM_EXIT_EFP_ADDRESS    0x490
+#define MEM_SIZE_SDB_ADDRESS        0x414
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
 #ifdef BLOCKDEV_SUPPORT
@@ -61,6 +62,7 @@ static uint32_t* volatile program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADD
 static uint32_t* volatile reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
 static uint32_t* volatile init_stack_vector_ptr = (uint32_t*)INIT_STACK_VEC_ADDRESS;
 static uint32_t* volatile mem_size_sdb_ptr = (uint32_t*)MEM_SIZE_SDB_ADDRESS;
+static uint32_t* volatile prog_exit_ptr = (uint32_t*)PROGRAM_EXIT_EFP_ADDRESS;
 
 // Stage 2 loads at 0x2000
 static Stage2 stage2 = (Stage2) 0x2000;
@@ -111,7 +113,7 @@ static void initialize_loader_efp() {
 
 static void initialize_warm_reboot() {
     *init_stack_vector_ptr = *mem_size_sdb_ptr;
-    *reset_vector_ptr = (uint32_t)warm_boot;
+    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)warm_boot;
 }
 
 void print_cpu_mem_info() {

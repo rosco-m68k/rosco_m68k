@@ -63,11 +63,23 @@ POSTINIT:                         ; running from copied run addr location
     dbra    D1,.COPY_LOOP         ; outer loop
 
 PREMAIN:
+    ; Save existing program exit EFP
+    ; Cannot use stack as we may jump directly with exit() or abort(),
+    ; from arbitrarily nested code...
+    move.l  EFP_PROG_EXIT,SAVE_PROG_EXIT
+
+    ; And set up new one at POSTMAIN
+    move.l  #.POSTMAIN,EFP_PROG_EXIT
+ 
     lea.l   __kinit,A0
     jsr     (A0)                  ; prepare C environment
     bsr.s   CALL_CTORS            ; Call global constructors
     lea.l   kmain,A0
     jsr     (A0)                  ; Fly user program, Fly!
+
+.POSTMAIN:
+    ; Restore EFP_PROG_EXIT
+    move.l  SAVE_PROG_EXIT,EFP_PROG_EXIT
     move.l  #0,-(A7)              ; Call __cxa_finalize with NULL dso_handle
     lea.l   __cxa_finalize,A0
     jsr     (A0)
@@ -117,3 +129,8 @@ CALL_DTORS::
 .DONE
     movem.l (A7)+,A2-A4
     rts
+
+    section .data
+
+SAVE_PROG_EXIT  ds.l  1
+
