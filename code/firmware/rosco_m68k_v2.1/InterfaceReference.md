@@ -1372,7 +1372,7 @@ must be accessed through the public TRAP functions!
 | 0x438   | FW_CLRSCR - Clear the default console (where supported)                                           |
 | 0x43C   | FW_MOVEXY - Move cursor to (X,Y) (see note 1)                                                     |
 | 0x440   | FW_SETCURSOR - Show (D0.B > 0) or hide (D0.B == 0) the cursor                                     |
-| 0x444   | RESERVED                                                                                          |
+| 0x444   | FW_CHECKCHAR - Determine whether a character is available on the default UART                     |
 | 0x448   | FW_PROGRAM_LOADER - The firmware uses this to invoke the program loader (defaults to SD/Kermit)   |
 | 0x44C   | FW_SD_INIT - Initialize SD Card                                                                   |
 | 0x450   | FW_SD_READ - Read from SD Card                                                                    |
@@ -1390,7 +1390,8 @@ must be accessed through the public TRAP functions!
 | 0x480   | FW_ATA_INIT - Initialize ATA PIO device                                                           |
 | 0x484   | FW_ATA_READ - Read from ATA device                                                                |
 | 0x488   | FW_ATA_WRITE - Write to ATA device                                                                |
-| 0x48C   | FW_ATA_IDENT - `IDENTIFY` ATA device                                                               |
+| 0x48C   | FW_ATA_IDENT - `IDENTIFY` ATA device                                                              |
+| 0x490   | FW_PROG_EXIT - Vector used by library code to support the exit() function                         |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).
