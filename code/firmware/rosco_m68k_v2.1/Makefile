@@ -52,24 +52,30 @@ all: $(BINARY_EVEN) $(BINARY_ODD)
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board)
 DEFINES:=$(DEFINES) -DREVISION1X
-HUGEROM?=false
-ROMDEVICE=AT28C256
 else
 $(info === Building rosco_m68k firmware for revision 2.x board)
-HUGEROM?=true
 endif
 
+# Set up Size-specific things appropriately..
+ifeq ($(REVISION1X),true)
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
-ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 ROMDEVICE=AT28C256
+endif
 else
+ifeq ($(HUGEROM),false)
 $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
+else
+$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
+LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+ROMDEVICE=SST39SF040
+DEFINES:=$(DEFINES) -DHUGEROM
 endif
 endif
 
