@@ -7,18 +7,18 @@
 
 void exit(int status)
 {
-  // Warm-reboot machine when quit
+  // Jump to EFP_PROG_EXIT when quit
   __asm__ __volatile__ (
-      "moveal 0xfc0004.l, %a0\n\t"
+      "moveal 0x490.l, %a0\n\t"
       "jmp %a0@\n\t"
   );
 }
 
 void abort(void)
 {
-  // Warm-reboot machine when quit (should this blink LED or something)
+  // Jump to reset vector when abort
   __asm__ __volatile__ (
-      "moveal 0xfc0004.l, %a0\n\t"
+      "moveal 0x4.l, %a0\n\t"
       "jmp %a0@\n\t"
   );
 }

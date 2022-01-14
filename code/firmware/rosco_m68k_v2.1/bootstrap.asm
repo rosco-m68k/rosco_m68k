@@ -243,6 +243,7 @@ INITSDB:
     move.l  #ANSI_MOVEXY,EFP_MOVEXY
     move.l  #ANSI_CLRSCR,EFP_CLRSCR
     move.l  #.RETURN,EFP_SETCURSOR     ; No-op for default SET CURSOR
+    move.l  #START,EFP_PROG_EXIT       ; Initial PROG_EXIT is reset vec
 
 .RETURN
     rts
