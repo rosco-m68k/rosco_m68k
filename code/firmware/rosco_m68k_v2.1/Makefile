@@ -40,7 +40,7 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
-				cpuspeed.o warmboot.o main1.o 
+				cpuspeed.o cputype.o warmboot.o main1.o 
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
@@ -50,10 +50,10 @@ WITH_DEBUG_STUB?=true
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
 ifeq ($(REVISION1X),true)
-$(info === Building rosco_m68k firmware for revision 1.x board)
+$(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU)
 DEFINES:=$(DEFINES) -DREVISION1X
 else
-$(info === Building rosco_m68k firmware for revision 2.x board)
+$(info === Building rosco_m68k firmware for revision 2.x board with MC$(CPU) CPU)
 endif
 
 # Set up Size-specific things appropriately..
@@ -143,10 +143,10 @@ $(ELF) : $(OBJECTS) $(STAGE2)
 $(BINARY) : $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
-ifeq ($(HUGEROM),true)
-		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
-else
+ifeq ($(HUGEROM),false)
 		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
+else
+		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
 endif
 
 $(DISASM) : $(ELF)
