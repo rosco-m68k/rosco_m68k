@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2021 Ross Bamford and contributors
+; Copyright (c)2019-2022 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; This is the main bootstrap code for the system. 
@@ -245,6 +245,8 @@ INITSDB:
     move.l  #.RETURN,EFP_SETCURSOR     ; No-op for default SET CURSOR
     move.l  #START,EFP_PROG_EXIT       ; Initial PROG_EXIT is reset vec
 
+    jsr     INIT_CPU_TYPE
+
 .RETURN
     rts
 
@@ -482,12 +484,6 @@ BERR_HANDLER::
     move.w  ($C,A7),D0                ; If we're here, it's an 010 frame...                
     bset    #15,D0                    ; ... so just set the RR (rerun) flag
     move.w  D0,($C,A7)
-
-    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
-    and.l   #$1FFFFFFF,D0             ; Zero high three bits
-    or.l    #$20000000,D0             ; Set them to indicate 010
-    move.l  D0,SDB_CPUINFO            ; And update the SDB 
-    
     bra.s   .DONE 
 
 .NOT010:
@@ -497,21 +493,12 @@ BERR_HANDLER::
     beq.w   .IS020 
 
     ; If we're here, assume it's a 68000.
-    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
-    and.l   #$1FFFFFFF,D0             ; Zero high three bits
-    move.l  D0,SDB_CPUINFO            ; And update the SDB 
-
     bra.s   .DONE
 
 .IS020
     move.w  ($E,A7),D0                ; If we're here, it's an 020 frame...                
     bclr    #8,D0                     ; ... we only care about data faults here... Hopefully :D
     move.w  D0,($E,A7)    
-
-    move.l  SDB_CPUINFO,D0            ; Get CPUINFO from SDB
-    and.l   #$1FFFFFFF,D0             ; Zero high three bits
-    or.l    #$40000000,D0             ; Set them to indicate 020
-    move.l  D0,SDB_CPUINFO            ; And update the SDB
 
 .DONE
     move.b  #1,BERR_FLAG
