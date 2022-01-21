@@ -1771,15 +1771,18 @@ static const char xansiterm_banner[] =
     "\x1b[35mX\x1b[93mo\x1b[33ms\x1b[96me\x1b[92mr\x1b[91ma \x1b[0mv";                     // 0.20
 static const char xansiterm_banner2[] = " XANSI \x1b[93m|_____|\x1b[0m  Classic ";         // 2.x\r\n;
 
-static char* str_hex(char *buf, unsigned int num) {
-    if (num > 0xf) {
+static char* str_hex(char *buf, unsigned int num) 
+{
+    if (num > 0xf) 
+    {
         buf = str_hex(buf, num >> 4);
     }
     *buf++ = "0123456789ABCDEF"[num & 0xf];
     return buf;
 }
 
-static char* str_fw_rev(char *buf, unsigned int ver) {
+static char* str_fw_rev(char *buf, unsigned int ver) 
+{
     buf = str_hex(buf, (ver & 0xf00) >> 8);
     *buf++ = '.';
     return str_hex(buf, ver & 0xff);
