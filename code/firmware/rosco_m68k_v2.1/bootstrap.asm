@@ -493,7 +493,9 @@ BERR_HANDLER::
     beq.w   .IS020 
 
     ; If we're here, assume it's a 68000.
-    bra.s   .DONE
+    ; We can't return from a bus error, signal error.
+    move.l  (A7)+,D0
+    jmp     BUS_ERROR_HANDLER
 
 .IS020
     move.w  ($E,A7),D0                ; If we're here, it's an 020 frame...                
