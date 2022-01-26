@@ -158,20 +158,6 @@ INITDUART_ATBASE:
     move.l  BERR_SAVED,$8             ; Restore bus error handler
     rts
 
-    ifnd REVISION1X
-
-START_HEART::
-    move.l  SDB_UARTBASE,A0
-    move.b  #$08,DUART_IMR(A0)        ; Unmask counter interrupt
-    rts
-
-STOP_HEART::
-    move.l  SDB_UARTBASE,A0
-    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
-    rts
-
-    endif
-
 
 ; PRINT null-terminated string pointed to by A0
 ;
@@ -259,5 +245,20 @@ RECVCHAR_DUART:
     move.b  DUART_RBA(A0),D0
     move.l  (A7)+,A0              ; Restore A0
     rts
+
+
+    ifnd REVISION1X
+
+START_HEART::
+    move.l  SDB_UARTBASE,A0
+    move.b  #$08,DUART_IMR(A0)        ; Unmask counter interrupt
+    rts
+
+STOP_HEART::
+    move.l  SDB_UARTBASE,A0
+    move.b  #$00,DUART_IMR(A0)        ; Mask all interrupts
+    rts
+
+    endif
 
     endif

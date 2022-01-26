@@ -21,7 +21,7 @@
 
 VECTORS:
     dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
-    dc.l    DEEP_RESET                  ; 01: Initial PC (start of ROM code)
+    dc.l    START                       ; 01: Initial PC (start of ROM code)
 
     dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error
     dc.l    ADDRESS_ERROR_HANDLER       ; 03: Address Error
@@ -68,7 +68,7 @@ VERSION:
 
 ; First of all, copy the exception table to RAM at 0x0.
 ; VBR defaults to that location anyway for 68000 compatibility.
-DEEP_RESET::
+START::
     or.w    #$0700,SR                   ; Disable interrupts for now
 
     ; Copy exception vectors

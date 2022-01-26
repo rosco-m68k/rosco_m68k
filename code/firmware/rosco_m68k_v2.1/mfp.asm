@@ -83,15 +83,6 @@ INITMFP::
     rts
 
 
-START_HEART::
-    bset.b  #5,MFP_IMRB               ; Unmask Timer C interrupt
-    rts
-
-STOP_HEART::
-    bclr.b  #5,MFP_IMRB               ; Mask Timer C interrupt
-    rts
-
-
 ; PRINT null-terminated string pointed to by A0
 ;
 ; Only used directly during early init; Becomes the default implementation
@@ -200,6 +191,15 @@ RECVCHAR_MFP:
 .GOTCHR
     move.b  MFP_UDR,D0            ; Get the data
     move.l  (A7)+,D1              ; Restore D1
+    rts
+
+
+START_HEART::
+    bset.b  #5,MFP_IMRB               ; Unmask Timer C interrupt
+    rts
+
+STOP_HEART::
+    bclr.b  #5,MFP_IMRB               ; Mask Timer C interrupt
     rts
 
     endif
