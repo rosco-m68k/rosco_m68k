@@ -8,11 +8,9 @@
 ; Copyright (c)2019-2022 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
-; This is the main bootstrap code for the system. 
-; It sets up the exception handlers, initializes the hardware
-; including the UART and system timers, sets up the basic
-; info in the System Data Block, enables interrupts and 
-; calls the main stage1 loader (in main1.c).
+; This is the DUART code. 
+; It detects and initializes the DUART, and provides
+; I/O routines.
 ;------------------------------------------------------------
     include "../../shared/rosco_m68k_public.asm"
     include "rosco_m68k_private.asm"
