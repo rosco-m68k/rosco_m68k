@@ -27,8 +27,6 @@
 INITDUART::
     ifnd REVISION1X
     ; Building for r2.x mainboard, try onboard DUART first
-    move.l  #0,SDB_UARTBASE           ; On r2 main board, start UARTBASE at 0...
-
     move.l  #DUART_BASE_MBR2,A0
     bsr.w   INITDUART_ATBASE          ; Try detect / and basic init
     tst.b   D5                        ; Did we find it?
@@ -97,9 +95,9 @@ INITDUART::
     move.l  #SENDCHAR_DUART,EFP_PRINTCHAR
     move.l  #SENDCHAR_DUART,EFP_SENDCHAR
     move.l  #RECVCHAR_DUART,EFP_RECVCHAR
-    move.l  #CHECKCHAR_DUART,EFP_CHECKCHAR
-    move.l  #ANSI_MOVEXY,EFP_MOVEXY
     move.l  #ANSI_CLRSCR,EFP_CLRSCR
+    move.l  #ANSI_MOVEXY,EFP_MOVEXY
+    move.l  #CHECKCHAR_DUART,EFP_CHECKCHAR
 
 .DONE
     rts

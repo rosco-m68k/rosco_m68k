@@ -72,6 +72,8 @@ INITSDB:
     move.w  #$FF00,SDB_SYSFLAGS       ; Initial system flags word (enable LEDs and CTS)
     move.b  #0,SDB_INTFLAGS           ; Initial internal flags
     move.l  #0,SDB_UPTICKS            ; Zero upticks
+    move.l  #RAMLIMIT,SDB_MEMSIZE     ; Default memory size
+    move.l  #0,SDB_UARTBASE           ; Clear before UART detection
 
     jsr     INIT_CPU_TYPE
 
@@ -184,7 +186,8 @@ INITMEMCOUNT:
     move.l  A0,SDB_MEMSIZE
     rts
 
-; Temporary bus error handler, in case no MC68681 is installed
+
+; Temporary bus error handler
 BERR_HANDLER::
     move.l  D0,-(A7)
     move.w  ($A,A7),D0                ; Get format
