@@ -86,4 +86,4 @@ START::
 
     ; Perform soft reset
     move.l  $00000004,A0                ; Load shallow reset...
-    jmp     (A0)                        ; ...and jump to it
+    jmp     (A0)                        ; ... and jump to it

@@ -16,13 +16,15 @@
 ; the PROGRAM_LOADER from the EFP table (by default, this is
 ; the compressed stage 2 / Kermit loader in ROM).
 ;------------------------------------------------------------
+    include "../../shared/rosco_m68k_public.asm"
+
     section .text
 
 warm_boot::
-    move.l  $0,A7                 ; Reset stack
+    move.l  SDB_MEMSIZE,A7        ; Reset stack
     lea.l   BANNER,A0             ; Load banner...
     jsr     FW_PRINT              ; And print it
-    move.l  $448,A0               ; Get address from PROGRAM_LOADER_EFP...
+    move.l  EFP_PROGLOADER,A0     ; Get address from FW_PROGRAM_LOADER...
     jmp     (A0)                  ; ... and gogogo!
 
     section .rodata
