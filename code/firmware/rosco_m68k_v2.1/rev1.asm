@@ -139,7 +139,7 @@ ILLEGAL_INSTRUCTION_HANDLER::
     move.l  #200000,D0                ; Wait a while
     bsr.w   BUSYWAIT
 
-    bra.s   ILLEGAL_INSTRUCTION_HANDLER
+    bra.w   ILLEGAL_INSTRUCTION_HANDLER
     
     rte                               ; Never reached
 
