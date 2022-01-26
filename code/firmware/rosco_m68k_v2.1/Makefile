@@ -10,7 +10,8 @@ EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
-       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
+       -fomit-frame-pointer -fno-delete-null-pointer-checks							\
+			 -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
