@@ -54,7 +54,7 @@ extern void print_unsigned(uint32_t num, uint8_t base);
 typedef void (*Stage2)(void);
 
 // Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+extern uint16_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 extern uint32_t _zip_start, _zip_end;
 
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
@@ -71,10 +71,10 @@ noreturn void main1();
 
 noreturn void linit() {
   // copy .data
-  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
+  for (uint16_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
 
   // zero .bss
-  for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
+  for (uint16_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 
   main1();
 }
