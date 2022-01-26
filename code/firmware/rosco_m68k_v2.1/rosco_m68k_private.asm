@@ -20,12 +20,12 @@
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
   ifd HUGEROM
-RELEASE_VER     equ     $E0000220
+RELEASE_VER     equ     $E0000230
   else
-RELEASE_VER     equ     $C0000220
+RELEASE_VER     equ     $C0000230
   endif
 
-VEC_LIMIT       equ     $400
+VECTORS_LOAD    equ     $00000000
 
 ; Bits we use in the firmware reserved area (non-BSS).
 BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync

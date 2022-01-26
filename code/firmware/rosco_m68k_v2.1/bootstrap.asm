@@ -19,68 +19,7 @@
 
     section .text
 
-RESET:
-    dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
-    dc.l    START                       ; 01: Initial PC (start of ROM code)
-    
-VECTORS:
-    dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error
-    dc.l    ADDRESS_ERROR_HANDLER       ; 03: Address Error
-    dc.l    ILLEGAL_INSTRUCTION_HANDLER ; 04: Illegal Instruction
-    dc.l    GENERIC_HANDLER             ; 05: Divide by Zero
-    dc.l    GENERIC_HANDLER             ; 06: CHK Instruction
-    dc.l    GENERIC_HANDLER             ; 07: TRAPV Instruction
-    dc.l    GENERIC_HANDLER             ; 08: Privilege Violation
-    dc.l    GENERIC_HANDLER             ; 09: Trace
-    dc.l    GENERIC_HANDLER             ; 0A: Line 1010 Emulator
-    dc.l    GENERIC_HANDLER             ; 0B: Line 1111 Emulator
-    dc.l    GENERIC_HANDLER             ; 0C: Reserved
-    dc.l    GENERIC_HANDLER             ; 0D: Reserved
-    dc.l    GENERIC_HANDLER             ; 0E: Format error (MC68010 Only)
-    dc.l    GENERIC_HANDLER             ; 0F: Uninitialized Vector
-    
-    dcb.l   8,GENERIC_HANDLER           ; 10-17: Reserved
-    
-    dc.l    GENERIC_HANDLER             ; 18: Spurious Interrupt
-    
-    dcb.l   7,GENERIC_HANDLER           ; 19-1F: Level 1-7 Autovectors
-    dcb.l   13,GENERIC_HANDLER          ; 20-2C: TRAP Handlers (unused)
-    dc.l    GENERIC_HANDLER             ; 2D: TRAP#13 handler (replaced later)
-    dc.l    TRAP_14_HANDLER             ; 2E: TRAP#14 handler
-    dc.l    GENERIC_HANDLER             ; 2F: TRAP#15 handler (replaced later)
-    dcb.l   16,GENERIC_HANDLER          ; 30-3F: Remaining Reserved vectors
-    dcb.l   4,GENERIC_HANDLER           ; 40-43: MFP GPIO #0-3 (Not used)
-    dc.l    GENERIC_HANDLER             ; 44: MFP Timer D (Interrupt not used)
-    dc.l    TICK_HANDLER                ; 45: MFP Timer C (System tick)
-    dcb.l   2,GENERIC_HANDLER           ; 46-47: MFP GPIO #4-5 (Not used)
-    dc.l    GENERIC_HANDLER             ; 48: MFP Timer B (Not used)
-    dc.l    GENERIC_HANDLER             ; 49: Transmitter error (Not used)
-    dc.l    GENERIC_HANDLER             ; 4A: Transmitter empty (Replaced later)
-    dc.l    GENERIC_HANDLER             ; 4B: Receiver error (Replaced later)
-    dc.l    GENERIC_HANDLER             ; 4C: Receiver buffer full (Replaced later)
-    dc.l    GENERIC_HANDLER             ; 4D: Timer A (Not used)
-    dcb.l   2,GENERIC_HANDLER           ; 4E-4F: MFP GPIO #6-7 (Not used)
-    dcb.l   176,GENERIC_HANDLER         ; 50-FF: Unused user vectors
-    
-VEC_END:
-VERSION:
-    dc.l    RELEASE_VER                 ; Embed the release version in ROM
-
-; First of all, copy the exception table to RAM at 0x0.
-; 68010 VBR defaults to that location anyway for 68000 compatibility.
-START::
-    or.w    #$0700,SR                 ; Disable interrupts for now    
-    move.l  #VEC_END,A0               ; Start into A0 (source)
-    move.l  #VEC_LIMIT,A1             ; 0x400 into A1 (destination)
-
-.ISR_COPY_LOOP:    
-    move.l  A1,D0                     ; Have we reached destination zero?
-    beq.s   .ISR_COPY_DONE            ; Halt if so
-    
-    move.l  -(A0),-(A1)               ; Copy long source to dest, with predecrement.
-    bra.s   .ISR_COPY_LOOP            ; Next iteration
-
-.ISR_COPY_DONE:
+SHALLOW_RESET::
     ifd REVISION1X 
     bsr.w   INITMFP                   ; Initialise MC68901
     endif
@@ -242,8 +181,8 @@ INITSDB:
     move.l  #HALT,EFP_HALT
     move.l  #ANSI_MOVEXY,EFP_MOVEXY
     move.l  #ANSI_CLRSCR,EFP_CLRSCR
-    move.l  #.RETURN,EFP_SETCURSOR     ; No-op for default SET CURSOR
-    move.l  #START,EFP_PROG_EXIT       ; Initial PROG_EXIT is reset vec
+    move.l  #.RETURN,EFP_SETCURSOR          ; No-op for default SET CURSOR
+    move.l  #SHALLOW_RESET,EFP_PROG_EXIT    ; Initial PROG_EXIT is reset vec
 
     jsr     INIT_CPU_TYPE
 
@@ -556,7 +495,7 @@ STOP_HEART::
 
 ;------------------------------------------------------------
 ; Exception handlers    
-TICK_HANDLER:
+TICK_HANDLER::
     move.l  D0,-(A7)                  ; Save D0
 
     ifnd REVISION1X
@@ -664,7 +603,7 @@ BUSYWAIT_C::
     move.l  (4,A7),D0
     jmp     BUSYWAIT
 
-BUS_ERROR_HANDLER:
+BUS_ERROR_HANDLER::
     or.w    #0700,SR                  ; Disable exceptions
 
     ifd REVISION1X
@@ -713,7 +652,7 @@ BUSYWAIT:
     bne.s   BUSYWAIT
     rts
 
-ADDRESS_ERROR_HANDLER:
+ADDRESS_ERROR_HANDLER::
     or.w    #0700,SR                  ; Disable exceptions
     
     ifd REVISION1X
@@ -779,7 +718,7 @@ ADDRESS_ERROR_HANDLER:
     
     rte                               ; Never reached
 
-ILLEGAL_INSTRUCTION_HANDLER:
+ILLEGAL_INSTRUCTION_HANDLER::
     or.w    #0700,SR                  ; Disable exceptions
 
     ifd REVISION1X
@@ -871,7 +810,7 @@ ILLEGAL_INSTRUCTION_HANDLER:
     
     rte                               ; Never reached
 
-GENERIC_HANDLER:
+GENERIC_HANDLER::
     move.l  #$2BADB105,SDB_STATUS
     rte
 
