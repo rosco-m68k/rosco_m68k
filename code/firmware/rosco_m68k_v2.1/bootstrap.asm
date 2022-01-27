@@ -262,25 +262,6 @@ GENERIC_HANDLER::
     rte
 
 
-; Convenience SEND/RECV char functions, using the EFP table.
-; These are provided for use by the Easy68k syscalls.S
-;
-; TODO these should be moved to syscalls_asm.S!
-SENDCHAR::
-    move.l  A3,-(A7)
-    move.l  EFP_SENDCHAR,A3
-    jsr     (A3)
-    move.l  (A7)+,A3
-    rts
-
-RECVCHAR::
-    move.l  A3,-(A7)
-    move.l  EFP_RECVCHAR,A3
-    jsr     (A3)
-    move.l  (A7)+,A3
-    rts
-
-
 ; Call busywait from C code...
 BUSYWAIT_C::
     move.l  (4,A7),D0
