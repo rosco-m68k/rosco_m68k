@@ -43,7 +43,7 @@ load_sp:
     section .rodata
 
 BANNER  dc.b  $D, $A, $D, $A 
-        dc.b  $1B, "[0m**********************", $D, $A
-        dc.b  $1B, "[1;37mrosco_m68k - Warm boot", $D, $A
-        dc.b  $1B, "[0m**********************"
-        dc.b  $D, $A, $D, $A, 0
+        dc.b  $1B, "[0m",    "**********************", $D, $A
+        dc.b  $1B, "[1;37m", "rosco_m68k - Warm boot", $D, $A
+        dc.b  $1B, "[0m",    "**********************", $D, $A
+        dc.b  $D, $A, 0

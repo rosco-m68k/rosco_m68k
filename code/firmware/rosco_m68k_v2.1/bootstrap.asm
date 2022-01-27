@@ -224,7 +224,7 @@ BERR_HANDLER::
     move.b  #1,BERR_FLAG
     move.l  (A7)+,D0
     rte
-    
+
 
 ; Convenience to install temporary BERR handler from C
 ; Zeroes bus error flag (at BERR_FLAG) and stores old handler
@@ -235,6 +235,7 @@ INSTALL_TEMP_BERR_HANDLER::
     move.l  $8,BERR_SAVED             ; Save the original bus error handler
     move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
     rts
+
 
 ; Convenience to restore BERR handler from C, after a
 ; call to INSTALL_TEM_BERR_HANDLER.
@@ -250,16 +251,10 @@ HALT::
     stop    #$2700
     bra.s   HALT
 
+
 SET_INTR::
     ; TODO Not yet implemented
     rts
-
-
-;------------------------------------------------------------
-; Exception handlers   
-GENERIC_HANDLER::
-    move.l  #$2BADB105,SDB_STATUS
-    rte
 
 
 ; Call busywait from C code...
@@ -276,6 +271,13 @@ BUSYWAIT::
     tst.l   D0
     bne.s   BUSYWAIT
     rts
+
+
+;------------------------------------------------------------
+; Exception handlers   
+GENERIC_HANDLER::
+    move.l  #$2BADB105,SDB_STATUS
+    rte
 
 
 ;------------------------------------------------------------
