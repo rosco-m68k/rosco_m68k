@@ -20,8 +20,8 @@
     section .text
 
 SHALLOW_RESET::
-    bsr.w   INITSDB
-    bsr.w   INITEFP
+    bsr.w   INITSDB                   ; Initialise System Data Block
+    bsr.w   INITEFPT                  ; Initialise Extension Function Pointer Table
 
     ifd REVISION1X 
     jsr     INITMFP                   ; Initialise MC68901
@@ -82,7 +82,7 @@ INITSDB:
 
 ; Initialise Extension Function Pointer Table
 ;
-INITEFP:
+INITEFPT:
     ; Basic IO Routines
     move.l  #EFP_DUMMY_NOOP,EFP_PRINT
     move.l  #EFP_DUMMY_NOOP,EFP_PRINTLN
