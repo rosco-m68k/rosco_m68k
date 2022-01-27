@@ -34,9 +34,9 @@ extern void debug_stub();
 
 #define INIT_STACK_VEC_ADDRESS      0x0
 #define RESET_VEC_ADDRESS           0x4
+#define MEM_SIZE_SDB_ADDRESS        0x414
 #define PROGRAM_LOADER_EFP_ADDRESS  0x448
 #define PROGRAM_EXIT_EFP_ADDRESS    0x490
-#define MEM_SIZE_SDB_ADDRESS        0x414
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
 #ifdef BLOCKDEV_SUPPORT
@@ -57,12 +57,12 @@ typedef void (*Stage2)(void);
 extern uint16_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 extern uint32_t _zip_start, _zip_end;
 
-static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
-static uint32_t* volatile program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADDRESS;
-static uint32_t* volatile reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
-static uint32_t* volatile init_stack_vector_ptr = (uint32_t*)INIT_STACK_VEC_ADDRESS;
-static uint32_t* volatile mem_size_sdb_ptr = (uint32_t*)MEM_SIZE_SDB_ADDRESS;
-static uint32_t* volatile prog_exit_ptr = (uint32_t*)PROGRAM_EXIT_EFP_ADDRESS;
+static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock *)0x400;
+static uint32_t * const init_stack_vector_ptr = (uint32_t *)INIT_STACK_VEC_ADDRESS;
+static uint32_t * const reset_vector_ptr = (uint32_t *)RESET_VEC_ADDRESS;
+static uint32_t * const mem_size_sdb_ptr = (uint32_t *)MEM_SIZE_SDB_ADDRESS;
+static uint32_t * const program_loader_ptr = (uint32_t *)PROGRAM_LOADER_EFP_ADDRESS;
+static uint32_t * const prog_exit_ptr = (uint32_t *)PROGRAM_EXIT_EFP_ADDRESS;
 
 // Stage 2 loads at 0x2000
 static Stage2 stage2 = (Stage2) 0x2000;
@@ -102,9 +102,7 @@ noreturn void default_program_loader() {
 
     FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Stop.\r\n");
 
-    while (true) {
-        HALT();
-    }
+    HALT();
 }
 
 static void initialize_loader_efp() {
