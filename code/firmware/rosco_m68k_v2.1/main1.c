@@ -111,7 +111,8 @@ static void initialize_loader_efp() {
 }
 
 static void initialize_warm_reboot() {
-    *prog_exit_ptr = (uint32_t)warm_boot;
+    *init_stack_vector_ptr = *mem_size_sdb_ptr;
+    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)warm_boot;
 }
 
 void print_cpu_mem_info() {
