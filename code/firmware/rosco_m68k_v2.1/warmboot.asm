@@ -20,24 +20,21 @@
 
     section .text
 
+; Print warm boot banner, load stack pointer, and jump to program loader
+;
 warm_boot::
-    bsr.s   load_sp               ; Load stack pointer
+    move.l  $0,A7                 ; Reset stack
     lea.l   BANNER,A0             ; Load banner...
     jsr     FW_PRINT              ; ... and print it
-    bra.s   hot_boot_no_load_sp
+    bra.s   hot_boot_no_load_sp   ; Continue to program loader
 
+; Load stack pointer and jump to program loader
+;
 hot_boot::
-    bsr.s   load_sp               ; Load stack pointer
+    move.l  $0,A7                 ; Reset stack
 hot_boot_no_load_sp:
     move.l  EFP_PROGLOADER,A0     ; Get address from FW_PROGRAM_LOADER...
     jmp     (A0)                  ; ... and gogogo!
-
-load_sp:
-    move.l  (A7)+,D0
-    move.l  SDB_MEMSIZE,A7        ; Reset stack to first memory block size...
-    add.l   #RAMBASE,A7           ; ... plus the base of that block
-    move.l  D0,-(A7)
-    rts
 
 
     section .rodata
