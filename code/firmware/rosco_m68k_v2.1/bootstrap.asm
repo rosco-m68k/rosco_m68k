@@ -70,7 +70,7 @@ VERSION:
 START::
     or.w    #$0700,SR                   ; Disable interrupts for now
 
-    ; Copy exception vectors table to RAM at 0x0.
+    ; Copy exception vectors table to RAM at VECTORS_LOAD (0x00000000).
     ; VBR defaults to that location anyway for 68000 compatibility.
     lea     (VECTORS),A0                ; Vectors in ROM into A0 (source)
     lea     (VECTORS_LOAD),A1           ; Vectors in RAM into A1 (destination)

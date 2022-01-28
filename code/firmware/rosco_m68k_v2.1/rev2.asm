@@ -8,7 +8,7 @@
 ; Copyright (c)2019-2022 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
-; This is the r1 board-specific code.
+; This is the r2 board-specific code.
 ; It contains the revision-specific exception handlers
 ; and routines, aside from the DUART initialisation and
 ; DUART I/O.
