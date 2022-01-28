@@ -1,7 +1,7 @@
 
 
 AR
-  0  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
+  0  ---- ---- ---- ---- ---- ---- ---- ---- ---- --x- ----
 
 Pin 23 = DUIACK       S0 = 0   S1 = 0
   1  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -29,7 +29,7 @@ Pin 22 = ANYIACK      S0 = 0   S1 = 0
 
 Pin 21 = BOOT         S0 = 1   S1 = 0
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 22  ---- ---- -x-- ---x ---- ---- ---- ---- ---- ---- ----
+ 22  ---- ---- ---- ---x ---- ---- ---- ---- ---- ---x ----
  23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  24  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  25  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -44,7 +44,7 @@ Pin 21 = BOOT         S0 = 1   S1 = 0
 
 Pin 20 = BQ2          S0 = 1   S1 = 0
  34  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 35  ---- ---- -x-- ---- ---x ---- ---- ---- ---- ---- ----
+ 35  ---- ---- ---- ---- ---x ---- ---- ---- ---- ---x ----
  36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -61,7 +61,7 @@ Pin 20 = BQ2          S0 = 1   S1 = 0
 
 Pin 19 = BQ1          S0 = 1   S1 = 0
  49  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 50  ---- ---- -x-- ---- ---- ---x ---- ---- ---- ---- ----
+ 50  ---- ---- ---- ---- ---- ---x ---- ---- ---- ---x ----
  51  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  52  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  53  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -80,7 +80,7 @@ Pin 19 = BQ1          S0 = 1   S1 = 0
 
 Pin 18 = BQ0          S0 = 1   S1 = 0
  66  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 67  ---- ---- -x-- ---- ---- ---- ---- ---- ---- ---- ----
+ 67  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---x ----
  68  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  69  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  70  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -142,10 +142,10 @@ Pin 15 = HALT         S0 = 1   S1 = 0
 120  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 121  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = NC           S0 = 0   S1 = 0
-122  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-123  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-124  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+Pin 14 = DOBOOT       S0 = 1   S1 = 0
+122  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
+123  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
+124  ---- ---- ---- ---- ---- ---- ---- ---x ---x ---- ----
 125  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 126  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 127  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
