@@ -17,13 +17,14 @@
 ; the compressed stage 2 / Kermit loader in ROM).
 ;------------------------------------------------------------
     include "../../shared/rosco_m68k_public.asm"
+    include "rosco_m68k_private.asm"
 
     section .text
 
 ; Print warm boot banner, load stack pointer, and jump to program loader
 ;
 warm_boot::
-    move.l  $0,A7                 ; Reset stack
+    move.l  VECTORS_LOAD,A7       ; Reset stack from reset stack pointer
     lea.l   BANNER,A0             ; Load banner...
     jsr     FW_PRINT              ; ... and print it
     bra.s   hot_boot_no_load_sp   ; Continue to program loader
@@ -31,7 +32,7 @@ warm_boot::
 ; Load stack pointer and jump to program loader
 ;
 hot_boot::
-    move.l  $0,A7                 ; Reset stack
+    move.l  VECTORS_LOAD,A7       ; Reset stack from reset stack pointer
 hot_boot_no_load_sp:
     move.l  EFP_PROGLOADER,A0     ; Get address from FW_PROGRAM_LOADER...
     jmp     (A0)                  ; ... and gogogo!
