@@ -15,7 +15,7 @@
   11   | NC       | Input
   12   | GND      | GND
   13   | NC       | Input
-  14   | DOBOOT   | Output
+  14   | NC       | NC
   15   | HALT     | Output
   16   | RESET    | Output
   17   | RUNLED   | Output

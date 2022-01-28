@@ -2,7 +2,7 @@ GAL22V10
 GLUE
 
 AS   IOSEL   HWRST  FC2    FC1     FC0   A1    A2    A3     A19      NC     GND
-NC   DOBOOT  HALT   RESET  RUNLED  BQ0   BQ1   BQ2   BOOT   ANYIACK  DUIACK VCC
+NC   NC      HALT   RESET  RUNLED  BQ0   BQ1   BQ2   BOOT   ANYIACK  DUIACK VCC
 
 HALT.T  =  GND
 HALT.E  =  HWRST
@@ -12,14 +12,11 @@ RESET.E =  HWRST
 
 RUNLED  = /HALT
 
-DOBOOT  = HWRST
-        + /HALT * /RESET
-
-AR      = DOBOOT
-BQ0.R   = /DOBOOT               ; High after one memory cycle
-BQ1.R   = /DOBOOT * BQ0         ; High after two memory cycles
-BQ2.R   = /DOBOOT * BQ1         ; High after three memory cycles
-BOOT.R  = /DOBOOT * BQ2         ; High after four memory cycles
+AR      = /HALT * /RESET
+BQ0.R   = HALT + RESET              ; High after one memory cycle
+BQ1.R   = HALT * BQ0 + RESET * BQ0  ; High after two memory cycles
+BQ2.R   = HALT * BQ1 + RESET * BQ1  ; High after three memory cycles
+BOOT.R  = HALT * BQ2 + RESET * BQ2  ; High after four memory cycles
 
 /ANYIACK= /HWRST * FC0 * FC1 * FC2 * A19
 /DUIACK = /HWRST * FC0 * FC1 * FC2 * /AS * /A1 * /A2 * A3 * A19
