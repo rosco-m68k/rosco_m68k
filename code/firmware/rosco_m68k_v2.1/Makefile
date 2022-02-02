@@ -1,6 +1,6 @@
 # Make rosco_m68k ROM images
 # 
-# Copyright (c)2019 Ross Bamford
+# Copyright (c)2019-2022 Ross Bamford
 # See LICENSE
 
 CPU?=68010
@@ -8,9 +8,10 @@ ARCH?=$(CPU)
 TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES)
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
-       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
-       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
+       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks						\
+			 -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -39,8 +40,9 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
-OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
-				cpuspeed.o cputype.o warmboot.o main1.o 
+OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
+				decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
+				cputype.o warmboot.o main1.o 
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
