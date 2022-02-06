@@ -631,7 +631,7 @@
     (uuid fc329e60-968a-4f61-ba77-53d29ff8c1c7)
   )
 
-  (text "GLUE_LOGIC.PLD" (at 226.06 127 0)
+  (text "GLUE_LOGIC.PLD" (at 169.545 127 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 637c5908-9371-4d80-a19b-036e111ef5cd)
   )
@@ -643,7 +643,7 @@
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid 95aed042-4cef-4360-9184-83bbe2dcfbaa)
   )
-  (text "WATCHDOG.PLD" (at 170.18 127 0)
+  (text "WATCHDOG.PLD" (at 227.33 127 0)
     (effects (font (size 1.27 1.27)) (justify left bottom))
     (uuid f364b99f-4502-4cba-a96d-4ed35ad108b5)
   )
