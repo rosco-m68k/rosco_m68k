@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <stdnoreturn.h>
 #include <string.h>
+#include <strings.h>
 
 #include <basicio.h>
 #include <debug_stub.h>

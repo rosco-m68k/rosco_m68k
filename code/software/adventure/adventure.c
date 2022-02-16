@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
+#include <strings.h>
 #include <stdlib.h>
 #ifdef __CC65__
 #include <conio.h>
