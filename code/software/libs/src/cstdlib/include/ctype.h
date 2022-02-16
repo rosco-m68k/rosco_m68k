@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2022 Ross Bamford and contributors
+ * Copyright (c)2019-2022 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * Stub "ctype" for simple programs that need it
