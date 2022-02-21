@@ -56,7 +56,7 @@ int isblank(int c) {
 }
 
 int isprint(int c) {
-    return isgraph(c) || c == '\t';
+    return isgraph(c) || c == ' ';
 }
 
 int tolower(int c) {
