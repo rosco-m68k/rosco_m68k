@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2019 Ross Bamford
+ * Copyright (c)2019-2022 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * Basic implementations for string routines, until we get 
@@ -14,34 +14,14 @@
  * ------------------------------------------------------------
  */
 
+#include <string.h>
 #include <stdint.h>
 #include <stddef.h>
 
-void* memset(void *str, int c, size_t n) {
-    // totally naive implementation, will do for now...
-    uint8_t *buf = (uint8_t*) str;
+void *memchr(const void *s, int c, size_t n) {
+  const unsigned char *src = (const unsigned char *)s;
 
-    for (uint8_t *end = buf + n; buf < end; *buf++ = c)
-        ;
-
-    return str;
-}
-
-void* memcpy(const void *to, const void *from, size_t n) {
-    // totally naive implementation, will do for now...
-    uint8_t *fbuf = (uint8_t*) from;
-    uint8_t *tbuf = (uint8_t*) to;
-
-    for (uint8_t *end = fbuf + n; fbuf < end; *tbuf++ = *fbuf++)
-        ;
-
-    return tbuf;
-}
-
-char* memchr(register const char* src_void, int c, size_t length) {
-  const unsigned char *src = (const unsigned char *)src_void;
-
-  while (length-- > 0) {
+  while (n-- > 0) {
       if (*src == c) {
           return (char*)src;
       }
@@ -50,112 +30,71 @@ char* memchr(register const char* src_void, int c, size_t length) {
   return NULL;
 }
 
-size_t strlen(const char *s) {
-    size_t i;
-    for (i = 0; s[i] != '\0'; i++) ;
-    return i;
+void *memcpy(void *__restrict s1, const void *__restrict s2, size_t n) {
+    // totally naive implementation, will do for now...
+    uint8_t *fbuf = (uint8_t*) s2;
+    uint8_t *tbuf = (uint8_t*) s1;
+
+    for (uint8_t *end = fbuf + n; fbuf < end; *tbuf++ = *fbuf++)
+        ;
+
+    return tbuf;
 }
 
-int strcmp(const char *str1, const char *str2) {
+void *memset(void *s, int c, size_t n) {
+    // totally naive implementation, will do for now...
+    uint8_t *buf = (uint8_t*) s;
+
+    for (uint8_t *end = buf + n; buf < end; *buf++ = c)
+        ;
+
+    return s;
+}
+
+char *strchr(const char *s, int c) {
+    while (*s != (char)c) {
+        if (!*s++) {
+            return NULL;
+        }
+    }
+    return (char *)s;
+}
+
+int strcmp(const char *s1, const char *s2) {
     // totally naive implementation, will do for now...
     register char c1, c2;
 
-    while ((c1 = *str1++)) {
-        if (!(c2 = *str2++)) {
+    while ((c1 = *s1++)) {
+        if (!(c2 = *s2++)) {
             return 1;
         } else if (c1 != c2) {
             return c1 - c2;
         }
     }
 
-    if (*str2) {
+    if (*s2) {
         return -1;
     } else {
         return 0;
     }
 }
 
-int isupper(int c) {
-  return (c >= 'A' && c <= 'Z');
+char *strcpy(char *__restrict s1, const char *__restrict s2) {
+	register char *d = s1;
+
+    while ((*d++ = *s2++) != 0)
+		;
+
+	return s1;
 }
 
-int islower(int c) {
-  return (c >= 'a' && c <= 'z');
+size_t strlen(const char *s) {
+    size_t i;
+    for (i = 0; s[i] != '\0'; i++) ;
+    return i;
 }
 
-int toupper(int c) {
-  return islower(c) ? (c) - ('a' - 'A') : c;
-}
-
-int tolower(int c) {
-  return isupper(c) ? (c) + ('a' - 'A') : c;
-}
-
-int strcasecmp (const char *s1, const char *s2) {
-    const unsigned char *p1 = (const unsigned char *) s1;
-    const unsigned char *p2 = (const unsigned char *) s2;
-    int result;
-
-    if (p1 == p2) {
-        return 0;
-    }
-
-    while ((result = tolower (*p1) - tolower (*p2++)) == 0) {
-        if (*p1++ == '\0') {
-            break;
-        }
-    }
-
-    return result;
-}
-
-int strncasecmp (const char *s1, const char *s2, size_t n) {
-    const unsigned char *p1 = (const unsigned char *) s1;
-    const unsigned char *p2 = (const unsigned char *) s2;
-    int result = 0;
-
-    if (p1 == p2) {
-        return 0;
-    }
-
-    while (n-- && (result = tolower (*p1) - tolower (*p2++)) == 0) {
-        if (*p1++ == '\0') {
-            break;
-        }
-    }
-
-    return result;
-}
-
-char *strchr(const char *s, int c) {
-    while (*s != (char)c) {
-        if (!*s++) {
-            return 0;
-        }
-    }
-    return (char *)s;
-}
-
-char *strrchr(const char *s, int c) {
-    const char* ret=0;
-    do {
-        if( *s == (char)c ) {
-            ret=s;
-        }
-    } while(*s++);
-    return (char*)ret;
-}
-
-size_t strnlen(const char* str, size_t maxlen) {
-    char*  p = memchr(str, 0, maxlen);
-    if (p == NULL) {
-        return maxlen;
-    } else {
-        return (p - str);
-    }
-}
-
-int strncmp(const char* s1, const char* s2, size_t n) {
+int strncmp(const char *s1, const char *s2, size_t n) {
     const unsigned char *p1 = (const unsigned char *) s1;
     const unsigned char *p2 = (const unsigned char *) s2;
     int result = 0;
@@ -172,22 +111,32 @@ int strncmp(const char* s1, const char* s2, size_t n) {
     return result;
 }
 
-char* strncpy(char *to, const char *from, size_t n) {
-  size_t size = strnlen (from, n);
+char *strncpy(char *__restrict s1, const char *__restrict s2, size_t n) {
+  size_t size = strnlen (s2, n);
   if (size != n) {
-    memset (to + size, '\0', n - size);
+    memset (s1 + size, '\0', n - size);
   }
 
-  return memcpy (to, from, size);
+  return memcpy (s1, s2, size);
 }
 
-char *strcpy(char *to, const char *from) {
-	register char *d = to;
+size_t strnlen(const char *s, size_t maxlen) {
+    char *p = memchr(s, 0, maxlen);
+    if (p == NULL) {
+        return maxlen;
+    } else {
+        return (p - s);
+    }
+}
 
-    while ((*d++ = *from++) != 0)
-		;
-
-	return to;
+char *strrchr(const char *s, int c) {
+    const char* ret = NULL;
+    do {
+        if(*s == (char)c) {
+            ret = s;
+        }
+    } while(*s++);
+    return (char*)ret;
 }
 
 /*
@@ -199,7 +148,7 @@ INDEX
 
 SYNOPSIS
 	#include <string.h>
-	char *strncat(char *restrict <[dst]>, const char *restrict <[src]>,
+	char *strncat(char *__restrict <[dst]>, const char *__restrict <[src]>,
                       size_t <[length]>);
 
 DESCRIPTION
