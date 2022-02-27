@@ -106,14 +106,28 @@ static int calculate_sector_count(int file_size) {
     return (file_size + SST_SECT_SIZE - 1) & -SST_SECT_SIZE;
 }
 
+// firmware image can be loaded from SD, or embedded in binary (set ROM_BIN path for Make)
+#if defined(FIRMWARE_EMBEDDED)
+extern char _binary_rosco_rom_bin_start[];
+extern char _binary_rosco_rom_bin_end[];
+#endif
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
     char c;
+    bool flash_okay = false;
 
-    SSTDeviceId even, odd;
+#if defined(FIRMWARE_EMBEDDED)
+    uint8_t *buffer = (uint8_t*)_binary_rosco_rom_bin_start;
+    uint32_t upgrade_romsize = _binary_rosco_rom_bin_end - _binary_rosco_rom_bin_start;
+#else
     uint8_t *buffer = (uint8_t*)&_end;
     uint32_t buffer_size = _SDB_MEM_SIZE - (uint32_t)buffer - 2048;     // Randomly choosing 2k for stack...
+    uint32_t upgrade_romsize = 0;
+#endif
+
+    SSTDeviceId even, odd;
 
     printf("\nrosco_m68k Flash EEPROM Update Utility\n");
     printf("**********************************************\n\n");
@@ -125,10 +139,8 @@ int main(int argc, char **argv) {
 
     mcEnableInterrupts(intr_mask);              // ROM should be back now, so re-enable interrupts.
 
-    printf("EVEN ROM is %s [Manufacturer: %s]\n",
-            sst_get_device_name(&even), sst_get_manufacturer_name(&even));
-    printf("ODD  ROM is %s [Manufacturer: %s]\n",
-            sst_get_device_name(&odd), sst_get_manufacturer_name(&odd));
+    printf("EVEN ROM is %s [Manufacturer: %s]\n",  sst_get_device_name(&even), sst_get_manufacturer_name(&even));
+    printf("ODD  ROM is %s [Manufacturer: %s]\n",  sst_get_device_name(&odd), sst_get_manufacturer_name(&odd));
 
     uint32_t logical_romsize = get_logical_rom_size(&even, &odd);
 
@@ -136,8 +148,16 @@ int main(int argc, char **argv) {
         printf("Apologies, but ROMs don't appear to be SST flash, this utility cannot program them.\n");
     } else {
         printf("\nLogical ROM size is %ld bytes\n", logical_romsize);
-        printf("%ld bytes available for update file buffer\n\n", buffer_size);
+#if defined(FIRMWARE_EMBEDDED)
+        printf("Embedded ROM image of %ld bytes ready for flashing\n", upgrade_romsize);
+#else
+        printf("%ld bytes available for update file buffer\n", buffer_size);
+#endif
+        printf("\n");
 
+#if defined(FIRMWARE_EMBEDDED)
+        flash_okay = true;
+#else
         if (!SD_check_support()) {
             printf("Sorry, SD Card support is required in ROM, but is not present. Cannot read firmware update files.\n");
         } else {
@@ -158,7 +178,7 @@ int main(int argc, char **argv) {
                     printf("Sorry, no firmware update found. Ensure `rosco_m68k.rom` exists in the root directory\n");
                 } else {
                     fl_fseek(romfile, 0L, SEEK_END);
-                    uint32_t upgrade_romsize = fl_ftell(romfile);
+                    upgrade_romsize = fl_ftell(romfile);
                     fl_fseek(romfile, 0L, SEEK_SET);
 
                     if (upgrade_romsize == 0 || fl_ftell(romfile) != 0) {
@@ -175,60 +195,65 @@ int main(int argc, char **argv) {
                         printf("Reading file...");
 
                         if (fl_fread(buffer, 1, upgrade_romsize, romfile) != (int)upgrade_romsize) {
-                            printf(" failed :( ... Cannot continue with incomplete image...\n");
-                        } else {
-                            RomVersionInfo *version_info = (RomVersionInfo*)(buffer + 0x400);
-
-                            if (version_info->major != 0) {
-                                printf("ROM image indicates version %2x.%02x.%s ; Extended system data area: %s\n", 
-                                        version_info->major, version_info->minor,
-                                        version_info->is_snapshot ? "SNAPSHOT" : "RELEASE",
-                                        version_info->is_extdata ? "Required" : "Not required");
-
-                                if (version_info->is_huge) {                                    
-                                    printf("\nReady to flash your rosco_m68k. This process should only take a few seconds.\n");
-                                    printf("\n\nNo flashing lights is normal - DO NOT TURN OFF YOUR rosco_m68k!\n\n");
-                                    printf("After the update is complete, your rosco_m68k should reboot automatically using\n");
-                                    printf("the newly updated flash.\n");
-
-                                    printf("\n>>> If you ready to proceed, press \"Y\" now :");
-
-                                    char c = mcReadchar();
-                                    if (c != 'Y' && c != 'y')
-                                    {
-                                        printf("\n\nUpdate NOT started, exiting.\n");
-                                        return 0;
-                                    }
-
-                                    printf("\n\n\n  *** rosco_m68k flash update in progress ***\n\n");
-                                    printf("        DO NOT TURN OFF YOUR rosco_m68k!\n\n");
-
-                                    mcBusywait(5000 * 500);  // small delay to allow user to see message...
-
-                                    mcDisableInterrupts();  // ROM is about to become unavailable, so no interrupts!
-
-                                    if (!write_boot_rom(buffer, upgrade_romsize)) {
-                                        printf("Oh dear, flash failed. \n");
-                                        printf("Honestly, it's a miracle you're even seeing this message...\n");
-                                        printf("Trying a reboot, if this fails you may need to reflash your ROMs in an external programmer :(\n");
-                                    } else {
-                                        // Cannot print anything here as EFPs may have been moved, or may not exist at all any more.
-                                        // Just try rebooting instead...
-                                        reboot_to_init();
-                                    }
-                                } else {
-                                    printf("ROM does not appear to be a flashable image (i.e. not a HUGEROM build). Cannot continue\n");
-                                }
-                            } else {
-                                printf("Oops, version check failed; Quitting while we're ahead...\n");
-                            } 
+                            printf(" failed :( ... Cannot continue with incomplete image...\n");                        
+                        }
+                        else {
+                            fl_fclose(romfile);
+                            flash_okay = true;
                         }
                     }
-
-                    fl_fclose(romfile);
                 }
             }
         }
+#endif
+    }
+
+    if (flash_okay) {
+        RomVersionInfo *version_info = (RomVersionInfo*)(buffer + 0x400);
+
+        if (version_info->major != 0) {
+            printf("ROM image indicates version %2x.%02x.%s ; Extended system data area: %s\n", 
+                    version_info->major, version_info->minor,
+                    version_info->is_snapshot ? "SNAPSHOT" : "RELEASE",
+                    version_info->is_extdata ? "Required" : "Not required");
+
+            if (version_info->is_huge) {                                    
+                printf("\nReady to flash your rosco_m68k. This process should only take a few seconds.\n");
+                printf("\n\nNo flashing lights is normal - DO NOT TURN OFF YOUR rosco_m68k!\n\n");
+                printf("After the update is complete, your rosco_m68k should reboot automatically using\n");
+                printf("the newly updated flash.\n");
+
+                printf("\n>>> If you ready to proceed, press \"Y\" now :");
+
+                c = mcReadchar();
+                if (c != 'Y' && c != 'y')
+                {
+                    printf("\n\nUpdate NOT started, exiting.\n");
+                    return 0;
+                }
+
+                printf("\n\n\n  *** rosco_m68k flash update in progress ***\n\n");
+                printf("        DO NOT TURN OFF YOUR rosco_m68k!\n\n");
+
+                mcBusywait(5000 * 500);  // small delay to allow user to see message...
+
+                mcDisableInterrupts();  // ROM is about to become unavailable, so no interrupts!
+
+                if (!write_boot_rom(buffer, upgrade_romsize)) {
+                    printf("Oh dear, flash failed. \n");
+                    printf("Honestly, it's a miracle you're even seeing this message...\n");
+                    printf("Trying a reboot, if this fails you may need to reflash your ROMs in an external programmer :(\n");
+                } else {
+                    // Cannot print anything here as EFPs may have been moved, or may not exist at all any more.
+                    // Just try rebooting instead...
+                    reboot_to_init();
+                }
+            } else {
+                printf("ROM does not appear to be a flashable image (i.e. not a HUGEROM build). Cannot continue\n");
+            }
+        } else {
+            printf("Oops, version check failed; Quitting while we're ahead...\n");
+        } 
     }
 
     return 0;
