@@ -2,7 +2,7 @@ ifeq ($(REVISION1X),true)
 OBJECTS := $(OBJECTS) blockdev/mfp_gpio.o blockdev/bbspi.o blockdev/bbsd.o                  \
 						blockdev/syscalls_asm.o blockdev/ata.o
 else
-OBJECTS := $(OBJECTS) blockdev/bbspi.o blockdev/bbsd.o                                      \
+OBJECTS := $(OBJECTS) blockdev/bbspi.o blockdev/bbsd.o blockdev/dua_spi_asm.o              \
 						blockdev/syscalls_asm.o blockdev/ata.o
 endif
 EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K_SDCARD -DSD_BLOCK_READ_ONLY -DBLOCKDEV_SUPPORT \
