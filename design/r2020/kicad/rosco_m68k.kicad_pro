@@ -106,7 +106,7 @@
         "allow_blind_buried_vias": false,
         "allow_microvias": false,
         "max_error": 0.005,
-        "min_clearance": 0.0,
+        "min_clearance": 0.151,
         "min_copper_edge_clearance": 0.024999999999999998,
         "min_hole_clearance": 0.25,
         "min_hole_to_hole": 0.25,
@@ -123,6 +123,7 @@
         0.0,
         0.1524,
         0.175,
+        0.25,
         0.65,
         0.85
       ],
@@ -358,7 +359,7 @@
     "classes": [
       {
         "bus_width": 12.0,
-        "clearance": 0.1524,
+        "clearance": 0.151,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -384,7 +385,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "rosco_m68k.net",
-      "specctra_dsn": "",
+      "specctra_dsn": "rosco_m68k.dsn",
       "step": "",
       "vrml": ""
     },
