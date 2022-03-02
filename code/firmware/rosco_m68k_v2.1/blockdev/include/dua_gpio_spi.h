@@ -69,6 +69,9 @@ static SPI_INLINE bool digitalRead(uint8_t pinmask) {
 }
 
 // send one SPI byte, ignore received byte
+#if USE_ASM_DUART_SPI
+extern void spi_send_byte(int byte);
+#else
 static SPI_INLINE void spi_send_byte(int byte) __attribute__ ((used));
 static SPI_INLINE void spi_send_byte(int byte)
 {
@@ -168,8 +171,12 @@ static SPI_INLINE void spi_send_byte(int byte)
     // Send clock high again
     *DUART_OUTHIPORT = SPI_SCK;
 }
+#endif
 
 // send "count" SPI bytes (> 0) from data, ignore received bytes
+#if USE_ASM_DUART_SPI
+extern void spi_send_buffer(void* data, int count);
+#else
 static SPI_INLINE void spi_send_buffer(void* data, int count) __attribute__ ((used));
 static SPI_INLINE void spi_send_buffer(void* data, int count)
 {
@@ -183,6 +190,7 @@ static SPI_INLINE void spi_send_buffer(void* data, int count)
     // Turn off Red LED
     *DUART_OUTHIPORT = 8;
 }
+#endif
 
 // send one SPI byte and receive one SPI byte
 static SPI_INLINE int spi_exchange_byte(int byte) __attribute__ ((used));
@@ -346,7 +354,7 @@ static SPI_INLINE void spi_exchange_buffer(void *data, int count)
 }
 
 // reads one SPI byte, sends one dummy 0xff byte,
-#if USE_ASM_DUART_SPI   // Xark - use asm version
+#if USE_ASM_DUART_SPI
 extern int spi_read_byte(void);
 #else
 static SPI_INLINE int spi_read_byte(void) __attribute__ ((used));
