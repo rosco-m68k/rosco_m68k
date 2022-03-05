@@ -1,0 +1,33 @@
+GAL16V8    ; For ATF16V8BQL
+Glue       ; CPU glue logic for Classic 68020 edition
+
+Clock DS    SIZ0    SIZ1    A0    AS   NC    NC    NC   GND
+/OE   NC    LDS     UDS     NC    Q3   Q2    Q1    Q0   VCC
+
+Q0.R = /Q0
+
+
+Q1.R = /Q1 *  Q0
+     +  Q1 * /Q0
+
+
+Q2.R =  Q2 * /Q1
+     +  Q2 * /Q0
+     + /Q2 *  Q1 *  Q0
+
+
+Q3.R =  Q3 * /Q2
+     +  Q3 * /Q1
+     +  Q3 * /Q0
+     + /Q3 *  Q2 *  Q1 *  Q0
+
+
+/UDS = /DS * /A0
+/LDS = /DS *  A0 
+     + /DS * /SIZ0 
+     + /DS *  SIZ1 
+
+DESCRIPTION
+
+CPU glue logic for rosco_m68k Classic 68020 edition
+

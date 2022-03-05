@@ -1,0 +1,82 @@
+
+
+Pin 19 = Q0           XOR = 1   AC1 = 0
+  0  ---x ---- ---- ---- ---- ---- ---- ----
+  1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  4  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  5  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  6  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+  7  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 18 = Q1           XOR = 1   AC1 = 0
+  8  --x- ---x ---- ---- ---- ---- ---- ----
+  9  ---x --x- ---- ---- ---- ---- ---- ----
+ 10  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 11  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 13  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 14  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 15  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 17 = Q2           XOR = 1   AC1 = 0
+ 16  ---- ---x --x- ---- ---- ---- ---- ----
+ 17  ---x ---- --x- ---- ---- ---- ---- ----
+ 18  --x- --x- ---x ---- ---- ---- ---- ----
+ 19  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 20  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 21  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 22  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 16 = Q3           XOR = 1   AC1 = 0
+ 24  ---- ---- ---x --x- ---- ---- ---- ----
+ 25  ---- ---x ---- --x- ---- ---- ---- ----
+ 26  ---x ---- ---- --x- ---- ---- ---- ----
+ 27  --x- --x- --x- ---x ---- ---- ---- ----
+ 28  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 29  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 30  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 31  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 15 = NC           XOR = 0   AC1 = 0
+ 32  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 33  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 34  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 14 = UDS          XOR = 0   AC1 = 1
+ 40  ---- ---- ---- ---- ---- ---- ---- ----
+ 41  -x-- ---- ---- -x-- ---- ---- ---- ----
+ 42  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 43  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 44  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 45  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 46  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 47  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 13 = LDS          XOR = 0   AC1 = 1
+ 48  ---- ---- ---- ---- ---- ---- ---- ----
+ 49  -x-- ---- ---- x--- ---- ---- ---- ----
+ 50  -x-- -x-- ---- ---- ---- ---- ---- ----
+ 51  -x-- ---- x--- ---- ---- ---- ---- ----
+ 52  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 53  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 54  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 55  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
+Pin 12 = NC           XOR = 0   AC1 = 0
+ 56  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 57  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 58  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 59  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 60  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 61  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 62  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 63  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+
