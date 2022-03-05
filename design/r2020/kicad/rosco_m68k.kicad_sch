@@ -387,6 +387,9 @@
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005ee9db9a"
       (reference "J3") (unit 1) (value "Conn_02x32_Odd_Even") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x32_P2.54mm_Vertical")
     )
+    (path "/00000000-0000-0000-0000-00005e53bc83/0a78dbf4-50db-47ff-b551-3e85ce211bd5"
+      (reference "J3-X1") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    )
     (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-000061644bc0"
       (reference "J4") (unit 1) (value "Conn_01x06") (footprint "rosco_m68k:1X06")
     )
