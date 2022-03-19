@@ -125,7 +125,7 @@ https://github.com/rosco-m68k/rosco_m68k/tree/develop/code/starter_projects
 
 The primary reference for the software interfaces provided by the 
 firmware can be found here: 
-https://github.com/rosco-m68k/rosco_m68k/blob/develop/code/firmware/rosco_m68k_v1.3/InterfaceReference.md
+https://github.com/rosco-m68k/rosco_m68k/blob/develop/code/firmware/rosco_m68k_firmware/InterfaceReference.md
 
 * Code is loaded at $40000 (somewhat arbitrarily). The loader will jump
   directly to that location after the code is received.
