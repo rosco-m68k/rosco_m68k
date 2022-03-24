@@ -1,0 +1,484 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid 9031bb33-c6aa-4758-bf5c-3274ed3ebab7)
+
+  (paper "A4")
+
+  (title_block
+    (title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
+    (date "2022-01-14")
+    (rev "2.12")
+    (company "The Really Old-School Company Limited")
+    (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
+    (comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
+    (comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
+    (comment 4 "Copyright 2019-2022 Ross Bamford and Contributors")
+  )
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 81.28 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005e53b4b8)
+    (property "Sheet name" "CPU" (id 0) (at 81.28 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "CPU.kicad_sch" (id 1) (at 81.28 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet (at 201.93 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005e53bc83)
+    (property "Sheet name" "Expansion" (id 0) (at 201.93 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "Expansion.kicad_sch" (id 1) (at 201.93 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet (at 129.54 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-000061622e90)
+    (property "Sheet name" "DUART" (id 0) (at 129.54 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "DUART.kicad_sch" (id 1) (at 129.54 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet (at 177.8 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00006162e38e)
+    (property "Sheet name" "Reset" (id 0) (at 177.8 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "Reset.kicad_sch" (id 1) (at 177.8 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet (at 105.41 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-0000616b7c9b)
+    (property "Sheet name" "Memory" (id 0) (at 105.41 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "Memory.kicad_sch" (id 1) (at 105.41 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet (at 153.67 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid) (color 0 0 0 0))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-0000617d19f3)
+    (property "Sheet name" "GALs" (id 0) (at 153.67 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheet file" "GALs.kicad_sch" (id 1) (at 153.67 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+    (path "/00000000-0000-0000-0000-00005e53b4b8" (page "2"))
+    (path "/00000000-0000-0000-0000-000061622e90" (page "3"))
+    (path "/00000000-0000-0000-0000-00005e53bc83" (page "4"))
+    (path "/00000000-0000-0000-0000-0000617d19f3" (page "5"))
+    (path "/00000000-0000-0000-0000-0000616b7c9b" (page "6"))
+    (path "/00000000-0000-0000-0000-00006162e38e" (page "7"))
+  )
+
+  (symbol_instances
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df41"
+      (reference "#FLG0101") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df47"
+      (reference "#FLG0102") (unit 1) (value "PWR_FLAG") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a80"
+      (reference "#PWR01") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a8d"
+      (reference "#PWR02") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a93"
+      (reference "#PWR03") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006161f2bf"
+      (reference "#PWR04") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061767a5b"
+      (reference "#PWR05") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-0000617498b7"
+      (reference "#PWR07") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006174a780"
+      (reference "#PWR08") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f0aa"
+      (reference "#PWR034") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f0a4"
+      (reference "#PWR035") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f07d"
+      (reference "#PWR036") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f083"
+      (reference "#PWR037") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f076"
+      (reference "#PWR038") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f089"
+      (reference "#PWR039") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-000061644bce"
+      (reference "#PWR0101") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-000061644bd4"
+      (reference "#PWR0102") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005e971be5"
+      (reference "#PWR0103") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005ed1852c"
+      (reference "#PWR0104") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-000061798eca"
+      (reference "#PWR0105") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-000061798ed6"
+      (reference "#PWR0106") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617b09b9"
+      (reference "#PWR0107") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f7d33e2"
+      (reference "#PWR0108") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f7d403d"
+      (reference "#PWR0109") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617b09c5"
+      (reference "#PWR0110") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617cc87f"
+      (reference "#PWR0111") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617cc88b"
+      (reference "#PWR0112") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-00006161cace"
+      (reference "#PWR0113") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00006162ec39"
+      (reference "#PWR0114") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-00006161cad4"
+      (reference "#PWR0115") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061654f39"
+      (reference "#PWR0116") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061de23f1"
+      (reference "#PWR0117") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df4d"
+      (reference "#PWR0127") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df53"
+      (reference "#PWR0128") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fd5b222"
+      (reference "#PWR0151") (unit 1) (value "VCC") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fd5e976"
+      (reference "#PWR0152") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f054"
+      (reference "#SUPPLY01") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f066"
+      (reference "#SUPPLY02") (unit 1) (value "GND") (footprint "")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005edd83d0"
+      (reference "C1") (unit 1) (value "7pF") (footprint "rosco_m68k:C2.5_or_3.5-3")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005edd8a07"
+      (reference "C2") (unit 1) (value "7pF") (footprint "rosco_m68k:C2.5_or_3.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000e602f468"
+      (reference "C3") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-000061798ed0"
+      (reference "C4") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617b09bf"
+      (reference "C5") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-0000617cc885"
+      (reference "C6") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a9c"
+      (reference "C7") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1aa2"
+      (reference "C8") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-00006161cac0"
+      (reference "C9") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061687a3b"
+      (reference "C10") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f06c"
+      (reference "C11") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000616269b3"
+      (reference "C12") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f048"
+      (reference "C13") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f699f5c"
+      (reference "C14") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6cd670"
+      (reference "C15") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6cd67c"
+      (reference "C16") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6cd676"
+      (reference "C17") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f699f62"
+      (reference "C18") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df3b"
+      (reference "C19") (unit 1) (value "100uF") (footprint "rosco_m68k:E2,5-5")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f699f50"
+      (reference "C20") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df35"
+      (reference "C21") (unit 1) (value "470uF") (footprint "rosco_m68k:E3,5-10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f699f56"
+      (reference "C22") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6756e5"
+      (reference "C23") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6756eb"
+      (reference "C24") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6cd66a"
+      (reference "C25") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f6cd656"
+      (reference "C26") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f3ee222"
+      (reference "C27") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005ef9c0b2"
+      (reference "C28") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005ef9cbda"
+      (reference "C29") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005ee63a78"
+      (reference "C30") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000616ba5ed"
+      (reference "C31") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000616be28d"
+      (reference "C32") (unit 1) (value "100nF") (footprint "rosco_m68k:C2.5-3")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fdb083a"
+      (reference "H1") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_3.2mm_M3_Pad")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fdb0840"
+      (reference "H2") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_3.2mm_M3_Pad")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fdb0846"
+      (reference "H3") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_3.2mm_M3_Pad")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005fdb084c"
+      (reference "H4") (unit 1) (value "MountingHole") (footprint "MountingHole:MountingHole_3.2mm_M3_Pad")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-00008b1e8db7"
+      (reference "IC1") (unit 1) (value "MC68010P10") (footprint "rosco_m68k:DIL64")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f699f4a"
+      (reference "IC1") (unit 2) (value "MC68010P10") (footprint "rosco_m68k:DIL64")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-00006161cada"
+      (reference "IC2") (unit 1) (value "ATF22V10C") (footprint "Package_DIP:DIP-24_W7.62mm_Socket_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000616af603"
+      (reference "IC3") (unit 1) (value "ATF22V10C") (footprint "Package_DIP:DIP-24_W7.62mm_Socket_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-0000603dddd7"
+      (reference "IC4") (unit 1) (value "XR68C681CJTR-F") (footprint "Package_LCC:PLCC-44_THT-Socket")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-00006161caa3"
+      (reference "IC5") (unit 1) (value "ATF22V10C") (footprint "Package_DIP:DIP-24_W7.62mm_Socket_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000616244b8"
+      (reference "IC6") (unit 1) (value "ATF22V10C") (footprint "Package_DIP:DIP-24_W7.62mm_Socket_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006173ff25"
+      (reference "IC7") (unit 1) (value "74LS148") (footprint "Package_DIP:DIP-16_W7.62mm_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f00c"
+      (reference "IC15") (unit 1) (value "555N") (footprint "Package_DIP:DIP-8_W7.62mm_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005ee19f70"
+      (reference "J1") (unit 1) (value "UART_A") (footprint "rosco_m68k:1X06")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005ee1b2ed"
+      (reference "J2") (unit 1) (value "UART_B") (footprint "rosco_m68k:1X06")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005ee9db9a"
+      (reference "J3") (unit 1) (value "Conn_02x32_Odd_Even") (footprint "Connector_PinHeader_2.54mm:PinHeader_2x32_P2.54mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-000061644bc0"
+      (reference "J4") (unit 1) (value "Conn_01x06") (footprint "rosco_m68k:1X06")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00005f55df2f"
+      (reference "J5") (unit 1) (value "PWR") (footprint "rosco_m68k:1X02")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061646a1a"
+      (reference "J6") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006164ae6a"
+      (reference "J7") (unit 1) (value "Conn_01x01_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-0000616fd293"
+      (reference "JP1") (unit 1) (value "Jumper") (footprint "rosco_m68k:1X02")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-0000616fcabd"
+      (reference "JP2") (unit 1) (value "Jumper") (footprint "rosco_m68k:1X02")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00006162cc16"
+      (reference "JP3") (unit 1) (value "Jumper") (footprint "rosco_m68k:1X02")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-0000617668ac"
+      (reference "JP4") (unit 1) (value "Jumper") (footprint "rosco_m68k:1X02")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006161b413"
+      (reference "LED1") (unit 1) (value "GREEN") (footprint "rosco_m68k:LED5MM")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006161c7b0"
+      (reference "LED2") (unit 1) (value "RED") (footprint "rosco_m68k:LED5MM")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f060"
+      (reference "LED3") (unit 1) (value "GREEN") (footprint "rosco_m68k:LED5MM")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f05a"
+      (reference "LED4") (unit 1) (value "RED") (footprint "rosco_m68k:LED5MM")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00005edd7329"
+      (reference "Q1") (unit 1) (value "3.6864MHz") (footprint "Crystal:Crystal_HC49-4H_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1ab0"
+      (reference "Q2") (unit 1) (value "5H8ET-10.000") (footprint "Oscillator:Oscillator_DIP-8")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006161b40d"
+      (reference "R1") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006161c7aa"
+      (reference "R2") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1ab6"
+      (reference "R3") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a6e"
+      (reference "R7") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061653f75"
+      (reference "R8") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a74"
+      (reference "R9") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a7a"
+      (reference "R10") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00006162e070"
+      (reference "R11") (unit 1) (value "10K") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175c33f"
+      (reference "R12") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f042"
+      (reference "R13") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f030"
+      (reference "R14") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061797c20"
+      (reference "R15") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175e1d4"
+      (reference "R16") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175ba3c"
+      (reference "R17") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175ffeb"
+      (reference "R18") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-0000600b8632"
+      (reference "R19") (unit 1) (value "10K") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061654750"
+      (reference "R21") (unit 1) (value "1K2") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f024"
+      (reference "R27") (unit 1) (value "2K2") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f02a"
+      (reference "R28") (unit 1) (value "270R") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f036"
+      (reference "R31") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f03c"
+      (reference "R32") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
+    )
+    (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f04e"
+      (reference "S1") (unit 1) (value "10-XX") (footprint "rosco_m68k:B3F-10XX")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005ecee814"
+      (reference "U1") (unit 1) (value "SST39SF040") (footprint "Package_DIP:DIP-32_W15.24mm_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005ecf0092"
+      (reference "U2") (unit 1) (value "SST39SF040") (footprint "Package_DIP:DIP-32_W15.24mm_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005fe46869"
+      (reference "U3") (unit 1) (value "AS6C4008-55PCN") (footprint "Package_DIP:DIP-32_W15.24mm_LongPads")
+    )
+    (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00005fe4ab28"
+      (reference "U4") (unit 1) (value "AS6C4008-55PCN") (footprint "Package_DIP:DIP-32_W15.24mm_LongPads")
+    )
+  )
+)

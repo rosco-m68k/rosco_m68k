@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2019-2021 Ross Bamford and contributors
+ * Copyright (c)2019-2022 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * This is the entry point for the Kernel.
@@ -32,17 +32,19 @@
 extern void debug_stub();
 #endif
 
-#define INIT_STACK_VEC_ADDRESS 0x0
-#define RESET_VEC_ADDRESS 0x4
-#define PROGRAM_LOADER_EFP_ADDRESS 0x448
-#define MEM_SIZE_SDB_ADDRESS 0x414
+#define INIT_STACK_VEC_ADDRESS      0x0
+#define RESET_VEC_ADDRESS           0x4
+#define MEM_SIZE_SDB_ADDRESS        0x414
+#define PROGRAM_LOADER_EFP_ADDRESS  0x448
+#define PROGRAM_EXIT_EFP_ADDRESS    0x490
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
 #ifdef BLOCKDEV_SUPPORT
 extern void ata_init();
 extern void INSTALL_BLOCKDEV_HANDLERS();
 #endif
-extern void warm_boot(void);
+extern noreturn void warm_boot(void);
+extern noreturn void hot_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern uint32_t cpuspeed(uint8_t model);
 extern void print_unsigned(uint32_t num, uint8_t base);
@@ -53,14 +55,15 @@ extern void print_unsigned(uint32_t num, uint8_t base);
 typedef void (*Stage2)(void);
 
 // Linker defines
-extern uint32_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
+extern uint16_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
 extern uint32_t _zip_start, _zip_end;
 
-static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
-static uint32_t* volatile program_loader_ptr = (uint32_t*)PROGRAM_LOADER_EFP_ADDRESS;
-static uint32_t* volatile reset_vector_ptr = (uint32_t*)RESET_VEC_ADDRESS;
-static uint32_t* volatile init_stack_vector_ptr = (uint32_t*)INIT_STACK_VEC_ADDRESS;
-static uint32_t* volatile mem_size_sdb_ptr = (uint32_t*)MEM_SIZE_SDB_ADDRESS;
+static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock *)0x400;
+static uint32_t * const init_stack_vector_ptr = (uint32_t *)INIT_STACK_VEC_ADDRESS;
+static uint32_t * const reset_vector_ptr = (uint32_t *)RESET_VEC_ADDRESS;
+static uint32_t * const mem_size_sdb_ptr = (uint32_t *)MEM_SIZE_SDB_ADDRESS;
+static uint32_t * const program_loader_ptr = (uint32_t *)PROGRAM_LOADER_EFP_ADDRESS;
+static uint32_t * const prog_exit_ptr = (uint32_t *)PROGRAM_EXIT_EFP_ADDRESS;
 
 // Stage 2 loads at 0x2000
 static Stage2 stage2 = (Stage2) 0x2000;
@@ -69,10 +72,10 @@ noreturn void main1();
 
 noreturn void linit() {
   // copy .data
-  for (uint32_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
+  for (uint16_t *dst = &_data_start, *src = &_code_end; dst < &_data_end; *dst = *src, dst++, src++);
 
   // zero .bss
-  for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
+  for (uint16_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 
   main1();
 }
@@ -100,9 +103,7 @@ noreturn void default_program_loader() {
 
     FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Stage 2 should not return! Stop.\r\n");
 
-    while (true) {
-        HALT();
-    }
+    HALT();
 }
 
 static void initialize_loader_efp() {
@@ -111,7 +112,7 @@ static void initialize_loader_efp() {
 
 static void initialize_warm_reboot() {
     *init_stack_vector_ptr = *mem_size_sdb_ptr;
-    *reset_vector_ptr = (uint32_t)warm_boot;
+    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)warm_boot;
 }
 
 void print_cpu_mem_info() {
@@ -198,8 +199,8 @@ skip9958:
     // We have enough setup done now that we can handle future warm reboot. Let's set that up..
     initialize_warm_reboot();
 
-    // And let's do default program loader first time around...
-    default_program_loader();
+    // Reload stack pointer and call program loader
+    hot_boot();
 }
 
 // TODO these are duplicated in stage2, find a way not to do that...

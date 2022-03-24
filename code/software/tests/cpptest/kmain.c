@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 extern void* _ctors;
 extern void* _ctors_end;
@@ -56,5 +57,8 @@ void kmain() {
     printf("C++ constructor check for BClass: bcl.num() returns %d (expect 64)\n", getBclNum());
 
     printf("Main will now exit, this should trigger C++ destructors followed by global ones...\n");
+    printf("Using explicit exit() call to test that destructors still get called...\n");
+    printf("(See https://github.com/rosco-m68k/rosco_m68k/issues/269)\n\n");
+    exit(99);
 }
 

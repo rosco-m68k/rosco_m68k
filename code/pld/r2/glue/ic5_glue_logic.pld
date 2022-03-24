@@ -12,11 +12,11 @@ RESET.E =  HWRST
 
 RUNLED  = /HALT
 
-AR      = HWRST
-BQ0.R   = /HWRST                ; High after one memory cycle
-BQ1.R   = /HWRST * BQ0          ; High after two memory cycles
-BQ2.R   = /HWRST * BQ1          ; High after three memory cycles
-BOOT.R  = /HWRST * BQ2          ; High after four memory cycles
+AR      = /HALT * /RESET
+BQ0.R   = HALT + RESET              ; High after one memory cycle
+BQ1.R   = HALT * BQ0 + RESET * BQ0  ; High after two memory cycles
+BQ2.R   = HALT * BQ1 + RESET * BQ1  ; High after three memory cycles
+BOOT.R  = HALT * BQ2 + RESET * BQ2  ; High after four memory cycles
 
 /ANYIACK= /HWRST * FC0 * FC1 * FC2 * A19
 /DUIACK = /HWRST * FC0 * FC1 * FC2 * /AS * /A1 * /A2 * A3 * A19
@@ -25,7 +25,7 @@ DESCRIPTION
 
 rosco_m68k glue for Classic board 2.0
 
-Copyright (c)2021 Ross Bamford & Contributors
+Copyright (c)2022 Ross Bamford & Contributors
 See LICENSE.md for licence details (spoiler: CERN / MIT).
 
 This IC provides general reset and glue logic for rosco_m68k 

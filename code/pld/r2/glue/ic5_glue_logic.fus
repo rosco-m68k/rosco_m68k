@@ -1,7 +1,7 @@
 
 
 AR
-  0  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
+  0  ---- ---- ---- ---- ---- ---- ---- ---x ---x ---- ----
 
 Pin 23 = DUIACK       S0 = 0   S1 = 0
   1  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
@@ -29,8 +29,8 @@ Pin 22 = ANYIACK      S0 = 0   S1 = 0
 
 Pin 21 = BOOT         S0 = 1   S1 = 0
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 22  ---- ---- -x-- ---x ---- ---- ---- ---- ---- ---- ----
- 23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 22  ---- ---- ---- ---x ---- ---- ---- ---- --x- ---- ----
+ 23  ---- ---- ---- ---x ---- ---- ---- --x- ---- ---- ----
  24  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  25  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  26  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -44,8 +44,8 @@ Pin 21 = BOOT         S0 = 1   S1 = 0
 
 Pin 20 = BQ2          S0 = 1   S1 = 0
  34  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 35  ---- ---- -x-- ---- ---x ---- ---- ---- ---- ---- ----
- 36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 35  ---- ---- ---- ---- ---x ---- ---- ---- --x- ---- ----
+ 36  ---- ---- ---- ---- ---x ---- ---- --x- ---- ---- ----
  37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -61,8 +61,8 @@ Pin 20 = BQ2          S0 = 1   S1 = 0
 
 Pin 19 = BQ1          S0 = 1   S1 = 0
  49  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 50  ---- ---- -x-- ---- ---- ---x ---- ---- ---- ---- ----
- 51  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 50  ---- ---- ---- ---- ---- ---x ---- ---- --x- ---- ----
+ 51  ---- ---- ---- ---- ---- ---x ---- --x- ---- ---- ----
  52  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  53  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  54  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -80,8 +80,8 @@ Pin 19 = BQ1          S0 = 1   S1 = 0
 
 Pin 18 = BQ0          S0 = 1   S1 = 0
  66  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 67  ---- ---- -x-- ---- ---- ---- ---- ---- ---- ---- ----
- 68  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 67  ---- ---- ---- ---- ---- ---- ---- ---- --x- ---- ----
+ 68  ---- ---- ---- ---- ---- ---- ---- --x- ---- ---- ----
  69  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  70  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  71  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

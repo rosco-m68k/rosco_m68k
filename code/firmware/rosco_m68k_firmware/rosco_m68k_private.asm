@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2021 Ross Bamford and contributors
+; Copyright (c)2019-2022 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; Global equates for firmware code
@@ -20,12 +20,12 @@
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
   ifd HUGEROM
-RELEASE_VER     equ     $60000210
+RELEASE_VER     equ     $60000220
   else
-RELEASE_VER     equ     $40000210
+RELEASE_VER     equ     $40000220
   endif
 
-VEC_LIMIT       equ     $400
+VECTORS_LOAD    equ     $00000000
 
 ; Bits we use in the firmware reserved area (non-BSS).
 BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync

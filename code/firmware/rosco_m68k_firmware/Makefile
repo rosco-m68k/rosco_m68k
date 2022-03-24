@@ -1,6 +1,6 @@
 # Make rosco_m68k ROM images
 # 
-# Copyright (c)2019 Ross Bamford
+# Copyright (c)2019-2022 Ross Bamford
 # See LICENSE
 
 CPU?=68010
@@ -8,9 +8,10 @@ ARCH?=$(CPU)
 TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES)
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror   \
-       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os         \
-       -fomit-frame-pointer -mno-align-int -mno-strict-align $(DEFINES)
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
+       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks						\
+			 -mno-align-int -mno-strict-align $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -39,8 +40,9 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
-OBJECTS=bootstrap.o lzgmini_68k.o decompress.o ansicon.o trap14.o 			\
-				cpuspeed.o warmboot.o main1.o 
+OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
+				decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
+				cputype.o warmboot.o main1.o 
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
@@ -50,26 +52,32 @@ WITH_DEBUG_STUB?=true
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
 ifeq ($(REVISION1X),true)
-$(info === Building rosco_m68k firmware for revision 1.x board)
+$(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU)
 DEFINES:=$(DEFINES) -DREVISION1X
-HUGEROM?=false
-ROMDEVICE=AT28C256
 else
-$(info === Building rosco_m68k firmware for revision 2.x board)
-HUGEROM?=true
+$(info === Building rosco_m68k firmware for revision 2.x board with MC$(CPU) CPU)
 endif
 
+# Set up Size-specific things appropriately..
+ifeq ($(REVISION1X),true)
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
-ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 ROMDEVICE=AT28C256
+endif
 else
+ifeq ($(HUGEROM),false)
 $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
+else
+$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
+LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+ROMDEVICE=SST39SF040
+DEFINES:=$(DEFINES) -DHUGEROM
 endif
 endif
 
@@ -137,10 +145,10 @@ $(ELF) : $(OBJECTS) $(STAGE2)
 $(BINARY) : $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
-ifeq ($(HUGEROM),true)
-		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
-else
+ifeq ($(HUGEROM),false)
 		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
+else
+		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
 endif
 
 $(DISASM) : $(ELF)

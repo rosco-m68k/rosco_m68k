@@ -18,19 +18,9 @@
 
 #include <machine.h>
 
-// SPI functions are static, so inlining depends on compiler optimization
-// level.  However, you can influence the compiler by defining one of these:
-// SPI_FAST   - encourage the compiler to inline functions
-// SPI_SMALL  - prevent the compiler from inlining functions
-#if !defined(SPI_INLINE)
-#if defined(SPI_FAST)
-#define SPI_INLINE    inline
-#elif defined(SPI_SMALL)
-#define SPI_INLINE __attribute__ ((noinline))
-#else
-#define SPI_INLINE
-#endif
-#endif
+#define USE_ASM_DUART_SPI   1   // Xark - set to 1 to use optimized asm routines
+// firmware SPI functions are static inline and always inlined
+#define SPI_INLINE inline __attribute__ ((always_inline))
 
 #define pinMode(...)
 #define INPUT   0
@@ -78,8 +68,10 @@ static SPI_INLINE bool digitalRead(uint8_t pinmask) {
     return ((*DUART_INPUTPORT) & pinmask);
 }
 
-
 // send one SPI byte, ignore received byte
+#if USE_ASM_DUART_SPI
+extern void spi_send_byte(int byte);
+#else
 static SPI_INLINE void spi_send_byte(int byte) __attribute__ ((used));
 static SPI_INLINE void spi_send_byte(int byte)
 {
@@ -179,8 +171,12 @@ static SPI_INLINE void spi_send_byte(int byte)
     // Send clock high again
     *DUART_OUTHIPORT = SPI_SCK;
 }
+#endif
 
 // send "count" SPI bytes (> 0) from data, ignore received bytes
+#if USE_ASM_DUART_SPI
+extern void spi_send_buffer(void* data, int count);
+#else
 static SPI_INLINE void spi_send_buffer(void* data, int count) __attribute__ ((used));
 static SPI_INLINE void spi_send_buffer(void* data, int count)
 {
@@ -194,6 +190,7 @@ static SPI_INLINE void spi_send_buffer(void* data, int count)
     // Turn off Red LED
     *DUART_OUTHIPORT = 8;
 }
+#endif
 
 // send one SPI byte and receive one SPI byte
 static SPI_INLINE int spi_exchange_byte(int byte) __attribute__ ((used));
@@ -357,6 +354,9 @@ static SPI_INLINE void spi_exchange_buffer(void *data, int count)
 }
 
 // reads one SPI byte, sends one dummy 0xff byte,
+#if USE_ASM_DUART_SPI
+extern int spi_read_byte(void);
+#else
 static SPI_INLINE int spi_read_byte(void) __attribute__ ((used));
 static SPI_INLINE int spi_read_byte(void)
 {
@@ -452,8 +452,12 @@ static SPI_INLINE int spi_read_byte(void)
 
     return byte;
 }
+#endif
 
 // reads "count" SPI bytes (> 0) into data, sends "count" dummy 0xff bytes
+#if USE_ASM_DUART_SPI   // Xark - use asm version
+extern void spi_read_buffer(void *data, int count);
+#else
 static SPI_INLINE void spi_read_buffer(void *data, int count) __attribute__ ((used));
 static SPI_INLINE void spi_read_buffer(void *data, int count)
 {
@@ -469,5 +473,6 @@ static SPI_INLINE void spi_read_buffer(void *data, int count)
     // Turn off Red LED
     *DUART_OUTHIPORT = 8;
 }
+#endif
 
 #endif  // _ROSCOM68K_GPIO_SPI_H

@@ -73,6 +73,7 @@ EFP_ATA_INIT    equ     $480
 EFP_ATA_READ    equ     $484
 EFP_ATA_WRITE   equ     $488
 EFP_ATA_IDENT   equ     $48C
+EFP_PROG_EXIT   equ     $490
 
 ; MFP Location
 MFPBASE     equ     IOBASE
