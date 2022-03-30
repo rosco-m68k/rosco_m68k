@@ -6,7 +6,7 @@
 
   (title_block
     (title "ROSCO_M68K CLASSIC MC68020 EDITION")
-    (date "2022-02-27")
+    (date "2022-03-30")
     (rev "1.0")
     (company "The Really Old-School Company Limited")
     (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
@@ -123,6 +123,9 @@
     (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061767a5b"
       (reference "#PWR05") (unit 1) (value "GND") (footprint "")
     )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/7cf547fd-1531-4a66-8381-61053c9e81c3"
+      (reference "#PWR06") (unit 1) (value "VCC") (footprint "")
+    )
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-0000617498b7"
       (reference "#PWR07") (unit 1) (value "VCC") (footprint "")
     )
@@ -197,12 +200,6 @@
     )
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061de23f1"
       (reference "#PWR0117") (unit 1) (value "GND") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/8e97d5e9-f4a5-4de1-9d65-91753d363b04"
-      (reference "#PWR0118") (unit 1) (value "VCC") (footprint "")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/fdebeb8b-6120-4981-bf3f-7398b520eba7"
-      (reference "#PWR0119") (unit 1) (value "VCC") (footprint "")
     )
     (path "/00000000-0000-0000-0000-00005e53b4b8/af09c535-1ecd-4d22-856a-a002e62b0a25"
       (reference "#PWR0120") (unit 1) (value "GND") (footprint "")
@@ -441,23 +438,11 @@
     (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1ab6"
       (reference "R3") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
     )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/2fee4aff-899e-4c6b-90c8-ca17c4367e4f"
+    (path "/00000000-0000-0000-0000-00005e53b4b8/11561b05-8ee8-4ba1-b680-c3bf6c0cb0ab"
       (reference "R4") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/5dd2fb78-8566-4dc2-840d-dbc42b3f504d"
-      (reference "R5") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/6a703337-b597-44c3-9b2d-968dfc92d97b"
-      (reference "R6") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a6e"
-      (reference "R7") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
     )
     (path "/00000000-0000-0000-0000-0000617d19f3/00000000-0000-0000-0000-000061653f75"
       (reference "R8") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a74"
-      (reference "R9") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
     )
     (path "/00000000-0000-0000-0000-00005e53b4b8/00000000-0000-0000-0000-0000616e1a7a"
       (reference "R10") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
@@ -465,26 +450,14 @@
     (path "/00000000-0000-0000-0000-0000616b7c9b/00000000-0000-0000-0000-00006162e070"
       (reference "R11") (unit 1) (value "10K") (footprint "rosco_m68k:0207_10")
     )
-    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175c33f"
-      (reference "R12") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
     (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f042"
       (reference "R13") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
     )
     (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f030"
       (reference "R14") (unit 1) (value "330R") (footprint "rosco_m68k:0207_10")
     )
-    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061797c20"
-      (reference "R15") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175e1d4"
       (reference "R16") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175ba3c"
-      (reference "R17") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
-    )
-    (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-00006175ffeb"
-      (reference "R18") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
     )
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-0000600b8632"
       (reference "R19") (unit 1) (value "10K") (footprint "rosco_m68k:0207_10")
@@ -504,11 +477,14 @@
     (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f03c"
       (reference "R32") (unit 1) (value "4K7") (footprint "rosco_m68k:0207_10")
     )
+    (path "/00000000-0000-0000-0000-00005e53b4b8/e9a72aad-fe63-4737-835b-383fde8e85b5"
+      (reference "RN1") (unit 1) (value "4K7") (footprint "Resistor_THT:R_Array_SIP9")
+    )
     (path "/00000000-0000-0000-0000-00005e53b4b8/75acc09e-c721-4b35-8b8f-df8a276666bb"
-      (reference "RN1") (unit 1) (value "10K") (footprint "Resistor_THT:R_Array_SIP9")
+      (reference "RN2") (unit 1) (value "10K") (footprint "Resistor_THT:R_Array_SIP9")
     )
     (path "/00000000-0000-0000-0000-00005e53b4b8/f8dda1f4-69da-4bba-8070-ca7f375adb84"
-      (reference "RN2") (unit 1) (value "R_Network08") (footprint "Resistor_THT:R_Array_SIP9")
+      (reference "RN3") (unit 1) (value "R_Network08") (footprint "Resistor_THT:R_Array_SIP9")
     )
     (path "/00000000-0000-0000-0000-00006162e38e/00000000-0000-0000-0000-00006104f04e"
       (reference "S1") (unit 1) (value "10-XX") (footprint "rosco_m68k:B3F-10XX")
