@@ -131,6 +131,7 @@ CALL_DTORS::
     rts
 
     section .data
+    align  4
 
 SAVE_PROG_EXIT  ds.l  1
 
