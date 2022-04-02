@@ -180,11 +180,13 @@ static KRESULT build_memory_map(volatile MEMINFO *header) {
         }
       }
       current += 16; // skip by 64 bytes to speed scanning
-    } else if (!block_started) {
-      // There is RAM here and we don't have a current block - start one
-      blocks[current_block].block_start = (uint32_t)current;
-      blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
-      block_started = true;
+    } else {
+      if (!block_started) {
+        // There is RAM here and we don't have a current block - start one
+        blocks[current_block].block_start = (uint32_t)current;
+        blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
+        block_started = true;
+      }
       current++;
     }
 
