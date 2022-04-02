@@ -4,27 +4,33 @@
 # MIT LICENSE
 
 ifndef ROSCO_M68K_DIR
-$(error Please set ROSCO_M68K_DIR to the top-level rosco_m68k directory to use for rosco_m68k building)
+$(info NOTE: ROSCO_M68K_DIR not set, using libs: ../../../code/software/libs)
+ROSCO_M68K_DIR=../../..
+else
+$(info NOTE: Using ROSCO_M68K_DIR libs in: $(ROSCO_M68K_DIR))
 endif
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
 CPU?=68010
+ARCH?=$(CPU)
+TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
+EXTRA_LIBS= 
+#EXTRA_VASMFLAGS?=-showopt
 SYSINCDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/include
 SYSLIBDIR?=$(ROSCO_M68K_DIR)/code/software/libs/build/lib
 DEFINES=-DROSCO_M68K
-FLAGS=-ffreestanding -ffunction-sections -fdata-sections \
-				-Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
-				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
-CFLAGS=-std=c11 $(FLAGS)
+CFLAGS=-std=c11 -ffreestanding -ffunction-sections -fdata-sections \
+ -Wall -Wextra -Werror -Wno-unused-function -pedantic -I$(SYSINCDIR) \
+ -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) $(DEFINES)
 CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
-GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
-		| grep libraries:\ =																								\
-    | sed 's/libraries: =/-L/g' 																				\
-    | sed 's/:/m68000\/ -L/g')m68000/
-LIBS=-lrosco_m68k -lgcc
-ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
+GCC_LIBS=$(shell $(CC) --print-search-dirs \
+ | grep libraries:\ = \
+ | sed 's/libraries: =/-L/g' \
+ | sed 's/:/m68000\/ -L/g')m68000/
+LIBS=$(EXTRA_LIBS) -lrosco_m68k -lgcc
+ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 
 ifneq ($(ROSCO_M68K_HUGEROM),false)
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
@@ -62,6 +68,7 @@ SYM=$(PROGRAM_BASENAME).sym
 # Assume source files in Makefile directory are source files for project
 CSOURCES=$(wildcard *.c)
 CXXSOURCES=$(wildcard *.cpp)
+CINCLUDES=$(wildcard *.h)
 SSOURCES=$(wildcard *.S)
 ASMSOURCES=$(wildcard *.asm)
 SOURCES=$(CSOURCES) $(CXXSOURCES) $(SSOURCES) $(ASMSOURCES)
@@ -85,10 +92,10 @@ $(DISASM) : $(ELF)
 
 $(OBJECTS): Makefile
 
-%.o : %.c
+%.o : %.c $(CINCLUDES)
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
 
-%.o : %.cpp
+%.o : %.cpp $(CINCLUDES)
 	$(CXX) -c $(CXXFLAGS) $(EXTRA_CXXFLAGS) -o $@ $<
 
 %.o : %.asm
@@ -106,21 +113,37 @@ dump: $(BINARY)
 
 # upload binary to rosco (if ready and kermit present)
 load: $(BINARY)
-	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 
-# This is handy to test on Ubuntu
-test: $(BINARY) $(DISASM)
+# Linux (gnome): Upload binary with kermit, connect with "screen" terminal
+# (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
+linuxtest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
-	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
-# This is handy to test on MacOS
+# Linux (gnome): Connect with "screen" terminal
+linuxterm:
+	-killall screen && sleep 1
+	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
+
+# macOS: Upload binary with kermit, connect with "screen" terminal
+# (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
 mactest: $(BINARY) $(DISASM)
 	-killall screen && sleep 1
-	kermit -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
-	echo "/usr/bin/screen $(SERIAL) $(BAUD)" > $(TMPDIR)/rosco_screen.sh
+	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
+	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
+	sleep 1
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+
+macterm:
+	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
+	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
+	-chmod +x $(TMPDIR)/rosco_screen.sh
+	sleep 1
 	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
-.PHONY: all clean dump disasm load test mactest
+.PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm

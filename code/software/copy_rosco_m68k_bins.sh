@@ -27,6 +27,8 @@ cp -v memcheck/memcheck.bin "$1"
 cp -v sdfat_demo/sdfat_demo.bin "$1"
 cp -v updateflash/updateflash.bin "$1"
 cp -v vterm/vterm.bin "$1"
+cp -v ../starter_projects/starter_asm/starter_asm.bin "$1"
+cp -v ../starter_projects/starter_c/starter_c.bin "$1"
 
 echo
 echo "NOTE: Remember to safely unmount $1 (if needed)."
