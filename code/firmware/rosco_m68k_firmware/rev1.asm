@@ -62,8 +62,7 @@ TICK_HANDLER::
     move.w  D0,SDB_TICKCNT            ; ... and write back to SDB
     move.l  (A7)+,D1                  ; Restore D1
 
-    move.b  R_STOPCNTCMD(A0),D0       ; Clear ISR[3]
-    move.l  (A7)+,A0                  ; Restore A0
+    move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     move.l  (A7)+,D0                  ; Restore D0
 
     rte                               ; We're done
