@@ -26,96 +26,106 @@ void abort(void)
 static unsigned int rand_seed = 42;
 void srand(unsigned int seed)
 {
-	rand_seed = seed;
+  rand_seed = seed;
 }
 
 int rand(void)
 {
-	rand_seed = rand_seed * 1103515245 + 12345;
-	return (rand_seed & RAND_MAX);
+  rand_seed = rand_seed * 1103515245 + 12345;
+  return (rand_seed & RAND_MAX);
 }
 
 long
 strtol (const char *__restrict s,
-	char **__restrict ptr,
-	int base)
+  char **__restrict ptr,
+  int base)
 {
-	//register const unsigned char *s = (const unsigned char *)nptr;
-	register unsigned long acc;
-	register int c;
-	register unsigned long cutoff;
-	register int neg = 0, any, cutlim;
+  //register const unsigned char *s = (const unsigned char *)nptr;
+  register unsigned long acc;
+  register int c;
+  register unsigned long cutoff;
+  register int neg = 0, any, cutlim;
 
-	if (base < 0 || base == 1 || base > 36) {
-		return 0;
-	}
+  /* if end ptr non-NULL, store string start by default */
+  if (ptr) {
+    *ptr = (char *)s;
+  }
 
-	/*
-	 * Skip white space and pick up leading +/- sign if any.
-	 * If base is 0, allow 0x for hex and 0 for octal, else
-	 * assume decimal; if base is already 16, allow 0x.
-	 */
-	do {
-		c = *s++;
-	} while (c == ' ');
-	if (c == '-') {
-		neg = 1;
-		c = *s++;
-	} else if (c == '+')
-		c = *s++;
-	if ((base == 0 || base == 16) &&
-	    c == '0' && (*s == 'x' || *s == 'X')) {
-		c = s[1];
-		s += 2;
-		base = 16;
-	}
-	if (base == 0)
-		base = c == '0' ? 8 : 10;
+  if (base < 0 || base == 1 || base > 36) {
+    return 0;
+  }
 
-	/*
-	 * Compute the cutoff value between legal numbers and illegal
-	 * numbers.  That is the largest legal value, divided by the
-	 * base.  An input number that is greater than this value, if
-	 * followed by a legal input character, is too big.  One that
-	 * is equal to this value may be valid or not; the limit
-	 * between valid and invalid numbers is then based on the last
-	 * digit.  For instance, if the range for longs is
-	 * [-2147483648..2147483647] and the input base is 10,
-	 * cutoff will be set to 214748364 and cutlim to either
-	 * 7 (neg==0) or 8 (neg==1), meaning that if we have accumulated
-	 * a value > 214748364, or equal but the next digit is > 7 (or 8),
-	 * the number is too big, and we will return a range error.
-	 *
-	 * Set any if any `digits' consumed; make it negative to indicate
-	 * overflow.
-	 */
-	cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
-	cutlim = cutoff % (unsigned long)base;
-	cutoff /= (unsigned long)base;
-	for (acc = 0, any = 0;; c = *s++) {
-		if (c >= '0' && c <= '9')
-			c -= '0';
-		else if (c >= 'A' && c <= 'Z')
-			c -= 'A' - 10;
-		else if (c >= 'a' && c <= 'z')
-			c -= 'a' - 10;
-		else
-			break;
-		if (c >= base)
-			break;
-		if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim)) {
-			any = -1;
-		} else {
-			any = 1;
-			acc *= base;
-			acc += c;
-		}
-	}
-	if (any < 0) {
-		acc = neg ? LONG_MIN : LONG_MAX;
-	} else if (neg)
-		acc = -acc;
-	return (acc);
+  /*
+   * Skip white space and pick up leading +/- sign if any.
+   * If base is 0, allow 0x for hex and 0 for octal, else
+   * assume decimal; if base is already 16, allow 0x.
+   */
+  do {
+    c = *s++;
+  } while (c == ' ');
+  if (c == '-') {
+    neg = 1;
+    c = *s++;
+  } else if (c == '+')
+    c = *s++;
+  if ((base == 0 || base == 16) &&
+      c == '0' && (*s == 'x' || *s == 'X')) {
+    c = s[1];
+    s += 2;
+    base = 16;
+  }
+  if (base == 0)
+    base = c == '0' ? 8 : 10;
+
+  /*
+   * Compute the cutoff value between legal numbers and illegal
+   * numbers.  That is the largest legal value, divided by the
+   * base.  An input number that is greater than this value, if
+   * followed by a legal input character, is too big.  One that
+   * is equal to this value may be valid or not; the limit
+   * between valid and invalid numbers is then based on the last
+   * digit.  For instance, if the range for longs is
+   * [-2147483648..2147483647] and the input base is 10,
+   * cutoff will be set to 214748364 and cutlim to either
+   * 7 (neg==0) or 8 (neg==1), meaning that if we have accumulated
+   * a value > 214748364, or equal but the next digit is > 7 (or 8),
+   * the number is too big, and we will return a range error.
+   *
+   * Set any if any `digits' consumed; make it negative to indicate
+   * overflow.
+   */
+  cutoff = neg ? -(unsigned long)LONG_MIN : LONG_MAX;
+  cutlim = cutoff % (unsigned long)base;
+  cutoff /= (unsigned long)base;
+  for (acc = 0, any = 0;; c = *s++) {
+    if (c >= '0' && c <= '9')
+      c -= '0';
+    else if (c >= 'A' && c <= 'Z')
+      c -= 'A' - 10;
+    else if (c >= 'a' && c <= 'z')
+      c -= 'a' - 10;
+    else
+      break;
+    if (c >= base)
+      break;
+    if (any < 0 || acc > cutoff || (acc == cutoff && c > cutlim)) {
+      any = -1;
+    } else {
+      any = 1;
+      acc *= base;
+      acc += c;
+    }
+  }
+  if (any < 0) {
+    acc = neg ? LONG_MIN : LONG_MAX;
+  } else if (neg)
+    acc = -acc;
+
+  /* if end ptr non-NULL, store ptr to the character past the last character interpreted */
+  if (ptr) {
+    *ptr = (char *)s-1;
+  }
+  return (acc);
 }
 
 
