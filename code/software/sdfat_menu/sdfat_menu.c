@@ -465,10 +465,14 @@ static void show_menu_files()
     }
 }
 
-static void execute_bin_file(const char * name)
+static void execute_bin_file(const char * name, uint8_t *loadstartptr)
 {
     const char * filename = fullpath(name);
     printf("Loading \"%s\"", filename);
+
+    if (loadstartptr != (uint8_t *) _LOAD_ADDRESS) {
+        printf(" to address 0x%08x", (int) loadstartptr);
+    }
 
     unsigned int timer = timer_start();
     void *       file  = fl_fopen(filename, "r");
@@ -494,7 +498,6 @@ static void execute_bin_file(const char * name)
     {
         int       c            = 0;
         int       b            = 0;
-        uint8_t * loadstartptr = (uint8_t *)_LOAD_ADDRESS;
         uint8_t * loadptr      = loadstartptr;
         uint8_t * endptr       = (uint8_t *)_INITIAL_STACK;
         while (loadptr < endptr && (c = fl_fread(loadptr, 1, 512, file)) > 0)
@@ -528,7 +531,9 @@ static void execute_bin_file(const char * name)
             {
                 disable_sd_boot();
             }
-            __asm__ __volatile__(" jmp _LOAD_ADDRESS\n" : : :);
+
+            __asm__ __volatile__("move.l %0,%%a0\n" : : "g" (loadstartptr));
+            __asm__ __volatile__(" jmp (%%a0)\n" : : :);
             __builtin_unreachable();
         }
         else
@@ -908,9 +913,15 @@ void command_prompt()
                     "Create directory \"%s\"...%s\n", filename, fl_createdirectory(filename) == 1 ? "OK" : "failed!");
                 break;
             }
-            case CMD_RUN:
-                execute_bin_file(arg);
+            case CMD_RUN: {
+                uint8_t *load_addr = (uint8_t *) _LOAD_ADDRESS; // Default load address.
+                arg2 = next_cmd_token();
+                if (arg2 != NULL && arg2[0] != 0) {
+                    load_addr = (uint8_t *) strtol(arg2, NULL, 16); // Use load addr from cmd line.
+                }
+                execute_bin_file(arg, load_addr);
                 break;
+            }
             case CMD_TYPE:
                 file_operation(arg, op_type);
                 break;
@@ -992,11 +1003,12 @@ void command_prompt()
                 printf("SD Card prompt commands:\n");
                 for (cmd_num = 0; cmd_num < NUM_CMD; cmd_num++)
                 {
-                    const char * cmd_arg = cmd_num < CMD_RUN    ? "[directory]"
+                    const char * cmd_arg = cmd_num == CMD_RUN   ? "<filename> [hex_load_addr]"
+                                           : cmd_num < CMD_RUN  ? "[directory]"
                                            : cmd_num < CMD_COPY ? "<filename>"
                                            : cmd_num < CMD_BOOT ? "<src> <dest>"
                                                                 : "";
-                    printf(" %-8.8s %-12.12s %s", cmd_table[cmd_num].command, cmd_arg, cmd_table[cmd_num].help);
+                    printf(" %-8.8s %-27.27s %s", cmd_table[cmd_num].command, cmd_arg, cmd_table[cmd_num].help);
                     if (cmd_table[cmd_num].alias != NULL)
                     {
                         printf(" (alias %s)", cmd_table[cmd_num].alias);
@@ -1121,7 +1133,7 @@ void sdfat_menu()
                 }
                 else
                 {
-                    execute_bin_file(n);
+                    execute_bin_file(n, (uint8_t *) _LOAD_ADDRESS);
                 }
             }
             else if (key >= '0' && key <= '9')
