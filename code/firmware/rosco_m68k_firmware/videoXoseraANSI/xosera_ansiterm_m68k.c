@@ -154,8 +154,7 @@ static inline __attribute__((always_inline)) xansiterm_data * get_xansi_data()
     __asm__ __volatile__("   lea.l   _private_xansiterm_data,%[ptr]" : [ptr] "=a"(ptr));
     return ptr;
 }
-#define xansi_memset(p, n) memset(p, 0, n)        // use regular memset
-#else                                             // building for firmware
+#else        // building for firmware
 static inline __attribute__((always_inline)) xansiterm_data * get_xansi_data()
 {
     xansiterm_data * ptr;
@@ -163,23 +162,7 @@ static inline __attribute__((always_inline)) xansiterm_data * get_xansi_data()
     return ptr;
 }
 
-// GCC really wants to transform my code to call memset, even though I never reference it (it
-// sees loops zeroing memory and tries to optimize).  This is a problem because it causes a
-// link error in firmware-land (where some normal C libraries are missing). Since GCC seems
-// to ignore -fno-builtin, using an obfuscated version seems the best way to outsmart GCC
-// (for now...hopefully it won't learn how to parse inline asm anytime soon). :D
-static void xansi_memset(void * str, unsigned int n)
-{
-    uint8_t * buf = (uint8_t *)str;
-    uint8_t * end = buf + n;
 
-    __asm__ __volatile__(
-        "secloop:   clr.b   (%[buf])+\n"
-        "           cmp.l   %[buf],%[end]\n"
-        "           bne.s   secloop\n"
-        :
-        : [buf] "a"(buf), [end] "a"(end));
-}
 #endif
 
 #if DEBUG
@@ -928,7 +911,7 @@ static inline void xansi_begin_csi_or_esc(xansiterm_data * td, char c)
     td->state             = (c == '\x1b') ? TSTATE_ESC : TSTATE_CSI;
     td->intermediate_char = 0;
     td->num_parms         = 0;
-    xansi_memset(td->csi_parms, sizeof(td->csi_parms));
+    xosera_memclear(td->csi_parms, sizeof(td->csi_parms));
 }
 
 // process ESC sequence (only single character supported)
@@ -1922,7 +1905,7 @@ bool xansiterm_INIT()
         return false;
     }
     xansiterm_data * td = get_xansi_data();
-    xansi_memset(td, sizeof(*td));
+    xosera_memclear(td, sizeof(*td));
     // default values (others will be zero or computed)
     td->device_recvchar  = _EFP_RECVCHAR;
     td->device_checkchar = _EFP_CHECKCHAR;
@@ -1951,14 +1934,13 @@ bool xansiterm_INIT()
 
     xansi_reset(true);
     xansiterm_PRINT(xansiterm_banner);
-    // NOTE: This crashes only in firmware?
-    // char * vs = init_data.description_str;
-    // *vs++     = td->ver_code[0];
-    // *vs++     = '.';
-    // *vs++     = td->ver_code[1];
-    // *vs++     = td->ver_code[2];
-    // *vs++     = '\0';
-    xansiterm_PRINT("?.??");    // TODO: Need better version code
+    char * vs = init_data.description_str;
+    *vs++     = td->ver_code[0];
+    *vs++     = '.';
+    *vs++     = td->ver_code[1];
+    *vs++     = td->ver_code[2];
+    *vs++     = '\0';
+    xansiterm_PRINT(init_data.description_str);
     xansiterm_PRINT(xansiterm_banner2);
     char * ft = init_data.description_str;
     if (!(_FIRMWARE_REV & (1U << 31)))

@@ -93,8 +93,9 @@ typedef struct _xosera_info xosera_info_t;        // forward declare
 bool xosera_init(int reconfig_num);                // wait a bit for Xosera to respond and optional reconfig (if 0 to 3)
 bool xosera_get_info(xosera_info_t * info);        // retrieve init xosera_info_t (valid after xosera reconfig)
 bool xosera_sync();                                // true if Xosera present and responding
-void cpu_delay(int ms);                            // delay approx milliseconds with CPU busy wait
-void xv_delay(uint32_t ms);                        // delay milliseconds using Xosera TIMER
+void xosera_memclear(void * ptr, unsigned int n);        // memory zero
+void cpu_delay(int ms);                                  // delay approx milliseconds with CPU busy wait
+void xv_delay(uint32_t ms);                              // delay milliseconds using Xosera TIMER
 
 #include "xosera_m68k_defs.h"
 
@@ -133,6 +134,10 @@ typedef struct _xosera_info
     unsigned char reserved_59;                // reserved byte
     uint32_t      githash;                    // git "short hash" version from repository
 } xosera_info_t;
+
+#ifndef __INTELLISENSE__        // vscode intellisense does not grok m68k (flags as error, but correct for m68k-gcc)
+typedef char _xosera_init_size_static_assert[sizeof(xosera_info_t) == XV_INFO_SIZE ? 1 : -1];
+#endif
 
 // Xosera XM register base ptr
 #if !defined(XV_PREP_REQUIRED)

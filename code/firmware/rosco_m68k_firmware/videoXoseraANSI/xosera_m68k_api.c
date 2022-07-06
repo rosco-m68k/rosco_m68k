@@ -21,31 +21,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#if defined(TEST_FIRMWARE)
-#include <stdlib.h>
-#include <string.h>
-#else
-// NOTE: some things missing in rosco_m68k firmware environment
-#define NULL    0
-
-// GCC really wants to transform my code to call memset, even though I never reference it (it
-// sees loops zeroing memory and tries to optimize).  This is a problem because it causes a
-// link error in firmware-land (where some normal C libraries are missing). Since GCC seems
-// to ignore -fno-builtin, using an obfuscated version seems the best way to outsmart GCC
-// (for now...hopefully it won't learn how to parse inline asm anytime soon). :D
-static void xansi_memset(void * str, unsigned int n)
-{
-    uint8_t * buf = (uint8_t *)str;
-    uint8_t * end = buf + n;
-
-    __asm__ __volatile__(
-        "secloop:   clr.b   (%[buf])+\n"
-        "           cmp.l   %[buf],%[end]\n"
-        "           bne.s   secloop\n"
-        :
-        : [buf] "a"(buf), [end] "a"(end));
-}
-#endif
 
 #include <machine.h>
 
@@ -64,6 +39,24 @@ __attribute__((noinline)) void cpu_delay(int ms)
         "    tst.l   %[temp]\n"
         "    bne.s   0b\n"
         : [temp] "+d"(ms));
+}
+
+// GCC really wants to transform my code to call memset, even though I never reference it (it
+// sees loops zeroing memory and tries to optimize).  This is a problem because it causes a
+// link error in firmware-land (where some normal C libraries are missing). Since GCC seems
+// to ignore -fno-builtin, using an obfuscated version seems the best way to outsmart GCC
+// (for now...hopefully it won't learn how to parse inline asm anytime soon). :D
+void xosera_memclear(void * ptr, unsigned int n)
+{
+    uint8_t * buf = (uint8_t *)ptr;
+    uint8_t * end = buf + n;
+
+    __asm__ __volatile__(
+        "0:         clr.b   (%[buf])+\n"
+        "           cmp.l   %[buf],%[end]\n"
+        "           bne.s   0b\n"
+        : [buf] "+a"(buf)
+        : [end] "a"(end));
 }
 
 // delay for approx ms milliseconds
@@ -132,13 +125,8 @@ bool xosera_init(int reconfig_num)
         {
             xwait_not_vblank();
             xwait_vblank();
-            uint16_t int_ctrl_save = xm_getw(INT_CTRL);        // save INT_CTRL
-            xm_setbh(INT_CTRL, 0x80 | reconfig_num);           // reconfig FPGA to config_num
-            detected = xosera_wait_sync();                     // wait for detect
-            if (detected)
-            {
-                xm_setw(INT_CTRL, int_ctrl_save | 0x00FF);        // restore INT_CTRL, clear any interrupts
-            }
+            xm_setbh(INT_CTRL, 0x80 | reconfig_num);        // reconfig FPGA to config_num
+            detected = xosera_wait_sync();                  // wait for detect
         }
     }
 
@@ -148,12 +136,12 @@ bool xosera_init(int reconfig_num)
 // TODO: retrieve xosera_info (placed in COPPER memory after xosera reconfig)
 bool xosera_get_info(xosera_info_t * info)
 {
-    if (info == NULL)
+    if (!info)
     {
         return false;
     }
 
-    xansi_memset(info, sizeof(xosera_info_t));
+    xosera_memclear(info, sizeof(xosera_info_t));
 
     if (!xosera_sync())
     {

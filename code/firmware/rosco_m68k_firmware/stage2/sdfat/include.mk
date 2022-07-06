@@ -13,7 +13,7 @@ BBSD_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter		                	\
             -Iinclude -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
             -DROSCO_M68K -DFATFS_USE_CUSTOM_OPTS_FILE					              	\
             -Isdfat/include -I../blockdev/include																\
-            -mno-align-int -mno-strict-align $(DEFINES) -DSDFAT_LOADER
+            $(DEFINES) -DSDFAT_LOADER
 								
 sdfat/load.o: sdfat/load.c
 	$(CC) $(BBSD_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
