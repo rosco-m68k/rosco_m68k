@@ -105,7 +105,7 @@ TRAP_14_HANDLER::
     bhs.s   .NO_DEVICE
 
     lea.l   DEVICE_BLOCKS,A0
-    lsl.w   #2,D0
+    lsl.w   #4,D0
     add.w   D0,A0
 
     bra.s   .EPILOGUE

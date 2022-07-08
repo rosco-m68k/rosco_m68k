@@ -361,7 +361,7 @@ GENERIC_HANDLER::
 
 ;------------------------------------------------------------
 ; Char devices
-    section .data
+    section .early_data
 DEVICE_COUNT::  dc.w    0
 DEVICE_BLOCKS:: ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
 

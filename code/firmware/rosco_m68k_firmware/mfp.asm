@@ -89,6 +89,9 @@ INITMFP::
     move.l  #CHECKCHAR_MFP,(A0)+
     move.l  #RECVCHAR_MFP,(A0)+
     move.l  #SENDCHAR_MFP,(A0)+
+
+    addi.w  #2,DEVICE_COUNT
+
     rts
 
 
