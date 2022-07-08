@@ -46,6 +46,14 @@ The hardware specifications for the rosco_m68k are:
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
 
+## Getting boards fabricated
+
+If you want to get boards fabricated, we recommend JLCPCB - they did all of our commercial boards
+when the rosco_m68k was offered for sale on Tindie. These are the options you'll want when
+ordering from them (these should be readily adaptable to other fabs too!)
+
+![JLCPCB Fab Options](images/jlcpcb-options.png)
+
 ## Certification
 
 The rosco_m68k is an OSHWA-certified Open Source Hardware project!
