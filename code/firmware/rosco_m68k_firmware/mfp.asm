@@ -85,10 +85,10 @@ INITMFP::
     lsl.w   D0
     add.w   D0,A0
 
-    move.l  #MFPBASE,(A0)+
-    move.l  #D_CHECKCHAR_DUART_A,(A0)+
-    move.l  #D_RECVCHAR_DUART_A,(A0)+
-    move.l  #D_SENDCHAR_DUART_A,(A0)+
+    move.l  #MFPBASE,(A0)+              ; Not actually needed, but for completeness...
+    move.l  #CHECKCHAR_MFP,(A0)+
+    move.l  #RECVCHAR_MFP,(A0)+
+    move.l  #SENDCHAR_MFP,(A0)+
     rts
 
 
