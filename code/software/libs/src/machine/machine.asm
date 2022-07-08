@@ -256,8 +256,8 @@ mcReadDevice::
     section .text.mcSendDevice
 mcSendDevice::
     move.l  D1,-(A7)
-    move.l  8(A7),A0
-    move.l  12(A7),D0
+    move.l  8(A7),D0
+    move.l  12(A7),A0
     move.l  #11,D1
     trap    #14
     move.l  (A7)+,D1

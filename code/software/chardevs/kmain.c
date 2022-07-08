@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <machine.h>
+#include <printf.h>
 
 typedef struct {
     uint32_t    data;
@@ -12,22 +13,12 @@ typedef struct {
     uint32_t    sendptr;
 } CHAR_DEVICE;
 
-static void printToDevice(void *device, char *str) {
-    while (*str) {
-        mcSendDevice(device, *str++);
-    }
-}
-
 void kmain() {
     if (mcCheckDeviceSupport()) {
         printf("Character device support detected\n");
 
         uint16_t count = mcGetDeviceCount();
         printf("Found %d device(s)\n", count);
-
-        uint16_t *ptr = (uint16_t*)0x1aa4;
-
-        printf("Device count in mem seems to be %d\n", *ptr);
 
         for (int i = 0; i < count; i++) {
             CHAR_DEVICE *dev = mcGetDevice(i);
@@ -38,7 +29,7 @@ void kmain() {
             printf("sendptr : 0x%08lx\n", dev->sendptr);
 
             printf("Printing to device %d\n", i);
-            printToDevice(dev, "Hello World\n");
+            fctprintf(mcSendDevice, dev, "Hello, World\n"); 
             printf("\n\n");
         }
 

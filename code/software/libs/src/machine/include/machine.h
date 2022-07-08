@@ -310,7 +310,7 @@ char mcReadDevice(void *device);
 /* 
  * Call the SENDCHAR function on the given device.
  */
-void mcSendDevice(void *device, char chr);
+void mcSendDevice(char chr, void *device);
 
 /*
  * Add a device in the next available slot.
