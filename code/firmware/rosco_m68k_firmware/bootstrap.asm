@@ -83,6 +83,7 @@ START::
 
     bsr.w   INITSDB                     ; Initialise System Data Block
     bsr.w   INITEFPT                    ; Initialise Extension Function Pointer Table
+    bsr.w   INITDEVS                    ; Initialise device blocks
 
     ifd REVISION1X 
     jsr     INITMFP                     ; Initialise MC68901
@@ -208,6 +209,22 @@ EFP_DUMMY_NEGONE_D0W::
     rts
 EFP_DUMMY_NEGONE_D0L::
     move.l  #-1,D0
+    rts
+
+
+; Initialize device blocks
+INITDEVS:
+    clr.w   DEVICE_COUNT    
+    move.w  #C_NUM_DEVICES,D0
+    lsl.w   #2,D0
+    lea.l   DEVICE_BLOCKS,A0
+    bra.s   .START
+
+.LOOP:
+    clr.l   (A0)+
+
+.START:
+    dbra.w  D0,.LOOP
     rts
 
 
@@ -343,6 +360,11 @@ GENERIC_HANDLER::
 
 
 ;------------------------------------------------------------
+; Char devices
+    section .data
+DEVICE_COUNT::  dc.w    0
+DEVICE_BLOCKS:: ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+
 ; Consts 
     section .rodata
 

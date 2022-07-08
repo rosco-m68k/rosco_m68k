@@ -24,6 +24,9 @@
 ; If an MC68681 is found, this will set D5 to 1. Otherwise, D5 will be 0.
 ; This is used to signal INITSDB that it should use the DUART vectors instead of
 ; the MFP ones.
+;
+; Trashes: D0, A0-A5
+; Modifies: D5 (non-zero if DUART detected), MFP Regs
 INITDUART::
     ifnd REVISION1X
     ; Building for r2.x mainboard, try onboard DUART first
@@ -41,10 +44,18 @@ INITDUART::
 
 .INIT_R2
     ; Else, we found an r2 (XR68C681). Set it up for 115200
+    ; UART A
     move.b  #$A0,DUART_CRA(A0)        ; Enable extended TX rates
     move.b  #$80,DUART_CRA(A0)        ; Enable extended RX rates
     move.b  #$80,DUART_ACR(A0)        ; Select bit rate set 2
     move.b  #$88,DUART_CSRA(A0)       ; 115K2
+
+    ; UART B
+    move.b  #$A0,DUART_CRB(A0)        ; Enable extended TX rates
+    move.b  #$80,DUART_CRB(A0)        ; Enable extended RX rates
+    move.b  #$80,DUART_ACR(A0)        ; Select bit rate set 2
+    move.b  #$88,DUART_CSRB(A0)       ; 115K2
+
     bra.s   .COMMON_INIT
 
 .TRY_R1
@@ -55,8 +66,14 @@ INITDUART::
 
     ; Else, we found an r1 (MC68681). Set it up for 115200
     move.b  #$60,DUART_ACR(A0)        ; Set 0, Counter, X1/X2, /16
+
+    ; UART A 
     move.b  DUART_CRA(A0),D0          ; Enable undocumented rates
     move.b  #$66,DUART_CSRA(A0)       ; 1200 per spec, uses counter instead
+
+    ; UART B
+    move.b  DUART_CRB(A0),D0          ; Enable undocumented rates
+    move.b  #$66,DUART_CSRB(A0)       ; 1200 per spec, uses counter instead
 
     move.b  #0,DUART_CUR(A0)          ; Counter high: 0
     move.b  #2,DUART_CLR(A0)          ; Counter  low: 2  (115.2KHz)
@@ -67,6 +84,9 @@ INITDUART::
 
     move.b  #$13,DUART_MR1A(A0)       ; (No RTS, RxRDY, Char, No parity, 8 bits)
     move.b  #$07,DUART_MR2A(A0)       ; (Normal, No TX CTS/RTS, 1 stop bit)
+    move.b  #$13,DUART_MR1B(A0)       ; (No RTS, RxRDY, Char, No parity, 8 bits)
+    move.b  #$07,DUART_MR2B(A0)       ; (Normal, No TX CTS/RTS, 1 stop bit) 
+    
     ifnd REVISION1X
     move.b  #$01,W_OPR_SETCMD(A0)     ; Assert RTS from startup
     endif
@@ -76,6 +96,7 @@ INITDUART::
     move.b  #%00000000,DUART_OPCR(A0)  ; All output port disabled
 
     move.b  #%00000101,DUART_CRA(A0)   ; Enable TX/RX port A
+    move.b  #%00000101,DUART_CRB(A0)   ; Enable TX/RX port B
 
     ifnd REVISION1X
     ; System timer / interrupt setup
@@ -99,6 +120,26 @@ INITDUART::
     move.l  #ANSI_MOVEXY,EFP_MOVEXY
     move.l  #EFP_DUMMY_NOOP,EFP_SETCURSOR
     move.l  #CHECKCHAR_DUART,EFP_CHECKCHAR
+
+    ; Setup device blocks...
+    lea.l   DEVICE_BLOCKS,A1
+    move.w  DEVICE_COUNT,D0
+    lsl.w   D0
+    add.w   D0,A1
+
+    ; ... UART A
+    move.l  A0,(A1)+
+    move.l  #D_CHECKCHAR_DUART_A,(A1)+
+    move.l  #D_RECVCHAR_DUART_A,(A1)+
+    move.l  #D_SENDCHAR_DUART_A,(A1)+
+
+    ; ... UART B
+    move.l  A0,(A1)+
+    move.l  #D_CHECKCHAR_DUART_B,(A1)+
+    move.l  #D_RECVCHAR_DUART_B,(A1)+
+    move.l  #D_SENDCHAR_DUART_B,(A1)+
+
+    addi.w  #2,DEVICE_COUNT
 
 .DONE
     rts
@@ -156,7 +197,7 @@ INITDUART_ATBASE:
     rts
 
 
-; PRINT null-terminated string pointed to by A0
+; PRINT null-terminated string pointed to by A0 to UART A
 ;
 ; Only used directly during early init; Becomes the default implementation
 ; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
@@ -182,8 +223,8 @@ EARLY_PRINT_DUART:
     rts                               ; We're done
 
 
-; PRINT null-terminated string pointed to by A0 followed by CRLF.
-;
+; PRINT null-terminated string pointed to by A0 followed by CRLF to UART A
+; 
 ; Only used directly during early init; Becomes the default implementation
 ; of FW_PRINT (pointed to by the EFP table) and likely replaced later.
 ;
@@ -200,7 +241,7 @@ EARLY_PRINTLN_DUART:
     rts
 
 
-; Check if a character is ready to receive via UART
+; Check if a character is ready to receive via UART A
 ;
 ; Trashes: UART registers
 ; Modifies: D0.B (return = 0 if no character waiting, nonzero otherwise)
@@ -213,9 +254,37 @@ CHECKCHAR_DUART:
     rts
 
 
-; Send a single character via UART
+; Char device handler - Check if a character is ready to receive via UART A
 ;
-; Trashes: MFP_UDR
+; Arguments: A0 - Should point to device block
+;
+; Trashes: A0, UART registers
+; Modifies: D0.B (return = 0 if no character waiting, nonzero otherwise)
+D_CHECKCHAR_DUART_A:
+    move.l  (A0),A0               ; Get DUART base address
+    move.b  DUART_SRA(A0),D0      ; Get RSR
+    andi.b  #1,D0                 ; And with buffer full bit
+    rts
+
+
+; Char device handler - Check if a character is ready to receive via UART B
+;
+; Arguments: A0 - Should point to device block
+;
+; Trashes: A0, UART registers
+; Modifies: D0.B (return = 0 if no character waiting, nonzero otherwise)
+D_CHECKCHAR_DUART_B:
+    move.l  (A0),A0               ; Get DUART base address
+    move.b  DUART_SRB(A0),D0      ; Get RSR
+    andi.b  #1,D0                 ; And with buffer full bit
+    rts
+
+
+; Send a single character via UART A
+;
+; Arguments: D0.B - Character to send
+;
+; Trashes: UART registers
 ; Modifies: Nothing
 SENDCHAR_DUART:
     move.l  A0,-(A7)              ; Stash A0
@@ -228,10 +297,42 @@ SENDCHAR_DUART:
     rts
 
 
-; Receive a single character via UART.
+; Char device handler - Send a single character via UART A
+;
+; Arguments: A0 - Should point to device block
+; Arguments: D0.B - Character to send
+;
+; Trashes: A0, UART registers
+; Modifies: Nothing
+D_SENDCHAR_DUART_A:
+    move.l  (A0),A0               ; Get DUART base address
+.BUSYLOOP
+    btst.b  #3,DUART_SRA(A0)
+    beq.s   .BUSYLOOP
+    move.b  D0,DUART_TBA(A0)
+    rts
+
+
+; Char device handler - Send a single character via UART B
+;
+; Arguments: A0 - Should point to device block
+; Arguments: D0.B - Character to send
+;
+; Trashes: A0, UART registers
+; Modifies: Nothing
+D_SENDCHAR_DUART_B:
+    move.l  (A0),A0               ; Get DUART base address
+.BUSYLOOP
+    btst.b  #3,DUART_SRB(A0)
+    beq.s   .BUSYLOOP
+    move.b  D0,DUART_TBB(A0)
+    rts
+
+
+; Receive a single character via UART A
 ; Ignores overrun errors.
 ;
-; Trashes: MFP_UDR
+; Trashes: UART registers
 ; Modifies: D0 (return)
 RECVCHAR_DUART:
     move.l  A0,-(A7)              ; Stash A0
@@ -241,6 +342,38 @@ RECVCHAR_DUART:
     beq.s   .BUSYLOOP
     move.b  DUART_RBA(A0),D0
     move.l  (A7)+,A0              ; Restore A0
+    rts
+
+
+; Char device handler - Receive a single character via UART A
+; Ignores overrun errors.
+;
+; Arguments: A0 - Should point to device block
+;
+; Trashes: A0, UART registers
+; Modifies: D0 (return)
+D_RECVCHAR_DUART_A:
+    move.l  (A0),A0               ; Get DUART base address
+.BUSYLOOP
+    btst.b  #0,DUART_SRA(A0)
+    beq.s   .BUSYLOOP
+    move.b  DUART_RBA(A0),D0
+    rts
+
+
+; Char device handler - Receive a single character via UART B
+; Ignores overrun errors.
+;
+; Arguments: A0 - Should point to device block
+;
+; Trashes: A0, UART registers
+; Modifies: D0 (return)
+D_RECVCHAR_DUART_B:
+    move.l  (A0),A0               ; Get DUART base address
+.BUSYLOOP
+    btst.b  #0,DUART_SRB(A0)
+    beq.s   .BUSYLOOP
+    move.b  DUART_RBB(A0),D0
     rts
 
     endif

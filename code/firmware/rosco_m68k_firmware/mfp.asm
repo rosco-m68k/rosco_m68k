@@ -34,7 +34,7 @@
 ; crystal with a 2.4576MHz part, and set the MFP_TDDR count to 1 - this will
 ; give a (standard) baud-rate of 19200 (assuming the /4 prescaler is still used).
 ;
-; Trashes: D0
+; Trashes: D0, A0
 ; Modifies: MFP Regs
 INITMFP::
     ; GPIOs
@@ -79,6 +79,16 @@ INITMFP::
     move.l  #EFP_DUMMY_NOOP,EFP_SETCURSOR
     move.l  #CHECKCHAR_MFP,EFP_CHECKCHAR
 
+    ; Setup device block
+    lea.l   DEVICE_BLOCKS,A0
+    move.w  DEVICE_COUNT,D0
+    lsl.w   D0
+    add.w   D0,A0
+
+    move.l  #MFPBASE,(A0)+
+    move.l  #D_CHECKCHAR_DUART_A,(A0)+
+    move.l  #D_RECVCHAR_DUART_A,(A0)+
+    move.l  #D_SENDCHAR_DUART_A,(A0)+
     rts
 
 

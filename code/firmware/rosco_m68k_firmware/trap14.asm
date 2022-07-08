@@ -26,7 +26,7 @@ TRAP_14_HANDLER::
     move.l  A1,-(A7)
     move.l  D1,-(A7)
 
-    cmp.l   #6,D1                       ; Is function code in range?
+    cmp.l   #13,D1                      ; Is function code in range?
     bhi.s   .EPILOGUE                   ; Nope, leave...
 
     add.l   D1,D1                       ; Multiply FC...
@@ -35,13 +35,20 @@ TRAP_14_HANDLER::
     jmp     (A1)                        ; ... then jump there
 
 .JUMPTABLE:
-    dc.l    .PRINT                      ; FC == 0 ; PRINT if so...
-    dc.l    .PRINTLN                    ; FC == 1 ; PRINTLN if so...
-    dc.l    .SENDCHAR                   ; FC == 2 ; SENDCHAR if so...
-    dc.l    .RECVCHAR                   ; FC == 3 ; RECVCHAR if so...
-    dc.l    .PRINTCHAR                  ; FC == 4 ; PRINTCHAR if so...
-    dc.l    .SETCURSOR                  ; FC == 5 ; SETCURSOR if so...
-    dc.l    .CHECKCHAR                  ; FC == 6 ; CHECKCHAR if so...
+    dc.l    .PRINT                      ; FC == 0  ; PRINT if so...
+    dc.l    .PRINTLN                    ; FC == 1  ; PRINTLN if so...
+    dc.l    .SENDCHAR                   ; FC == 2  ; SENDCHAR if so...
+    dc.l    .RECVCHAR                   ; FC == 3  ; RECVCHAR if so...
+    dc.l    .PRINTCHAR                  ; FC == 4  ; PRINTCHAR if so...
+    dc.l    .SETCURSOR                  ; FC == 5  ; SETCURSOR if so...
+    dc.l    .CHECKCHAR                  ; FC == 6  ; CHECKCHAR if so...
+    dc.l    .CHECK_DEV_SUPPORT          ; FC == 7  ; CHECK_DEV_SUPPORT if so...
+    dc.l    .GET_DEVICE_COUNT           ; FC == 8  ; GET_DEVICE_COUNT if so...
+    dc.l    .GET_DEVICE                 ; FC == 9  ; GET_DEVICE if so...
+    dc.l    .DEV_RECVCHAR               ; FC == 10 ; DEV_RECVCHAR if so...
+    dc.l    .DEV_SENDCHAR               ; FC == 11 ; DEV_SENCCHAR if so...
+    dc.l    .DEV_CHECKCHAR              ; FC == 12 ; DEV_CHECKCHAR if so...
+    dc.l    .ADD_DEVICE                 ; FC == 13 ; ADD_DEVICE if so...
     
 .EPILOGUE
     move.l  (A7)+,D1
@@ -84,13 +91,69 @@ TRAP_14_HANDLER::
     jsr     (A1)
     bra.s   .EPILOGUE
 
+.CHECK_DEV_SUPPORT
+    move.l  #$1234FEDC,D0
+    bra.s   .EPILOGUE
+
+.GET_DEVICE_COUNT
+    move.w  DEVICE_COUNT,D0
+    bra.s   .EPILOGUE
+
+; **********************************
+.GET_DEVICE
+    cmp.w   DEVICE_COUNT,D0
+    bhs.s   .NO_DEVICE
+
+    lea.l   DEVICE_BLOCKS,A0
+    lsl.w   #2,D0
+    add.w   D0,A0
+
+    bra.s   .EPILOGUE
+
+.NO_DEVICE
+    move.l  #0,A0
+    bra.s   .EPILOGUE
+; **********************************
+
+.DEV_RECVCHAR
+    move.l  8(A0),A1
+    jsr     (A1)
+    bra.s   .EPILOGUE
+
+.DEV_SENDCHAR
+    move.l  12(A0),A1
+    jsr     (A1)
+    bra.s   .EPILOGUE
+
+.DEV_CHECKCHAR
+    move.l  4(A0),A1
+    jsr     (A1)
+    bra.s   .EPILOGUE
+
+.ADD_DEVICE
+    move.w  DEVICE_COUNT,D0
+    cmp.w   #15,D0
+    bhi.w   .EPILOGUE
+
+    lea.l   DEVICE_BLOCKS,A1
+    lsl.w   #2,D0
+    add.w   D0,A1
+
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
+
+    addi.w  #1,DEVICE_COUNT
+
+    bra.w   .EPILOGUE
 
 ; Wraps FW_PRINT so it can be called from C-land
 ;
 ; Modifies: A0 (Will point to address after null terminator)
 FW_PRINT_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINT                  ; Call EARLY_PRINT
+    bra.s   FW_PRINT                  ; Call FW_PRINT
 
 ; Wraps FW_PRINTLN so it can be called from C-land
 ;
@@ -99,7 +162,7 @@ FW_PRINT_C::
 ; It's cheaper size-wise to just duplicate this here...
 FW_PRINTLN_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINTLN                ; Call EARLY_PRINT
+    bra.s   FW_PRINTLN                ; Call FW_PRINT
 
 ; Firmware PRINT null-terminated string pointed to by A0
 ; Uses PRINT function pointed to by EFP table

@@ -44,6 +44,12 @@ as possible, and will be kept updated as firmware 2.0 is developed.
       * 1.2.2.5 PRINTCHAR (Function #4)
       * 1.2.2.6 SETCURSOR (Function #5)
       * 1.2.2.9 CHECKCHAR (Function #6)
+      * 1.2.2.8 CHECK_DEVICE_SUPPORT (Function #7)
+      * 1.2.2.9 GET_DEVICE_COUNT (Function #8)
+      * 1.2.2.10 GET_DEVICE (Function #9)
+      * 1.2.2.11 DEVICE_RECVCHAR (Function #10)
+      * 1.2.2.12 DEVICE_SENDCHAR (Function #11)
+      * 1.2.2.13 DEVICE_CHECKCHAR (Function #12)
   * 1.3. Easy68k compatibility layer (TRAP 15)
     * 1.3.1 Example Usage
     * 1.3.2 Functions
@@ -71,6 +77,12 @@ as possible, and will be kept updated as firmware 2.0 is developed.
   * 2.2. Basic System Data Block (SDB)
   * 2.3. Extension Function Pointer Table (EFPT)
   * 2.4. Video IO Data Area (VDA)
+  * 2.5. Firmware Reserved Area 1 (Internal)
+  * 2.6. Firmware Reserved Area 2 (BSS)
+* 3. Character Devices
+  * 3.1 General Information
+  * 3.2. The `CHAR_DEVICE` structure
+  * 3.3. Device function calling conventions
 
 # 1. TRAP Interfaces for User Code
 
@@ -801,8 +813,143 @@ System integrators and third-party hardware developers may also override
 the default UART (for example to utilise third-party hardware). 
 See section 2.3 for details.
 
-## 1.3. Easy68k compatibility layer (TRAP 15)
+#### 1.2.2.8 CHECK_DEVICE_SUPPORT (Function #7)
 
+**Arguments**
+
+* `D1.L` - 7 (Function code)
+
+**Modifies**
+
+* `D0.B` - Return value
+
+**Description**
+
+Check if the new _Character Device Support_ (available since firmware
+2.30) is available.
+
+Where support is available, this will return the magic number $1234FEDC 
+in `D0.L`.
+
+Any other value indicates that support is not available. In this
+case, none of the character device routines should be used.
+
+#### 1.2.2.9 GET_DEVICE_COUNT (Function #8)
+
+**Arguments**
+
+* `D1.L` - 8 (Function code)
+
+**Modifies**
+
+* `D0.W` - Return value
+
+**Description**
+
+Returns the number of character devices the firmware knows about in 
+`D0.W`.
+
+#### 1.2.2.10 GET_DEVICE (Function #9)
+
+**Arguments**
+
+* `D0.W` - 0-based index of the desired device
+* `D1.L` - 9 (Function code)
+
+**Modifies**
+
+* `D0.W` - Trashed
+* `A0`   - Points to a device structure, or 0 if invalid index
+
+**Description**
+
+Returns the number of character devices the firmware knows about in 
+`D0.W`.
+
+#### 1.2.2.11 DEVICE_RECVCHAR (Function #10)
+
+**Arguments**
+
+* `D1.L` - 10 (Function code)
+* `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
+
+**Modifies**
+
+* `D0.B` - Returns the received character
+* `A0`   - Trashed 
+
+**Description**
+
+Synchronously receive a character via the character device in the supplied
+`CHAR_DEVICE` structure, and return it in `D0.B`. 
+
+If no character is immediately available, this routine _may_ block until one
+becomes available. As such, it is not suitable for use in time- or 
+latency-critical code (e.g. interrupt handlers).
+
+#### 1.2.2.12 DEVICE_SENDCHAR (Function #11)
+
+**Arguments**
+
+* `D1.L` - 11 (Function code)
+* `D0.B` - Character to send
+* `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
+
+**Modifies**
+
+* `A0`   - Trashed 
+
+**Description**
+
+Synchronously send the character contained in `D0.B` via the character 
+device referenced by the supplied `CHAR_DEVICE` structure. 
+
+This routine _may_ block until there is space in the device's buffer
+for the character - as such, it is not suitable for use in time- or 
+latency-critical code (e.g. interrupt handlers).
+
+#### 1.2.2.13 DEVICE_CHECKCHAR (Function #12)
+
+**Arguments**
+
+* `D1.L` - 12 (Function code)
+* `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
+
+**Modifies**
+
+* `D0.B` - 0 if no character waiting, nonzero otherwise
+* `A0`   - Trashed 
+
+**Description**
+
+Determine whether the the character device referenced by the supplied
+ `CHAR_DEVICE` structure has a character waiting to be received, returning 
+ non-zero in `D0.B` if so, zero otherwise. 
+
+This can be used to determine whether a call to `DEVICE_RECVCHAR` will 
+block if called for the same device.
+
+Note that this function _may_ clear error flags and other status information.
+
+#### 1.2.2.14 ADD_DEVICE (Function #13)
+
+**Arguments**
+
+* `A0`   - Pointer to a new `CHAR_DEVICE` structure
+* `D1.L` - 13 (Function code)
+
+**Modifies**
+
+* `D0.B` - 0-15 index of the device. Any other value indicates failure.
+
+**Description**
+
+Adds a new character device at the next available slot. There
+are sixteen slots - if they are all full, this function will return
+a value >15 to indicate failure.
+
+
+## 1.3. Easy68k compatibility layer (TRAP 15)
 
 TRAP 15 provides an (optional, included by default) Easy68k-compatible
 IO interface. The aim is to allow many common Easy68k programs to be 
@@ -1247,6 +1394,8 @@ All addresses listed in this section are physical addresses. If you
 are programming for a system that has an MMU, you may need
 to take virtual addressing into account and translate accordingly.
 
+# 2. System Data Area memory map
+
 ## 2.1. Exception vectors
 
 **Start Address**: 0x0
@@ -1420,7 +1569,7 @@ variables and data required by a video driver.
 
 TODO document layout when video is V9958!
 
-## 2.6. Firmware Reserved Area 1 (Internal)
+## 2.5. Firmware Reserved Area 1 (Internal)
 
 **Start Address**: 0x1180
 **End Address**: 0x17FF
@@ -1437,3 +1586,42 @@ This area is reserved for future Firmware expansion.
 This area is reserved for the firmware's BSS section. The content
 and layout of this area may change without notice.
 
+# 3. Character Devices
+
+## 3.1 General Information
+
+The system provides support for up to 16 character devices which are
+accessed through the relevant routines in TRAP 14.
+
+Any UART devices detected during firmware initialization will 
+automatically have such devices created for them. The remainder are
+available for user use.
+
+## 3.2. The `CHAR_DEVICE` structure
+
+The `CHAR_DEVICE` structure is currently 16 bytes:
+
+| Offset | Contains                                               |
+|--------|--------------------------------------------------------|
+| 0x0    | Data required by the functions (e.g. base address)     |
+| 0x4    | CHECKCHAR function pointer                             |
+| 0x8    | RECVCHAR function pointer                              |
+| 0xC    | SENDCHAR function pointer                              |
+
+## 3.3. Device function calling conventions
+
+> **Note** It is legal to call device functions directly from user codes. They 
+should be designed accordingly. The system TRAPs to call them are
+provided for convenience only, and device functions should not assume
+the CPU will be in supervisor mode when they are called.
+
+All the device functions receive a pointer to their `CHAR_DEVICE` 
+structure in A0. `D0` is used for the return value where applicable.
+
+The calling convention (other than the pointer to the device structure)
+is the same as the `CHECKCHAR`, `RECVCHAR` and `SENDCHAR` functions
+in TRAP 14.
+
+If the device routines are to be directly called from (for example) C
+then a wrapper will be required to manage moving arguments from the
+stack to the appropriate registers.
