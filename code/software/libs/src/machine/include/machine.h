@@ -282,5 +282,40 @@ void mcEnableInterrupts(uint8_t mask);
  */
 noreturn void mcHalt();
 
+/*
+ * Check if the firmware supports character devices.
+ */
+bool mcCheckDeviceSupport();
+
+/*
+ * Get the number of character devices known to the firmware.
+ */
+uint8_t mcGetDeviceCount();
+
+/*
+ * Get the firmware `CHAR_DEVICE` structure for a device.
+ */
+void* mcGetDevice(uint8_t num);
+
+/*
+ * Call the CHECKCHAR function on the given device.
+ */
+bool mcCheckDevice(void *device);
+
+/*
+ * Call the RECVCHAR function on the given device.
+ */
+char mcReadDevice(void *device);
+
+/* 
+ * Call the SENDCHAR function on the given device.
+ */
+void mcSendDevice(void *device, char chr);
+
+/*
+ * Add a device in the next available slot.
+ */
+uint8_t mcAddDevice(void *newDevice);
+
 #endif
 
