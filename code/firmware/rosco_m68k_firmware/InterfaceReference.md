@@ -821,7 +821,7 @@ See section 2.3 for details.
 
 **Modifies**
 
-* `D0.B` - Return value
+* `D0.L` - Return value
 
 **Description**
 
