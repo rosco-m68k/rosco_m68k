@@ -1910,10 +1910,10 @@ bool xansiterm_INIT()
     td->device_recvchar  = _EFP_RECVCHAR;
     td->device_checkchar = _EFP_CHECKCHAR;
     td->gfx_ctrl = MAKE_GFX_CTRL(0x00, 0, 0, 0, 0, 0);          // 16-colors 0-15, 1-BPP tiled, H repeat x1, V repeat x1
-    td->tile_ctrl[0] = MAKE_TILE_CTRL(0x0000, 0, 0, 16);        // 1st font in tile RAM 8x16 (initial default)
-    td->tile_ctrl[1] = MAKE_TILE_CTRL(0x0800, 0, 0, 8);         // 2nd font in tile RAM 8x8
-    td->tile_ctrl[2] = MAKE_TILE_CTRL(0x0C00, 0, 0, 8);         // 3rd font in tile RAM 8x8
-    td->tile_ctrl[3] = MAKE_TILE_CTRL(0x0000, 0, 0, 16);        // same as 0 (for user defined)
+    td->tile_ctrl[0] = MAKE_TILE_CTRL(0x0000, 0, 0, 16);        // 1st font in tile RAM (8x16 ST font - default)
+    td->tile_ctrl[1] = MAKE_TILE_CTRL(0x0800, 0, 0, 8);         // 2nd font in tile RAM (8x8 ST font)
+    td->tile_ctrl[2] = MAKE_TILE_CTRL(0x0C00, 0, 0, 8);         // 3rd font in tile RAM (8x8 PC font)
+    td->tile_ctrl[3] = MAKE_TILE_CTRL(0x1000, 0, 0, 8);         // 4th font in tile RAM (8x8 hex font)
     td->def_color    = DEFAULT_COLOR;                           // default dark-green on black
     td->send_index   = -1;
 
