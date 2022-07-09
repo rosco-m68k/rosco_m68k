@@ -89,8 +89,12 @@ INITMFP::
     move.l  #CHECKCHAR_MFP,(A0)+
     move.l  #RECVCHAR_MFP,(A0)+
     move.l  #SENDCHAR_MFP,(A0)+
+    move.l  #0,(A0)+                    ; Reserved
+    move.l  #0,(A0)+                    ; Reserved
+    move.l  #0,(A0)+                    ; Reserved
+    move.l  #$00000001,(A0)+            ; MFP UART is device type 1, 0 flags
 
-    addi.w  #2,DEVICE_COUNT
+    addi.w  #1,DEVICE_COUNT
 
     rts
 

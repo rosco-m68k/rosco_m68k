@@ -45,10 +45,10 @@ TRAP_14_HANDLER::
     dc.l    .CHECK_DEV_SUPPORT          ; FC == 7  ; CHECK_DEV_SUPPORT if so...
     dc.l    .GET_DEVICE_COUNT           ; FC == 8  ; GET_DEVICE_COUNT if so...
     dc.l    .GET_DEVICE                 ; FC == 9  ; GET_DEVICE if so...
-    dc.l    .DEV_RECVCHAR               ; FC == 10 ; DEV_RECVCHAR if so...
-    dc.l    .DEV_SENDCHAR               ; FC == 11 ; DEV_SENCCHAR if so...
-    dc.l    .DEV_CHECKCHAR              ; FC == 12 ; DEV_CHECKCHAR if so...
-    dc.l    .ADD_DEVICE                 ; FC == 13 ; ADD_DEVICE if so...
+    dc.l    .ADD_DEVICE                 ; FC == 10 ; ADD_DEVICE if so...
+    dc.l    .DEV_RECVCHAR               ; FC == 11 ; DEV_RECVCHAR if so...
+    dc.l    .DEV_SENDCHAR               ; FC == 12 ; DEV_SENCCHAR if so...
+    dc.l    .DEV_CHECKCHAR              ; FC == 13 ; DEV_CHECKCHAR if so...
     
 .EPILOGUE
     move.l  (A7)+,D1
@@ -105,7 +105,7 @@ TRAP_14_HANDLER::
     bhs.s   .NO_DEVICE
 
     lea.l   DEVICE_BLOCKS,A0
-    lsl.w   #4,D0
+    lsl.w   #5,D0
     add.w   D0,A0
 
     bra.s   .EPILOGUE
@@ -115,30 +115,20 @@ TRAP_14_HANDLER::
     bra.s   .EPILOGUE
 ; **********************************
 
-.DEV_RECVCHAR
-    move.l  8(A0),A1
-    jsr     (A1)
-    bra.s   .EPILOGUE
-
-.DEV_SENDCHAR
-    move.l  12(A0),A1
-    jsr     (A1)
-    bra.s   .EPILOGUE
-
-.DEV_CHECKCHAR
-    move.l  4(A0),A1
-    jsr     (A1)
-    bra.s   .EPILOGUE
-
 .ADD_DEVICE
     move.w  DEVICE_COUNT,D0
     cmp.w   #15,D0
     bhi.w   .EPILOGUE
 
     lea.l   DEVICE_BLOCKS,A1
-    lsl.w   #2,D0
+    lsl.w   #5,D0
     add.w   D0,A1
 
+    ; Copy 32 bytes of device struct
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
+    move.l  (A0)+,(A1)+
     move.l  (A0)+,(A1)+
     move.l  (A0)+,(A1)+
     move.l  (A0)+,(A1)+
@@ -147,6 +137,24 @@ TRAP_14_HANDLER::
     addi.w  #1,DEVICE_COUNT
 
     bra.w   .EPILOGUE
+
+; **********************************
+
+.DEV_RECVCHAR
+    move.l  8(A0),A1
+    jsr     (A1)
+    bra.w   .EPILOGUE
+
+.DEV_SENDCHAR
+    move.l  12(A0),A1
+    jsr     (A1)
+    bra.w   .EPILOGUE
+
+.DEV_CHECKCHAR
+    move.l  4(A0),A1
+    jsr     (A1)
+    bra.w   .EPILOGUE
+
 
 ; Wraps FW_PRINT so it can be called from C-land
 ;

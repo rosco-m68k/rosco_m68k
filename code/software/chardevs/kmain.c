@@ -11,7 +11,13 @@ typedef struct {
     uint32_t    checkptr;
     uint32_t    recvptr;
     uint32_t    sendptr;
-} CHAR_DEVICE;
+    uint32_t    reserved0;
+    uint32_t    reserved1;
+    uint32_t    reserved2;
+    uint16_t    capabilities;
+    uint8_t     flags;
+    uint8_t     device_type;
+} __attribute__((packed)) CHAR_DEVICE;
 
 void kmain() {
     if (mcCheckDeviceSupport()) {
@@ -23,6 +29,7 @@ void kmain() {
         for (int i = 0; i < count; i++) {
             CHAR_DEVICE *dev = mcGetDevice(i);
 
+            printf("type    : 0x%02x\n",  dev->device_type);
             printf("data    : 0x%08lx\n", dev->data);
             printf("checkptr: 0x%08lx\n", dev->checkptr);
             printf("recvptr : 0x%08lx\n", dev->recvptr);
@@ -34,6 +41,8 @@ void kmain() {
         }
 
         printf("Done\n");
+
+        while (1);
 
     } else {
         printf("No character device support detected\n");

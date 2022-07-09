@@ -866,11 +866,28 @@ Returns the number of character devices the firmware knows about in
 Returns the number of character devices the firmware knows about in 
 `D0.W`.
 
-#### 1.2.2.11 DEVICE_RECVCHAR (Function #10)
+#### 1.2.2.11 ADD_DEVICE (Function #10)
 
 **Arguments**
 
+* `A0`   - Pointer to a new `CHAR_DEVICE` structure
 * `D1.L` - 10 (Function code)
+
+**Modifies**
+
+* `D0.B` - 0-15 index of the device. Any other value indicates failure.
+
+**Description**
+
+Adds a new character device at the next available slot. There
+are sixteen slots - if they are all full, this function will return
+a value >15 to indicate failure.
+
+#### 1.2.2.12 DEVICE_RECVCHAR (Function #11)
+
+**Arguments**
+
+* `D1.L` - 11 (Function code)
 * `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
 
 **Modifies**
@@ -887,11 +904,11 @@ If no character is immediately available, this routine _may_ block until one
 becomes available. As such, it is not suitable for use in time- or 
 latency-critical code (e.g. interrupt handlers).
 
-#### 1.2.2.12 DEVICE_SENDCHAR (Function #11)
+#### 1.2.2.13 DEVICE_SENDCHAR (Function #12)
 
 **Arguments**
 
-* `D1.L` - 11 (Function code)
+* `D1.L` - 12 (Function code)
 * `D0.B` - Character to send
 * `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
 
@@ -908,11 +925,11 @@ This routine _may_ block until there is space in the device's buffer
 for the character - as such, it is not suitable for use in time- or 
 latency-critical code (e.g. interrupt handlers).
 
-#### 1.2.2.13 DEVICE_CHECKCHAR (Function #12)
+#### 1.2.2.14 DEVICE_CHECKCHAR (Function #13)
 
 **Arguments**
 
-* `D1.L` - 12 (Function code)
+* `D1.L` - 13 (Function code)
 * `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
 
 **Modifies**
@@ -930,23 +947,6 @@ This can be used to determine whether a call to `DEVICE_RECVCHAR` will
 block if called for the same device.
 
 Note that this function _may_ clear error flags and other status information.
-
-#### 1.2.2.14 ADD_DEVICE (Function #13)
-
-**Arguments**
-
-* `A0`   - Pointer to a new `CHAR_DEVICE` structure
-* `D1.L` - 13 (Function code)
-
-**Modifies**
-
-* `D0.B` - 0-15 index of the device. Any other value indicates failure.
-
-**Description**
-
-Adds a new character device at the next available slot. There
-are sixteen slots - if they are all full, this function will return
-a value >15 to indicate failure.
 
 
 ## 1.3. Easy68k compatibility layer (TRAP 15)
@@ -1599,14 +1599,34 @@ available for user use.
 
 ## 3.2. The `CHAR_DEVICE` structure
 
-The `CHAR_DEVICE` structure is currently 16 bytes:
+The `CHAR_DEVICE` structure is currently 32 bytes:
 
-| Offset | Contains                                               |
-|--------|--------------------------------------------------------|
-| 0x0    | Data required by the functions (e.g. base address)     |
-| 0x4    | CHECKCHAR function pointer                             |
-| 0x8    | RECVCHAR function pointer                              |
-| 0xC    | SENDCHAR function pointer                              |
+| Offset | Size | Contains                                               |
+|--------|------|--------------------------------------------------------|
+| 0x0    |  0x4 | Data required by the functions (e.g. base address)     |
+| 0x4    |  0x4 | CHECKCHAR function pointer                             |
+| 0x8    |  0x4 | RECVCHAR function pointer                              |
+| 0xC    |  0x4 | SENDCHAR function pointer                              |
+| 0x10   |  0x4 | Reserved for future use                                |
+| 0x14   |  0x4 | Reserved for future use                                |
+| 0x18   |  0x4 | Reserved for future use                                |
+| 0x1C   |  0x2 | Capability flags                                       |
+| 0x1E   |  0x1 | Additional device-specific flags                       |
+| 0x1F   |  0x1 | Device type                                            |
+
+### 3.2.1 Capability Flags
+
+The capability flags are a work in progress, and are currently ignored.
+
+### 3.2.2 Device Types
+
+The device types currently defined by the system are:
+
+| Type | Description                                                     |
+|------|-----------------------------------------------------------------|
+| 0x01 | MFP in-built UART                                               |
+| 0x02 | DUART Port A                                                    |
+| 0x03 | DUART Port B                                                    |
 
 ## 3.3. Device function calling conventions
 

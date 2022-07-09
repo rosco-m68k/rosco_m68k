@@ -132,12 +132,20 @@ INITDUART::
     move.l  #D_CHECKCHAR_DUART_A,(A1)+
     move.l  #D_RECVCHAR_DUART_A,(A1)+
     move.l  #D_SENDCHAR_DUART_A,(A1)+
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #$00000002,(A1)+          ; DUART A is device type 2, 0 flags
 
     ; ... UART B
     move.l  A0,(A1)+
     move.l  #D_CHECKCHAR_DUART_B,(A1)+
     move.l  #D_RECVCHAR_DUART_B,(A1)+
     move.l  #D_SENDCHAR_DUART_B,(A1)+
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #0,(A1)+                  ; Reserved
+    move.l  #$00000003,(A1)+          ; DUART A is device type 3, 0 flags
 
     addi.w  #2,DEVICE_COUNT
 

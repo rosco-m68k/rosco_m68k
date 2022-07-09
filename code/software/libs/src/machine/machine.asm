@@ -221,6 +221,20 @@ mcGetDevice::
     rts
 
 
+; Call device add function
+;
+; Trashes: A0
+; Modifies: D0 (return)
+    section .text.mcAddDevice
+mcAddDevice::
+    move.l  D1,-(A7)
+    move.l  8(A7),A0
+    move.l  #10,D1
+    trap    #14
+    move.l  (A7)+,D1
+    rts
+
+
 ; Call device check function
 ;
 ; Trashes: A0
@@ -229,7 +243,7 @@ mcGetDevice::
 mcCheckDevice::
     move.l  D1,-(A7)
     move.l  8(A7),A0
-    move.l  #12,D1
+    move.l  #13,D1
     trap    #14
     move.l  (A7)+,D1
     rts
@@ -243,7 +257,7 @@ mcCheckDevice::
 mcReadDevice::
     move.l  D1,-(A7)
     move.l  8(A7),A0
-    move.l  #10,D1
+    move.l  #11,D1
     trap    #14
     move.l  (A7)+,D1
     rts
@@ -258,22 +272,8 @@ mcSendDevice::
     move.l  D1,-(A7)
     move.l  8(A7),D0
     move.l  12(A7),A0
-    move.l  #11,D1
+    move.l  #12,D1
     trap    #14
     move.l  (A7)+,D1
     rts
-
-; Call device add function
-;
-; Trashes: A0
-; Modifies: D0 (return)
-    section .text.mcAddDevice
-mcAddDevice::
-    move.l  D1,-(A7)
-    move.l  8(A7),A0
-    move.l  #13,D1
-    trap    #14
-    move.l  (A7)+,D1
-    rts
-
 
