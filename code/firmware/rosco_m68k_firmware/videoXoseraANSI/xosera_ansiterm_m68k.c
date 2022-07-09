@@ -74,7 +74,7 @@ extern void dprintf(const char * fmt, ...) __attribute__((format(__printf__, 1, 
 #define DEFAULT_COLOR         0x02        // rosco_m68k "retro" dark green on black
 #define MAX_CSI_PARMS         16          // max CSI parameters per sequence
 #define MAX_QUERY_LEN         16          // max query response length (including NUL terminator)
-#define USE_BLITTER           0           // TODO: not yet...1 = use blitter for scrolling and clearing
+#define USE_BLITTER           1           // Yes please! 1 = use blitter for scrolling and clearing
 
 // terminal attribute and option flags
 enum e_term_flags
@@ -347,7 +347,6 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
     xreg_setw(BLIT_SRC_A, (td->color << 8) | ' ');        // A = const data
     xreg_setw(BLIT_MOD_B, 0x0000);                        // no modulo B
     xreg_setw(BLIT_SRC_B, 0xFFFF);                        // AND with B (and disable transparency)
-    xreg_setw(BLIT_MOD_C, 0x0000);                        // no modulo C
     xreg_setw(BLIT_VAL_C, 0x0000);                        // XOR with C
     xreg_setw(BLIT_MOD_D, 0x0000);                        // no modulo D
     xreg_setw(BLIT_DST_D, start);                         // VRAM display dest address
@@ -378,7 +377,7 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
 }
 #endif
 
-#if 1 || !USE_BLITTER        // TODO: This will not be needed when xansi_scroll_down blitter debugged
+#if !USE_BLITTER
 // scroll unrolled for 32-bytes per loop, so no inline please
 static __attribute__((noinline)) void xansi_do_scroll()
 {
@@ -667,7 +666,6 @@ static void xansi_scroll_up()
     xreg_setw(BLIT_SRC_A, saddr);            // A = source
     xreg_setw(BLIT_MOD_B, 0x0000);           // no modulo B
     xreg_setw(BLIT_SRC_B, 0xFFFF);           // AND with B (and disable transparency)
-    xreg_setw(BLIT_MOD_C, 0x0000);           // no modulo C
     xreg_setw(BLIT_VAL_C, 0x0000);           // XOR with C
     xreg_setw(BLIT_MOD_D, 0x0000);           // no modulo D
     xreg_setw(BLIT_DST_D, daddr);            // VRAM display dest address
@@ -675,6 +673,7 @@ static void xansi_scroll_up()
     xreg_setw(BLIT_LINES, 0x0000);           // lines (0 for 1-D blit)
     xreg_setw(BLIT_WORDS, count - 1);        // words to write -1
 
+    // clear bottom line
     daddr = td->vram_base + td->vram_size - td->cols;
     count = td->cols;
 
@@ -699,35 +698,35 @@ static void xansi_scroll_up()
 }
 #endif
 
-#if 0 && USE_BLITTER        // TODO: This seldom used function is buggy...too tired to debug now. :)
+#if USE_BLITTER
 // setup Xosera registers for scrolling down and call scroll function
 static void xansi_scroll_down(xansiterm_data * td)
 {
     xv_prep();
 
-    uint16_t saddr = td->vram_end - td->cols - 1;
-    uint16_t daddr = td->vram_end - 1;
+    uint16_t daddr = td->vram_end - td->cols - 1;
+    uint16_t saddr = daddr - td->cols;
     uint16_t count = td->vram_size - td->cols;
 
     xwait_blit_ready();
-    xreg_setw(BLIT_CTRL, 0x0012);            // decr+constB
-    xreg_setw(BLIT_MOD_A, 0x0000);           // no modulo A
-    xreg_setw(BLIT_SRC_A, saddr);            // A = source
-    xreg_setw(BLIT_MOD_B, 0x0000);           // no modulo B
-    xreg_setw(BLIT_SRC_B, 0xFFFF);           // AND with B (and disable transparency)
-    xreg_setw(BLIT_MOD_C, 0x0000);           // no modulo C
-    xreg_setw(BLIT_VAL_C, 0x0000);           // XOR with C
-    xreg_setw(BLIT_MOD_D, 0x0000);           // no modulo D
-    xreg_setw(BLIT_DST_D, daddr);            // VRAM display dest address
-    xreg_setw(BLIT_SHIFT, 0xFF00);           // no edge masking or shifting
-    xreg_setw(BLIT_LINES, 0x0000);           // lines (0 for 1-D blit)
-    xreg_setw(BLIT_WORDS, count - 1);        // words to write -1
+    xreg_setw(BLIT_CTRL, 0x0002);                  // constB
+    xreg_setw(BLIT_MOD_A, -(td->cols * 2));        // no modulo A
+    xreg_setw(BLIT_SRC_A, saddr);                  // A = source
+    xreg_setw(BLIT_MOD_B, 0x0000);                 // modulo B
+    xreg_setw(BLIT_SRC_B, 0xFFFF);                 // AND with B (and disable transparency)
+    xreg_setw(BLIT_VAL_C, 0x0000);                 // XOR with C
+    xreg_setw(BLIT_MOD_D, -(td->cols * 2));        // modulo D
+    xreg_setw(BLIT_DST_D, daddr);                  // VRAM display dest address
+    xreg_setw(BLIT_SHIFT, 0xFF00);                 // no edge masking or shifting
+    xreg_setw(BLIT_LINES, td->rows - 1);           // lines
+    xreg_setw(BLIT_WORDS, td->cols - 1);           // words per line -1
 
-    daddr = td->vram_base + td->cols - 1;
+    // clear top line
+    daddr = td->vram_base;
     count = td->cols;
 
     xwait_blit_ready();
-    xreg_setw(BLIT_CTRL, 0x0013);                         // decr+constB+constA
+    xreg_setw(BLIT_CTRL, 0x0003);                         // constB+constA
     xreg_setw(BLIT_SRC_A, (td->color << 8) | ' ');        // A = const data
     xreg_setw(BLIT_DST_D, daddr);                         // VRAM display dest address
     xreg_setw(BLIT_WORDS, count - 1);                     // words to write -1
