@@ -282,6 +282,7 @@ mcSendDevice::
 ;
 ; Trashes: D0, A0
 ; Modifies: DUART registers
+    section .text.mcDeviceCtrl
 mcDeviceCtrl::
     move.l  D1,-(A7)
     move.l  D2,-(A7)
