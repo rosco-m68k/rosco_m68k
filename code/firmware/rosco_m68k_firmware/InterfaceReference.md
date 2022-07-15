@@ -949,6 +949,40 @@ block if called for the same device.
 Note that this function _may_ clear error flags and other status information.
 
 
+#### 1.2.2.15 RESERVED (Function #14)
+
+This function code is reserved for future use and should not be called.
+
+
+#### 1.2.2.16 RESERVED (Function #15)
+
+This function code is reserved for future use and should not be called.
+
+#### 1.2.2.17 DEVICE_CTRL (Function #16)
+
+**Arguments**
+
+* `D1.L` - 13 (Function code)
+* `D0.L` - Command (low-byte) and optional data
+* `D2.L` - 32-bit command-specific parameter
+* `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
+
+**Modifies**
+
+* `D0.L` - 0 if unknown command, device/command-specific result otherwise
+* `A0`   - Trashed 
+
+**Description**
+
+Send a device-specific command, with optional parameters in the high
+24 bits of `D0` and the full 32-bits of `D2`.
+
+The commands supported, the parameters they take, and the return value
+of this function are all device specific. See the specific documentation
+for the device (which can be identified by the device type in the 
+`CHAR_DEVICE` block) for details.
+
+
 ## 1.3. Easy68k compatibility layer (TRAP 15)
 
 TRAP 15 provides an (optional, included by default) Easy68k-compatible
@@ -1609,7 +1643,7 @@ The `CHAR_DEVICE` structure is currently 32 bytes:
 | 0xC    |  0x4 | SENDCHAR function pointer                              |
 | 0x10   |  0x4 | Reserved for future use                                |
 | 0x14   |  0x4 | Reserved for future use                                |
-| 0x18   |  0x4 | Reserved for future use                                |
+| 0x18   |  0x4 | DEVICE_CTRL function pointer                           |
 | 0x1C   |  0x2 | Capability flags                                       |
 | 0x1E   |  0x1 | Additional device-specific flags                       |
 | 0x1F   |  0x1 | Device type                                            |

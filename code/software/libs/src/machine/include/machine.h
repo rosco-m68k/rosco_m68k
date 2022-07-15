@@ -313,6 +313,11 @@ char mcReadDevice(void *device);
 void mcSendDevice(char chr, void *device);
 
 /*
+ * Call the DEVICE_CTRL function on the given device.
+ */
+uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, void *device);
+
+/*
  * Add a device in the next available slot.
  */
 uint8_t mcAddDevice(void *newDevice);

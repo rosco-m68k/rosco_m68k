@@ -134,7 +134,7 @@ INITDUART::
     move.l  #D_SENDCHAR_DUART_A,(A1)+
     move.l  #0,(A1)+                  ; Reserved
     move.l  #0,(A1)+                  ; Reserved
-    move.l  #0,(A1)+                  ; Reserved
+    move.l  #D_CTRL_DUART_A,(A1)+
     move.l  #$00000002,(A1)+          ; DUART A is device type 2, 0 flags
 
     ; ... UART B
@@ -144,8 +144,8 @@ INITDUART::
     move.l  #D_SENDCHAR_DUART_B,(A1)+
     move.l  #0,(A1)+                  ; Reserved
     move.l  #0,(A1)+                  ; Reserved
-    move.l  #0,(A1)+                  ; Reserved
-    move.l  #$00000003,(A1)+          ; DUART A is device type 3, 0 flags
+    move.l  #D_CTRL_DUART_B,(A1)+
+    move.l  #$00000003,(A1)+          ; DUART B is device type 3, 0 flags
 
     addi.w  #2,DEVICE_COUNT
 
@@ -382,6 +382,62 @@ D_RECVCHAR_DUART_B:
     btst.b  #0,DUART_SRB(A0)
     beq.s   .BUSYLOOP
     move.b  DUART_RBB(A0),D0
+    rts
+
+; Device control handler for UART A
+;
+; Arguments: A0   - Should point to device block
+;            D0.B - Command (Rest of D0 may be used for extra params)
+;            D2.L - Command-specific parameter
+;
+; Trashes: A0, D2
+; Modifies: D0.L (command-specific return), DUART registers
+;
+D_CTRL_DUART_A:
+    tst.b   D0                    ; We only have command 0 so far...
+    bne.s   .badcommand
+
+    move.l  (A0),A0               ; Get DUART base address
+
+    ; Set baudrate command - D1.B contains receiver (high nibble)
+    ; and transmitter (low nibble) baud selection, taken from 
+    ; Bit Rate Set 2 in Table 9 of the XR68C681 datasheet.
+    move.b  D1,DUART_CSRA(A0)     ; Set DUART_CSRA with argument
+    moveq.l #1,D0
+    bra.s   .done
+
+.badcommand
+    clr.l   D0
+
+.done
+    rts
+
+; Device control handler for UART B
+;
+; Arguments: A0   - Should point to device block
+;            D0.B - Command (Rest of D0 may be used for extra params)
+;            D2.L - Command-specific parameter
+;
+; Trashes: A0, D2
+; Modifies: D0.L (command-specific return), DUART registers
+;
+D_CTRL_DUART_B:
+    tst.b   D0                    ; We only have command 0 so far...
+    bne.s   .badcommand
+
+    move.l  (A0),A0               ; Get DUART base address
+
+    ; Set baudrate command - D1.B contains receiver (high nibble)
+    ; and transmitter (low nibble) baud selection, taken from 
+    ; Bit Rate Set 2 in Table 9 of the XR68C681 datasheet.
+    move.b  D1,DUART_CSRB(A0)     ; Set DUART_CSRB with argument
+    moveq.l #1,D0
+    bra.s   .done
+
+.badcommand
+    clr.l   D0
+
+.done
     rts
 
     endif

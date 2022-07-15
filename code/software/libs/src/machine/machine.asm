@@ -277,3 +277,22 @@ mcSendDevice::
     move.l  (A7)+,D1
     rts
 
+
+; Call device control function
+;
+; Trashes: D0, A0
+; Modifies: DUART registers
+mcDeviceCtrl::
+    move.l  D1,-(A7)
+    move.l  D2,-(A7)
+    move.l  12(A7),D0
+    move.l  16(A7),D2
+    move.l  20(A7),A0
+    move.l  #16,D1
+    trap    #14
+    move.l  (A7)+,D2
+    move.l  (A7)+,D1
+    rts
+
+
+
