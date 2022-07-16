@@ -92,8 +92,11 @@ START::
     jsr     INITDUART                   ; Initialise MC68681
     endif
 
-    bsr.w   INITMEMCOUNT                ; Initialise memory count in SDB    
+    bsr.w   INITMEMCOUNT                ; Initialise memory count in SDB
+
+    ifnd NO_BANNER  
     bsr.s   PRINT_BANNER
+    endif
 
     ifd REVISION1X
     ifd NO_TICK
@@ -117,6 +120,7 @@ START::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
+    ifnd NO_BANNER  
 PRINT_BANNER:
     lea.l   SZ_BANNER0,A0               ; Load first string into A0
     move.l  EFP_PRINTLN,A3              ; Load function into A3
@@ -124,6 +128,7 @@ PRINT_BANNER:
     jsr     (A3)                        ; Print all the banner lines
     
     rts                                 ; We're done
+    endif
 
 
 ; Initialise System Data Block
