@@ -69,6 +69,11 @@ endif
 ifeq ($(NOBANNER),true)
 $(info === Building rosco_m68k firmware with no serial banner output at startup)
 DEFINES:=$(DEFINES) -DNO_BANNER
+else
+ifeq ($(LATEBANNER),true)
+$(info === Building rosco_m68k firmware with late banner output at startup)
+DEFINES:=$(DEFINES) -DLATE_BANNER
+endif
 endif
 
 # Set up Size-specific things appropriately..

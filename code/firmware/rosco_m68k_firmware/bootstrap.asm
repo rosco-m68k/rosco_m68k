@@ -94,8 +94,10 @@ START::
 
     bsr.w   INITMEMCOUNT                ; Initialise memory count in SDB
 
-    ifnd NO_BANNER  
+    ifnd NO_BANNER
+    ifnd LATE_BANNER 
     bsr.s   PRINT_BANNER
+    endif
     endif
 
     ifd REVISION1X
@@ -121,7 +123,11 @@ START::
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
     ifnd NO_BANNER  
+    ifd LATE_BANNER
+PRINT_BANNER::
+    else
 PRINT_BANNER:
+    endif
     lea.l   SZ_BANNER0,A0               ; Load first string into A0
     move.l  EFP_PRINTLN,A3              ; Load function into A3
     
