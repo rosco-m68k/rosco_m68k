@@ -148,6 +148,7 @@ TRAP_14_HANDLER::
     move.l  (A0)+,(A1)+
 
     addi.w  #1,DEVICE_COUNT
+    lsr.w   #5,D0               ; Re-shift for return value
 
     bra.w   .EPILOGUE
 
