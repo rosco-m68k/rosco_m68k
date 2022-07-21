@@ -853,18 +853,22 @@ Returns the number of character devices the firmware knows about in
 
 **Arguments**
 
-* `D0.W` - 0-based index of the desired device
 * `D1.L` - 9 (Function code)
+* `D0.W` - 0-based index of the desired device
+* `A0`   - Points to a `CHAR_DEVICE` structure (32 bytes)
 
 **Modifies**
 
-* `D0.W` - Trashed
-* `A0`   - Points to a device structure, or 0 if invalid index
+* `D0.B` - `0` if the device number is not valid, nonzero otherwise
+* `A0`   - Trashed
 
 **Description**
 
-Returns the number of character devices the firmware knows about in 
-`D0.W`.
+Populates the supplied device structure with data for the
+specified device number. 
+
+Note that the data is copied into the structure you supply,
+you cannot use this to modify system data structures.
 
 #### 1.2.2.11 ADD_DEVICE (Function #10)
 

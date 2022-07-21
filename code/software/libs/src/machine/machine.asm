@@ -211,12 +211,9 @@ mcGetDeviceCount::
 mcGetDevice::
     move.l  D1,-(A7)
     move.l  8(A7),D0
+    move.l  12(A7),A0
     move.l  #9,D1
     trap    #14
-
-    ; Despite what the GCC docs seem to say, pointers are also
-    ; expected to be returned in D0, and not A0 🤷
-    move.l  A0,D0
     move.l  (A7)+,D1
     rts
 

@@ -107,14 +107,24 @@ TRAP_14_HANDLER::
     cmp.w   DEVICE_COUNT,D0
     bhs.s   .NO_DEVICE
 
-    lea.l   DEVICE_BLOCKS,A0
+    lea.l   DEVICE_BLOCKS,A1
     lsl.w   #5,D0
-    add.w   D0,A0
+    add.w   D0,A1
 
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+    move.l  (A1)+,(A0)+
+
+    move.b  #1,D0
     bra.s   .EPILOGUE
 
 .NO_DEVICE
-    move.l  #0,A0
+    clr.b   D0
     bra.s   .EPILOGUE
 ; **********************************
 

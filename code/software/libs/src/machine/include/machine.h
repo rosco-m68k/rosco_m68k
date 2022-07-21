@@ -183,6 +183,22 @@ typedef struct {
 } __attribute__ ((packed)) SystemDataBlock;
 
 /*
+ * Represents a character device known to the firmware
+ */
+typedef struct {
+    uint32_t    data;
+    uint32_t    checkptr;
+    uint32_t    recvptr;
+    uint32_t    sendptr;
+    uint32_t    reserved0;
+    uint32_t    reserved1;
+    uint32_t    reserved2;
+    uint16_t    capabilities;
+    uint8_t     flags;
+    uint8_t     device_type;
+} __attribute__((packed)) CharDevice;
+
+/*
  * Absolute symbols defined in linker script
  */
 extern uint32_t       _INITIAL_STACK;     // firmware stack top (mem top)
@@ -293,34 +309,53 @@ bool mcCheckDeviceSupport();
 uint8_t mcGetDeviceCount();
 
 /*
- * Get the firmware `CHAR_DEVICE` structure for a device.
+ * Populate the given `CHAR_DEVICE` structure for a device.
+ * 
+ * `device` must point to a 32-byte buffer, which may or may not
+ * have the same internal representation as a `CharDevice` struct.
  */
-void* mcGetDevice(uint8_t num);
+bool mcGetDevice(uint8_t num, void *device);
 
 /*
  * Call the CHECKCHAR function on the given device.
+ *
+ * `device` must be the `CHAR_DEVICE` structure populated by 
+ * `mcGetDevice`.
  */
 bool mcCheckDevice(void *device);
 
 /*
  * Call the RECVCHAR function on the given device.
+ *
+ * `device` must be the `CHAR_DEVICE` structure populated by 
+ * `mcGetDevice`.
  */
 char mcReadDevice(void *device);
 
 /* 
  * Call the SENDCHAR function on the given device.
+ *
+ * `device` must be the `CHAR_DEVICE` structure populated by 
+ * `mcGetDevice`.
  */
 void mcSendDevice(char chr, void *device);
 
 /*
  * Call the DEVICE_CTRL function on the given device.
+ *
+ * `device` must be the `CHAR_DEVICE` structure populated by 
+ * `mcGetDevice`.
  */
 uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, void *device);
 
 /*
  * Add a device in the next available slot.
+ *
+ * The supplied `CharDevice` will be translated to the firmware's
+ * internal representation. It is safe to reuse the buffer once 
+ * the call completes.
  */
-uint8_t mcAddDevice(void *newDevice);
+uint8_t mcAddDevice(CharDevice *newDevice);
 
 #endif
 
