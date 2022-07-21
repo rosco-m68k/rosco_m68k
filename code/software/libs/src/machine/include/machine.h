@@ -311,49 +311,46 @@ uint8_t mcGetDeviceCount();
 /*
  * Populate the given `CHAR_DEVICE` structure for a device.
  * 
- * `device` must point to a 32-byte buffer, which may or may not
- * have the same internal representation as a `CharDevice` struct.
+ * Returns `true` if the call succeeded, `false` otherwise.
  */
-bool mcGetDevice(uint8_t num, void *device);
+bool mcGetDevice(uint8_t num, CharDevice *device);
 
 /*
  * Call the CHECKCHAR function on the given device.
  *
- * `device` must be the `CHAR_DEVICE` structure populated by 
- * `mcGetDevice`.
+ * Returns `true` if a character is available, `false` otherwise.
  */
-bool mcCheckDevice(void *device);
+bool mcCheckDevice(CharDevice *device);
 
 /*
- * Call the RECVCHAR function on the given device.
+ * Call the RECVCHAR function on the given device. This may
+ * block until a character is available.
  *
- * `device` must be the `CHAR_DEVICE` structure populated by 
- * `mcGetDevice`.
+ * Returns the received character.
  */
-char mcReadDevice(void *device);
+char mcReadDevice(CharDevice *device);
 
 /* 
  * Call the SENDCHAR function on the given device.
  *
- * `device` must be the `CHAR_DEVICE` structure populated by 
- * `mcGetDevice`.
+ * N.B. The `device` parameter must point to a `CharDevice` struct.
+ * It has `void*` type for compatibility with `fctprintf`.
  */
 void mcSendDevice(char chr, void *device);
 
 /*
  * Call the DEVICE_CTRL function on the given device.
  *
- * `device` must be the `CHAR_DEVICE` structure populated by 
- * `mcGetDevice`.
+ * Returns 0 if unknown command, device/command-specific result otherwise.
  */
-uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, void *device);
+uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, CharDevice *device);
 
 /*
  * Add a device in the next available slot.
  *
- * The supplied `CharDevice` will be translated to the firmware's
- * internal representation. It is safe to reuse the buffer once 
- * the call completes.
+ * It is safe to reuse the buffer once the call completes.
+ * 
+ * Returns 0-15 index of the device. Any other value indicates failure.
  */
 uint8_t mcAddDevice(CharDevice *newDevice);
 
