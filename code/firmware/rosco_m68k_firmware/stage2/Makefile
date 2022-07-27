@@ -45,6 +45,7 @@ ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
 endif
 ifeq ($(WITH_BLOCKDEV),true)
+include load/include.mk
 include sdfat/include.mk
 include idehdd/include.mk
 endif

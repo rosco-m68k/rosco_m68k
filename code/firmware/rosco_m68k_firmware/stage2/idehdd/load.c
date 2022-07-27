@@ -6,28 +6,26 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2021 Ross Bamford and contributors
+ * Copyright (c)2021-2022 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * IDE HDD loader for stage 2
  * ------------------------------------------------------------
  */
 
-#include <stdnoreturn.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <ata.h>
 #include <part.h>
 #include "fat_filelib.h"
-#include "system.h"
 
 extern void mcPrint(char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 extern bool ATA_support_check();
+extern bool load_kernel_bin(void *file);
 
 extern uint8_t *kernel_load_ptr;
 
-static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 static ATADevice device;
 static PartHandle part;
 static uint8_t part_num;
@@ -40,7 +38,7 @@ static int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) 
     return 0;
 }
 
-bool try_boot(uint8_t device_id) {
+static bool try_boot(uint8_t device_id) {
     if (ATA_init(device_id, &device) == ATA_INIT_OK) {
 
 #ifdef ATA_DEBUG
@@ -78,39 +76,8 @@ bool try_boot(uint8_t device_id) {
                         mcPrint("FAT initialized successfully\r\n");
 #endif
                         void *file = fl_fopen("/ROSCODE1.BIN", "r");
-
                         if (file != NULL) {
-                            uint32_t start = sdb->upticks;
-
-                            mcPrint("Loading");
-
-                            int c;
-                            uint8_t *current_load_ptr = kernel_load_ptr;
-                            uint8_t b = 0;
-                            while ((c = fl_fread(current_load_ptr, 512, 1, file)) > 0) {
-                                current_load_ptr += c;
-                                if (++b == 8) {
-                                    mcPrint(".");
-                                    b = 0;
-                                }
-                            }
-
-                            fl_fclose(file);
-
-                            if (c != EOF) {
-                                mcPrint("\r\n*** HDD load error\r\n\r\n");
-                            } else {
-                                uint32_t total_ticks = sdb->upticks - start;
-                                uint32_t total_secs = (total_ticks + 50) / 100;
-                                uint32_t load_size = current_load_ptr - kernel_load_ptr;
-                                mcPrint("\r\nLoaded ");
-                                print_unsigned(load_size, 10);
-                                mcPrint(" bytes in ~");
-                                print_unsigned(total_secs ? total_secs : 1, 10);
-                                mcPrint(" sec.\r\n");
-
-                                return true;
-                            }
+                            return load_kernel_bin(file);
 #ifdef ATA_DEBUG
                         } else {
                             mcPrint("Open failed\r\n");
