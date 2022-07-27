@@ -18,12 +18,7 @@
 #include <stdint.h>
 #include <bbsd.h>
 #include "fat_filelib.h"
-
-#define CS      GPIO1
-#define SCK     GPIO2
-#define MOSI    GPIO3
-#define MISO    GPIO4
-
+#include "system.h"
 
 extern void mcPrint(char *str);
 extern bool BBSD_support_check();
@@ -33,8 +28,7 @@ static BBSDCard sd;
 
 extern void print_unsigned(uint32_t num, uint8_t base);
 
-// TODO use SDB properly, this address might change in future!
-static volatile uint32_t * const upticks = (volatile uint32_t * const)0x40C;
+static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
 static int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
     if (!sd.initialized) {
@@ -82,7 +76,7 @@ bool sd_load_kernel() {
         void *file = fl_fopen("/ROSCODE1.BIN", "r");
 
         if (file != NULL) {
-            uint32_t start = *upticks;
+            uint32_t start = sdb->upticks;
 
             mcPrint("Loading");
 
@@ -102,7 +96,7 @@ bool sd_load_kernel() {
             if (c != EOF) {
                 mcPrint("\r\n*** SD load error\r\n\r\n");
             } else {
-                uint32_t total_ticks = *upticks - start;
+                uint32_t total_ticks = sdb->upticks - start;
                 uint32_t total_secs = (total_ticks + 50) / 100;
                 uint32_t load_size = current_load_ptr - kernel_load_ptr;
                 mcPrint("\r\nLoaded ");
