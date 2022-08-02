@@ -50,7 +50,7 @@ static bool try_boot(uint8_t device_id) {
         mcPrint("initialized\r\n");
 #endif
 
-        PartInitStatus pinit = Part_init(&part, &device);
+        PartInitStatus pinit = Part_init_ATA(&part, &device);
 
         if (pinit == PART_INIT_OK) {
 #ifdef ATA_DEBUG
