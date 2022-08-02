@@ -97,6 +97,5 @@ bool load_kernel(PartHandle *part) {
         }
     }
 
-    mcPrint("");
     return false;
 }

@@ -47,7 +47,6 @@ static bool try_boot(uint8_t device_id) {
 #ifdef ATA_DEBUG
             mcPrint("Partition table initialized\r\n");
 #endif
-
             return load_kernel(&part);
         } else if (pinit == PART_INIT_BAD_SIGNATURE) {
             mcPrint("  Bad partition signature\r\n");
