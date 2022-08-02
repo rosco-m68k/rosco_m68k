@@ -15,33 +15,12 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <bbsd.h>
-#include "fat_filelib.h"
+#include "bbsd.h"
+#include "part.h"
 
 extern void mcPrint(const char *str);
 extern bool BBSD_support_check();
-extern bool load_kernel_bin(void *file);
-
-static BBSDCard sd;
-
-static int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
-    if (!sd.initialized) {
-        return 0;
-    }
-
-    for(uint32_t i = 0; i < sector_count; i++) {
-        if (!BBSD_read_block(&sd, sector + i, buffer)) {
-            return 0;
-        }
-        buffer += 512;
-    }
-
-    return 1;
-}
-
-static int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
-    return 0;
-}
+extern bool load_kernel(PartHandle *part);
 
 bool sd_load_kernel() {
     if (!BBSD_support_check()) {
@@ -49,29 +28,36 @@ bool sd_load_kernel() {
         return false;
     }
 
+    BBSDCard sd;
     if (BBSD_initialize(&sd) == BBSD_INIT_OK) {
         switch (sd.type) {
         case BBSD_CARD_TYPE_V1:
-            mcPrint("SD v1 card; ");
+            mcPrint("SD v1 card:\r\n");
             break;
         case BBSD_CARD_TYPE_V2:
-            mcPrint("SD v2 card; ");
+            mcPrint("SD v2 card:\r\n");
             break;
         case BBSD_CARD_TYPE_SDHC:
-            mcPrint("SDHC card; ");
+            mcPrint("SDHC card:\r\n");
             break;
         default:
-            mcPrint("Ignoring unrecognised SD card");
+            mcPrint("Ignoring unrecognised SD card\r\n");
             return false;
         }
 
-        fl_attach_media(media_read, media_write);
+        PartHandle part;
+        PartInitStatus pinit = Part_init_BBSD(&part, &sd);
 
-        void *file = fl_fopen("/ROSCODE1.BIN", "r");
-        if (file != NULL) {
-            return load_kernel_bin(file);
+        if (pinit == PART_INIT_OK) {
+            return load_kernel(&part);
+        } else if (pinit == PART_INIT_BAD_SIGNATURE) {
+            mcPrint("  Bad partition signature\r\n");
+        } else if (pinit == PART_INIT_READ_FAILURE) {
+            mcPrint("  Partition read failure\r\n");
+        } else if (pinit == PART_INIT_GENERAL_FAILURE) {
+            mcPrint("  Partition init general failure\r\n");
         } else {
-            mcPrint(" (not bootable)\r\n");
+            mcPrint("  Partition init - unknown result!\r\n");
         }
     }
 

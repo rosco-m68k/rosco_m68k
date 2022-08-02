@@ -69,7 +69,7 @@ noreturn void lmain() {
 
 #ifndef MAME_FIRMWARE
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint("Searching for boot media... ");
+    mcPrint("Searching for boot media...\r\n");
 #  endif
 
 #  ifdef SDFAT_LOADER
@@ -83,7 +83,7 @@ noreturn void lmain() {
     }
 #  endif
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint(" None found\r\n");
+    mcPrint("No bootable media found\r\n");
 #  endif
 #  ifdef KERMIT_LOADER
     mcPrint("Ready for Kermit receive...\r\n");

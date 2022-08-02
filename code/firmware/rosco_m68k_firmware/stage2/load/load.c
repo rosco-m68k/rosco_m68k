@@ -16,20 +16,31 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "fat_filelib.h"
+#include "part.h"
 #include "system.h"
 
 extern void mcPrint(const char *str);
-
-extern uint8_t *kernel_load_ptr;
-
 extern void print_unsigned(uint32_t num, uint8_t base);
 
+extern uint8_t *kernel_load_ptr;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
+
+static const char FILENAME_BIN[] = "/ROSCODE1.BIN";
+
+static PartHandle *load_part;
+static uint8_t load_part_num;
+
+static int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+    return Part_read(load_part, load_part_num, buffer, sector, sector_count) == sector_count ? 1 : 0;
+}
+
+static int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+    return 0;
+}
 
 bool load_kernel_bin(void *file) {
     uint32_t start = sdb->upticks;
 
-    mcPrint("Loading");
     int c;
     uint8_t *current_load_ptr = kernel_load_ptr;
     uint8_t b = 0;
@@ -41,8 +52,6 @@ bool load_kernel_bin(void *file) {
         }
     }
     mcPrint("\r\n");
-
-    fl_fclose(file);
 
     if (c != EOF) {
         mcPrint("*** Kernel load error\r\n");
@@ -60,4 +69,34 @@ bool load_kernel_bin(void *file) {
 
         return true;
     }
+}
+
+bool load_kernel(PartHandle *part) {
+    load_part = part;
+
+    for (int i = 0; i < 4; i++) {
+        if (Part_valid(part, i)) {
+            load_part_num = i;
+            mcPrint("  Partition ");
+            print_unsigned(load_part_num + 1, 10);  // Print partition numbers as 1-indexed
+            mcPrint(": ");
+
+            fl_attach_media(media_read, media_write);
+
+            void *file;
+            if (file = fl_fopen(FILENAME_BIN, "r")) {
+                mcPrint("Loading \"");
+                mcPrint(FILENAME_BIN);
+                mcPrint("\"");
+                bool result = load_kernel_bin(file);
+                fl_fclose(file);
+                return result;
+            } else {
+                mcPrint("(not bootable)\r\n");
+            }
+        }
+    }
+
+    mcPrint("");
+    return false;
 }
