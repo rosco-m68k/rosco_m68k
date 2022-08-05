@@ -110,7 +110,7 @@ static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buf
 #endif
 
         RuntimePart *part = &handle->parts[part_num];
-        if (start >= part->sector_count || count > part->sector_count) {
+        if (start >= part->sector_count) {
             // Out of range for partition
 #ifdef ATA_DEBUG
             mcPrint("  --> OUT OF RANGE\r\n");
@@ -138,7 +138,7 @@ static uint32_t Part_read_BBSD(PartHandle *handle, uint8_t part_num, uint8_t *bu
     } else {
 
         RuntimePart *part = &handle->parts[part_num];
-        if (start >= part->sector_count || count > part->sector_count) {
+        if (start >= part->sector_count) {
             // Out of range for partition
             return 0;
         } else {
