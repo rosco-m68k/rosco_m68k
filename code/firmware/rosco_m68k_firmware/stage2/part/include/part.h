@@ -19,7 +19,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ata.h>
+#include "ata.h"
+#include "bbsd.h"
 #include "part_mbr.h"
 
 typedef enum {
@@ -36,12 +37,22 @@ typedef struct {
     uint32_t    sector_count;
 } RuntimePart;
 
+typedef enum {
+    PART_DEVICE_TYPE_ATA,
+    PART_DEVICE_TYPE_BBSD,
+} PartDeviceType;
+
 typedef struct {
-    ATADevice   *device;
+    PartDeviceType device_type;
+    union {
+        ATADevice   *ata_device;
+        BBSDCard    *bbsd_device;
+    };
     RuntimePart parts[4];
 } PartHandle;
 
-PartInitStatus Part_init(PartHandle *handle, ATADevice *device);
+PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device);
+PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device);
 uint32_t Part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count);
 bool Part_valid(PartHandle *handle, uint8_t part);
 
