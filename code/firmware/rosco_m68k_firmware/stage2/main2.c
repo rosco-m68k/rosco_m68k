@@ -42,7 +42,7 @@ static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)
 
 // Kernels are loaded at the same address regardless of _how_ they're loaded
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
-static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
+KMain kernel_entry = (KMain) KERNEL_LOAD_ADDRESS;
 
 #ifdef KERMIT_LOADER
 // This is provided by Kermit
@@ -114,7 +114,7 @@ have_kernel:
     red_led_off();
     mcPrint("\r\n");
 
-    kmain(sdb);
+    kernel_entry(sdb);
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
