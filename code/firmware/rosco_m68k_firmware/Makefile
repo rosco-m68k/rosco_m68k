@@ -11,8 +11,7 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
        -fomit-frame-pointer -fno-delete-null-pointer-checks						\
-			 -mno-align-int -mno-strict-align --param=min-pagesize=0				\
-			 $(DEFINES)
+			 --param=min-pagesize=0 $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
