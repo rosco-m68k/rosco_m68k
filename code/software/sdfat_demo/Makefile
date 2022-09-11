@@ -15,8 +15,8 @@ GCC_LIBS=$(shell $(CC) --print-search-dirs 															\
     | sed 's/:/m68000\/ -L/g')m68000/
 DEFINES=-DROSCO_M68K
 CFLAGS=-std=c11 -ffreestanding -Wall -pedantic -Werror -I$(SYSINCDIR) 	\
-			 -mcpu=68010 -march=68010 -mtune=68010 -Wno-unused-function				\
-			 -mno-align-int -mno-strict-align $(DEFINES)
+       -mcpu=68010 -march=68010 -mtune=68010 -Wno-unused-function				\
+       $(DEFINES)
 
 ifneq ($(ROSCO_M68K_HUGEROM),false)
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld

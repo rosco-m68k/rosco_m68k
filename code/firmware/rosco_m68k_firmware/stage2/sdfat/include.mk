@@ -5,10 +5,10 @@ EXTRA_CFLAGS := $(EXTRA_CFLAGS)																								\
 		-Isdfat/include
 
 BBSD_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter		                	\
-			      -Wall -Werror -Wpedantic -Wno-unused-function                   	\
+            -Wall -Werror -Wpedantic -Wno-unused-function                   	\
             -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)						\
             -DROSCO_M68K -I../blockdev/include																\
-            -mno-align-int -mno-strict-align $(DEFINES) -DSDFAT_LOADER
+            $(DEFINES) -DSDFAT_LOADER
 								
 sdfat/load.o: sdfat/load.c
 	$(CC) $(BBSD_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
