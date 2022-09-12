@@ -30,6 +30,8 @@ extern uint8_t *kernel_load_ptr;
 extern KMain kernel_entry;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
+extern char _end[];
+
 static const char FILENAME_BIN[] = "/ROSCODE1.BIN";
 static const char FILENAME_ELF[] = "/ROSCODE1.ELF";
 
@@ -81,6 +83,43 @@ bool load_kernel_bin(void *file) {
     }
 }
 
+static bool load_range_allowed(uintptr_t start, size_t size) {
+    if (size == 0) {
+        // If there's nothing to load, we don't care, allow it
+        return true;
+    }
+
+    // Use last instead of `end = start + size` to avoid overflowing
+    const size_t offset_last = size - 1;
+    if (start > UINTPTR_MAX - offset_last) {
+        // Last byte address would overflow
+        return false;
+    }
+    const uintptr_t last = start + offset_last;
+
+    const size_t page_size = 0x1000;
+    const uintptr_t page_mask = ~(uintptr_t) (page_size - 1);
+    // Dummy variable to get stack pointers
+    volatile char dummy;
+    const uintptr_t dummy_addr = (uintptr_t) &dummy;
+    // Leave at least one full page below the dummy on the stack
+    const uintptr_t stack_guard_start = (dummy_addr - page_size) & page_mask;
+
+    // Check for overlaps with reserved memory
+    if (last >= 0 && start < 0x2000) {
+        // Is in the exception vectors, SDB, EFPT, VDA, or firmware-reserved areas
+        return false;
+    } else if (last >= 0x2000 && start < (uintptr_t) &_end) {
+        // Is in stage2
+        return false;
+    } else if (last >= stack_guard_start && start < sdb->memsize) {
+        // Is in the stack
+        return false;
+    }
+
+    return true;
+}
+
 static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
     // TODO: Validate other fields and don't allow overwriting kernel memory
     if (phdr->p_align > 0) {
@@ -88,6 +127,12 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
             mcPrint("\r\n*** Invalid loadable segment alignment\r\n");
             return -1;
         }
+    }
+
+    // Don't allow overwriting firmware-reserved areas, stage2, or stack
+    if (!load_range_allowed(phdr->p_vaddr, phdr->p_memsz)) {
+            mcPrint("\r\n*** Segment would overwrite firmware memory\r\n");
+            return -1;
     }
 
     if (fl_fseek(file, phdr->p_offset, SEEK_SET) != 0) {
