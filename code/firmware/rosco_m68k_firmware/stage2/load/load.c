@@ -84,7 +84,7 @@ bool load_kernel(PartHandle *part) {
             fl_attach_media(media_read, media_write);
 
             void *file;
-            if (file = fl_fopen(FILENAME_BIN, "r")) {
+            if ((file = fl_fopen(FILENAME_BIN, "r"))) {
                 mcPrint("Loading \"");
                 mcPrint(FILENAME_BIN);
                 mcPrint("\"");
