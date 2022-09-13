@@ -1300,14 +1300,14 @@ gattr(struct k_data * k, UCHAR * s, struct k_response * r) {
     UCHAR c;                            /* Workers */
     int aln, i, rc;
 
-    UCHAR sizebuf[SIZEBUFL];
+    UCHAR sizebuf[SIZEBUFL + 1];
 
     rc = -1;
     while ((c = *s++)) {		/* Get attribute tag */
         aln = xunchar(*s++);            /* Length of attribute string */
         switch (c) {
           case '!':                     /* File length in K */
-	  case '"':			/* File type */
+          case '"':			/* File type */
             for (i = 0; (i < aln) && (i < SIZEBUFL); i++) /* Copy it */
               sizebuf[i] = *s++;
             sizebuf[i] = '\0';           /* Terminate with null */
