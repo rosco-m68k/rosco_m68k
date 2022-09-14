@@ -11,7 +11,7 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
        -fomit-frame-pointer -fno-delete-null-pointer-checks						\
-       --param=min-pagesize=0 $(DEFINES)
+       $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -22,6 +22,14 @@ OBJDUMP=m68k-elf-objdump
 SIZE=m68k-elf-size
 NM=m68k-elf-nm
 RM=rm -f
+
+# If this is GCC 12, add flag --param=min-pagesize=0
+ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
+CC_VERSION:=$(shell $(CC) -dumpfullversion)
+ifeq ($(firstword $(subst ., ,$(CC_VERSION))),12)
+CFLAGS+=--param=min-pagesize=0
+endif
+endif
 
 # Output config
 BINARY_BASENAME=rosco_m68k
