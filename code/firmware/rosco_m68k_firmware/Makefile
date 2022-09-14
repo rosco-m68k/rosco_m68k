@@ -1,40 +1,12 @@
 # Make rosco_m68k ROM images
-# 
-# Copyright (c)2019-2022 Ross Bamford
+#
+# Copyright (c)2019-2022 Ross Bamford and contributors
 # See LICENSE
 
-CPU?=68010
-ARCH?=$(CPU)
-TUNE?=$(CPU)
-EXTRA_CFLAGS?=-g
-DEFINES:=$(DEFINES)
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
-       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks						\
-       $(DEFINES)
-LDFLAGS=-Map=$(MAP)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
-AS=vasmm68k_mot
-OBJCOPY=m68k-elf-objcopy
-OBJDUMP=m68k-elf-objdump
-SIZE=m68k-elf-size
-NM=m68k-elf-nm
-RM=rm -f
+include config.mk
 
-# GCC-version-specific settings
-ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
-CC_VERSION:=$(shell $(CC) -dumpfullversion)
-CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
-# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
-ifeq ($(CC_MAJOR),12)
-CFLAGS+=--param=min-pagesize=0
-endif
-ifeq ($(CC_MAJOR),13)
-CFLAGS+=--param=min-pagesize=0
-endif
-endif
+INCLUDES+=$(INCLUDES) -Iinclude
+LDFLAGS+=-Map=$(MAP)
 
 # Output config
 BINARY_BASENAME=rosco_m68k
@@ -54,19 +26,13 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
-				decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
-				cputype.o warmboot.o main1.o 
-
-# Big ROM configuration (enable everything) is now default
-WITH_BLOCKDEV?=true
-WITH_KERMIT?=true
-WITH_DEBUG_STUB?=true
+        decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
+        cputype.o warmboot.o main1.o
 
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU)
-DEFINES:=$(DEFINES) -DREVISION1X
 else
 $(info === Building rosco_m68k firmware for revision 2.x board with MC$(CPU) CPU)
 endif
@@ -81,7 +47,7 @@ DEFINES:=$(DEFINES) -DLATE_BANNER
 endif
 endif
 
-# Set up Size-specific things appropriately..
+# Set up Size-specific things appropriately...
 ifeq ($(REVISION1X),true)
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco))
@@ -92,7 +58,6 @@ ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
 ROMDEVICE=SST39SF040
-DEFINES:=$(DEFINES) -DHUGEROM
 else
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
@@ -104,47 +69,41 @@ ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
 MAMESIZE=0x00100000
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
-DEFINES:=$(DEFINES) -DHUGEROM
 else
-ifeq ($(HUGEROM),false)
+ifneq ($(HUGEROM),true)
 $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
 else
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
 ROMDEVICE=SST39SF040
-DEFINES:=$(DEFINES) -DHUGEROM
 endif
 endif
 endif
 
-ifeq ($(NO68681),true)
-$(info === Building rosco_m68k firmware NO_68681 without DUART)
-DEFINES:=$(DEFINES) -DNO_68681
+ifneq ($(WITH_68681),true)
+$(info === Building rosco_m68k firmware without 68681 DUART support)
 else
 $(info === Building rosco_m68k firmware with 68681 DUART support)
 endif
 
 ifeq ($(NO_TICK),true)
 $(info === Building rosco_m68k firmware with NO_TICK)
-DEFINES:=$(DEFINES) -DNO_TICK
 endif
 
-ifneq ($(WITH_BLOCKDEV),false)
+ifeq ($(WITH_BLOCKDEV),true)
 $(info === Building rosco_m68k firmware with block device support)
 include blockdev/include.mk
 ifeq ($(ATA_DEBUG),true)
 $(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
-DEFINES:=$(DEFINES) -DATA_DEBUG
 endif
 endif
 
-ifneq ($(WITH_VDP),false)
+ifeq ($(WITH_VDP),true)
 $(info === Building rosco_m68k firmware with V9958 VDP)
 include video9958/include.mk
 endif
 
-# only one Xosera console at a time
-ifneq ($(XOSERA_ANSI_CON),false)
+ifeq ($(WITH_XOSERA),true)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)
 include videoXoseraANSI/include.mk
 endif
@@ -156,12 +115,12 @@ endif
 
 include easy68k/include.mk
 
-export ATA_DEBUG
-export WITH_BLOCKDEV
-export WITH_KERMIT
 export CPU ARCH TUNE
 export REVISION1X
+export WITH_KERMIT
+export WITH_BLOCKDEV
 export MAME
+export ATA_DEBUG
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -181,10 +140,10 @@ $(ELF) : $(OBJECTS) $(STAGE2)
 $(BINARY) : $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
-ifeq ($(HUGEROM),false)
-		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
-else
+ifeq ($(HUGEROM),true)
 		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
+else
+		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
 endif
 
 $(DISASM) : $(ELF)
