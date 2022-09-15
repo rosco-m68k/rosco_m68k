@@ -1,6 +1,6 @@
-# Make rosco_m68k ROM images
+# Make rosco_m68k libraries
 # 
-# Copyright (c)2020 Ross Bamford
+# Copyright (c) 2020-2022 Ross Bamford and contributors
 # See LICENSE
 
 CPU?=68010

@@ -1,13 +1,13 @@
 # Make rosco_m68k rebuilds everything under "software"
 # 
-# Copyright (c)2020 Ross Bamford
+# Copyright (c)2020-2022 Ross Bamford and contributors
 # See LICENSE
 
 LIBSTARG = clean all install
 SOFTWARETARG = clean all
 
-# NOTE: markm-ide skipped for now (breaks Makefile pattern)
 SOFTWARE := $(subst /.,,$(filter-out tests/.,$(filter-out markm-ide/.,$(filter-out libs/.,$(wildcard */.)))))
+SOFTWARE += $(subst /.,,$(wildcard markm-ide/*/.))
 SOFTWARE += $(subst /.,,$(wildcard tests/*/.))
 SOFTWARE += $(wildcard ../starter_projects/*/.)
 all: libs $(SOFTWARE)
