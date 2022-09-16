@@ -47,11 +47,9 @@ static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
 extern int receive_kernel();
 #endif
 
-#ifdef SDCARD_LOADER
+#ifdef BLOCKDEV_LOADER
 // This is provided by the SD/FAT loader
 extern bool sd_load_kernel();
-#endif
-#ifdef IDE_LOADER
 // This is provided by the IDE/FAT loader
 extern bool ide_load_kernel();
 #endif
@@ -73,17 +71,13 @@ noreturn void lmain() {
 #ifdef BLOCKDEV_LOADER
     mcPrint("Searching for boot media...\r\n");
 
-#  ifdef SDCARD_LOADER
     if (sd_load_kernel()) {
         goto have_kernel;
     }
-#  endif
 
-#  ifdef IDE_LOADER
     if (ide_load_kernel()) {
         goto have_kernel;
     }
-#  endif
 
     mcPrint("No bootable media found\r\n");
 #endif

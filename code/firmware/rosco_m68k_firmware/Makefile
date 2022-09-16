@@ -123,9 +123,9 @@ include easy68k/include.mk
 export CPU ARCH TUNE
 export REVISION1X
 
-# Software configuration options
-export WITH_KERMIT
-export WITH_BLOCKDEV
+# Loader configuration options
+export WITH_KERMIT_LOADER
+export WITH_BLOCKDEV_LOADER
 
 # Special software configuration options
 export ATA_DEBUG

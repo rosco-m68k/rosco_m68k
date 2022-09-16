@@ -25,18 +25,14 @@ LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o main2.o
 
-ifeq ($(WITH_KERMIT),true)
+ifeq ($(WITH_KERMIT_LOADER),true)
 include kermit/include.mk
 endif
-ifeq ($(WITH_BLOCKDEV),true)
+ifeq ($(WITH_BLOCKDEV_LOADER),true)
 include load/include.mk
 include part/include.mk
-ifeq ($(WITH_SD),true)
 include sdcard/include.mk
-endif
-ifeq ($(WITH_ATA),true)
 include idehdd/include.mk
-endif
 endif
 
 $(BINARY): $(OBJECTS)
