@@ -170,7 +170,7 @@ endif
 
 clean:
 	make -C $(STAGE2_DIR) clean	
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(MAME_BINARY)
+	$(RM) $(OBJECTS) $(ELF) $(BINARY) $(DISASM) $(SYM) $(MAP) $(BINARY_ODD) $(BINARY_EVEN) $(MAME_BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh

@@ -4,4 +4,4 @@ OBJECTS+=load/load.o																												\
 	load/fat_io_lib/fat_misc.o load/fat_io_lib/fat_string.o										\
 	load/fat_io_lib/fat_table.o load/fat_io_lib/fat_write.o
 INCLUDES+=-Iload/include
-DEFINES+=-DFATFS_USE_CUSTOM_OPTS_FILE
+DEFINES+=-DFATFS_USE_CUSTOM_OPTS_FILE -DBLOCKDEV_LOADER

@@ -51,6 +51,7 @@ else
 HUGEROM?=true
 endif
 ifeq ($(CPU),68000)
+WITH_ATA?=false
 WITH_VDP?=false
 WITH_XOSERA?=false
 ifeq ($(REVISION1X),true)
@@ -61,6 +62,8 @@ endif
 # Default configuration options
 WITH_68681?=true
 WITH_BLOCKDEV?=true
+WITH_BBSD?=true
+WITH_ATA?=true
 WITH_VDP?=true
 WITH_XOSERA?=true
 WITH_KERMIT?=true

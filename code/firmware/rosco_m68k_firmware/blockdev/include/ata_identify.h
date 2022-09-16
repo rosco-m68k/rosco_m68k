@@ -13,8 +13,11 @@
  * ATA IDENTIFY block structure
  * ------------------------------------------------------------
  */
+
 #ifndef __ROSCO_M68K_ATA_IDENTIFY_H
 #define __ROSCO_M68K_ATA_IDENTIFY_H
+
+#ifdef ROSCO_M68K_ATA
 
 #include <stdint.h>
 
@@ -390,4 +393,5 @@ typedef struct {
   uint16_t CheckSum : 8;
 } ATA_IDENTIFY_DEVICE_DATA;
 
+#endif // ROSCO_M68K_ATA
 #endif // __ROSCO_M68K_ATA_IDENTIFY_H

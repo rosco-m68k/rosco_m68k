@@ -17,6 +17,8 @@
 #ifndef __ROSCO_M68K_ATA_H
 #define __ROSCO_M68K_ATA_H
 
+#ifdef ROSCO_M68K_ATA
+
 #define ATA_PRIMARY_DCR_AS          0x3F6
 #define ATA_SECONDARY_DCR_AS        0x376
 
@@ -109,4 +111,5 @@ uint32_t ATA_read_sectors(uint8_t *buf, uint32_t lba, uint32_t num, ATADevice *d
 uint32_t ATA_write_sectors(uint8_t *buf, uint32_t lba, uint32_t num, ATADevice *dev);
 uint32_t ATA_ident(uint8_t *buf, ATADevice *dev);
 
+#endif // ROSCO_M68K_ATA
 #endif // __ROSCO_M68K_ATA_H

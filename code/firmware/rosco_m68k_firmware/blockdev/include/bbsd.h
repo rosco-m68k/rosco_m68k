@@ -16,6 +16,8 @@
 #ifndef ROSCO_M68K_BBSD_H
 #define ROSCO_M68K_BBSD_H
 
+#ifdef ROSCO_M68K_SDCARD
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -232,6 +234,5 @@ bool BBSD_write_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
 bool BBSD_read_data(BBSDCard *sd, uint32_t block, uint16_t start_ofs, uint16_t count, uint8_t *buffer);
 #endif
 
+#endif /* ROSCO_M68K_SDCARD */
 #endif /* ROSCO_M68K_BBSD_H */
-
-

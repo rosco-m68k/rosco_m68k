@@ -31,9 +31,7 @@ extern void red_led_off();
 extern void mcBusywait(uint32_t);
 #endif
 
-/*
- * This is what a Kernel entry point should look like.
- */
+// This is what a Kernel entry point should look like
 typedef void (*KMain)(volatile SystemDataBlock * const);
 
 // Linker defines
@@ -67,25 +65,30 @@ noreturn void lmain() {
     // Always do this for backwards compatibility
     ENABLE_RECV();
 
-#ifndef MAME_FIRMWARE
-#  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
+#ifdef MAME_FIRMWARE
+    mcPrint("Starting MAME Quickload kernel...\r\n");
+    goto have_kernel;
+#endif
+
+#ifdef BLOCKDEV_LOADER
     mcPrint("Searching for boot media...\r\n");
-#  endif
 
 #  ifdef SDFAT_LOADER
     if (sd_load_kernel()) {
         goto have_kernel;
     }
 #  endif
+
 #  ifdef IDE_LOADER
     if (ide_load_kernel()) {
         goto have_kernel;
     }
 #  endif
-#  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
+
     mcPrint("No bootable media found\r\n");
-#  endif
-#  ifdef KERMIT_LOADER
+#endif
+
+#ifdef KERMIT_LOADER
     mcPrint("Ready for Kermit receive...\r\n");
 
     mcBusywait(100000);
@@ -98,19 +101,13 @@ noreturn void lmain() {
     mcBusywait(400000);
     
     mcPrint("Kernel received okay; Starting...\r\n");
-#  else
-    mcPrint("No bootable media found & no Kermit support; Halting...\r\n");
-    goto halt;
-#  endif
-#else
-    mcPrint("Starting MAME Quickload kernel...\r\n");
+    goto have_kernel;
 #endif
 
-#if !defined(MAME_FIRMWARE)
-#  if defined SDFAT_LOADER || defined IDE_LOADER
+    mcPrint("No bootable media found & no Kermit support; Halting...\r\n");
+    goto halt;
+
 have_kernel:
-#  endif
-#endif
     red_led_off();
     mcPrint("\r\n");
 
@@ -118,9 +115,7 @@ have_kernel:
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
-#ifndef KERMIT_LOADER
 halt:
-#endif
     while (true) {
         mcHalt();
     }

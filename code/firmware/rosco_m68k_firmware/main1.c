@@ -40,8 +40,10 @@ extern void debug_stub();
 
 extern void INSTALL_EASY68K_TRAP_HANDLERS();
 #ifdef BLOCKDEV_SUPPORT
-extern void ata_init();
 extern void INSTALL_BLOCKDEV_HANDLERS();
+#endif
+#ifdef ROSCO_M68K_ATA
+extern void ata_init();
 #endif
 extern noreturn void warm_boot(void);
 extern noreturn void hot_boot(void);
@@ -149,10 +151,6 @@ void print_cpu_mem_info() {
 
 /* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
-#ifdef LATE_BANNER    
-    bool have_video = false;
-#endif
-
     if (sdb->magic != 0xB105D47A) {
         FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
         HALT();
@@ -165,31 +163,22 @@ noreturn void main1() {
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
+    bool have_video_con = false;
 #if defined(XOSERA_ANSI_CON)
-    if (XANSI_HAVE_XOSERA() && XANSI_CON_INIT()) {
-#ifdef LATE_BANNER
-        have_video = true;
-#endif
-        goto skip9958;
+    if (!have_video_con && XANSI_HAVE_XOSERA()) {
+        have_video_con = XANSI_CON_INIT();
     }
 #endif
-
 #ifdef VIDEO9958_CON
-    if (HAVE_V9958()) {
-#ifdef LATE_BANNER        
-        have_video = true;
-#endif
+    if (!have_video_con && HAVE_V9958()) {
         V9958_CON_INIT();
         V9958_CON_INSTALLHANDLERS();
+        have_video_con = true;
     }
 #endif
 
-#if defined(XOSERA_ANSI_CON)
-skip9958:
-#endif
-
 #ifdef LATE_BANNER
-if (!have_video) {
+if (!have_video_con) {
     PRINT_BANNER();
 }
 #endif
@@ -203,8 +192,10 @@ if (!have_video) {
 
     print_cpu_mem_info();
 
-#ifdef BLOCKDEV_SUPPORT
+#ifdef ROSCO_M68K_ATA
     ata_init();
+#endif
+#ifdef BLOCKDEV_SUPPORT
     INSTALL_BLOCKDEV_HANDLERS();
 #endif
 

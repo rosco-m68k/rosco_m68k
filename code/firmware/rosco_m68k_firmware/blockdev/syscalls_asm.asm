@@ -155,6 +155,9 @@ ATA_IDENTIFY:
 * ************************************************************************** *
 ; EFP default handlers
 * ************************************************************************** *
+
+    ifd ROSCO_M68K_SDCARD
+
 ; Arguments:
 ;   A1  - Pointer to an SD struct
 ;
@@ -204,6 +207,8 @@ SD_BLOCK_OP:
     jsr     (A0)
     add.l   #12,A7
     rts
+
+    endif   ; ROSCO_M68K_SDCARD
 
 ; Arguments:
 ;   None
@@ -320,6 +325,8 @@ SPI_BUFFER_OP:
     add.l   #8,A7
     rts
 
+    ifd ROSCO_M68K_ATA
+
 ; Arguments:
 ;
 ;  D1.L - 0 (ATA Master) or 1 (ATA slave)
@@ -401,6 +408,8 @@ FW_ATA_IDENT:
     jsr     ATA_ident
     add.l   #8,A7
     rts
+    
+    endif   ; ROSCO_M68K_ATA
 
 * ************************************************************************** *
 * ************************************************************************** *
@@ -411,10 +420,12 @@ INSTALL_BLOCKDEV_HANDLERS::
     move.l  #BLOCKDEV_TRAP_13_HANDLER,TRAP_13_VECTOR_ADDR
 
     ; Set up EFP pointers
+    ifd ROSCO_M68K_SDCARD
     move.l  #FW_SD_INIT,EFP_SD_INIT
     move.l  #FW_SD_READ,EFP_SD_READ
     move.l  #FW_SD_WRITE,EFP_SD_WRITE
     move.l  #FW_SD_REG,EFP_SD_REG
+    endif
     move.l  #FW_SPI_INIT,EFP_SPI_INIT
     move.l  #FW_SPI_ASSERT_CS,EFP_SPI_CS_A
     move.l  #FW_SPI_DEASSERT_CS,EFP_SPI_CS_D
@@ -424,10 +435,12 @@ INSTALL_BLOCKDEV_HANDLERS::
     move.l  #FW_SPI_RECV_BUFFER,EFP_SPI_RECV_M
     move.l  #FW_SPI_SEND_BYTE,EFP_SPI_SEND_B
     move.l  #FW_SPI_SEND_BUFFER,EFP_SPI_SEND_M
+    ifd ROSCO_M68K_ATA
     move.l  #FW_ATA_INIT,EFP_ATA_INIT
     move.l  #FW_ATA_READ,EFP_ATA_READ
     move.l  #FW_ATA_WRITE,EFP_ATA_WRITE
     move.l  #FW_ATA_IDENT,EFP_ATA_IDENT
+    endif
 
     ; And done...
     rts
