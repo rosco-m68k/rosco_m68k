@@ -20,7 +20,6 @@
 
 extern void mcPrint(char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
-extern bool ATA_support_check();
 extern bool load_kernel(PartHandle *part);
 
 static bool try_boot(uint8_t device_id) {

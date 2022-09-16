@@ -3,15 +3,18 @@
 # Copyright (c)2020-2022 Ross Bamford and contributors
 # See LICENSE
 
+default: all
+
 include ../config.mk
 
-INCLUDES=-Ifat_io_lib -Iinclude -I../include
-EXTRA_CFLAGS=-Wno-unused-function -O9
+EXTRA_CFLAGS+=-Wno-unused-function -O9
+INCLUDES+=-Ifat_io_lib -Iinclude -I../include
 LDFLAGS+=-T rosco_m68k_stage2.ld -Map=$(MAP)
 
-# Output config
+# Output file configuration
 BINARY_BASENAME=loader2
 BINARY_EXT=bin
+
 MAP=$(BINARY_BASENAME).map
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 BINARY_ZIP=$(BINARY).zip
@@ -32,13 +35,7 @@ include sdfat/include.mk
 include idehdd/include.mk
 endif
 
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
-
-%.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
-
-$(BINARY) : $(OBJECTS)
+$(BINARY): $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	-chmod a-x $@
 

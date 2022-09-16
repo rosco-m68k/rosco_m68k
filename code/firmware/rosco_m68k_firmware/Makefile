@@ -3,12 +3,14 @@
 # Copyright (c)2019-2022 Ross Bamford and contributors
 # See LICENSE
 
+default: all
+
 include config.mk
 
-INCLUDES+=$(INCLUDES) -Iinclude
+INCLUDES+=-Iinclude
 LDFLAGS+=-Map=$(MAP)
 
-# Output config
+# Output file configuration
 BINARY_BASENAME=rosco_m68k
 BINARY_EXT=rom
 ELF_EXT=elf
@@ -23,13 +25,11 @@ STAGE2_FILE=loader2.bin.zip.o
 STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
+MAME_BINARY=$(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
-ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
         decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
         cputype.o warmboot.o main1.o
-
-all: $(BINARY_EVEN) $(BINARY_ODD)
 
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU)
@@ -47,38 +47,42 @@ DEFINES:=$(DEFINES) -DLATE_BANNER
 endif
 endif
 
-# Set up Size-specific things appropriately...
+# When MAME is true, override HUGEROM and set relevant variables
+ifeq ($(MAME),true)
 ifeq ($(REVISION1X),true)
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco))
-LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 MAMESIZE=0x00010000
+HUGEROM=
+MAMENAME=rosco
 else
-ifeq ($(HUGEROM),true)
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
-ROMDEVICE=SST39SF040
-else
-$(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
-LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
-ROMDEVICE=AT28C256
-endif
-endif
-else
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
 MAMESIZE=0x00100000
-LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+HUGEROM=true
+MAMENAME=rosco_classicv2
+endif
+endif
+
+# Select linker script and set relevant variables according to ROM type
+ifeq ($(HUGEROM),true)
+LDFLAGS+=-T ./rosco_m68k_firmware_1M.ld
+ROMDEVICE?=SST39SF040
+ROMSIZETEXT=1MB
+ROMSIZENAME=HUGEROM
 else
-ifneq ($(HUGEROM),true)
-$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
+ifneq ($(REVISION1X),true)
+$(error === Invalid option combination: Cannot build non-HUGEROM for r2.x boards!)
+endif
+LDFLAGS+=-T ./rosco_m68k_firmware_64k.ld
+ROMDEVICE?=AT28C256
+ROMSIZETEXT=64KB
+ROMSIZENAME=BIGROM
+endif
+
+ifeq ($(MAME),true)
+FIRMWARE_TARGET=MAME ($(MAMENAME))
 else
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
-ROMDEVICE=SST39SF040
+FIRMWARE_TARGET=$(ROMSIZETEXT) $(ROMDEVICE) ($(ROMSIZENAME))
 endif
-endif
-endif
+
+$(info === Building rosco_m68k firmware for $(FIRMWARE_TARGET))
 
 ifneq ($(WITH_68681),true)
 $(info === Building rosco_m68k firmware without 68681 DUART support)
@@ -115,61 +119,61 @@ endif
 
 include easy68k/include.mk
 
+# Hardware configuration options
 export CPU ARCH TUNE
 export REVISION1X
+
+# Software configuration options
 export WITH_KERMIT
 export WITH_BLOCKDEV
-export MAME
+
+# Special software configuration options
 export ATA_DEBUG
+export MAME
 
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+# Recipes
 
-%.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
+$(STAGE2): $(STAGE2_DIR)
+	make -C $^ $(STAGE2_FILE)
 
-$(STAGE2) : $(STAGE2_DIR)
-	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
-
-$(ELF) : $(OBJECTS) $(STAGE2)
+$(ELF): $(OBJECTS) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
 	-chmod a-x $@
 
-$(BINARY) : $(ELF) $(DISASM) $(SYMS)
+$(BINARY): $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
-ifeq ($(HUGEROM),true)
-		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
-else
-		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
-endif
+	@echo === Completed building rosco_m68k firmware for "$(FIRMWARE_TARGET)": $@
 
-$(DISASM) : $(ELF)
+$(DISASM): $(ELF)
 	$(OBJDUMP) --disassemble -S $(ELF) >$(DISASM)
 
+ifeq ($(MAME),true)
+$(MAME_BINARY): $(BINARY)
+	srec_cat -output $(MAME_BINARY) -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 $(MAMESIZE)
+else
 $(BINARY_EVEN): $(BINARY)
 	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0
-
 $(BINARY_ODD): $(BINARY)
 	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
+endif
 
-.PHONY: all clean dump tools
+.PHONY: all clean burn tools
 
+ifeq ($(MAME),true)
+all: $(MAME_BINARY)
+else
+all: $(BINARY_EVEN) $(BINARY_ODD)
+endif
 
 clean:
 	make -C $(STAGE2_DIR) clean	
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
+	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(MAME_BINARY)
 
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
 tools: 
 	make -C tools/liblzg/src
-
-ifeq ($(MAME),true)
-mame: $(BINARY)
-	srec_cat -output $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 $(MAMESIZE)
-endif
-

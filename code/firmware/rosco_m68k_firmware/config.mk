@@ -3,6 +3,10 @@
 # Copyright (c)2019-2022 Ross Bamford and contributors
 # See LICENSE
 
+# Avoid a plain `make` without a target before `include config.mk`
+decoy_config_mk:
+	@echo A default target should exist before \"config.mk\" is included.
+
 CPU?=68010
 ARCH?=$(CPU)
 TUNE?=$(CPU)
@@ -16,6 +20,8 @@ CFLAGS=-mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)						\
        $(INCLUDES) $(DEFINES)
 LDFLAGS=
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
+
+# Tools
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
@@ -60,22 +66,34 @@ WITH_XOSERA?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 
-# Configuration-based defines
+# Configuration-based defines for stage1 and stage2
 ifeq ($(REVISION1X),true)
 DEFINES+=-DREVISION1X
-endif
-ifeq ($(HUGEROM),true)
-DEFINES+=-DHUGEROM
-endif
-ifneq ($(WITH_68681),true)
-DEFINES+=-DNO_68681
-endif
-ifeq ($(NO_TICK),true)
-DEFINES+=-DNO_TICK
 endif
 ifeq ($(ATA_DEBUG),true)
 DEFINES+=-DATA_DEBUG
 endif
+
+# Configuration-based defines for stage1
+ifeq ($(HUGEROM),true)
+DEFINES+=-DHUGEROM
+endif
+ifeq ($(NO_TICK),true)
+DEFINES+=-DNO_TICK
+endif
+ifneq ($(WITH_68681),true)
+DEFINES+=-DNO_68681
+endif
+
+# Configuration-based defines for stage2
 ifeq ($(MAME),true)
 DEFINES+=-DMAME_FIRMWARE
 endif
+
+# Generic recipes
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+
+%.o: %.asm
+	$(AS) $(ASFLAGS) -o $@ $<

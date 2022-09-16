@@ -12,4 +12,3 @@ ifeq ($(HUGEROM),true)
 blockdev/%.o: blockdev/%.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -O3 -o $@ $<
 endif
-
