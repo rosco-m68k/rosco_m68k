@@ -25,6 +25,18 @@ LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o main2.o
 
+# System-specific default configuration options
+ifeq ($(REVISION1X),true)
+HUGEROM?=false
+else
+HUGEROM?=true
+endif
+
+# Default configuration options
+WITH_KERMIT_LOADER?=true
+WITH_BLOCKDEV_LOADER?=true
+WITH_MAME_LOADER?=false
+
 # Configuration-based defines
 ifeq ($(REVISION1X),true)
 DEFINES+=-DREVISION1X
