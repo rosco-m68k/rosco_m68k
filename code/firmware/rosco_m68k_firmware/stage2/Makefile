@@ -31,8 +31,8 @@ endif
 ifeq ($(WITH_BLOCKDEV),true)
 include load/include.mk
 include part/include.mk
-ifeq ($(WITH_BBSD),true)
-include sdfat/include.mk
+ifeq ($(WITH_SD),true)
+include sdcard/include.mk
 endif
 ifeq ($(WITH_ATA),true)
 include idehdd/include.mk

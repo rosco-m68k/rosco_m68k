@@ -1,3 +1,0 @@
-OBJECTS+=sdfat/sdcard.o sdfat/load.o
-INCLUDES+=-Isdfat/include
-DEFINES+=-DSPI_FASTER -DSD_FASTER -DSD_BLOCK_READ_ONLY -DSDFAT_LOADER

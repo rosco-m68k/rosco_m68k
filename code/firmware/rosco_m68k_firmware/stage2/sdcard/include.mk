@@ -1,0 +1,3 @@
+OBJECTS+=sdcard/sdcard.o sdcard/load.o
+INCLUDES+=-Isdcard/include
+DEFINES+=-DSPI_FASTER -DSD_FASTER -DSD_BLOCK_READ_ONLY -DSDCARD_LOADER

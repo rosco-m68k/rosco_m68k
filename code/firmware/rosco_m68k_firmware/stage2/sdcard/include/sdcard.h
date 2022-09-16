@@ -26,32 +26,29 @@
 #endif
 
 typedef enum {
-    BBSD_CARD_TYPE_V1,
-    BBSD_CARD_TYPE_V2,
-    BBSD_CARD_TYPE_SDHC,
-    BBSD_CARD_TYPE_UNKNOWN,
-} BBSDCardType;
+    SD_CARD_TYPE_V1,
+    SD_CARD_TYPE_V2,
+    SD_CARD_TYPE_SDHC,
+    SD_CARD_TYPE_UNKNOWN,
+} SDCardType;
 
 typedef enum {
-    BBSD_INIT_OK,
-    BBSD_INIT_IDLE_FAILED,
-    BBSD_INIT_CMD8_FAILED,
-    BBSD_INIT_ACMD41_FAILED,
-} BBSDInitStatus;
+    SD_INIT_OK,
+    SD_INIT_IDLE_FAILED,
+    SD_INIT_CMD8_FAILED,
+    SD_INIT_ACMD41_FAILED,
+} SDInitStatus;
 
 typedef struct {
     bool            initialized;
-    BBSDCardType    type;
-#ifndef SD_BLOCK_READ_ONLY
-    bool            have_current_block;     /* if true, the next two members have meaning */
-    uint32_t        current_block_start;
-    uint16_t        current_block_offset;
-    bool            can_partial_read;
-#endif
-} BBSDCard;
+    SDCardType      type;
+    uint32_t        reserved[4];
+} SDCard;
 
-bool BBSD_support_check();
-BBSDInitStatus BBSD_initialize(BBSDCard *sd);
-bool BBSD_read_block(BBSDCard *sd, uint32_t block, uint8_t *buffer);
+bool SD_check_support();
+SDInitStatus SD_initialize(SDCard *sd);
+bool SD_read_block(SDCard *sd, uint32_t block, void *buf);
+bool SD_write_block(SDCard *sd, uint32_t block, void *buf);
+bool SD_read_register(SDCard *sd, uint8_t regcmd, void *buf);
 
 #endif /* __ROSCO_M68K_BBSD_H */

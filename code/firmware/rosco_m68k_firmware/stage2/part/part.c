@@ -19,7 +19,7 @@
 #include "part.h"
 #include "part_mbr.h"
 #include "ata.h"
-#include "bbsd.h"
+#include "sdcard.h"
 
 static MBR buffer;
 
@@ -64,11 +64,11 @@ PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device) {
     }
 }
 
-PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device) {
-    if (BBSD_read_block(device, 0, (uint8_t*)&buffer)) {
+PartInitStatus Part_init_SD(PartHandle *handle, SDCard *device) {
+    if (SD_read_block(device, 0, (uint8_t*)&buffer)) {
         if (buffer.signature[0] == 0x55 && buffer.signature[1] == 0xAA) {
-            handle->device_type = PART_DEVICE_TYPE_BBSD;
-            handle->bbsd_device = device;
+            handle->device_type = PART_DEVICE_TYPE_SD;
+            handle->sd_device = device;
 
             for (int i = 0; i < 4; i++) {
                 handle->parts[i].status = buffer.parts[i].status;
@@ -132,7 +132,7 @@ static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buf
     }
 }
 
-static uint32_t Part_read_BBSD(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
+static uint32_t Part_read_SD(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
     if (part_num > 3 || handle->parts[part_num].type == 0) {
         return 0;
     } else {
@@ -147,7 +147,7 @@ static uint32_t Part_read_BBSD(PartHandle *handle, uint8_t part_num, uint8_t *bu
             }
 
             for (uint32_t i = 0; i < count; i++) {
-                if (!BBSD_read_block(handle->bbsd_device, part->lba_start + start + i, buffer)) {
+                if (!SD_read_block(handle->sd_device, part->lba_start + start + i, buffer)) {
                     return i;
                 }
                 buffer += 512;
@@ -161,8 +161,8 @@ uint32_t Part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32
     switch (handle->device_type) {
     case PART_DEVICE_TYPE_ATA:
         return Part_read_ATA(handle, part_num, buffer, start, count);
-    case PART_DEVICE_TYPE_BBSD:
-        return Part_read_BBSD(handle, part_num, buffer, start, count);
+    case PART_DEVICE_TYPE_SD:
+        return Part_read_SD(handle, part_num, buffer, start, count);
     default:
         return 0;
     }

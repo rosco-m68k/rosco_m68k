@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "ata.h"
-#include "bbsd.h"
+#include "sdcard.h"
 #include "part_mbr.h"
 
 typedef enum {
@@ -39,20 +39,20 @@ typedef struct {
 
 typedef enum {
     PART_DEVICE_TYPE_ATA,
-    PART_DEVICE_TYPE_BBSD,
+    PART_DEVICE_TYPE_SD,
 } PartDeviceType;
 
 typedef struct {
     PartDeviceType device_type;
     union {
         ATADevice   *ata_device;
-        BBSDCard    *bbsd_device;
+        SDCard      *sd_device;
     };
     RuntimePart parts[4];
 } PartHandle;
 
 PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device);
-PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device);
+PartInitStatus Part_init_SD(PartHandle *handle, SDCard *device);
 uint32_t Part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count);
 bool Part_valid(PartHandle *handle, uint8_t part);
 

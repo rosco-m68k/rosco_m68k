@@ -13,7 +13,7 @@
 ;------------------------------------------------------------
     include "../../../../shared/rosco_m68k_public.asm"
 
-BBSD_support_check::
+SD_check_support::
     move.l  #0,D0
     trap    #13
     cmp.l   #$1234FEDC,D0
@@ -25,7 +25,7 @@ BBSD_support_check::
 .DONE
     rts
     
-BBSD_initialize::
+SD_initialize::
     movem.l A0-A1,-(A7)
     move.l  (12,A7),A1
     move.l  EFP_SD_INIT,A0
@@ -33,7 +33,7 @@ BBSD_initialize::
     movem.l (A7)+,A0-A1
     rts
 
-BBSD_read_block::
+SD_read_block::
     movem.l A0-A2/D1,-(A7)
     move.l  (20,A7),A1
     move.l  (24,A7),D1
@@ -42,4 +42,23 @@ BBSD_read_block::
     jsr     (A0)
     movem.l (A7)+,A0-A2/D1
     rts
+
+SD_write_block::
+    movem.l A0-A2/D1,-(A7)
+    move.l  (20,A7),A1
+    move.l  (24,A7),D1
+    move.l  (28,A7),A2
+    move.l  EFP_SD_REG,A0
+    jsr     (A0)
+    movem.l (A7)+,A0-A2/D1
+    rts
   
+SD_read_register::
+    movem.l A0-A2/D1,-(A7)
+    move.l  (20,A7),A1
+    move.l  (24,A7),D1
+    move.l  (28,A7),A2
+    move.l  EFP_SD_READ,A0
+    jsr     (A0)
+    movem.l (A7)+,A0-A2/D1
+    rts
