@@ -8,7 +8,7 @@ default: all
 include ../config.mk
 
 EXTRA_CFLAGS+=-Wno-unused-function -O9
-INCLUDES+=-Ifat_io_lib -Iinclude -I../include
+INCLUDES+=-Iinclude -I../include
 LDFLAGS+=-T rosco_m68k_stage2.ld -Map=$(MAP)
 
 # Output file configuration
@@ -25,6 +25,21 @@ LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o main2.o
 
+# Configuration-based defines
+ifeq ($(REVISION1X),true)
+DEFINES+=-DREVISION1X
+endif
+ifeq ($(HUGEROM),true)
+DEFINES+=-DHUGEROM
+endif
+ifeq ($(ATA_DEBUG),true)
+DEFINES+=-DATA_DEBUG
+endif
+ifeq ($(WITH_MAME_LOADER),true)
+DEFINES+=-DMAME_LOADER
+endif
+
+# Configuration-based subdirectory includes
 ifeq ($(WITH_KERMIT_LOADER),true)
 include kermit/include.mk
 endif

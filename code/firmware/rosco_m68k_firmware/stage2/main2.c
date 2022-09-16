@@ -63,7 +63,7 @@ noreturn void lmain() {
     // Always do this for backwards compatibility
     ENABLE_RECV();
 
-#ifdef MAME_FIRMWARE
+#ifdef MAME_LOADER
     mcPrint("Starting MAME Quickload kernel...\r\n");
     goto have_kernel;
 #endif

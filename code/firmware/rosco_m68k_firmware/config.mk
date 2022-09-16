@@ -44,58 +44,6 @@ CFLAGS+=--param=min-pagesize=0
 endif
 endif
 
-# System-specific default configuration options
-ifeq ($(REVISION1X),true)
-HUGEROM?=false
-else
-HUGEROM?=true
-endif
-ifeq ($(CPU),68000)
-WITH_ATA?=false
-WITH_VDP?=false
-WITH_XOSERA?=false
-ifeq ($(REVISION1X),true)
-WITH_68681?=false
-endif
-endif
-
-# Default configuration options for stage1
-WITH_68681?=true
-WITH_BLOCKDEV?=true
-WITH_BBSD?=true
-WITH_ATA?=true
-WITH_VDP?=true
-WITH_XOSERA?=true
-WITH_DEBUG_STUB?=true
-
-# Default configuration options for stage2
-WITH_KERMIT_LOADER?=true
-WITH_BLOCKDEV_LOADER?=true
-
-# Configuration-based defines for stage1 and stage2
-ifeq ($(REVISION1X),true)
-DEFINES+=-DREVISION1X
-endif
-ifeq ($(ATA_DEBUG),true)
-DEFINES+=-DATA_DEBUG
-endif
-
-# Configuration-based defines for stage1
-ifeq ($(HUGEROM),true)
-DEFINES+=-DHUGEROM
-endif
-ifeq ($(NO_TICK),true)
-DEFINES+=-DNO_TICK
-endif
-ifneq ($(WITH_68681),true)
-DEFINES+=-DNO_68681
-endif
-
-# Configuration-based defines for stage2
-ifeq ($(MAME),true)
-DEFINES+=-DMAME_FIRMWARE
-endif
-
 # Generic recipes
 
 %.o: %.c
