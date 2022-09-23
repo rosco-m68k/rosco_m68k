@@ -124,7 +124,7 @@ INITDUART::
     ; Setup device blocks...
     lea.l   DEVICE_BLOCKS,A1
     move.w  DEVICE_COUNT,D0
-    lsl.w   D0
+    lsl.w   #5,D0
     add.w   D0,A1
 
     ; ... UART A
