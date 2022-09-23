@@ -179,6 +179,7 @@ mcHalt::
 mcCheckDeviceSupport::
     move.l  D1,-(A7)
     move.l  #7,D1
+    moveq   #0,D0
     trap    #14
     cmp.l   #$1234FEDC,D0
     beq.s   .done
