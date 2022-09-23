@@ -227,7 +227,7 @@ EFP_DUMMY_NEGONE_D0L::
 INITDEVS:
     clr.w   DEVICE_COUNT    
     move.w  #C_NUM_DEVICES,D0
-    lsl.w   #2,D0
+    lsl.w   #3,D0
     lea.l   DEVICE_BLOCKS,A0
     bra.s   .START
 
