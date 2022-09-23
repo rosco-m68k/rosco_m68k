@@ -189,7 +189,7 @@ FW_PRINT_C::
 ; It's cheaper size-wise to just duplicate this here...
 FW_PRINTLN_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINTLN                ; Call FW_PRINT
+    bra.s   FW_PRINTLN                ; Call FW_PRINTLN
 
 ; Firmware PRINT null-terminated string pointed to by A0
 ; Uses PRINT function pointed to by EFP table
