@@ -26,7 +26,7 @@
 ; the MFP ones.
 ;
 ; Trashes: D0, A0-A5
-; Modifies: D5 (non-zero if DUART detected), MFP Regs
+; Modifies: D5 (non-zero if DUART detected), DUART Regs
 INITDUART::
     ifnd REVISION1X
     ; Building for r2.x mainboard, try onboard DUART first
