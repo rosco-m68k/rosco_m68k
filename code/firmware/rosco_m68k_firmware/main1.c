@@ -48,6 +48,9 @@ extern noreturn void hot_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern uint32_t cpuspeed(uint8_t model);
 extern void print_unsigned(uint32_t num, uint8_t base);
+#ifdef LATE_BANNER
+extern void PRINT_BANNER(void);
+#endif
 
 /*
  * This is what a Stage 2 entry point should look like.
@@ -146,6 +149,10 @@ void print_cpu_mem_info() {
 
 /* Main stage 1 entry point - Only called during cold boot */
 noreturn void main1() {
+#ifdef LATE_BANNER    
+    bool have_video = false;
+#endif
+
     if (sdb->magic != 0xB105D47A) {
         FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
         HALT();
@@ -160,12 +167,18 @@ noreturn void main1() {
 
 #if defined(XOSERA_ANSI_CON)
     if (XANSI_HAVE_XOSERA() && XANSI_CON_INIT()) {
+#ifdef LATE_BANNER
+        have_video = true;
+#endif
         goto skip9958;
     }
 #endif
 
 #ifdef VIDEO9958_CON
     if (HAVE_V9958()) {
+#ifdef LATE_BANNER        
+        have_video = true;
+#endif
         V9958_CON_INIT();
         V9958_CON_INSTALLHANDLERS();
     }
@@ -173,6 +186,12 @@ noreturn void main1() {
 
 #if defined(XOSERA_ANSI_CON)
 skip9958:
+#endif
+
+#ifdef LATE_BANNER
+if (!have_video) {
+    PRINT_BANNER();
+}
 #endif
 
     // Now we have tick, we can determine CPU speed

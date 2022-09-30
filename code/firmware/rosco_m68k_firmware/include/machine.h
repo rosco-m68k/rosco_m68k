@@ -124,7 +124,7 @@
 #endif
 
 // Define addresses used by the temporary bus error handler.
-// N.B. These are duplicated in equates.asm, and must be kept in sync!
+// N.B. These are duplicated in rosco_m68k_private.asm, and must be kept in sync!
 #define BERR_SAVED                  0x1180
 #define BERR_FLAG                   0x1184
 

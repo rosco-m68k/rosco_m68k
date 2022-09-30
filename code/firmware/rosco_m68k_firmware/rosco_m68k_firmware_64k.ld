@@ -27,6 +27,7 @@ SECTIONS
 
   .data : AT(_code_end)
   {
+    *(.early_data*)
     _data_start = .;
     *(.data)
     _data_end = .;
