@@ -32,5 +32,10 @@ BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kep
 BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
 
 ; Initialisation
-INIT_SSP    equ     RAMLIMIT
+INIT_SSP        equ     RAMLIMIT
+
+; Char devices
+C_DEVICE_SIZE   equ     $20         ; Size of single device block (**must** be a multiple of 4!)
+C_NUM_DEVICES   equ     $10         ; Number of device blocks to allocate
+
 
