@@ -1,6 +1,6 @@
 # Make rosco_m68k rebuilds everything under "software"
 # 
-# Copyright (c)2020-2022 Ross Bamford and contributors
+# Copyright (c) 2020 Ross Bamford
 # See LICENSE
 
 LIBSTARG = clean all install
