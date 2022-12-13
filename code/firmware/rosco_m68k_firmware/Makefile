@@ -11,7 +11,7 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
        -fomit-frame-pointer -fno-delete-null-pointer-checks						\
-			 $(DEFINES)
+       $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -22,6 +22,14 @@ OBJDUMP=m68k-elf-objdump
 SIZE=m68k-elf-size
 NM=m68k-elf-nm
 RM=rm -f
+
+# If this is GCC 12, add flag --param=min-pagesize=0
+ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
+CC_VERSION:=$(shell $(CC) -dumpfullversion)
+ifeq ($(firstword $(subst ., ,$(CC_VERSION))),12)
+CFLAGS+=--param=min-pagesize=0
+endif
+endif
 
 # Output config
 BINARY_BASENAME=rosco_m68k
@@ -56,6 +64,16 @@ $(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU
 DEFINES:=$(DEFINES) -DREVISION1X
 else
 $(info === Building rosco_m68k firmware for revision 2.x board with MC$(CPU) CPU)
+endif
+
+ifeq ($(NOBANNER),true)
+$(info === Building rosco_m68k firmware with no serial banner output at startup)
+DEFINES:=$(DEFINES) -DNO_BANNER
+else
+ifeq ($(LATEBANNER),true)
+$(info === Building rosco_m68k firmware with late banner output at startup)
+DEFINES:=$(DEFINES) -DLATE_BANNER
+endif
 endif
 
 # Set up Size-specific things appropriately..
