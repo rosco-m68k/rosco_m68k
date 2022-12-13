@@ -31,37 +31,46 @@
 #include <stdint.h>
 // Low-level C API macro reference (act like functions as shown):
 
-// set XM registers (main registers, omit XM_ from xmreg name):
+// --- set XM registers (main registers, omit XM_ from xmreg name):
 // void     xm_setbh(xmreg, high_byte)
 // void     xm_setbl(xmreg, low_byte)
 // void     xm_setw(xmreg, word_value)
 // void     xm_setl(xmreg, long_value)
-// void     xm_set_rw_rd_incr()
-// void     xm_set_no_rw_rd_incr()
 
-// set XR register (extended registers, omit XR_ from xreg name):
+// --- set XR register (extended registers, omit XR_ from xreg name):
 // void     xreg_setw(xreg, word_value)
 // void     xreg_set_addr(xreg)
 // void     xreg_setw_next(word_value)
 
-// set XR memory address (or XR register):
+// --- set VRAM memory address:
+// void     vram_setw(vram, word_value)
+// void     vram_set_addr_incr(vram, incr)
+// void     vram_setw_next(word_value)
+// void     vram_setw_wait(vram, wordval)
+// void     vram_setw_next_wait(word_value)
+// void     vram_setl(vram, long_value)       // TODO: implement
+// void     vram_setl_next(long_value)        // TODO: implement
+// void     vram_setl_wait(vram, longval)     // TODO: implement
+// void     vram_setl_next_wait(long_value)   // TODO: implement
+
+// --- set XR memory address (or XR register address):
 // void     xmem_setw(xrmem, word_value)
 // void     xmem_set_addr(xrmem)
 // void     xmem_setw_next(word_value)
 // void     xmem_setw_wait(xrmem, wordval)
 // void     xmem_setw_next_wait(word_value)
 
-// get XM registers (main registers):
-// uint8_t  xm_get_sys_ctrlb(bit_name)   (SYS_CTRL_<bit_name>_B)
-// uint8_t  xm_getbh(xmreg)             (omit XM_ from xmreg name)
-// uint8_t  xm_getbl(xmreg)             (omit XM_ from xmreg name)
-// uint16_t xm_getw(xmreg)              (omit XM_ from xmreg name)
-// uint32_t xm_getl(xmreg)              (omit XM_ from xmreg name)
+// --- get XM registers (main registers, omit XM_ from xmreg name):
+// uint8_t  xm_get_sys_ctrlb(bit_name)  (SYS_CTRL_<bit_name>_B)
+// uint8_t  xm_getbh(xmreg)
+// uint8_t  xm_getbl(xmreg)
+// uint16_t xm_getw(xmreg)
+// uint32_t xm_getl(xmreg)
 
-// get XR registers (extended registers):
-// uint16_t xreg_getw(xreg)             (omit XR_ from xreg name)
-// uint16_t xreg_get_addr(xreg)         (omit XR_ from xreg name)
-// uint16_t xreg_getw_next(xreg)        (omit XR_ from xreg name)
+// --- get XR registers (extended registers, omit XR_ from xreg name):
+// uint16_t xreg_getw(xreg)
+// uint16_t xreg_get_addr(xreg)
+// uint16_t xreg_getw_next(xreg)
 
 // NOTE: "*_wait" functions wait if there is memory contention (with xwait_mem_ready() before a read or after a write).
 // In most video modes, other than reading COLOR_MEM, wait will not be needed as there will be enough free XR or VRAM
@@ -69,7 +78,18 @@
 // needed for reliable operation (especially when reading memories used during video display).
 // TODO: test and verify exactly when "*_wait" functions are required
 
-// get XR memory address (or XR register):
+// --- get VRAM data from VRAM address // TODO: actually implement these. 😅
+// uint16_t vram_getw(vram)
+// void vram_get_addr_incr(vram, incr)
+// uint16_t vram_getw_next()
+// uint16_t vram_getw_wait(vram)
+// uint16_t vram_getw_next_wait()
+// uint16_t vram_getl(vram)
+// uint16_t vram_getl_next()
+// uint16_t vram_getl_wait(vram)
+// uint16_t vram_getl_next_wait()
+
+// --- get XR data from XR address (or XR register):
 // uint16_t xmem_getw(xrmem)
 // void xmem_get_addr(xrmem)
 // uint16_t xmem_getw_next()
@@ -90,9 +110,12 @@
 typedef struct _xosera_info xosera_info_t;        // forward declare
 
 // external function declarations
-bool xosera_init(int reconfig_num);                // wait a bit for Xosera to respond and optional reconfig (if 0 to 3)
-bool xosera_get_info(xosera_info_t * info);        // retrieve init xosera_info_t (valid after xosera reconfig)
-bool xosera_sync();                                // true if Xosera present and responding
+bool xosera_init(int reconfig_num);        // wait a bit for Xosera to respond and optional reconfig (if 0 to 3)
+int  xosera_vid_width();
+int  xosera_vid_height();
+int  xosera_aud_channels();
+bool xosera_get_info(xosera_info_t * info);              // retrieve init xosera_info_t (valid after xosera reconfig)
+bool xosera_sync();                                      // true if Xosera present and responding
 void xosera_memclear(void * ptr, unsigned int n);        // memory zero
 void cpu_delay(int ms);                                  // delay approx milliseconds with CPU busy wait
 void xv_delay(uint32_t ms);                              // delay milliseconds using Xosera TIMER
@@ -127,12 +150,12 @@ typedef struct _xreg
 // stored at XV_INFO_ADDR after FPGA reconfigure
 typedef struct _xosera_info
 {
-    char          description_str[48];        // ASCII description
-    uint16_t      reserved_48[4];             // 8 reserved bytes (and force alignment)
-    uint16_t      version_bcd;                // BCD version number (xx.yy)
-    unsigned char git_modified;               // non-zero if design modified from githash version
-    unsigned char reserved_59;                // reserved byte
-    uint32_t      githash;                    // git "short hash" version from repository
+    char          description_str[240];        // ASCII description
+    uint16_t      reserved_48[4];              // 8 reserved bytes (and force alignment)
+    uint16_t      version_bcd;                 // BCD version number (xx.yy)
+    unsigned char git_modified;                // non-zero if design modified from githash version
+    unsigned char reserved_59;                 // reserved byte
+    uint32_t      githash;                     // git "short hash" version from repository
 } xosera_info_t;
 
 #ifndef __INTELLISENSE__        // vscode intellisense does not grok m68k (flags as error, but correct for m68k-gcc)
@@ -140,8 +163,9 @@ typedef char _xosera_init_size_static_assert[sizeof(xosera_info_t) == XV_INFO_SI
 #endif
 
 // Xosera XM register base ptr
+typedef volatile xmreg_t * const xosera_ptr_t;
 #if !defined(XV_PREP_REQUIRED)
-extern volatile xmreg_t * const xosera_ptr;
+extern xosera_ptr_t xosera_ptr;
 #endif
 
 // Extra-credit function that saves 8 cycles per function that calls xosera API functions (call once at top).
@@ -209,11 +233,52 @@ extern volatile xmreg_t * const xosera_ptr;
         }                                                                                                              \
     } while (false)
 
-// set XR memory write address xrmem (use xmem_setw_next()/xmem_setw_next_wait() to write data)
-#define xreg_set_addr(xreg) xm_setw(WR_XADDR, (XR_##xreg))
+// set vram memory address vram to 16-bit word word_value
+#define vram_setw(vram, word_value)                                                                                    \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        uint16_t vram_setw_u16 = (word_value);                                                                         \
+        if (__builtin_constant_p((vram)) && __builtin_constant_p(vram_setw_u16))                                       \
+        {                                                                                                              \
+            __asm__ __volatile__(                                                                                      \
+                "movep.l %[rxav]," XM_STR(XM_WR_ADDR) "(%[ptr])"                                                       \
+                :                                                                                                      \
+                : [rxav] "d"((((uint32_t)(vram)) << 16) | (uint16_t)(vram_setw_u16)), [ptr] "a"(xosera_ptr)            \
+                :);                                                                                                    \
+        }                                                                                                              \
+        else                                                                                                           \
+        {                                                                                                              \
+            xm_setw(WR_ADDR, (vram));                                                                                  \
+            xm_setw(DATA, vram_setw_u16);                                                                              \
+        }                                                                                                              \
+    } while (false)
 
-// set next xreg (i.e., next WR_XADDR after increment) 16-bit word value
-#define xreg_setw_next(word_value) xm_setw(XDATA, (word_value))
+// set vram memory write address and increment (use vram_set[w/l]_next[_wait]() to write data)
+#define vram_set_addr_incr(vram, incr)                                                                                 \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        xm_setw(WR_INCR, (incr));                                                                                      \
+        xm_setw(WR_ADDR, (vram));                                                                                      \
+    } while (false)
+
+// set next vram data (i.e., next WR_ADDR after increment) 16-bit word value
+#define vram_setw_next(word_value) xm_setw(DATA, (word_value))
+
+// set vram address vram to 16-bit word word_value and wait for slow memory
+#define vram_setw_wait(vram, word_value)                                                                               \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        vram_setw((vram), (word_value));                                                                               \
+        xwait_mem_ready();                                                                                             \
+    } while (false)
+
+// set next vram data (i.e., next WR_ADDR after increment) 16-bit word value and wait for slow memory
+#define vram_setw_next_wait(word_value)                                                                                \
+    do                                                                                                                 \
+    {                                                                                                                  \
+        vram_setw_next((word_value));                                                                                  \
+        xwait_mem_ready();                                                                                             \
+    } while (false)
 
 // set XR memory address xrmem to 16-bit word word_value
 #define xmem_setw(xrmem, word_value)                                                                                   \
@@ -222,6 +287,12 @@ extern volatile xmreg_t * const xosera_ptr;
         xm_setw(WR_XADDR, (xrmem));                                                                                    \
         xm_setw(XDATA, (word_value));                                                                                  \
     } while (false)
+
+// set XR memory write address xrmem (use xmem_setw_next()/xmem_setw_next_wait() to write data)
+#define xreg_set_addr(xreg) xm_setw(WR_XADDR, (XR_##xreg))
+
+// set next xreg (i.e., next WR_XADDR after increment) 16-bit word value
+#define xreg_setw_next(word_value) xm_setw(XDATA, (word_value))
 
 // set XR memory write address xrmem (use xmem_setw_next()/xmem_setw_next_wait() to write data)
 #define xmem_set_addr(xrmem) xm_setw(WR_XADDR, (xrmem))

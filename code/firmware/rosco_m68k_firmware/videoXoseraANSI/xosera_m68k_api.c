@@ -133,6 +133,18 @@ bool xosera_init(int reconfig_num)
     return detected;
 }
 
+int xosera_vid_width()
+{
+    xv_prep();
+
+    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 640 : 848;
+}
+
+int xosera_vid_height()
+{
+    return 480;
+}
+
 // TODO: retrieve xosera_info (placed in COPPER memory after xosera reconfig)
 bool xosera_get_info(xosera_info_t * info)
 {
@@ -155,18 +167,18 @@ bool xosera_get_info(xosera_info_t * info)
 
     uint16_t copsave = xreg_getw(COPP_CTRL);        // save COPP_CTRL
 
-    xreg_setw(COPP_CTRL, 0x005A);        // set to test value 1
-    if (xreg_getw(COPP_CTRL) != 0x005A)
-    {
-        return false;
-    }
-    xreg_setw(COPP_CTRL, 0x00A5);        // set to test value 2
-    if (xreg_getw(COPP_CTRL) != 0x00A5)
+    xreg_setw(COPP_CTRL, 0x0000);        // disable copper
+
+    uint16_t copvalue = xmem_getw(XR_COPPER_ADDR);        // save copper mem
+    xmem_setw(XR_COPPER_ADDR, copvalue ^ 0xe342);         // set test value
+
+    if (xmem_getw(XR_COPPER_ADDR) != (copvalue ^ 0xe342))        // if test failed, return
     {
         return false;
     }
 
-    xreg_setw(COPP_CTRL, copsave);        // restore
+    xmem_setw(XR_COPPER_ADDR, copvalue);        // restore copper mem
+
 
     uint16_t * wp = (uint16_t *)info;
 
@@ -176,6 +188,8 @@ bool xosera_get_info(xosera_info_t * info)
     {
         *wp++ = xmem_getw_next_wait();
     }
+
+    xreg_setw(COPP_CTRL, copsave);        // restore
 
     return true;        // TODO: Add CRC or similar?
 }
