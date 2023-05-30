@@ -12,6 +12,16 @@ OBJECTS := $(OBJECTS) $(LIBOBJECTS)
 INCLUDES := $(INCLUDES) $(DIR)/include/*
 LIBS := $(LIBS) $(DIR)/$(BINARY)
 
+# GCC-version-specific settings
+ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
+CC_VERSION:=$(shell $(CC) -dumpfullversion)
+CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
+# If this is GCC 13, add flag -Wno-error=maybe-uninitialized
+ifeq ($(CC_MAJOR),13)
+CFLAGS+=-Wno-error=maybe-uninitialized
+endif
+endif
+
 $(DIR)/$(BINARY): $(LIBOBJECTS)
 	$(AR)	$(ARFLAGS) rs $@ $^
 	$(RANLIB) $@
