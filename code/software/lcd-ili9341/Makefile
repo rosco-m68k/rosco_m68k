@@ -15,3 +15,10 @@ endif
 -include $(ROSCO_M68K_DIR)/code/software/software.mk
 
 EXTRA_LIBS=-lvterm
+
+lcd-ili9341.o: images
+
+images:
+	$(MAKE) -C images
+
+.PHONY: images
