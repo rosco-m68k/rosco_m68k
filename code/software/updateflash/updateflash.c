@@ -26,7 +26,7 @@
 #define EROM_BASE   ((ROM_BASE))
 #define OROM_BASE   ((ROM_BASE + 1))
 
-extern void *_end;
+extern char _end[];
 extern void reboot_to_init();
 
 // NB Size must be even (this is checked before calling this function).
