@@ -145,7 +145,27 @@ int xosera_vid_height()
     return 480;
 }
 
-// TODO: retrieve xosera_info (placed in COPPER memory after xosera reconfig)
+int xosera_max_hpos()
+{
+    xv_prep();
+
+    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 800 - 1 : 1088 - 1;
+}
+
+int xosera_max_vpos()
+{
+    xv_prep();
+
+    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 525 - 1 : 517 - 1;
+}
+
+int xosera_aud_channels()
+{
+    xv_prep();
+
+    return xm_getbh(FEATURES) & 0xF;
+}
+
 bool xosera_get_info(xosera_info_t * info)
 {
     if (!info)
@@ -178,7 +198,6 @@ bool xosera_get_info(xosera_info_t * info)
     }
 
     xmem_setw(XR_COPPER_ADDR, copvalue);        // restore copper mem
-
 
     uint16_t * wp = (uint16_t *)info;
 

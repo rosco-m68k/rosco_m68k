@@ -31,7 +31,7 @@
 #define XR_PA_REGS      0x0010        // 0x0010-0x0017 8 playfield A video registers
 #define XR_PB_REGS      0x0018        // 0x0018-0x001F 8 playfield B video registers
 #define XR_AUDIO_REGS   0x0020        // 0x0020-0x002F 16 audio playback registers      // TODO: audio
-#define XR_BLIT_REGS    0x0040        // 0x0040-0x004B 12 blitter registers
+#define XR_BLIT_REGS    0x0040        // 0x0040-0x004B 10 blitter registers
 #define XR_TILE_ADDR    0x4000        // (R/W) 0x4000-0x53FF tile glyph/tile map memory
 #define XR_TILE_SIZE    0x1400        //                     5120 x 16-bit tile glyph/tile map memory
 #define XR_COLOR_ADDR   0x8000        // (R/W) 0x8000-0x81FF 2 x A & B color lookup memory
@@ -40,8 +40,8 @@
 #define XR_COLOR_A_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
 #define XR_COLOR_B_ADDR 0x8100        // (R/W) 0x8100-0x81FF B 256 entry color lookup memory
 #define XR_COLOR_B_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
-#define XR_COPPER_ADDR  0xC000        // (R/W) 0xC000-0xC3FF copper program memory (16-bit instructions)
-#define XR_COPPER_SIZE  0x0400        //                     1024 x 16-bit copper program memory addresses
+#define XR_COPPER_ADDR  0xC000        // (R/W) 0xC000-0xC5FF copper program memory
+#define XR_COPPER_SIZE  0x0600        //                     1024+512 x 16-bit copper memory words
 
 // Xosera version info put in COPPER memory after FPGA reconfigure
 #define XV_INFO_ADDR (XR_COPPER_ADDR + XR_COPPER_SIZE - 128)
@@ -93,7 +93,7 @@
 #define SYS_CTRL_UNUSED_9_F  0x02        // (RO   )  unused (reads 0)
 #define SYS_CTRL_UNUSED_8_F  0x01        // (- /- )
 
-// INT_CTRL bit numbers NOTE: These are word bits for INT_CTRL word
+// INT_CTRL bit numbers within word
 #define INT_CTRL_RECONFIG_B   15        // reconfigure FPGA to config # in bits [9:8] of INT_CTRL
 #define INT_CTRL_BLIT_EN_B    14        // blitter ready interrupt mask
 #define INT_CTRL_TIMER_EN_B   13        // timer match interrupt mask
@@ -110,7 +110,7 @@
 #define INT_CTRL_AUD2_INTR_B  2         // audio channel ready interrupt (read status, write acknowledge)
 #define INT_CTRL_AUD1_INTR_B  1         // audio channel ready interrupt (read status, write acknowledge)
 #define INT_CTRL_AUD0_INTR_B  0         // audio channel ready interrupt (read status, write acknowledge)
-// INT_CTRL bit flags
+// INT_CTRL bit flag/mask
 #define INT_CTRL_RECONFIG_F   0x8000        // reconfigure FPGA to config # in bits [9:8] of INT_CTRL
 #define INT_CTRL_BLIT_EN_F    0x4000        // blitter ready interrupt enable
 #define INT_CTRL_TIMER_EN_F   0x2000        // timer match interrupt enable
@@ -132,6 +132,24 @@
 #define INT_CTRL_AUD_ALL_F    0x000F        // all audio channels status/acknowledge
 #define INT_CTRL_CLEAR_ALL_F  0x007F        // clear all interrupts
 
+// FEATURES bit numbers within word (for fields wider than 1 bit, XB_(xxx_B, xxx_W) macro can be used)
+#define FEATURES_MONRES_B  0         // rightmost bit number for 4-bit monitor mode field
+#define FEATURES_MONRES_W  4         // bit width for 4-bit monitor mode field
+#define FEATURES_COPP_B    4         // bit number indicating presence of COPPER
+#define FEATURES_BLIT_B    5         // bit number indicating presence of BLITTER
+#define FEATURES_PF_B_B    6         // bit number indicating presence of playfield B (2nd playfield)
+#define FEATURES_AUDCHAN_B 8         // rightmost bit number for 4-bit audio channels field
+#define FEATURES_AUDCHAN_W 4         // bit width for 4-bit audio channels field
+#define FEATURES_CONFIG_B  12        // rightmost bit number for 4-bit FPGA config field
+#define FEATURES_CONFIG_W  4         // bit width for 4-bit FPGA config field
+// FEATURES flag/mask
+#define FEATURES_MONRES_F  0x000F        // bit-mask for 4-bit monitor mode field
+#define FEATURES_COPP_F    0x0010        // bit flag indicating presence of COPPER
+#define FEATURES_BLIT_F    0x0020        // bit flag indicating presence of BLITTER
+#define FEATURES_PF_B_F    0x0040        // bit flag indicating presence of playfield B (2nd playfield)
+#define FEATURES_AUDCHAN_F 0x0F00        // bit-mask for 4-bit audio channels field
+#define FEATURES_CONFIG_F  0xF000        // bit-mask for 4-bit config field
+
 // XR Extended Register / Region (accessed via XM_RD_XADDR/XM_WR_XADDR and XM_XDATA)
 
 //  Video Config and Copper XR Registers
@@ -152,6 +170,24 @@
 #define XR_UNUSED_0E 0x0E        // (- /-) unused XR 0E
 #define XR_UNUSED_0F 0x0F        // (- /-) unused XR 0F
 
+// XR_VID_CTRL bit numbers within word)
+#define XR_VID_CTRL_SWAP_AB_B 15        // bit number to colormap used (pf A uses colormap B and vice versa)
+#define XR_VID_CTRL_BORDCOL_B 0         // rightmost bit number of pf A color index
+#define XR_VID_CTRL_BORDCOL_W 8         // bit width for pf A color index
+// XR_VID_CTRL flag/mask
+#define XR_VID_CTRL_SWAP_AB_F 0x8000        // flag to swap colormap used (pf A uses colormap B and vice versa)
+#define XR_VID_CTRL_BORDCOL_F 0x00FF        // mask for pf A color index
+
+// XR_COPP_CTRL bit numbers within word)
+#define XR_COPP_CTRL_COPP_EN_B 15        // bit number to enable/disable copper
+// XR_COPP_CTRL bit flag/mask
+#define XR_COPP_CTRL_COPP_EN_F 0x8000        // flag to enable/disable copper
+
+// XR_AUD_CTRL bit numbers within word)
+#define XR_AUD_CTRL_AUD_EN_B 0        // bit number to enable/disable audio
+// XR_AUD_CTRL bit flag/mask
+#define XR_AUD_CTRL_AUD_EN_F 0x0001        // flag to enable/disable audio
+
 // Playfield A Control XR Registers
 #define XR_PA_GFX_CTRL  0x10        // (R /W) playfield A graphics control
 #define XR_PA_TILE_CTRL 0x11        // (R /W) playfield A tile control
@@ -160,7 +196,7 @@
 #define XR_PA_HV_FSCALE 0x14        // (R /W) playfield A horizontal and vertical fractional scale
 #define XR_PA_HV_SCROLL 0x15        // (R /W) playfield A horizontal and vertical fine scroll
 #define XR_PA_LINE_ADDR 0x16        // (- /W) playfield A scanline start address (loaded at start of line)
-#define XR_PA_UNUSED_17 0x17        // // TODO: colorbase?
+#define XR_PA_UNUSED_17 0x17        // (- /-)
 
 // Playfield B Control XR Registers
 #define XR_PB_GFX_CTRL  0x18        // (R /W) playfield B graphics control
@@ -170,7 +206,45 @@
 #define XR_PB_HV_FSCALE 0x1C        // (R /W) playfield B horizontal and vertical fractional scale
 #define XR_PB_HV_SCROLL 0x1D        // (R /W) playfield B horizontal and vertical fine scroll
 #define XR_PB_LINE_ADDR 0x1E        // (- /W) playfield B scanline start address (loaded at start of line)
-#define XR_PB_UNUSED_1F 0x1F        // // TODO: colorbase?
+#define XR_PB_UNUSED_1F 0x1F        // (- /-)
+
+// Playfield GFX BPP constants
+#define XR_GFX_BPP_1 0        // Px_GFX_CTRL.bpp (1-bpp + fore/back attribute color)
+#define XR_GFX_BPP_4 1        // Px_GFX_CTRL.bpp (4-bpp, 16 color)
+#define XR_GFX_BPP_8 2        // Px_GFX_CTRL.bpp (8-bpp 256 color)
+#define XR_GFX_BPP_X 3        // Px_GFX_CTRL.bpp (reserved)
+
+// XR_Px_GFX_CTRL bit numbers within word)
+#define XR_GFX_CTRL_V_REPEAT_B  0
+#define XR_GFX_CTRL_V_REPEAT_W  2
+#define XR_GFX_CTRL_H_REPEAT_B  2
+#define XR_GFX_CTRL_H_REPEAT_W  2
+#define XR_GFX_CTRL_BPP_B       4
+#define XR_GFX_CTRL_BPP_W       2
+#define XR_GFX_CTRL_BITMAP_B    6
+#define XR_GFX_CTRL_BLANK_B     7
+#define XR_GFX_CTRL_COLORBASE_B 8
+#define XR_GFX_CTRL_COLORBASE_W 8
+// XR_Px_GFX_CTRL bit flag/mask
+#define XR_GFX_CTRL_V_REPEAT_F  0x0003
+#define XR_GFX_CTRL_H_REPEAT_F  0x000C
+#define XR_GFX_CTRL_BPP_F       0x0030
+#define XR_GFX_CTRL_BITMAP_F    0x0040
+#define XR_GFX_CTRL_BLANK_F     0x0080
+#define XR_GFX_CTRL_COLORBASE_F 0xFF00
+
+// XR_Px_TILE_CTRL bit numbers within word)
+#define XR_TILE_CTRL_TILE_H_B       0
+#define XR_TILE_CTRL_TILE_H_W       4
+#define XR_TILE_CTRL_TILE_VRAM_B    8
+#define XR_TILE_CTRL_DISP_TILEMEM_B 9
+#define XR_TILE_CTRL_TILEBASE_B     10
+#define XR_TILE_CTRL_TILEBASE_W     6
+// XR_Px_TILE_CTRL bit flag/mask
+#define XR_TILE_CTRL_TILE_H_F       0x000F
+#define XR_TILE_CTRL_TILE_VRAM_F    0x0100
+#define XR_TILE_CTRL_DISP_TILEMEM_F 0x0200
+#define XR_TILE_CTRL_TILEBASE_F     0xFC00
 
 // Audio Registers
 #define XR_AUD0_VOL    0x20        // (WO/-) // TODO: WIP
@@ -207,12 +281,6 @@
 #define XR_UNUSED_4E  0x4E        // unused XR reg
 #define XR_UNUSED_4F  0x4F        // unused XR reg
 
-// constants
-#define XR_GFX_BPP_1 0        // Px_GFX_CTRL.bpp (1-bpp + fore/back attribute color)
-#define XR_GFX_BPP_4 1        // Px_GFX_CTRL.bpp (4-bpp, 16 color)
-#define XR_GFX_BPP_8 2        // Px_GFX_CTRL.bpp (8-bpp 256 color)
-#define XR_GFX_BPP_X 3        // Px_GFX_CTRL.bpp (reserved)
-
 #define MAKE_GFX_CTRL(colbase, blank, bpp, bm, hx, vx)                                                                 \
     (XB_(colbase, 8, 8) | XB_(blank, 7, 1) | XB_(bm, 6, 1) | XB_(bpp, 4, 2) | XB_(hx, 2, 2) | XB_(vx, 0, 2))
 #define MAKE_TILE_CTRL(tilebase, map_in_tile, glyph_in_vram, tileheight)                                               \
@@ -238,11 +306,11 @@
 #define COP_MOVEP(rgb16, color_num) (0xA0000000 | XB_((uint32_t)(color_num), 16, 13) | ((uint16_t)(rgb16)))
 #define COP_MOVEC(val16, cop_addr)  (0xC0000000 | XB_((uint32_t)(cop_addr), 16, 13) | ((uint16_t)(val16)))
 #else        // newer "slim copper" versions (but still 32-bit "emulating" previous copper)
-#define COP_WAIT_HV(h_pos, v_pos)   (0x28002000 | XB_((uint32_t)(v_pos), 16, 11) | XB_((uint32_t)(h_pos), 0, 11))
-#define COP_WAIT_H(h_pos)           (0x20002000 | XB_((uint32_t)(h_pos), 0, 11))
-#define COP_WAIT_V(v_pos)           (0x20002800 | XB_((uint32_t)(v_pos), 0, 10))
-#define COP_WAIT_F()                (0x20002FFF)
-#define COP_END()                   (0x20002FFF)
+#define COP_WAIT_HV(h_pos, v_pos) (0x28002000 | XB_((uint32_t)(v_pos), 16, 11) | XB_((uint32_t)(h_pos), 0, 11))
+#define COP_WAIT_H(h_pos)         (0x20002000 | XB_((uint32_t)(h_pos), 0, 11))
+#define COP_WAIT_V(v_pos)         (0x20002800 | XB_((uint32_t)(v_pos), 0, 10))
+#define COP_WAIT_F()              (0x20002FFF)
+#define COP_END()                 (0x20002FFF)
 // #define COP_SKIP_HV(h_pos, v_pos)   (0x20000000 | XB_((uint32_t)(v_pos), 16, 12) | XB_((uint32_t)(h_pos), 4, 12))
 // #define COP_SKIP_H(h_pos)           (0x20000001 | XB_((uint32_t)(h_pos), 4, 12))
 // #define COP_SKIP_V(v_pos)           (0x20000002 | XB_((uint32_t)(v_pos), 16, 12))

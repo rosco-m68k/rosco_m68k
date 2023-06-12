@@ -113,6 +113,8 @@ typedef struct _xosera_info xosera_info_t;        // forward declare
 bool xosera_init(int reconfig_num);        // wait a bit for Xosera to respond and optional reconfig (if 0 to 3)
 int  xosera_vid_width();
 int  xosera_vid_height();
+int  xosera_max_hpos();
+int  xosera_max_vpos();
 int  xosera_aud_channels();
 bool xosera_get_info(xosera_info_t * info);              // retrieve init xosera_info_t (valid after xosera reconfig)
 bool xosera_sync();                                      // true if Xosera present and responding
