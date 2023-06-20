@@ -40,7 +40,7 @@
 #define XR_COLOR_A_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
 #define XR_COLOR_B_ADDR 0x8100        // (R/W) 0x8100-0x81FF B 256 entry color lookup memory
 #define XR_COLOR_B_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
-#define XR_COPPER_ADDR  0xC000        // (R/W) 0xC000-0xC5FF copper program memory
+#define XR_COPPER_ADDR  0xC000        // (R/W) 0xC000-0xC5FF copper memory (16-bit words)
 #define XR_COPPER_SIZE  0x0600        //                     1024+512 x 16-bit copper memory words
 
 // Xosera version info put in COPPER memory after FPGA reconfigure
@@ -263,6 +263,11 @@
 #define XR_AUD3_PERIOD 0x2D        // (WO/-) // TODO: WIP
 #define XR_AUD3_LENGTH 0x2E        // (WO/-) // TODO: WIP
 #define XR_AUD3_START  0x2F        // (WO/-) // TODO: WIP
+// Audio flags
+#define AUD_PER_RESTART_B 15        // AUDx_PERIOD bit 15 is force channel restart
+#define AUD_PER_RESTART_F 0x8000
+#define AUD_LEN_TILEMEM_B 15        // AUDx_LENGTH bit 15 is TILEMEM flag
+#define AUD_LEN_TILEMEM_F 0x8000
 
 #define XR_BLIT_CTRL  0x40        // (WO) blit control ([15:8]=transp value, [5]=8 bpp, [4]=transp on, [0]=S constant)
 #define XR_BLIT_ANDC  0x41        // (WO) blit AND-COMPLEMENT constant value

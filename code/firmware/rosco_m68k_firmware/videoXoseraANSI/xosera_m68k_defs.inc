@@ -236,6 +236,11 @@ XR_AUD3_VOL             equ     $2C         ; (WO/-) // TODO: WIP
 XR_AUD3_PERIOD          equ     $2D         ; (WO/-) // TODO: WIP
 XR_AUD3_LENGTH          equ     $2E         ; (WO/-) // TODO: WIP
 XR_AUD3_START           equ     $2F         ; (WO/-) // TODO: WIP
+; Audio flags
+AUD_PER_RESTART_B       equ     15          ; AUDx_PERIOD bit 15 is force channel restart
+AUD_PER_RESTART_F       equ     $8000
+AUD_LEN_TILEMEM_B       equ     15          ; AUDx_LENGTH bit 15 is TILEMEM flag
+AUD_LEN_TILEMEM_F       equ     $8000
 
 ; "Slim" blitter
 XR_BLIT_CTRL            equ     $40         ; (WO) blit control ([15:8]=transp value, [5]=8 bpp, [4]=transp on, [0]=S constant)
