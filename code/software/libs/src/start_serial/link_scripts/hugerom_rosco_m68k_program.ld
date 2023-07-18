@@ -98,7 +98,7 @@ SECTIONS
     _init_end = .;
   } > RAM
 
-  .text.postinit :
+  .text.postinit ALIGN(4) :
   {
     _postinit = .;
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
@@ -114,7 +114,9 @@ SECTIONS
     _code_end = .;
   } > RAM
 
-  .ctors ALIGN(4) : 
+  . = DATA_SEGMENT_ALIGN(CONSTANT(MAXPAGESIZE), CONSTANT(COMMONPAGESIZE));
+
+  .ctors ALIGN(4) :
   {
       _ctors = .;
       KEEP(*(.ctors))           /* Run in reverse order, so non-priority ones go first  */
@@ -138,15 +140,16 @@ SECTIONS
     _data_end = .;
   } > RAM
 
-  .bss(NOLOAD):
+  .bss ALIGN(4) :
   {
-    . = ALIGN(4);       /* Not strictly needed, but here in case we rearrange things */
     _bss_start = .;
     *(.bss*)
     *(COMMON)
     . = ALIGN(4);       /* long align for kinit clearing */
     _bss_end = .;
   } > RAM
+
+  . = DATA_SEGMENT_END(.);
 
   _end = .;
 }
