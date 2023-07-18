@@ -17,11 +17,12 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 
-ram  = 0x00002000;          /* start of user memory                     */
+ram       = 0x00000000;                 /* start of RAM                 */
+user_ram  = 0x00002000;                 /* start of user memory         */
 
 MEMORY
 {
-  RAM  : org = ram,  l = 0x00f7e000     /* program can use all RAM > 8K */
+  RAM  : org = ram,  l = 0x00f80000     /* program can use all RAM > 8K */
 }
 
 /* program configuration symbols that may be useful to override */
@@ -86,11 +87,11 @@ PROVIDE(_FIRMWARE_REV   = 0x00E00400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
 PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
-PROVIDE(_RUN_ADDRESS    = ORIGIN(RAM)); /* start of user memory         */
+PROVIDE(_RUN_ADDRESS    = user_ram);    /* start of user memory         */
 
 SECTIONS
 {
-  .text.init :
+  .text.init _RUN_ADDRESS : AT(_LOAD_ADDRESS)
   {
     _init = .;
     KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
