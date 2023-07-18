@@ -17,12 +17,12 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 
-ram       = 0x00000000;                 /* start of RAM                 */
-user_ram  = 0x00002000;                 /* start of user memory         */
-
 MEMORY
 {
-  RAM  : org = ram,  l = 0x00f80000     /* program can use all RAM > 8K */
+  RAM       : org = 0x00000000,  l = 0x00100000
+  EXP_RAM   : org = 0x00100000,  l = 0x00D00000
+  ROM       : org = 0x00E00000,  l = 0x00100000
+  IO_SPACE  : org = 0x00F00000,  l = 0x00100000
 }
 
 /* program configuration symbols that may be useful to override */
@@ -87,7 +87,7 @@ PROVIDE(_FIRMWARE_REV   = 0x00E00400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
 PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
-PROVIDE(_RUN_ADDRESS    = user_ram);    /* start of user memory         */
+PROVIDE(_RUN_ADDRESS    = 0x00002000);    /* start of user memory         */
 
 SECTIONS
 {
