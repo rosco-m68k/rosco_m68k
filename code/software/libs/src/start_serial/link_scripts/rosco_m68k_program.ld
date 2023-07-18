@@ -96,7 +96,7 @@ SECTIONS
     _init = .;
     KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
-  } > RAM
+  } >RAM
 
   .text.postinit ALIGN(4) :
   {
@@ -104,7 +104,7 @@ SECTIONS
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
     . = ALIGN(4);       /* long align for init.S copying */
     _postinit_end = .;
-  } > RAM
+  } >RAM
 
   .text ALIGN(4) :
   {
@@ -112,7 +112,7 @@ SECTIONS
     *(.text*)
     *(.rodata*)
     _code_end = .;
-  } > RAM
+  } >RAM
 
   . = DATA_SEGMENT_ALIGN(CONSTANT(MAXPAGESIZE), CONSTANT(COMMONPAGESIZE));
 
@@ -122,7 +122,7 @@ SECTIONS
       KEEP(*(.ctors))           /* Run in reverse order, so non-priority ones go first  */
       KEEP(*(SORT(.ctors.*)))   /* followed by ctors with priority */
       _ctors_end = .;
-  } > RAM
+  } >RAM
 
   .dtors ALIGN(4) : 
   {
@@ -130,7 +130,7 @@ SECTIONS
       KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first, highest to lowest */
       KEEP(*(.dtors))           /* Followed by non-priority ones */
       _dtors_end = .;
-  } > RAM
+  } >RAM
 
   .data ALIGN(4) :
   {
@@ -138,7 +138,7 @@ SECTIONS
     *(.data*)
     . = ALIGN(4);       /* long align for init.S copying */
     _data_end = .;
-  } > RAM
+  } >RAM
 
   .bss ALIGN(4) :
   {
@@ -147,7 +147,7 @@ SECTIONS
     *(COMMON)
     . = ALIGN(4);       /* long align for kinit clearing */
     _bss_end = .;
-  } > RAM
+  } >RAM
 
   . = DATA_SEGMENT_END(.);
 
