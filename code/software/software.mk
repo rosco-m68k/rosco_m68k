@@ -37,6 +37,21 @@ ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
 
+ifeq ($(CPU),68000)
+LD_SMALL_PAGES?=true
+endif
+ifeq ($(CPU),68010)
+LD_SMALL_PAGES?=true
+endif
+ifeq ($(CPU),68020)
+LD_SMALL_PAGES?=true
+endif
+LD_SMALL_PAGES?=false
+ifeq ($(LD_SMALL_PAGES),true)
+# Saves space in binaries, but will break MMU use
+LDFLAGS+=-z max-page-size=16 -z common-page-size=16
+endif
+
 CC=m68k-elf-gcc
 CXX=m68k-elf-g++
 AS=m68k-elf-as
