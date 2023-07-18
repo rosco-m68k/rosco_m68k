@@ -9236,7 +9236,7 @@ LAB_SMSG
 * MID$	. MID$(<sexpr>,<nexpr>[,<nexpr>])				* done
 * USING$	. USING$(<sexpr>,<nexpr>[,<nexpr>]...])			* done
 
-	section .data
+	section .data,data
     align   12
 FREE_MEM:
 	
