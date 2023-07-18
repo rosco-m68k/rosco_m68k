@@ -87,7 +87,7 @@ PROVIDE(_FIRMWARE_REV   = 0x00E00400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
 PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
-PROVIDE(_RUN_ADDRESS    = 0x00002000);    /* start of user memory         */
+PROVIDE(_RUN_ADDRESS    = 0x00002000);  /* start of user memory         */
 
 SECTIONS
 {
