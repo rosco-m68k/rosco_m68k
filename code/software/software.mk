@@ -37,17 +37,17 @@ ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
 
-ifeq ($(CPU),68000)
-LD_SMALL_PAGES?=true
+ifeq ($(CPU),68030)
+LD_LD_SUPPORT_MMU?=true
 endif
-ifeq ($(CPU),68010)
-LD_SMALL_PAGES?=true
+ifeq ($(CPU),68040)
+LD_SUPPORT_MMU?=true
 endif
-ifeq ($(CPU),68020)
-LD_SMALL_PAGES?=true
+ifeq ($(CPU),68060)
+LD_SUPPORT_MMU?=true
 endif
-LD_SMALL_PAGES?=false
-ifeq ($(LD_SMALL_PAGES),true)
+LD_SUPPORT_MMU?=false
+ifneq ($(LD_SUPPORT_MMU),true)
 # Saves space in binaries, but will break MMU use
 LDFLAGS+=-z max-page-size=16 -z common-page-size=16
 endif
