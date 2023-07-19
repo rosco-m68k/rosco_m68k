@@ -66,6 +66,8 @@ CFLAGS+=--param=min-pagesize=0
 endif
 endif
 
+# For systems without MMU support, aligning LOAD segments with pages is not needed
+# In those cases, provide fake page sizes to both save space and remove RWX warnings
 ifeq ($(CPU),68030)
 LD_LD_SUPPORT_MMU?=true
 endif
