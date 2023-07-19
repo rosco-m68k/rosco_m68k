@@ -17,11 +17,12 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 
-ram  = 0x00002000;          /* start of user memory                     */
-
 MEMORY
 {
-  RAM  : org = ram,  l = 0x00f7e000     /* program can use all RAM > 8K */
+  RAM       : org = 0x00000000,  l = 0x00100000
+  EXP_RAM   : org = 0x00100000,  l = 0x00E80000
+  IO_SPACE  : org = 0x00F80000,  l = 0x00040000
+  ROM       : org = 0x00FC0000,  l = 0x00040000
 }
 
 /* program configuration symbols that may be useful to override */
@@ -86,7 +87,7 @@ PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
 
 /* NOTE: rev1.1 used 0x00028000 (but init now position independent)     */
 PROVIDE(_LOAD_ADDRESS   = 0x00040000);  /* firmware KERNEL_LOAD_ADDRESS */
-PROVIDE(_RUN_ADDRESS    = ORIGIN(RAM)); /* start of user memory         */
+PROVIDE(_RUN_ADDRESS    = 0x00002000);  /* start of user memory         */
 
 SECTIONS
 {
@@ -95,15 +96,15 @@ SECTIONS
     _init = .;
     KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
     _init_end = .;
-  } > RAM
+  } >RAM
 
-  .text.postinit :
+  .text.postinit ALIGN(4) :
   {
     _postinit = .;
     KEEP(*(.postinit))  /* KEEP() "anchors" section for gc-sections */
     . = ALIGN(4);       /* long align for init.S copying */
     _postinit_end = .;
-  } > RAM
+  } >RAM
 
   .text ALIGN(4) :
   {
@@ -111,15 +112,17 @@ SECTIONS
     *(.text*)
     *(.rodata*)
     _code_end = .;
-  } > RAM
-  
-  .ctors ALIGN(4) : 
+  } >RAM
+
+  . = DATA_SEGMENT_ALIGN(CONSTANT(MAXPAGESIZE), CONSTANT(COMMONPAGESIZE));
+
+  .ctors ALIGN(4) :
   {
       _ctors = .;
       KEEP(*(.ctors))           /* Run in reverse order, so non-priority ones go first  */
       KEEP(*(SORT(.ctors.*)))   /* followed by ctors with priority */
       _ctors_end = .;
-  } > RAM
+  } >RAM
 
   .dtors ALIGN(4) : 
   {
@@ -127,7 +130,7 @@ SECTIONS
       KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first, highest to lowest */
       KEEP(*(.dtors))           /* Followed by non-priority ones */
       _dtors_end = .;
-  } > RAM
+  } >RAM
 
   .data ALIGN(4) :
   {
@@ -135,17 +138,18 @@ SECTIONS
     *(.data*)
     . = ALIGN(4);       /* long align for init.S copying */
     _data_end = .;
-  } > RAM
+  } >RAM
 
-  .bss(NOLOAD):
+  .bss ALIGN(4) :
   {
-    . = ALIGN(4);       /* Not strictly needed, but here in case we rearrange things */
     _bss_start = .;
     *(.bss*)
     *(COMMON)
     . = ALIGN(4);       /* long align for kinit clearing */
     _bss_end = .;
-  } > RAM
+  } >RAM
+
+  . = DATA_SEGMENT_END(.);
 
   _end = .;
 }
