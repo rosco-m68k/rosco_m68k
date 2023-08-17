@@ -16,6 +16,6 @@ jobs:
             make clean all
         - name: Build software
           run: |
-            cd ../../software
+            cd code/software
             make clean all
 
