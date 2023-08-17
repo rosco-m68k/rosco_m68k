@@ -28,6 +28,17 @@ jobs:
             make clean all
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz "$GITHUB_WORKSPACE/artifacts"
+        - name: Build firmware - r2 Flash
+          run: |
+            cd code/software/updateflash
+            ROM_BIN=../../firmware/rosco_m68k_firmware/rosco_m68k.rom make clean all
+            cp updateflash.bin rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_flash.bin "$GITHUB_WORKSPACE/artifacts"
+        - name: Build firmware - r2 MAME
+          run: |
+            cd code/firmware/rosco_m68k_firmware
+            MAME=true make clean all mame
+            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_mame.tar.gz rosco_m68k.rom rosco_m68k_mame.rom.bin
+            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_mame.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Build firmware - r1 Big
           run: |
             cd code/firmware/rosco_m68k_firmware
@@ -40,12 +51,6 @@ jobs:
             REVISION1X=true HUGEROM=true make clean all
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_1.x_hugerom.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_1.x_hugerom.tar.gz "$GITHUB_WORKSPACE/artifacts"
-        - name: Build firmware - r2 MAME
-          run: |
-            cd code/firmware/rosco_m68k_firmware
-            MAME=true make clean all mame
-            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_mame.tar.gz rosco_m68k.rom rosco_m68k_mame.rom.bin
-            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_mame.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Upload artifacts
           uses: actions/upload-artifact@v3
           with:
