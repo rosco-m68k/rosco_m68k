@@ -32,7 +32,7 @@ jobs:
           run: |
             cd code/software/updateflash
             ROM_BIN=../../firmware/rosco_m68k_firmware/rosco_m68k.rom make clean all
-            cp updateflash.bin rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_flash.bin "$GITHUB_WORKSPACE/artifacts"
+            cp updateflash.bin "$GITHUB_WORKSPACE"/artifacts/rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_flash.bin
         - name: Build firmware - r2 MAME
           run: |
             cd code/firmware/rosco_m68k_firmware
