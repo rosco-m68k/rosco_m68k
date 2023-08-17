@@ -7,6 +7,9 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v1
+        - name: Hack GITHUB_WORKSPACE 🥷
+          run: |
+            sudo chown -R linuxbrew "$GITHUB_WORKSPACE"
         - name: Build firmware
           run: |
             cd code/firmware/rosco_m68k_firmware
