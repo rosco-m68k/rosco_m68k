@@ -91,7 +91,7 @@ PROVIDE(_RUN_ADDRESS    = 0x00002000);  /* start of user memory         */
 
 SECTIONS
 {
-  .text.init :
+  .text.init _RUN_ADDRESS : AT(_LOAD_ADDRESS)
   {
     _init = .;
     KEEP(*(.init))      /* KEEP() "anchors" section for gc-sections */
@@ -127,7 +127,7 @@ SECTIONS
   .dtors ALIGN(4) : 
   {
       _dtors = .;
-      KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first, highest to lowest */
+      KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first */
       KEEP(*(.dtors))           /* Followed by non-priority ones */
       _dtors_end = .;
   } >RAM
