@@ -66,6 +66,23 @@ CFLAGS+=--param=min-pagesize=0
 endif
 endif
 
+# For systems without MMU support, aligning LOAD segments with pages is not needed
+# In those cases, provide fake page sizes to both save space and remove RWX warnings
+ifeq ($(CPU),68030)
+LD_LD_SUPPORT_MMU?=true
+endif
+ifeq ($(CPU),68040)
+LD_SUPPORT_MMU?=true
+endif
+ifeq ($(CPU),68060)
+LD_SUPPORT_MMU?=true
+endif
+LD_SUPPORT_MMU?=false
+ifneq ($(LD_SUPPORT_MMU),true)
+# Saves space in binaries, but will break MMU use
+LDFLAGS+=-z max-page-size=16 -z common-page-size=16
+endif
+
 # Output config (assume name of directory)
 PROGRAM_BASENAME=$(shell basename $(CURDIR))
 

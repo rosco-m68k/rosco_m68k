@@ -112,12 +112,12 @@ IIHANDLER:
     move.l  CONTADDR,(2,A7)           ; Update continue PC
     rte
 
-    section .rodata
+    section .rodata,text
 MODULE    dc.l    $0                  ; Option 0, Type 0, Rest ignored
           dc.l    MODENTRY            ; Entry word at MODENTRY
 SZCPU     dc.b    'MC680', 0
 
-    section .bss
+    section .bss,bss
 M16BUF    ds.l    4
 IISAVED   ds.l    1
 FLSAVED   ds.l    1

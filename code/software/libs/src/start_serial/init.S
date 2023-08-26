@@ -130,7 +130,7 @@ CALL_DTORS::
     movem.l (A7)+,A2-A4
     rts
 
-    section .data
+    section .bss,bss
     align  4
 
 SAVE_PROG_EXIT  ds.l  1
