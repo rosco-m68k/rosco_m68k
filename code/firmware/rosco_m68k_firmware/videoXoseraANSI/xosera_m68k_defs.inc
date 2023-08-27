@@ -19,30 +19,33 @@
 ; ------------------------------------------------------------
 ;
 
-; See: https://github.com/XarkLabs/Xosera/blob/master/REFERENCE.md
+; See: https:;github.com/XarkLabs/Xosera/blob/master/REFERENCE.md
 
 XM_BASEADDR             equ     $f80060     ; Xosera rosco_m68k 68010 register base address
 
 ; Xosera XR Memory Regions (size in 16-bit words)
-XR_CONFIG_REGS          equ     $0000       ; 0x0000-0x000F 16 config/ctrl registers
-XR_PA_REGS              equ     $0010       ; 0x0010-0x0017 8 playfield A video registers
-XR_PB_REGS              equ     $0018       ; 0x0018-0x001F 8 playfield B video registers
-XR_AUDIO_REGS           equ     $0020       ; 0x0020-0x002F 16 audio playback registers      // TODO: audio
-XR_BLIT_REGS            equ     $0040       ; 0x0040-0x004B 10 blitter registers
-XR_TILE_ADDR            equ     $4000       ; (R/W) 0x4000-0x53FF tile glyph/tile map memory
+XR_CONFIG_REGS          equ     $0000       ; $0000-$000F 16 config/ctrl registers
+XR_PA_REGS              equ     $0010       ; $0010-$0017 8 playfield A video registers
+XR_PB_REGS              equ     $0018       ; $0018-$001F 8 playfield B video registers
+XR_AUDIO_REGS           equ     $0020       ; $0020-$002F 16 audio playback registers      ; TODO: audio
+XR_BLIT_REGS            equ     $0040       ; $0040-$004B 10 blitter registers
+XR_TILE_ADDR            equ     $4000       ; (R/W) $4000-$53FF tile glyph/tile map memory
 XR_TILE_SIZE            equ     $1400       ;                     5120 x 16-bit tile glyph/tile map memory
-XR_COLOR_ADDR           equ     $8000       ; (R/W) 0x8000-0x81FF 2 x A & B color lookup memory
-XR_COLOR_SIZE           equ     $0200       ;                     2 x 256 x 16-bit words  (0xARGB)
-XR_COLOR_A_ADDR         equ     $8000       ; (R/W) 0x8000-0x80FF A 256 entry color lookup memory
-XR_COLOR_A_SIZE         equ     $0100       ;                     256 x 16-bit words (0xARGB)
-XR_COLOR_B_ADDR         equ     $8100       ; (R/W) 0x8100-0x81FF B 256 entry color lookup memory
-XR_COLOR_B_SIZE         equ     $0100       ;                     256 x 16-bit words (0xARGB)
-XR_COPPER_ADDR          equ     $C000       ; (R/W) 0xC000-0xC5FF copper memory (16-bit instructions)
+XR_COLOR_ADDR           equ     $8000       ; (R/W) $8000-$81FF 2 x A & B color lookup memory
+XR_COLOR_SIZE           equ     $0200       ;                     2 x 256 x 16-bit words  ($ARGB)
+XR_COLOR_A_ADDR         equ     $8000       ; (R/W) $8000-$80FF A 256 entry color lookup memory
+XR_COLOR_A_SIZE         equ     $0100       ;                     256 x 16-bit words ($ARGB)
+XR_COLOR_B_ADDR         equ     $8100       ; (R/W) $8100-$81FF B 256 entry color lookup memory
+XR_COLOR_B_SIZE         equ     $0100       ;                     256 x 16-bit words ($ARGB)
+XR_POINTER_ADDR         equ     $8200       ; (-/W) 0x8200-0x82FF 256 word 32x32 4-bpp pointer image
+XR_POINTER_SIZE         equ     $0100       ;                     256 x 16-bit words (4-bit pixels)
+XR_COPPER_ADDR          equ     $C000       ; (R/W) $C000-$C5FF copper memory (16-bit instructions)
 XR_COPPER_SIZE          equ     $0600       ;                     1024+512 x 16-bit copper memory words
 
 ; Xosera version info put in COPPER memory after FPGA reconfigure
-XV_INFO_ADDR            equ     XR_COPPER_ADDR+XR_COPPER_SIZE-128
-XV_INFO_SIZE            equ     256        ; 256 bytes total for "struct _xosera_info" (last 128 words in copper memory)
+XV_INFO_BYTES           equ     256        ; 256 bytes total for "struct _xosera_info" (last 128 words in copper memory)
+XV_INFO_WORDS           equ     128        ; 128 16-bit words (last 128 words in copper memory)
+XV_INFO_ADDR            equ     (XR_COPPER_ADDR + XR_COPPER_SIZE - XV_INFO_WORDS)
 
 ; Xosera Main Registers (XM Registers, directly CPU accessable)
 ; NOTE: Main register numbers are multiplied by 4 for rosco_m68k, because of even byte 6800 8-bit addressing plus
@@ -59,14 +62,14 @@ XM_WR_INCR              equ     $20         ; (R /W ) increment value for XM_WR_
 XM_WR_ADDR              equ     $24         ; (R /W ) VRAM address for writing to VRAM when XM_DATA/XM_DATA_2 is written
 XM_DATA                 equ     $28         ; (R+/W+) read/write VRAM word at XM_RD_ADDR/XM_WR_ADDR & add XM_RD_INCR/XM_WR_INCR
 XM_DATA_2               equ     $2C         ; (R+/W+) 2nd XM_DATA(to allow for 32-bit read/write access)
-XM_UNUSED_0C            equ     $30         ; (- /- )
-XM_UNUSED_0D            equ     $34         ; (- /- )
-XM_UNUSED_0E            equ     $38         ; (- /- )
-XM_FEATURES             equ     $3C         ; (RO)
+XM_PIXEL_X              equ     $30         ; (   W+) pixel X coordinate / pixel base address
+XM_PIXEL_Y              equ     $34         ; (   W+) pixel Y coordinate / pixel line width
+XM_UART                 equ     $38         ; (R+/W+) optional debug USB UART communication
+XM_FEATURE              equ     $3C         ; (R+/W+) Xosera feature flags, odd byte UART
 
 ; SYS_CTRL bit numbers NOTE: These are bits in high byte of SYS_CTRL word (for access with fast address register
 ; indirect with no offset)
-SYS_CTRL_MEM_BUSY_B     equ     7           ; (RO   )  memory read/write operation pending (with contended memory)
+SYS_CTRL_MEM_WAIT_B     equ     7           ; (RO   )  memory read/write operation pending (with contended memory)
 SYS_CTRL_BLIT_FULL_B    equ     6           ; (RO   )  blitter queue is full, do not write new operation to blitter registers
 SYS_CTRL_BLIT_BUSY_B    equ     5           ; (RO   )  blitter is still busy performing an operation (not done)
 SYS_CTRL_UNUSED_12_B    equ     4           ; (RO   )  unused (reads 0)
@@ -75,7 +78,7 @@ SYS_CTRL_VBLANK_B       equ     2           ; (RO   )  video signal is in vertic
 SYS_CTRL_UNUSED_9_B     equ     1           ; (RO   )  unused (reads 0)
 SYS_CTRL_UNUSED_8_B     equ     0           ; (- /- )
 ; SYS_CTRL bit flags
-SYS_CTRL_MEM_BUSY_F     equ     $80         ; (RO   )  memory read/write operation pending (with contended memory)
+SYS_CTRL_MEM_WAIT_F     equ     $80         ; (RO   )  memory read/write operation pending (with contended memory)
 SYS_CTRL_BLIT_FULL_F    equ     $40         ; (RO   )  blitter queue is full (do not write to blitter registers)
 SYS_CTRL_BLIT_BUSY_F    equ     $20         ; (RO   )  blitter is still busy performing an operation (not done)
 SYS_CTRL_UNUSED_12_F    equ     $10         ; (RO   )  unused (reads 0)
@@ -122,6 +125,24 @@ INT_CTRL_AUD1_INTR_F    equ     $0002       ; audio channel ready interrupt (rea
 INT_CTRL_AUD0_INTR_F    equ     $0001       ; audio channel ready interrupt (read status, write acknowledge)
 INT_CTRL_AUD_ALL_F      equ     $000F       ; all audio channels status/acknowledge
 INT_CTRL_CLEAR_ALL_F    equ     $007F       ; clear all interrupts
+; FEATURE bit numbers within high byte, low byte UART data
+FEATURE_UART_RXF_B       equ     7           ; UART receive buffer full (data waiting)
+FEATURE_UART_TXF_B       equ     6           ; UART transmit buffer full (busy transmitting data)
+FEATURE_UART_B          equ     5           ; UART present flag (debug feature)
+FEATURE_AUDIO_B         equ     4           ; audio present
+FEATURE_BLIT_B          equ     3           ; blitter present
+FEATURE_COPP_B          equ     2           ; copper present
+FEATURE_PF_B_B          equ     1           ; playfield B present
+FEATURE_PF_WIDE_B       equ     0           ; 0 = 640x480 4:3, 1 = 848x480 16:9 widescreen
+; FEATURE flag/mask within high byte, low byte UART data
+FEATURE_RX_F            equ     $80        ; UART receive buffer full (data waiting)
+FEATURE_TX_F            equ     $40        ; UART transmit buffer full (busy transmitting data)
+FEATURE_UART_F          equ     $20        ; UART present flag (debug feature)
+FEATURE_AUDIO_F         equ     $10        ; audio present
+FEATURE_BLIT_F          equ     $08        ; blitter present
+FEATURE_COPP_F          equ     $04        ; copper present
+FEATURE_PF_B_F          equ     $02        ; playfield B present
+FEATURE_PF_WIDE_F       equ     $01        ; 0 = 640x480 4:3, 1 = 848x480 16:9 widescreen
 
 ; XR Extended Register / Region (accessed via XM_RD_XADDR/XM_WR_XADDR and XM_XDATA)
 
@@ -132,8 +153,8 @@ XR_AUD_CTRL             equ     $02         ; (- /-) TODO: audio channel control
 XR_SCANLINE             equ     $03         ; (R /W) read scanline (incl. offscreen), write signal video interrupt
 XR_VID_LEFT             equ     $04         ; (R /W) left edge of active display window (typically 0)
 XR_VID_RIGHT            equ     $05         ; (R /W) right edge of active display window +1 (typically 640 or 848)
-XR_UNUSED_06            equ     $06         ; (- /-) unused XR 06
-XR_UNUSED_07            equ     $07         ; (- /-) unused XR 07
+XR_POINTER_H            equ     $06         ; (- /W) pointer sprite raw H position
+XR_POINTER_V            equ     $07         ; (- /W) pointer sprite raw V position / pointer color select
 XR_UNUSED_08            equ     $08         ; (- /-) unused XR 08
 XR_UNUSED_09            equ     $09         ; (- /-) unused XR 09
 XR_UNUSED_0A            equ     $0A         ; (- /-) unused XR 0A
@@ -220,22 +241,22 @@ XR_TILE_CTRL_DISP_TILEMEM_F equ $0200
 XR_TILE_CTRL_TILEBASE_F     equ $FC00
 
 ; Audio Registers
-XR_AUD0_VOL             equ     $20         ; (WO/-) // TODO: WIP
-XR_AUD0_PERIOD          equ     $21         ; (WO/-) // TODO: WIP
-XR_AUD0_LENGTH          equ     $22         ; (WO/-) // TODO: WIP
-XR_AUD0_START           equ     $23         ; (WO/-) // TODO: WIP
-XR_AUD1_VOL             equ     $24         ; (WO/-) // TODO: WIP
-XR_AUD1_PERIOD          equ     $25         ; (WO/-) // TODO: WIP
-XR_AUD1_LENGTH          equ     $26         ; (WO/-) // TODO: WIP
-XR_AUD1_START           equ     $27         ; (WO/-) // TODO: WIP
-XR_AUD2_VOL             equ     $28         ; (WO/-) // TODO: WIP
-XR_AUD2_PERIOD          equ     $29         ; (WO/-) // TODO: WIP
-XR_AUD2_LENGTH          equ     $2A         ; (WO/-) // TODO: WIP
-XR_AUD2_START           equ     $2B         ; (WO/-) // TODO: WIP
-XR_AUD3_VOL             equ     $2C         ; (WO/-) // TODO: WIP
-XR_AUD3_PERIOD          equ     $2D         ; (WO/-) // TODO: WIP
-XR_AUD3_LENGTH          equ     $2E         ; (WO/-) // TODO: WIP
-XR_AUD3_START           equ     $2F         ; (WO/-) // TODO: WIP
+XR_AUD0_VOL             equ     $20         ; (WO/-) ; TODO: WIP
+XR_AUD0_PERIOD          equ     $21         ; (WO/-) ; TODO: WIP
+XR_AUD0_LENGTH          equ     $22         ; (WO/-) ; TODO: WIP
+XR_AUD0_START           equ     $23         ; (WO/-) ; TODO: WIP
+XR_AUD1_VOL             equ     $24         ; (WO/-) ; TODO: WIP
+XR_AUD1_PERIOD          equ     $25         ; (WO/-) ; TODO: WIP
+XR_AUD1_LENGTH          equ     $26         ; (WO/-) ; TODO: WIP
+XR_AUD1_START           equ     $27         ; (WO/-) ; TODO: WIP
+XR_AUD2_VOL             equ     $28         ; (WO/-) ; TODO: WIP
+XR_AUD2_PERIOD          equ     $29         ; (WO/-) ; TODO: WIP
+XR_AUD2_LENGTH          equ     $2A         ; (WO/-) ; TODO: WIP
+XR_AUD2_START           equ     $2B         ; (WO/-) ; TODO: WIP
+XR_AUD3_VOL             equ     $2C         ; (WO/-) ; TODO: WIP
+XR_AUD3_PERIOD          equ     $2D         ; (WO/-) ; TODO: WIP
+XR_AUD3_LENGTH          equ     $2E         ; (WO/-) ; TODO: WIP
+XR_AUD3_START           equ     $2F         ; (WO/-) ; TODO: WIP
 ; Audio flags
 AUD_PER_RESTART_B       equ     15          ; AUDx_PERIOD bit 15 is force channel restart
 AUD_PER_RESTART_F       equ     $8000

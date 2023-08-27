@@ -27,6 +27,11 @@
 #define XV_PREP_REQUIRED
 #include "xosera_m68k_api.h"
 
+#define MODE_640_FULL_H 800
+#define MODE_640_FULL_V 525
+#define MODE_848_FULL_H 1088
+#define MODE_848_FULL_V 517
+
 #define SYNC_RETRIES 250        // ~1/4 second
 
 // TODO: This is less than ideal (tuned for ~10MHz)
@@ -93,7 +98,8 @@ bool xosera_sync()
     }
     xm_setw(RD_INCR, rd_incr);
 
-    return true;
+    // make sure memory and blitter report not busy/running
+    return (xm_getbh(SYS_CTRL) & (SYS_CTRL_MEM_WAIT_F | SYS_CTRL_BLIT_BUSY_F)) == 0;
 }
 
 // wait for Xosera to respond after reconfigure
@@ -137,7 +143,7 @@ int xosera_vid_width()
 {
     xv_prep();
 
-    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 640 : 848;
+    return ((xm_getbl(FEATURE) & FEATURE_MONRES_F) == 0) ? 640 : 848;
 }
 
 int xosera_vid_height()
@@ -149,21 +155,52 @@ int xosera_max_hpos()
 {
     xv_prep();
 
-    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 800 - 1 : 1088 - 1;
+    return ((xm_getbl(FEATURE) & FEATURE_MONRES_F) == 0) ? MODE_640_FULL_H - 1 : MODE_848_FULL_H - 1;
 }
 
 int xosera_max_vpos()
 {
     xv_prep();
 
-    return ((xm_getbl(FEATURES) & 0xF) == 0) ? 525 - 1 : 517 - 1;
+    return ((xm_getbl(FEATURE) & FEATURE_MONRES_F) == 0) ? MODE_640_FULL_V - 1 : MODE_848_FULL_V - 1;
+}
+
+void xosera_set_pointer(int16_t x, int16_t y, uint16_t colormap_index)
+{
+    xv_prep();
+
+    uint8_t ws = xm_getbl(FEATURE) & FEATURE_MONRES_F;        // 0 = 640x480
+
+    // offscreen pixels plus 6 pixel "head start"
+    x = x + (ws ? (MODE_848_FULL_H - 848 - 6) : (MODE_640_FULL_H - 640 - 6));
+    // make sure doesn't wrap back onscreen due to limited bits in POINTER_H
+    if (x < 0 || x > MODE_848_FULL_H)
+    {
+        x = MODE_848_FULL_H;
+    }
+
+    // make sure doesn't wrap back onscreen due to limited bits in POINTER_V
+    if (y < -32 || y > 480)
+    {
+        y = 480;
+    }
+    else if (y < 0)
+    {
+        // special handling for partially off top (offset to before V wrap)
+        y = y + (ws ? MODE_848_FULL_V : MODE_640_FULL_V);
+    }
+
+    while (!(xm_getbh(SYS_CTRL) & (SYS_CTRL_HBLANK_F | SYS_CTRL_VBLANK_F)))
+        ;
+    xreg_setw(POINTER_H, x);
+    xreg_setw(POINTER_V, colormap_index | y);
 }
 
 int xosera_aud_channels()
 {
     xv_prep();
 
-    return xm_getbh(FEATURES) & 0xF;
+    return xm_getbh(FEATURE) & (FEATURE_AUDCHAN_F >> 8);
 }
 
 bool xosera_get_info(xosera_info_t * info)
@@ -185,32 +222,24 @@ bool xosera_get_info(xosera_info_t * info)
     xwait_not_vblank();
     xwait_vblank();
 
-    uint16_t copsave = xreg_getw(COPP_CTRL);        // save COPP_CTRL
+    bool valid = false;
 
-    xreg_setw(COPP_CTRL, 0x0000);        // disable copper
-
-    uint16_t copvalue = xmem_getw(XR_COPPER_ADDR);        // save copper mem
-    xmem_setw(XR_COPPER_ADDR, copvalue ^ 0xe342);         // set test value
-
-    if (xmem_getw(XR_COPPER_ADDR) != (copvalue ^ 0xe342))        // if test failed, return
-    {
-        return false;
-    }
-
-    xmem_setw(XR_COPPER_ADDR, copvalue);        // restore copper mem
-
-    uint16_t * wp = (uint16_t *)info;
-
-    // xosera_info stored at end COPPER program memory
     xmem_get_addr(XV_INFO_ADDR);
-    for (uint16_t i = 0; i < sizeof(xosera_info_t); i += 2)
+    if (xmem_getw_next_wait() == (('X' << 8) | 'o') && xmem_getw_next_wait() == (('s' << 8) | 'e') &&
+        xmem_getw_next_wait() == (('r' << 8) | 'a'))
     {
-        *wp++ = xmem_getw_next_wait();
+        // xosera_info stored at end COPPER program memory
+        uint16_t * wp = (uint16_t *)info;
+        xmem_get_addr(XV_INFO_ADDR);
+        for (uint16_t i = 0; i < (sizeof(xosera_info_t) / 2); i++)
+        {
+            *wp++ = xmem_getw_next_wait();
+        }
+
+        valid = true;
     }
 
-    xreg_setw(COPP_CTRL, copsave);        // restore
-
-    return true;        // TODO: Add CRC or similar?
+    return valid;
 }
 
 // define xosera_ptr so GCC doesn't see const value (so it tries to keep it in a register vs reloading it).

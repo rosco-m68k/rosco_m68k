@@ -338,6 +338,7 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
     uint16_t count = end - start;
 
     xv_prep();
+    xm_setbl(SYS_CTRL, 0x0F);
 
     xwait_blit_ready();
     xreg_setw(BLIT_CTRL, 0x0001);                  // no transp, constS
@@ -585,6 +586,7 @@ static void xansi_reset(bool reset_colormap)
     xreg_setw(PA_DISP_ADDR, td->vram_base);
     xreg_setw(PA_LINE_LEN, cols);
     xreg_setw(PA_HV_SCROLL, 0x0000);
+    xm_setbl(SYS_CTRL, 0x0F);
 
     if (reset_colormap)
     {
@@ -1899,6 +1901,7 @@ bool xansiterm_INIT()
 
     xv_prep();
     xreg_setw(PA_GFX_CTRL, td->gfx_ctrl);
+    xm_setbl(SYS_CTRL, 0x0F);
 
     // TODO: Not ideal no version code without COPPER
     td->ver_code[0] = '0';

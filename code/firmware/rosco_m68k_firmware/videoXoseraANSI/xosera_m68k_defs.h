@@ -40,12 +40,15 @@
 #define XR_COLOR_A_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
 #define XR_COLOR_B_ADDR 0x8100        // (R/W) 0x8100-0x81FF B 256 entry color lookup memory
 #define XR_COLOR_B_SIZE 0x0100        //                     256 x 16-bit words (0xARGB)
+#define XR_POINTER_ADDR 0x8200        // (-/W) 0x8200-0x82FF 256 word 32x32 4-bpp pointer image
+#define XR_POINTER_SIZE 0x0100        //                     256 x 16-bit words (4-bit pixels)
 #define XR_COPPER_ADDR  0xC000        // (R/W) 0xC000-0xC5FF copper memory (16-bit words)
 #define XR_COPPER_SIZE  0x0600        //                     1024+512 x 16-bit copper memory words
 
 // Xosera version info put in COPPER memory after FPGA reconfigure
-#define XV_INFO_ADDR (XR_COPPER_ADDR + XR_COPPER_SIZE - 128)
-#define XV_INFO_SIZE 256        // 64 bytes total for "struct _xosera_info" (last 128 words in copper memory)
+#define XV_INFO_BYTES 256        // 256 bytes total for "struct _xosera_info" (last 128 words in copper memory)
+#define XV_INFO_WORDS 128        // 128 16-bit words (last 128 words in copper memory)
+#define XV_INFO_ADDR  (XR_COPPER_ADDR + XR_COPPER_SIZE - XV_INFO_WORDS)
 
 // Macros to make bit-fields easier (works similar to Verilog "+:" operator, e.g., word[RIGHTMOST_BIT +: BIT_WIDTH])
 // encode value into bit-field for register
@@ -56,26 +59,26 @@
 // Xosera Main Registers (XM Registers, directly CPU accessable)
 // NOTE: Main register numbers are multiplied by 4 for rosco_m68k, because of even byte 6800 8-bit addressing plus
 // 16-bit registers
-#define XM_SYS_CTRL  0x00        // (R /W+) status bits, FPGA config, write masking
-#define XM_INT_CTRL  0x04        // (R /W ) interrupt status/control
-#define XM_TIMER     0x08        // (RO   ) read 1/10th millisecond timer
-#define XM_RD_XADDR  0x0C        // (R /W+) XR register/address for XM_XDATA read access
-#define XM_WR_XADDR  0x10        // (R /W ) XR register/address for XM_XDATA write access
-#define XM_XDATA     0x14        // (R /W+) read/write XR register/memory at XM_RD_XADDR/XM_WR_XADDR
-#define XM_RD_INCR   0x18        // (R /W ) increment value for XM_RD_ADDR read from XM_DATA/XM_DATA_2
-#define XM_RD_ADDR   0x1C        // (R /W+) VRAM address for reading from VRAM when XM_DATA/XM_DATA_2 is read
-#define XM_WR_INCR   0x20        // (R /W ) increment value for XM_WR_ADDR on write to XM_DATA/XM_DATA_2
-#define XM_WR_ADDR   0x24        // (R /W ) VRAM address for writing to VRAM when XM_DATA/XM_DATA_2 is written
-#define XM_DATA      0x28        // (R+/W+) read/write VRAM word at XM_RD_ADDR/XM_WR_ADDR & add XM_RD_INCR/XM_WR_INCR
-#define XM_DATA_2    0x2C        // (R+/W+) 2nd XM_DATA(to allow for 32-bit read/write access)
-#define XM_UNUSED_0C 0x30        // (- /- )
-#define XM_UNUSED_0D 0x34        // (- /- )
-#define XM_UNUSED_0E 0x38        // (- /- )
-#define XM_FEATURES  0x3C        // (RO)
+#define XM_SYS_CTRL 0x00        // (R /W+) status bits, FPGA config, write masking
+#define XM_INT_CTRL 0x04        // (R /W ) interrupt status/control
+#define XM_TIMER    0x08        // (R /W+) read 1/10th millisecond timer, write 8-bit interval timer count
+#define XM_RD_XADDR 0x0C        // (R /W+) XR register/address for XM_XDATA read access
+#define XM_WR_XADDR 0x10        // (R /W ) XR register/address for XM_XDATA write access
+#define XM_XDATA    0x14        // (R /W+) read/write XR register/memory at XM_RD_XADDR/XM_WR_XADDR
+#define XM_RD_INCR  0x18        // (R /W ) increment value for XM_RD_ADDR read from XM_DATA/XM_DATA_2
+#define XM_RD_ADDR  0x1C        // (R /W+) VRAM address for reading from VRAM when XM_DATA/XM_DATA_2 is read
+#define XM_WR_INCR  0x20        // (R /W ) increment value for XM_WR_ADDR on write to XM_DATA/XM_DATA_2
+#define XM_WR_ADDR  0x24        // (R /W ) VRAM address for writing to VRAM when XM_DATA/XM_DATA_2 is written
+#define XM_DATA     0x28        // (R+/W+) read/write VRAM word at XM_RD_ADDR/XM_WR_ADDR & add XM_RD_INCR/XM_WR_INCR
+#define XM_DATA_2   0x2C        // (R+/W+) 2nd XM_DATA(to allow for 32-bit read/write access)
+#define XM_PIXEL_X  0x30        // (- /W+) pixel X coordinate / pixel base address
+#define XM_PIXEL_Y  0x34        // (- /W+) pixel Y coordinate / pixel line width
+#define XM_UART     0x38        // (R+/W+) optional debug USB UART communication
+#define XM_FEATURE  0x3C        // (R /W+) Xosera feature flags, write sets pixel base, width to X, Y and mask mode
 
 // SYS_CTRL bit numbers NOTE: These are bits in high byte of SYS_CTRL word (for access with fast address register
 // indirect with no offset)
-#define SYS_CTRL_MEM_BUSY_B  7        // (RO   )  memory read/write operation pending (with contended memory)
+#define SYS_CTRL_MEM_WAIT_B  7        // (RO   )  memory read/write operation pending (with contended memory)
 #define SYS_CTRL_BLIT_FULL_B 6        // (RO   )  blitter queue is full, do not write new operation to blitter registers
 #define SYS_CTRL_BLIT_BUSY_B 5        // (RO   )  blitter is still busy performing an operation (not done)
 #define SYS_CTRL_UNUSED_12_B 4        // (RO   )  unused (reads 0)
@@ -84,7 +87,7 @@
 #define SYS_CTRL_UNUSED_9_B  1        // (RO   )  unused (reads 0)
 #define SYS_CTRL_UNUSED_8_B  0        // (- /- )
 // SYS_CTRL bit flags
-#define SYS_CTRL_MEM_BUSY_F  0x80        // (RO   )  memory read/write operation pending (with contended memory)
+#define SYS_CTRL_MEM_WAIT_F  0x80        // (RO   )  memory read/write operation pending (with contended memory)
 #define SYS_CTRL_BLIT_FULL_F 0x40        // (RO   )  blitter queue is full (do not write to blitter registers)
 #define SYS_CTRL_BLIT_BUSY_F 0x20        // (RO   )  blitter is still busy performing an operation (not done)
 #define SYS_CTRL_UNUSED_12_F 0x10        // (RO   )  unused (reads 0)
@@ -92,7 +95,6 @@
 #define SYS_CTRL_VBLANK_F    0x04        // (RO   )  video signal is in vertical blank period
 #define SYS_CTRL_UNUSED_9_F  0x02        // (RO   )  unused (reads 0)
 #define SYS_CTRL_UNUSED_8_F  0x01        // (- /- )
-
 // INT_CTRL bit numbers within word
 #define INT_CTRL_RECONFIG_B   15        // reconfigure FPGA to config # in bits [9:8] of INT_CTRL
 #define INT_CTRL_BLIT_EN_B    14        // blitter ready interrupt mask
@@ -131,24 +133,30 @@
 #define INT_CTRL_AUD0_INTR_F  0x0001        // audio channel ready interrupt (read status, write acknowledge)
 #define INT_CTRL_AUD_ALL_F    0x000F        // all audio channels status/acknowledge
 #define INT_CTRL_CLEAR_ALL_F  0x007F        // clear all interrupts
-
-// FEATURES bit numbers within word (for fields wider than 1 bit, XB_(xxx_B, xxx_W) macro can be used)
-#define FEATURES_MONRES_B  0         // rightmost bit number for 4-bit monitor mode field
-#define FEATURES_MONRES_W  4         // bit width for 4-bit monitor mode field
-#define FEATURES_COPP_B    4         // bit number indicating presence of COPPER
-#define FEATURES_BLIT_B    5         // bit number indicating presence of BLITTER
-#define FEATURES_PF_B_B    6         // bit number indicating presence of playfield B (2nd playfield)
-#define FEATURES_AUDCHAN_B 8         // rightmost bit number for 4-bit audio channels field
-#define FEATURES_AUDCHAN_W 4         // bit width for 4-bit audio channels field
-#define FEATURES_CONFIG_B  12        // rightmost bit number for 4-bit FPGA config field
-#define FEATURES_CONFIG_W  4         // bit width for 4-bit FPGA config field
-// FEATURES flag/mask
-#define FEATURES_MONRES_F  0x000F        // bit-mask for 4-bit monitor mode field
-#define FEATURES_COPP_F    0x0010        // bit flag indicating presence of COPPER
-#define FEATURES_BLIT_F    0x0020        // bit flag indicating presence of BLITTER
-#define FEATURES_PF_B_F    0x0040        // bit flag indicating presence of playfield B (2nd playfield)
-#define FEATURES_AUDCHAN_F 0x0F00        // bit-mask for 4-bit audio channels field
-#define FEATURES_CONFIG_F  0xF000        // bit-mask for 4-bit config field
+// UART status bit number within even byte of XM_UART
+#define UART_RXF_B 7           // UART receive buffer full (data waiting)
+#define UART_TXF_B 6           // UART transmit buffer full (busy transmitting data)
+#define UART_RXF_F 0x80        // UART receive buffer full (data waiting)
+#define UART_TXF_F 0x40        // UART transmit buffer full (busy transmitting data)
+// FEATURE bit numbers within word (for fields wider than 1 bit, XB_(xxx_B, xxx_W) macro can be used)
+#define FEATURE_MONRES_B  0         // rightmost bit number for 4-bit monitor mode field
+#define FEATURE_MONRES_W  4         // bit width for 4-bit monitor mode field
+#define FEATURE_COPP_B    4         // bit number indicating presence of COPPER
+#define FEATURE_BLIT_B    5         // bit number indicating presence of BLITTER
+#define FEATURE_PF_B_B    6         // bit number indicating presence of playfield B (2nd playfield)
+#define FEATURE_UART_B    7         // bit number indicating presence of debug UART
+#define FEATURE_AUDCHAN_B 8         // rightmost bit number for 4-bit audio channels field
+#define FEATURE_AUDCHAN_W 4         // bit width for 4-bit audio channels field
+#define FEATURE_CONFIG_B  12        // rightmost bit number for 4-bit FPGA config field
+#define FEATURE_CONFIG_W  4         // bit width for 4-bit FPGA config field
+// FEATURE flag/mask
+#define FEATURE_MONRES_F  0x000F        // bit-mask for 4-bit monitor mode field
+#define FEATURE_COPP_F    0x0010        // bit flag indicating presence of COPPER
+#define FEATURE_BLIT_F    0x0020        // bit flag indicating presence of BLITTER
+#define FEATURE_PF_B_F    0x0040        // bit flag indicating presence of playfield B (2nd playfield)
+#define FEATURE_UART_F    0x0080        // bit flag indicating presence of debug UART
+#define FEATURE_AUDCHAN_F 0x0F00        // bit-mask for 4-bit audio channels field
+#define FEATURE_CONFIG_F  0xF000        // bit-mask for 4-bit config field
 
 // XR Extended Register / Region (accessed via XM_RD_XADDR/XM_WR_XADDR and XM_XDATA)
 
@@ -159,8 +167,8 @@
 #define XR_SCANLINE  0x03        // (R /W) read scanline (incl. offscreen), write signal video interrupt
 #define XR_VID_LEFT  0x04        // (R /W) left edge of active display window (typically 0)
 #define XR_VID_RIGHT 0x05        // (R /W) right edge of active display window +1 (typically 640 or 848)
-#define XR_UNUSED_06 0x06        // (- /-) unused XR 06
-#define XR_UNUSED_07 0x07        // (- /-) unused XR 07
+#define XR_POINTER_H 0x06        // (- /W) pointer sprite raw H position
+#define XR_POINTER_V 0x07        // (- /W) pointer sprite raw V position / pointer color select
 #define XR_UNUSED_08 0x08        // (- /-) unused XR 08
 #define XR_UNUSED_09 0x09        // (- /-) unused XR 09
 #define XR_UNUSED_0A 0x0A        // (- /-) unused XR 0A

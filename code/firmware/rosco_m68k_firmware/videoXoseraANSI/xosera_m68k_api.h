@@ -115,6 +115,9 @@ int  xosera_vid_width();
 int  xosera_vid_height();
 int  xosera_max_hpos();
 int  xosera_max_vpos();
+void xosera_set_pointer(int16_t  x_pos,                  // native pixel X for pointer upper left
+                        int16_t  y_pos,                  // native pixel Y for pointer upper left
+                        uint16_t colormap_index);        // colormap_index = 0xS000 (upper 4-bits colorA index)
 int  xosera_aud_channels();
 bool xosera_get_info(xosera_info_t * info);              // retrieve init xosera_info_t (valid after xosera reconfig)
 bool xosera_sync();                                      // true if Xosera present and responding
@@ -161,7 +164,7 @@ typedef struct _xosera_info
 } xosera_info_t;
 
 #ifndef __INTELLISENSE__        // vscode intellisense does not grok m68k (flags as error, but correct for m68k-gcc)
-typedef char _xosera_init_size_static_assert[sizeof(xosera_info_t) == XV_INFO_SIZE ? 1 : -1];
+typedef char _xosera_init_size_static_assert[sizeof(xosera_info_t) == XV_INFO_BYTES ? 1 : -1];
 #endif
 
 // Xosera XM register base ptr
@@ -449,5 +452,17 @@ extern xosera_ptr_t xosera_ptr;
 
 // wait until scanout is not in horizontal blank (visible line on display)
 #define xwait_not_vblank() xwait_ctrl_bit_clear(VBLANK)
+
+// return true if ready to transmit character
+#define uart_send_ready() (!(xm_getbh(UART) & UART_TXF_B))
+
+// transmit UART character (call when uart_send_ready() returns true)
+#define uart_send_byte(byte) (xosera_ptr[(XM_UART) >> 2].b.l = (byte))
+
+// return true if RX character waiting
+#define uart_get_ready() (xm_getbh(UART) & UART_RXF_B)
+
+// return UART received character (call when uart_get_ready() returns true)
+#define uart_get_byte() (xosera_ptr[XM_UART >> 2].b.l)
 
 #endif        // XOSERA_M68K_API_H
