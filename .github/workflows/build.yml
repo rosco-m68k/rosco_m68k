@@ -1,9 +1,8 @@
 name: CI Build on PR
 on: 
-  push:
+  pull_request:
     branches-ignore:
       - 'master'
-      - 'develop'
       - 'release/*'
 jobs:
   build:
