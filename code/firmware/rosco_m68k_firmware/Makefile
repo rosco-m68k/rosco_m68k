@@ -169,6 +169,9 @@ export MAME
 %.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
+%.o : %.s
+	$(AS) $(ASFLAGS) -o $@ $<
+
 $(STAGE2) : $(STAGE2_DIR)
 	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
 
