@@ -67,36 +67,37 @@ finally:
 }
 
 static uint32_t get_logical_rom_size(SSTDeviceId *even, SSTDeviceId *odd) {
-    uint32_t romsize = 0;
-
+    uint32_t even_romsize = 0;
+    if (even->manufacturer == SST_MFR_SST) {
     switch (even->device) {
     case SST_DEV_010A:
-        romsize = 262144;
+            even_romsize = 262144;
         break;
     case SST_DEV_020A:
-        romsize = 524288;
+            even_romsize = 524288;
         break;
     case SST_DEV_040:
-        romsize = 1048576;
+            even_romsize = 1048576;
         break;
     }
+    }
 
-    if (even->device != odd->device) {
-        switch(odd->device) {
+    uint32_t odd_romsize = 0;
+    if (odd->manufacturer == SST_MFR_SST) {
+        switch (odd->device) {
         case SST_DEV_010A:
-            romsize = 262144;
+            odd_romsize = 262144;
             break;
         case SST_DEV_020A:
-            if (romsize > 524288) {
-                romsize = 524288;
-            }
+            odd_romsize = 524288;
             break;
         case SST_DEV_040:
-            // Must already be smaller than this...
+            odd_romsize = 1048576;
             break;
         }
     }
 
+    uint32_t romsize = even_romsize < odd_romsize ? even_romsize : odd_romsize;
     return romsize;
 }
 
