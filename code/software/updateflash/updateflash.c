@@ -69,17 +69,17 @@ finally:
 static uint32_t get_logical_rom_size(SSTDeviceId *even, SSTDeviceId *odd) {
     uint32_t even_romsize = 0;
     if (even->manufacturer == SST_MFR_SST) {
-    switch (even->device) {
-    case SST_DEV_010A:
+        switch (even->device) {
+        case SST_DEV_010A:
             even_romsize = 262144;
-        break;
-    case SST_DEV_020A:
+            break;
+        case SST_DEV_020A:
             even_romsize = 524288;
-        break;
-    case SST_DEV_040:
+            break;
+        case SST_DEV_040:
             even_romsize = 1048576;
-        break;
-    }
+            break;
+        }
     }
 
     uint32_t odd_romsize = 0;
@@ -146,7 +146,8 @@ int main(int argc, char **argv) {
     uint32_t logical_romsize = get_logical_rom_size(&even, &odd);
 
     if (logical_romsize == 0) {
-        printf("Apologies, but ROMs don't appear to be SST flash, this utility cannot program them.\n");
+        printf("Apologies, but ROMs could not be identified, this utility cannot program them.\n");
+        printf("Please check that the flash write jumper (JP3) is installed and that the ROMs are SST flash.\n");
     } else {
         printf("\nLogical ROM size is %ld bytes\n", logical_romsize);
 #if defined(FIRMWARE_EMBEDDED)
