@@ -21,6 +21,14 @@
 #include "part.h"
 #include "system.h"
 
+/*
+ * Currently, software that relocates itself to 0x2000 must be loaded like a
+ * raw binary program (to 0x40000), to avoid overwriting firmware stage2.
+ * If ELF_LOAD_VIRTUAL_ADDR is 1, instead load every segment to its run virtual
+ * address, and use E_ENTRY.
+ */ 
+#define ELF_LOAD_VIRTUAL_ADDR 0
+
 extern void mcPrint(const char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 
@@ -123,14 +131,22 @@ static bool load_range_allowed(uintptr_t start, size_t size) {
 static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
     // TODO: Validate other fields and don't allow overwriting kernel memory
     if (phdr->p_align > 0) {
+#if ELF_LOAD_VIRTUAL_ADDR
         if (phdr->p_vaddr % phdr->p_align != phdr->p_offset % phdr->p_align) {
+#else
+        if (phdr->p_paddr % phdr->p_align != phdr->p_offset % phdr->p_align) {
+#endif
             mcPrint("\r\n*** Invalid loadable segment alignment\r\n");
             return -1;
         }
     }
 
     // Don't allow overwriting firmware-reserved areas, stage2, or stack
+#if ELF_LOAD_VIRTUAL_ADDR
     if (!load_range_allowed(phdr->p_vaddr, phdr->p_memsz)) {
+#else
+    if (!load_range_allowed(phdr->p_paddr, phdr->p_memsz)) {
+#endif
             mcPrint("\r\n*** Segment would overwrite firmware memory\r\n");
             return -1;
     }
@@ -146,7 +162,11 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
         size_t count_to_do = phdr->p_filesz - count_done;
         this_count = count_to_do > BYTES_PER_DOT ? BYTES_PER_DOT : count_to_do;
 
+#if ELF_LOAD_VIRTUAL_ADDR
         if (fl_fread((void *) (phdr->p_vaddr + count_done), 1, this_count, file) != this_count) {
+#else
+        if (fl_fread((void *) (phdr->p_paddr + count_done), 1, this_count, file) != this_count) {
+#endif
             mcPrint("\r\n*** Couldn't read loadable segment\r\n");
             return -1;
         }
@@ -155,7 +175,11 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
     }
 
     // Clear remaining bytes in segment memory image
+#if ELF_LOAD_VIRTUAL_ADDR
     memset((void *) (phdr->p_vaddr + phdr->p_filesz), 0, phdr->p_memsz - phdr->p_filesz);
+#else
+    memset((void *) (phdr->p_paddr + phdr->p_filesz), 0, phdr->p_memsz - phdr->p_filesz);
+#endif
 
     return phdr->p_filesz;
 }
@@ -238,12 +262,14 @@ bool load_kernel_elf(void *file) {
     }
     mcPrint("\r\n");
 
+#if ELF_LOAD_VIRTUAL_ADDR
     if (ehdr.e_entry != 0) {
         kernel_entry = (KMain) ehdr.e_entry;
     } else {
         mcPrint("*** ELF file has no entry point\r\n");
         return false;
     }
+#endif
 
     uint32_t total_ticks = sdb->upticks - start;
     uint32_t total_secs = (total_ticks + 50) / 100;
