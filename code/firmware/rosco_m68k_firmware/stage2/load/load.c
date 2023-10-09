@@ -219,6 +219,8 @@ bool load_kernel_elf(void *file) {
 
     // Process program headers
     uint32_t load_size = 0;
+    bool have_load_paddr = false;
+    Elf32_Addr load_paddr;
     if (ehdr.e_phoff == 0) {
         mcPrint("\r\n*** ELF file has no program header table\r\n");
         return false;
@@ -243,6 +245,10 @@ bool load_kernel_elf(void *file) {
         case PT_NULL:
             break;
         case PT_LOAD: {
+            if (!have_load_paddr) {
+                load_paddr = phdr.p_paddr;
+                have_load_paddr = true;
+            }
             long phdr_result = load_kernel_elf_phdr_load(file, &phdr);
             if (phdr_result < 0) {
                 return false;
@@ -259,6 +265,15 @@ bool load_kernel_elf(void *file) {
         kernel_entry = (KMain) ehdr.e_entry;
     } else {
         mcPrint("*** ELF file has no entry point\r\n");
+        return false;
+    }
+    (void) load_paddr;  // Suppress unused variable
+#else
+    // In physical load mode, the first load segment must physically be at kernel_entry (0x40000)
+    if (!have_load_paddr || load_paddr != (Elf32_Addr) kernel_entry) {
+        mcPrint("\r\n*** ELF program load physical address is not at 0x");
+        print_unsigned((uint32_t) kernel_entry, 16);
+        mcPrint("\r\n");
         return false;
     }
 #endif
