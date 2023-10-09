@@ -16,7 +16,7 @@
     section .text.init
 
 START::
-    movea.l #START,A7                   ; Stack to just below this code
+    movea.l VECTORS_LOAD,A7             ; Stack to the default stack pointer vector
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0
