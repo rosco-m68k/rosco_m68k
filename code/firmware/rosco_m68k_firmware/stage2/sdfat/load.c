@@ -16,11 +16,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "bbsd.h"
+#include "load.h"
 #include "part.h"
 
 extern void mcPrint(const char *str);
 extern bool BBSD_support_check();
-extern bool load_kernel(PartHandle *part);
 
 bool sd_load_kernel() {
     if (!BBSD_support_check()) {

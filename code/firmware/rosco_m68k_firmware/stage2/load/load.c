@@ -16,6 +16,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include "load.h"
 #include "elf.h"
 #include "fat_filelib.h"
 #include "part.h"
@@ -33,8 +34,6 @@
 
 extern void mcPrint(const char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
-
-typedef void (*KMain)(volatile SystemDataBlock * const);
 
 extern uint8_t *kernel_load_ptr;
 extern KMain kernel_entry;

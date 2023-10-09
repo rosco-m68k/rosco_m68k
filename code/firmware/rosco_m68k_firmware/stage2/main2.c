@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
+#include "load.h"
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
@@ -31,31 +32,17 @@ extern void red_led_off();
 extern void mcBusywait(uint32_t);
 #endif
 
-/*
- * This is what a Kernel entry point should look like.
- */
-typedef void (*KMain)(volatile SystemDataBlock * const);
-
 // Linker defines
 extern uint32_t _bss_start, _bss_end;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
-// Kernels are loaded at the same address regardless of _how_ they're loaded
+// Flat binary kernels are loaded at the same address regardless of _how_ they're loaded
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
 KMain kernel_entry = (KMain) KERNEL_LOAD_ADDRESS;
 
 #ifdef KERMIT_LOADER
 // This is provided by Kermit
 extern int receive_kernel();
-#endif
-
-#ifdef SDFAT_LOADER
-// This is provided by the SD/FAT loader
-extern bool sd_load_kernel();
-#endif
-#ifdef IDE_LOADER
-// This is provided by the IDE/FAT loader
-extern bool ide_load_kernel();
 #endif
 
 void linit() {
