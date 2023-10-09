@@ -270,7 +270,10 @@ bool load_kernel_elf(void *file) {
     (void) load_paddr;  // Suppress unused variable
 #else
     // In physical load mode, the first load segment must physically be at kernel_entry (0x40000)
-    if (!have_load_paddr || load_paddr != (Elf32_Addr) kernel_entry) {
+    if (!have_load_paddr) {
+        mcPrint("\r\n*** ELF program has no segments to load\r\n");
+        return false;
+    } else if (load_paddr != (Elf32_Addr) kernel_entry) {
         mcPrint("\r\n*** ELF program load physical address is not at 0x");
         print_unsigned((uint32_t) kernel_entry, 16);
         mcPrint("\r\n");
