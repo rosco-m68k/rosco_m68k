@@ -14,10 +14,9 @@
     include "../rosco_m68k_private.asm"
 
     section .text.init
-    org     $2000
 
 START::
-    move.l  SDB_MEMSIZE,A7              ; Stack to top of RAM
+    movea.l #START,A7                   ; Stack to just below this code
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0

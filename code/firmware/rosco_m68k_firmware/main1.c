@@ -68,8 +68,8 @@ static uint32_t * const mem_size_sdb_ptr = (uint32_t *)MEM_SIZE_SDB_ADDRESS;
 static uint32_t * const program_loader_ptr = (uint32_t *)PROGRAM_LOADER_EFP_ADDRESS;
 static uint32_t * const prog_exit_ptr = (uint32_t *)PROGRAM_EXIT_EFP_ADDRESS;
 
-// Stage 2 loads at 0x2000
-static Stage2 stage2 = (Stage2) 0x2000;
+// Stage 2 loads at 0xF0000
+static Stage2 stage2 = (Stage2) 0xF0000;
 
 noreturn void main1();
 

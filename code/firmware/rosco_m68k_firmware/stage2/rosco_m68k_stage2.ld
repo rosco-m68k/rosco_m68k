@@ -1,14 +1,14 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
-phys = 0x2000;
+stage2 = 0xF0000;
 MEMORY
 {
-  RAM : org = phys, l = 0xFDFFF   /* Allow loader to use all of RAM */
+  RAM : org = 0x00000, l = 0x100000
 }
 
 SECTIONS
 {
-  .text : AT(0)
+  .text stage2 :
   {
     _code = .;
     *(.text.init)
@@ -18,14 +18,14 @@ SECTIONS
     _code_end = .;
   } > RAM
 
-  .data : ALIGN(2) 
+  .data ALIGN(4) :
   {
     _data_start = .;
     *(.data*)
     _data_end = .;
   } > RAM
   
-  .bss : ALIGN(2)
+  .bss ALIGN(4) :
   {
     _bss_start = .;
     *(COMMON)
