@@ -35,7 +35,7 @@ GCC_LIBS?=$(shell $(CC) --print-search-dirs \
 LIBS=$(EXTRA_LIBS) -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
-LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k $(EXTRA_LDFLAGS)
 
 CC=m68k-elf-gcc
 CXX=m68k-elf-g++
@@ -69,7 +69,7 @@ endif
 # For systems without MMU support, aligning LOAD segments with pages is not needed
 # In those cases, provide fake page sizes to both save space and remove RWX warnings
 ifeq ($(CPU),68030)
-LD_LD_SUPPORT_MMU?=true
+LD_SUPPORT_MMU?=true
 endif
 ifeq ($(CPU),68040)
 LD_SUPPORT_MMU?=true
@@ -104,7 +104,7 @@ SOURCES=$(CSOURCES) $(CXXSOURCES) $(SSOURCES) $(ASMSOURCES)
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 
-TO_CLEAN=$(RM) $(OBJECTS) $(ELF) $(BINARY) $(MAP) $(SYM) $(DISASM) $(addsuffix .lst,$(basename $(SSOURCES) $(ASMSOURCES)))
+TO_CLEAN=$(OBJECTS) $(ELF) $(BINARY) $(MAP) $(SYM) $(DISASM) $(addsuffix .lst,$(basename $(SSOURCES) $(ASMSOURCES)))
 
 all: $(BINARY) $(DISASM)
 
