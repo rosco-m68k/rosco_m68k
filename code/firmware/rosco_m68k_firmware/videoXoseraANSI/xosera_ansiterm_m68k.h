@@ -23,7 +23,7 @@
  * ------------------------------------------------------------
  */
 
-#define XANSI_TERMINAL_REVISION 2        // increment when XANSI feature/bugfix applied
+#define XANSI_TERMINAL_REVISION 3        // increment when XANSI feature/bugfix applied
 
 // external terminal functions
 bool         XANSI_HAVE_XOSERA(void);                    // sanity check if HW responds at Xosera address (vs BUS error)

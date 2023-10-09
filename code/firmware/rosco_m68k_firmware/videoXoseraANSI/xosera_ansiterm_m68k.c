@@ -39,8 +39,8 @@
 #define DEBUG 0        // must be zero (no printf in firmware)
 // thse are missing from kernel machine.h
 extern unsigned int _FIRMWARE_REV;        // rosco ROM firmware revision
-extern void (*_EFP_RECVCHAR)();
-extern void (*_EFP_CHECKCHAR)();
+extern void         (*_EFP_RECVCHAR)();
+extern void         (*_EFP_CHECKCHAR)();
 
 #endif
 
@@ -51,6 +51,9 @@ extern void (*_EFP_CHECKCHAR)();
 #include "xosera_ansiterm_m68k.h"
 
 #define XV_PREP_REQUIRED        // require Xosera xv_prep() function (for speed)
+#if !defined(ROSCO_M68K)
+#define ROSCO_M68K
+#endif
 #include "xosera_m68k_api.h"
 
 #if DEBUG
@@ -144,7 +147,7 @@ typedef struct xansiterm_data
 // get xansiterm data (data needs to be in first 32KB of memory)
 
 #if defined(TEST_FIRMWARE)                                           // building for RAM testing
-static_assert(sizeof(xansiterm_data) <= 128, "data too big");        // fit in reserved space at 0x0500
+_Static_assert(sizeof(xansiterm_data) <= 128, "data too big");        // fit in reserved space at 0x0500
 // NOTE: address must be < 32KB, attribute is a bit of a hack (causes warning about section attributes)
 xansiterm_data                                                _private_xansiterm_data;
 static inline __attribute__((always_inline)) xansiterm_data * get_xansi_data()
@@ -335,7 +338,7 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
         start      = end;
         end        = t;
     }
-    uint16_t count = end - start;
+    uint16_t count = end - start - 1;
 
     xv_prep();
     xm_setbl(SYS_CTRL, 0x0F);
@@ -352,7 +355,7 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
     xreg_setw_next(0x0000);                        // LINES lines (0 for 1-D blit)
     xreg_setw_next(count);                         // WORDS words to write -1
 
-    if (!xm_get_sys_ctrlb(BLIT_BUSY))
+    if (!xm_getb_sys_ctrl(BLIT_BUSY))
     {
         xm_setw(WR_INCR, 1);
         xm_setw(WR_ADDR, start);
@@ -360,7 +363,7 @@ static __attribute__((noinline)) void xansi_clear(uint16_t start, uint16_t end)
         do
         {
             xm_setbl(DATA, ' ');
-        } while (++start <= end);
+        } while (count--);
     }
     else
     {
@@ -498,7 +501,7 @@ static void set_default_colors(volatile xmreg_t * const xosera_ptr)
                                               0x0f5f,         // light magenta
                                               0x0ff5,         // yellow
                                               0x0fff};        // bright white
-    xmem_set_addr(XR_COLOR_ADDR);
+    xmem_setw_next_addr(XR_COLOR_ADDR);
     for (uint16_t i = 0; i < 16; i++)
     {
         xmem_setw_next(def_colors16[i]);
@@ -585,7 +588,8 @@ static void xansi_reset(bool reset_colormap)
     xreg_setw(PA_TILE_CTRL, tile_ctrl_val);
     xreg_setw(PA_DISP_ADDR, td->vram_base);
     xreg_setw(PA_LINE_LEN, cols);
-    xreg_setw(PA_HV_SCROLL, 0x0000);
+    xreg_setw(PA_H_SCROLL, 0x0000);
+    xreg_setw(PA_V_SCROLL, 0x0000);
     xm_setbl(SYS_CTRL, 0x0F);
 
     if (reset_colormap)
@@ -661,7 +665,7 @@ static void xansi_scroll_up()
     xreg_setw_next(0x0000);              // LINES lines (0 for 1-D blit)
     xreg_setw_next(count - 1);           // WORDS words to write -1
 
-    if (!xm_get_sys_ctrlb(BLIT_BUSY))
+    if (!xm_getb_sys_ctrl(BLIT_BUSY))
     {
         xm_setw(WR_INCR, 1);
         xm_setw(RD_INCR, 1);
@@ -706,7 +710,7 @@ static void xansi_scroll_down(xansiterm_data * td)
     xreg_setw_next(td->rows - 1);           // LINES lines
     xreg_setw_next(td->cols - 1);           // WORDS words per line -1
 
-    if (!xm_get_sys_ctrlb(BLIT_BUSY))
+    if (!xm_getb_sys_ctrl(BLIT_BUSY))
     {
         xm_setw(WR_INCR, -1);
         xm_setw(RD_INCR, -1);
@@ -1903,7 +1907,7 @@ bool xansiterm_INIT()
     xreg_setw(PA_GFX_CTRL, td->gfx_ctrl);
     xm_setbl(SYS_CTRL, 0x0F);
 
-    // TODO: Not ideal no version code without COPPER
+    // NOTE: Not ideal no version code without COPPER
     td->ver_code[0] = '0';
     td->ver_code[1] = '0';
     td->ver_code[2] = '0';
