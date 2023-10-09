@@ -49,6 +49,7 @@ SIZE=m68k-elf-size
 VASM=vasmm68k_mot
 RM=rm -f
 CP=cp
+LSOF=lsof
 KERMIT=kermit
 SERIAL?=/dev/modem
 BAUD?=9600
@@ -148,32 +149,33 @@ load: $(BINARY)
 # Linux (gnome): Upload binary with kermit, connect with "screen" terminal
 # (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
 linuxtest: $(BINARY) $(DISASM)
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
 # Linux (gnome): Connect with "screen" terminal
 linuxterm:
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
 # macOS: Upload binary with kermit, connect with "screen" terminal
 # (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
 mactest: $(BINARY) $(DISASM)
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
 	sleep 1
-	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+	open -n -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 macterm:
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
 	sleep 1
-	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+	open -n -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
 .PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm
