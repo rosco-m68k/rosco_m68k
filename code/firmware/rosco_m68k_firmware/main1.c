@@ -69,7 +69,8 @@ static uint32_t * const program_loader_ptr = (uint32_t *)PROGRAM_LOADER_EFP_ADDR
 static uint32_t * const prog_exit_ptr = (uint32_t *)PROGRAM_EXIT_EFP_ADDRESS;
 
 // Stage 2 loads at 0xF0000
-static Stage2 stage2 = (Stage2) 0xF0000;
+extern void STAGE2_LOAD(void);
+static Stage2 stage2 = &STAGE2_LOAD;
 
 noreturn void main1();
 
