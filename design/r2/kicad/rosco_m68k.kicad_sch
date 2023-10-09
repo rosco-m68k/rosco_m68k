@@ -6,13 +6,13 @@
 
   (title_block
     (title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
-    (date "2022-01-14")
-    (rev "2.12")
+    (date "2023-08-17")
+    (rev "2.13-DEV")
     (company "The Really Old-School Company Limited")
     (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
     (comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
     (comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
-    (comment 4 "Copyright 2019-2022 Ross Bamford and Contributors")
+    (comment 4 "Copyright 2019-2023 Ross Bamford and Contributors")
   )
 
   (lib_symbols
@@ -367,10 +367,13 @@
       (reference "J5") (unit 1) (value "PWR") (footprint "rosco_m68k:1X02")
     )
     (path "/00000000-0000-0000-0000-00005e53bc83/00000000-0000-0000-0000-000061646a1a"
-      (reference "J6") (unit 1) (value "Conn_01x04_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical")
+      (reference "J6") (unit 1) (value "Conn_01x05_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-00006164ae6a"
       (reference "J7") (unit 1) (value "Conn_01x01_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical")
+    )
+    (path "/00000000-0000-0000-0000-00005e53bc83/0b160a58-3616-42d3-bdb5-6987f9ffecd5"
+      (reference "J8") (unit 1) (value "Conn_01x02_Male") (footprint "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical")
     )
     (path "/00000000-0000-0000-0000-000061622e90/00000000-0000-0000-0000-0000616fd293"
       (reference "JP1") (unit 1) (value "Jumper") (footprint "rosco_m68k:1X02")
