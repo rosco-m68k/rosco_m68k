@@ -24,8 +24,6 @@
 
 #include <stdint.h>
 
-#pragma pack(push, 1)
-
 typedef uint32_t Elf32_Addr;
 typedef uint16_t Elf32_Half;
 typedef uint32_t Elf32_Off;
@@ -93,7 +91,7 @@ typedef struct {
     Elf32_Half      e_shentsize;
     Elf32_Half      e_shnum;
     Elf32_Half      e_shstrndx;
-} Elf32_Ehdr;
+} __attribute__ ((packed)) Elf32_Ehdr;
 
 // Program Header
 
@@ -116,8 +114,6 @@ typedef struct {
     Elf32_Word  p_memsz;
     Elf32_Word  p_flags;
     Elf32_Word  p_align;
-} Elf32_Phdr;
-
-#pragma pack(pop)
+} __attribute__ ((packed)) Elf32_Phdr;
 
 #endif
