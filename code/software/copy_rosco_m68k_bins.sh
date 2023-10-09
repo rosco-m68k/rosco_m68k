@@ -12,7 +12,7 @@ if [ -z "$1" ]
 fi
 echo "=== Copying rosco_m68k software examples -> $1"
 echo
-cp -v sdfat_menu/ROSCODE1.BIN "$1"
+cp -v sdfat_menu/sdfat_menu.bin "$1/ROSCODE1.BIN"
 cp -v 2dmaze/2dmaze.bin "$1"
 cp -v adventure/adventure.bin "$1"
 cp -v chardevs/chardevs.bin "$1"
