@@ -20,7 +20,7 @@
     section .text
 
 VECTORS:
-    dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
+    dc.l    STAGE2_LOAD                 ; 00: Stack (below stage2)
     dc.l    START                       ; 01: Initial PC (start of ROM code)
 
     dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error

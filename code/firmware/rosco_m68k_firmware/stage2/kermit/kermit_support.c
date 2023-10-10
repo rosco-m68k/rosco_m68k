@@ -22,11 +22,12 @@
 extern void mcPrint(char *str);
 extern void mcBusywait(uint32_t nops);
 
-UCHAR o_buf[OBUFLEN+8];         /* File output buffer */
-UCHAR i_buf[IBUFLEN+8];         /* File input buffer */
+/* Large kermit structures are kept in free memory 0x02000-0x40000 */
+UCHAR o_buf[OBUFLEN+8] __attribute__ ((section (".kermit")));   /* File output buffer */
+UCHAR i_buf[IBUFLEN+8] __attribute__ ((section (".kermit")));   /* File input buffer */
 
-static struct k_data k;
-static struct k_response response;
+static struct k_data k __attribute__ ((section ( ".kermit")));
+static struct k_response response __attribute__ ((section (".kermit")));
 
 extern uint8_t *kernel_load_ptr;
 static uint8_t *current_load_ptr;

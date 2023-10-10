@@ -14,10 +14,9 @@
     include "../rosco_m68k_private.asm"
 
     section .text.init
-    org     $2000
 
 START::
-    move.l  SDB_MEMSIZE,A7              ; Stack to top of RAM
+    movea.l VECTORS_LOAD,A7             ; Stack to the default stack pointer vector
     lea.l   linit,A0
     jsr     (A0)
     lea.l   lmain,A0
