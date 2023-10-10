@@ -14,7 +14,7 @@ SECTIONS
     _kermit_start = .;
     *(.kermit)
     _kermit_end = .;
-    ASSERT(_kermit_end < 0x40000, "Error: No room left for kernel load region");
+    ASSERT(_kermit_end <= 0x40000, "Error: No room left for kernel load region");
   } > RAM
 
   .text stage2 :
