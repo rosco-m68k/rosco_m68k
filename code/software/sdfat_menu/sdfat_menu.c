@@ -415,8 +415,12 @@ static void get_menu_files()
             {
                 if (num_dir_files < MAX_DIR_FILES)
                 {
-                    strncpy(dir_files[num_dir_files], dirent.filename, MAX_BIN_NAMELEN - 1);
-                    num_dir_files++;
+                    // ignore hidden/system directories
+                    if (dirent.filename[0] != '.')
+                    {
+                        strncpy(dir_files[num_dir_files], dirent.filename, MAX_BIN_NAMELEN - 1);
+                        num_dir_files++;
+                    }
                 }
                 else
                 {
