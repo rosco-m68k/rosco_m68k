@@ -167,7 +167,7 @@ mactest: $(BINARY) $(DISASM)
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
 	sleep 1
-	open -n -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 macterm:
 	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
@@ -175,7 +175,7 @@ macterm:
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
 	sleep 1
-	open -n -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
+	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 # Makefile magic (for "phony" targets that are not real files)
 .PHONY: all clean disasm dump load linuxtest linuxterm mactest macterm
