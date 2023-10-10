@@ -22,16 +22,6 @@
 #include "part.h"
 #include "system.h"
 
-/*
- * Currently, software that relocates itself to 0x2000 must be loaded like a
- * raw binary program (to 0x40000), to avoid overwriting firmware stage2.
- * If ELF_LOAD_VIRTUAL_ADDR is 1, instead load every segment to its run virtual
- * address, and use E_ENTRY.
- */ 
-#ifndef ELF_LOAD_VIRTUAL_ADDR
-#define ELF_LOAD_VIRTUAL_ADDR 0
-#endif
-
 extern void mcPrint(const char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 
@@ -39,6 +29,7 @@ extern uint8_t *kernel_load_ptr;
 extern KMain kernel_entry;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
+extern char STAGE2_LOAD[];
 extern char _end[];
 
 static const char FILENAME_BIN[] = "/ROSCODE1.BIN";
@@ -118,7 +109,7 @@ static bool load_range_allowed(uintptr_t start, size_t size) {
     if (last >= 0 && start < 0x2000) {
         // Is in the exception vectors, SDB, EFPT, VDA, or firmware-reserved areas
         return false;
-    } else if (last >= 0x2000 && start < (uintptr_t) &_end) {
+    } else if (last >= (uintptr_t) &STAGE2_LOAD && start < (uintptr_t) &_end) {
         // Is in stage2
         return false;
     } else if (last >= stack_guard_start && start < sdb->memsize) {
@@ -130,22 +121,16 @@ static bool load_range_allowed(uintptr_t start, size_t size) {
 }
 
 static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
-#if ELF_LOAD_VIRTUAL_ADDR
-    const Elf32_Addr load_addr = phdr->p_vaddr;
-#else
-    const Elf32_Addr load_addr = phdr->p_paddr;
-#endif
-
-    // TODO: Validate other fields and don't allow overwriting kernel memory
+    // TODO: Validate other fields
     if (phdr->p_align > 0) {
-        if (load_addr % phdr->p_align != phdr->p_offset % phdr->p_align) {
+        if (phdr->p_vaddr % phdr->p_align != phdr->p_offset % phdr->p_align) {
             mcPrint("\r\n*** Invalid loadable segment alignment\r\n");
             return -1;
         }
     }
 
     // Don't allow overwriting firmware-reserved areas, stage2, or stack
-    if (!load_range_allowed(load_addr, phdr->p_memsz)) {
+    if (!load_range_allowed(phdr->p_vaddr, phdr->p_memsz)) {
             mcPrint("\r\n*** Segment would overwrite firmware memory\r\n");
             return -1;
     }
@@ -161,7 +146,7 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
         size_t count_to_do = phdr->p_filesz - count_done;
         this_count = count_to_do > BYTES_PER_DOT ? BYTES_PER_DOT : count_to_do;
 
-        if (fl_fread((void *) (load_addr + count_done), 1, this_count, file) != this_count) {
+        if (fl_fread((void *) (phdr->p_vaddr + count_done), 1, this_count, file) != this_count) {
             mcPrint("\r\n*** Couldn't read loadable segment\r\n");
             return -1;
         }
@@ -170,7 +155,7 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
     }
 
     // Clear remaining bytes in segment memory image
-    memset((void *) (load_addr + phdr->p_filesz), 0, phdr->p_memsz - phdr->p_filesz);
+    memset((void *) (phdr->p_vaddr + phdr->p_filesz), 0, phdr->p_memsz - phdr->p_filesz);
 
     return phdr->p_filesz;
 }
@@ -218,8 +203,6 @@ bool load_kernel_elf(void *file) {
 
     // Process program headers
     uint32_t load_size = 0;
-    bool have_load_paddr = false;
-    Elf32_Addr load_paddr;
     if (ehdr.e_phoff == 0) {
         mcPrint("\r\n*** ELF file has no program header table\r\n");
         return false;
@@ -244,10 +227,6 @@ bool load_kernel_elf(void *file) {
         case PT_NULL:
             break;
         case PT_LOAD: {
-            if (!have_load_paddr) {
-                load_paddr = phdr.p_paddr;
-                have_load_paddr = true;
-            }
             long phdr_result = load_kernel_elf_phdr_load(file, &phdr);
             if (phdr_result < 0) {
                 return false;
@@ -259,26 +238,12 @@ bool load_kernel_elf(void *file) {
     }
     mcPrint("\r\n");
 
-#if ELF_LOAD_VIRTUAL_ADDR
     if (ehdr.e_entry != 0) {
         kernel_entry = (KMain) ehdr.e_entry;
     } else {
         mcPrint("*** ELF file has no entry point\r\n");
         return false;
     }
-    (void) load_paddr;  // Suppress unused variable
-#else
-    // In physical load mode, the first load segment must physically be at kernel_entry (0x40000)
-    if (!have_load_paddr) {
-        mcPrint("\r\n*** ELF program has no segments to load\r\n");
-        return false;
-    } else if (load_paddr != (Elf32_Addr) kernel_entry) {
-        mcPrint("\r\n*** ELF program load physical address is not at 0x");
-        print_unsigned((uint32_t) kernel_entry, 16);
-        mcPrint("\r\n");
-        return false;
-    }
-#endif
 
     uint32_t total_ticks = sdb->upticks - start;
     uint32_t total_secs = (total_ticks + 50) / 100;
