@@ -128,7 +128,7 @@ XANSI_CON_RECVCHAR::
                 ifnd    TEST_FIRMWARE
                 lea.l   XANSI_CON_DATA.w,a2
                 else
-                lea.l   _private_xansiterm_data.w,a2
+                lea.l   _private_xansiterm_data,a2
                 endif
 
                 tst.b   2(a2)                   ; check if not query (send_index < 0)
@@ -194,7 +194,7 @@ XANSI_CON_CHECKCHAR::
                 ifnd    TEST_FIRMWARE
                 lea.l   XANSI_CON_DATA.w,a1
                 else
-                lea.l   _private_xansiterm_data.w,a1
+                lea.l   _private_xansiterm_data,a1
                 endif
 
                 tst.b   2(a1)                   ; check for query (send_index >= 0)
