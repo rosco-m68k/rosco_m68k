@@ -33,12 +33,15 @@
 // number of elements in C array
 #define ELEMENTS(a) ((int)(sizeof(a) / sizeof(*a)))
 
-#define MAX_BIN_FILES   26                             // A to Z menu BIN files
+#define MAX_FILE_PAGES  10
+#define MAX_BIN_FILES   26 * MAX_FILE_PAGES            // A to Z menu BIN files
 #define MAX_DIR_FILES   10                             // 0 to 9 menu directories
 #define MAX_BIN_NAMELEN FATFS_MAX_LONG_FILENAME        // full name length
 
 static bool         no_sd_boot;                                        // flag to disable SD boot upon warm-start
 static int          num_menu_files;                                    // number of BIN files in menu
+static int          num_menu_pages;                                    // number menu pages
+static int          cur_page;                                          // current menu page
 static int          num_dir_files;                                     // number of directories in menu
 static char         menu_files[MAX_BIN_FILES][MAX_BIN_NAMELEN];        // names of BIN files
 static char         dir_files[MAX_DIR_FILES][MAX_BIN_NAMELEN];         // names of directories
@@ -366,6 +369,8 @@ static void check_sd_card()
 // gather files and directories for menu from current dir
 static void get_menu_files()
 {
+    cur_page       = 0;
+    num_menu_pages = 0;
     num_menu_files = 0;
     num_dir_files  = 0;
     memset(menu_files, 0, sizeof(menu_files));
@@ -392,17 +397,17 @@ static void get_menu_files()
                         if (num_menu_files < MAX_BIN_FILES)
                         {
                             strncpy(menu_files[num_menu_files], dirent.filename, MAX_BIN_NAMELEN - 1);
+                            bin_sizes[num_menu_files] = dirent.size;
+                            num_menu_files++;
                         }
                         else
                         {
                             if (!too_many_files)
                             {
-                                printf("*** Too many menu files (use prompt to access others > 26)\n");
+                                printf("*** Too many menu files (use prompt to access others > %d)\n", MAX_BIN_FILES);
                                 too_many_files = true;
                             }
                         }
-                        bin_sizes[num_menu_files] = dirent.size;
-                        num_menu_files++;
                     }
                 }
             }
@@ -410,22 +415,28 @@ static void get_menu_files()
             {
                 if (num_dir_files < MAX_DIR_FILES)
                 {
-                    strncpy(dir_files[num_dir_files], dirent.filename, MAX_BIN_NAMELEN - 1);
+                    // ignore hidden/system directories
+                    if (dirent.filename[0] != '.')
+                    {
+                        strncpy(dir_files[num_dir_files], dirent.filename, MAX_BIN_NAMELEN - 1);
+                        num_dir_files++;
+                    }
                 }
                 else
                 {
                     if (!too_many_dirs)
                     {
-                        printf("*** Too many directories (use prompt to access others > 10)\n");
+                        printf("*** Too many directories (use prompt to access others > %d)\n", MAX_DIR_FILES);
                         too_many_dirs = true;
                     }
                 }
-                num_dir_files++;
             }
         }
 
         fl_closedir(&dirstat);
     }
+
+    num_menu_pages = (num_menu_files + 25) / 26;
 }
 
 // display file menu
@@ -437,17 +448,26 @@ static void show_menu_files()
     unsigned int tm = ts / (60 * 100);
     ts              = (ts - (tm * (60 * 100))) / 100;
 
+    int first_file = cur_page * 26;
+    int file_count = first_file + 26 < num_menu_files ? 26 : num_menu_files - first_file;
+
     snprintf(mem_str, sizeof(mem_str), "%luK", (_INITIAL_STACK + 1023) / 1024);
     snprintf(up_str, sizeof(up_str), "%02u:%02u", tm, ts);
-    printf("\nDir: %-33.33s <Mem %-6.6s Uptime %s>\n", fullpath(""), mem_str, up_str);
+    printf("\nDir: %-33.33s <Mem %-6.6s Uptime %s>  Page %d/%d\n",
+           fullpath(""),
+           mem_str,
+           up_str,
+           cur_page + 1,
+           num_menu_pages);
     bool odd  = false;
-    int  half = (num_menu_files + 1) / 2;
-    for (int i = 0; i < num_menu_files; i++)
+    int  half = (file_count + 1) / 2;
+    for (int i = 0; i < file_count; i++)
     {
+        int fi = first_file + i;
         printf("[%4s] %c - %-27.27s%s",
-               friendly_size(bin_sizes[i]),
+               friendly_size(bin_sizes[fi]),
                'A' + (i / 2) + (odd ? half : 0),
-               menu_files[i],
+               menu_files[fi],
                odd ? "\n" : "  ");
         odd = !odd;
     }
@@ -465,13 +485,14 @@ static void show_menu_files()
     }
 }
 
-static void execute_bin_file(const char * name, uint8_t *loadstartptr)
+static void execute_bin_file(const char * name, uint8_t * loadstartptr)
 {
     const char * filename = fullpath(name);
     printf("Loading \"%s\"", filename);
 
-    if (loadstartptr != (uint8_t *) _LOAD_ADDRESS) {
-        printf(" to address 0x%08x", (int) loadstartptr);
+    if (loadstartptr != (uint8_t *)_LOAD_ADDRESS)
+    {
+        printf(" to address 0x%08x", (int)loadstartptr);
     }
 
     unsigned int timer = timer_start();
@@ -496,10 +517,10 @@ static void execute_bin_file(const char * name, uint8_t *loadstartptr)
 
     if (file != NULL)
     {
-        int       c            = 0;
-        int       b            = 0;
-        uint8_t * loadptr      = loadstartptr;
-        uint8_t * endptr       = (uint8_t *)_INITIAL_STACK;
+        int       c       = 0;
+        int       b       = 0;
+        uint8_t * loadptr = loadstartptr;
+        uint8_t * endptr  = (uint8_t *)_INITIAL_STACK;
         while (loadptr < endptr && (c = fl_fread(loadptr, 1, 512, file)) > 0)
         {
             loadptr += c;
@@ -532,7 +553,7 @@ static void execute_bin_file(const char * name, uint8_t *loadstartptr)
                 disable_sd_boot();
             }
 
-            __asm__ __volatile__("move.l %0,%%a0\n" : : "g" (loadstartptr));
+            __asm__ __volatile__("move.l %0,%%a0\n" : : "g"(loadstartptr));
             __asm__ __volatile__(" jmp (%%a0)\n" : : :);
             __builtin_unreachable();
         }
@@ -857,7 +878,7 @@ static struct
                         [CMD_DEL]    = {"del", "rm", "Delete file"},
                         [CMD_TYPE]   = {"type", "cat", "Display ASCII file"},
                         [CMD_DUMP]   = {"dump", NULL, "Dump file in hex and ASCII"},
-                        [CMD_WRITE]  = {"write", NULL, "Write 100KB test file"},
+                        [CMD_WRITE]  = {"write", NULL, "Write/verify 512KB test file"},
                         [CMD_CRC]    = {"crc", NULL, "CRC-32 of file"},
                         [CMD_COPY]   = {"copy", "cp", "Copy file"},
                         [CMD_BOOT]   = {"boot", NULL, "Warm-boot"},
@@ -914,10 +935,11 @@ void command_prompt()
                 break;
             }
             case CMD_RUN: {
-                uint8_t *load_addr = (uint8_t *) _LOAD_ADDRESS; // Default load address.
-                arg2 = next_cmd_token();
-                if (arg2 != NULL && arg2[0] != 0) {
-                    load_addr = (uint8_t *) strtol(arg2, NULL, 16); // Use load addr from cmd line.
+                uint8_t * load_addr = (uint8_t *)_LOAD_ADDRESS;        // Default load address.
+                arg2                = next_cmd_token();
+                if (arg2 != NULL && arg2[0] != 0)
+                {
+                    load_addr = (uint8_t *)strtol(arg2, NULL, 16);        // Use load addr from cmd line.
                 }
                 execute_bin_file(arg, load_addr);
                 break;
@@ -1039,31 +1061,47 @@ void sdfat_menu()
         warm_boot(true);
     }
 
+    bool reshow = false;
+
     while (true)
     {
-        check_sd_card();
-
-        get_menu_files();
-
-        if (num_menu_files == 0 && num_dir_files == 0)
+        if (!reshow)
         {
-            printf("\nNo menu files present.\n");
-            command_prompt();
-            continue;
-        }
+            check_sd_card();
 
+            get_menu_files();
+
+            if (num_menu_files == 0 && num_dir_files == 0)
+            {
+                printf("\nNo menu files present.\n");
+                command_prompt();
+                continue;
+            }
+        }
+        else
+        {
+            printf("\n\n\n");
+        }
+        reshow = false;
+
+        int first_file = cur_page * 26;
+        int file_count = first_file + 26 < num_menu_files ? 26 : num_menu_files - first_file;
         show_menu_files();
 
-        printf("\nPress ");
+        printf("\n");
         if (num_menu_files > 0)
         {
-            printf("A-%c to run, ", 'A' + num_menu_files - 1);
+            printf("A-%c to run, ", 'A' + file_count - 1);
         }
         if (num_dir_files > 0)
         {
             printf("0-%c for dir, ", '0' + num_dir_files - 1);
         }
-        printf("RETURN for prompt, SPACE to reload:");
+        if (num_menu_pages > 1)
+        {
+            printf("<-> page, ");
+        }
+        printf("RETURN for prompt, ' ' to reload:");
 
         bool getnewkey;
         do
@@ -1101,7 +1139,7 @@ void sdfat_menu()
             if (key >= 'A' && key <= 'Z')
             {
                 int run_num = (key - 'A');
-                int half    = (num_menu_files + 1) / 2;
+                int half    = (file_count + 1) / 2;
                 if (run_num >= half)
                 {
                     run_num = ((run_num - half) * 2) + 1;
@@ -1110,6 +1148,8 @@ void sdfat_menu()
                 {
                     run_num = run_num * 2;
                 }
+
+                run_num += first_file;
 
                 if (run_num >= num_menu_files)
                 {
@@ -1133,7 +1173,7 @@ void sdfat_menu()
                 }
                 else
                 {
-                    execute_bin_file(n, (uint8_t *) _LOAD_ADDRESS);
+                    execute_bin_file(n, (uint8_t *)_LOAD_ADDRESS);
                 }
             }
             else if (key >= '0' && key <= '9')
@@ -1160,7 +1200,33 @@ void sdfat_menu()
 
                 change_dir(dir_files[dir_num]);
             }
-            else if (key == '.')
+            else if (key == ',' || key == '<')
+            {
+                if (cur_page >= 1)
+                {
+                    cur_page -= 1;
+                    reshow = true;
+                    break;
+                }
+                else
+                {
+                    getnewkey = true;
+                }
+            }
+            else if (key == '.' || key == '>')
+            {
+                if (cur_page + 1 < num_menu_pages)
+                {
+                    cur_page += 1;
+                    reshow = true;
+                    break;
+                }
+                else
+                {
+                    getnewkey = true;
+                }
+            }
+            else if (key == '\\')
             {
                 no_sd_boot = !no_sd_boot;
                 printf("%s\n", no_sd_boot ? "no boot" : "SD boot");
