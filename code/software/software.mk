@@ -35,7 +35,7 @@ GCC_LIBS?=$(shell $(CC) --print-search-dirs \
 LIBS=$(EXTRA_LIBS) -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
-LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k
+LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k $(EXTRA_LDFLAGS)
 
 CC=m68k-elf-gcc
 CXX=m68k-elf-g++
@@ -49,6 +49,7 @@ SIZE=m68k-elf-size
 VASM=vasmm68k_mot
 RM=rm -f
 CP=cp
+LSOF=lsof
 KERMIT=kermit
 SERIAL?=/dev/modem
 BAUD?=9600
@@ -69,7 +70,7 @@ endif
 # For systems without MMU support, aligning LOAD segments with pages is not needed
 # In those cases, provide fake page sizes to both save space and remove RWX warnings
 ifeq ($(CPU),68030)
-LD_LD_SUPPORT_MMU?=true
+LD_SUPPORT_MMU?=true
 endif
 ifeq ($(CPU),68040)
 LD_SUPPORT_MMU?=true
@@ -104,7 +105,7 @@ SOURCES=$(CSOURCES) $(CXXSOURCES) $(SSOURCES) $(ASMSOURCES)
 # Assume each source files makes an object file
 OBJECTS=$(addsuffix .o,$(basename $(SOURCES)))
 
-TO_CLEAN=$(RM) $(OBJECTS) $(ELF) $(BINARY) $(MAP) $(SYM) $(DISASM) $(addsuffix .lst,$(basename $(SSOURCES) $(ASMSOURCES)))
+TO_CLEAN=$(OBJECTS) $(ELF) $(BINARY) $(MAP) $(SYM) $(DISASM) $(addsuffix .lst,$(basename $(SSOURCES) $(ASMSOURCES)))
 
 all: $(BINARY) $(DISASM)
 
@@ -148,19 +149,19 @@ load: $(BINARY)
 # Linux (gnome): Upload binary with kermit, connect with "screen" terminal
 # (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
 linuxtest: $(BINARY) $(DISASM)
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
 # Linux (gnome): Connect with "screen" terminal
 linuxterm:
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	gnome-terminal --geometry=80x25 --title="rosco_m68k $(SERIAL)" -- screen $(SERIAL) $(BAUD)
 
 # macOS: Upload binary with kermit, connect with "screen" terminal
 # (NOTE: kills existing "screen", opens new screen serial in new shell window/tab)
 mactest: $(BINARY) $(DISASM)
-	-killall screen && sleep 1
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	$(KERMIT) -i -l $(SERIAL) -b $(BAUD) -s $(BINARY)
 	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
@@ -169,6 +170,7 @@ mactest: $(BINARY) $(DISASM)
 	open -b com.apple.terminal $(TMPDIR)/rosco_screen.sh
 
 macterm:
+	-$(LSOF) -t $(SERIAL) | (read oldscreen ; [ ! -z "$$oldscreen" ] && kill -3 $$oldscreen ; sleep 1)
 	echo "#! /bin/sh" > $(TMPDIR)/rosco_screen.sh
 	echo "/usr/bin/screen $(SERIAL) $(BAUD)" >> $(TMPDIR)/rosco_screen.sh
 	-chmod +x $(TMPDIR)/rosco_screen.sh
