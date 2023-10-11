@@ -1,11 +1,12 @@
 OUTPUT_FORMAT("binary")
 ENTRY(START)
 kermit_buffers = 0x2000;
-stage2 = 0xF0000;
 MEMORY
 {
   RAM : org = 0x00000, l = 0x100000
 }
+
+PROVIDE(STAGE2_LOAD     = 0x000F0000);
 
 SECTIONS
 {
@@ -14,10 +15,10 @@ SECTIONS
     _kermit_start = .;
     *(.kermit)
     _kermit_end = .;
-    ASSERT(_kermit_end < 0x40000, "Error: No room left for kernel load region");
+    ASSERT(_kermit_end <= 0x40000, "Error: No room left for kernel load region");
   } > RAM
 
-  .text stage2 :
+  .text STAGE2_LOAD :
   {
     _code = .;
     *(.text.init)

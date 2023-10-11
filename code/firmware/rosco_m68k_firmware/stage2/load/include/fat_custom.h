@@ -31,5 +31,4 @@
 // Added by us
 #define FATFS_INC_LOCKING               0
 #define FATFS_INC_USELESS_STUFF         0
-#define FATFS_MINIMAL_API               1
-
+#define FATFS_MINIMAL_API               0

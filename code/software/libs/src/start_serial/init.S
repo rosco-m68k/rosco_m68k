@@ -31,10 +31,8 @@
 
 ; NOTE: Loaded at $00040000 but init code is position-independent.
 
-START::                           ; position-independent load addr
-    move.l  SDB_MEMSIZE,A7        ; Reset stack to top of memory
-
-    lea.l   START(PC),A0          ; PC-rel source addr (load addr)
+RELOC:                            ; position-independent load addr
+    lea.l   RELOC(PC),A0          ; PC-rel source addr (load addr)
     lea.l   _init,A1              ; absolute dest addr (run addr)
     move.l  #_postinit_end,D0     ; init section absolute end addr
     sub.l   A1,D0                 ; subtract dest addr for init length
@@ -62,7 +60,9 @@ POSTINIT:                         ; running from copied run addr location
     dbra    D0,.COPY_LOOP         ; inner loop
     dbra    D1,.COPY_LOOP         ; outer loop
 
-PREMAIN:
+_start::                          ; entrypoint at copied run addr location
+    move.l  SDB_MEMSIZE,A7        ; reset stack to top of memory
+
     ; Save existing program exit EFP
     ; Cannot use stack as we may jump directly with exit() or abort(),
     ; from arbitrarily nested code...
