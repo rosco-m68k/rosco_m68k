@@ -1,5 +1,5 @@
-LIB=cstdlib
-LIBOBJECTS=$(DIR)/ctype.o $(DIR)/strings.o $(DIR)/string.o $(DIR)/fgets.o $(DIR)/stdlib.o $(DIR)/setjmp.o
+LIB=gdb
+LIBOBJECTS=$(DIR)/gdb-support.o $(DIR)/m68k-stub.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---
