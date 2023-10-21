@@ -215,7 +215,7 @@ typedef struct FrameStruct {
     int pc;
     short format;
     int fsaveHeader;
-    int morejunk;                   /* exception frame, fp save... */
+    int morejunk[];                 /* exception frame, fp save... */
     // ...
 } Frame;
 
@@ -965,7 +965,7 @@ void handle_exception(int exceptionVector) {
                 if ((frame->exceptionVector == 33) && (frame->exceptionPC == (newPC + 2))) {
                     break;
                 }
-                
+
                 if (frame == frame->previous) {
                     frame = 0; /* no match found */
                     break;
