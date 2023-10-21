@@ -29,6 +29,9 @@ void set_debug_traps(void);
 extern int remote_debug;
 
 bool start_debugger(void) {
+    // Set this to 1 for a lot of noisy output that helps debug stuff...
+    remote_debug = 0;
+
     if (!mcCheckDeviceSupport()) {
         return false;
     }

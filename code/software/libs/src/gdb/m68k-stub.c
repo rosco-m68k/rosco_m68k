@@ -226,12 +226,12 @@ static Frame *lastFrame;
 /*
  * these should not be static cuz they can be used outside this module
  */
-int registers[NUMREGBYTES / 4];
-int superStack;
+volatile int registers[NUMREGBYTES / 4];
+volatile int superStack;
 
 #define STACKSIZE 10000
-int remcomStack[STACKSIZE / sizeof(int)];
-int *stackPtr = &remcomStack[STACKSIZE / sizeof(int) - 1];
+volatile int remcomStack[STACKSIZE / sizeof(int)];
+volatile int *stackPtr = &remcomStack[STACKSIZE / sizeof(int) - 1];
 
 /*
  * In many cases, the system will want to continue exception processing
@@ -239,7 +239,7 @@ int *stackPtr = &remcomStack[STACKSIZE / sizeof(int) - 1];
  * oldExceptionHook is a function to invoke in this case.
  */
 
-static ExceptionHook oldExceptionHook;
+static volatile ExceptionHook oldExceptionHook;
 
 #ifdef mc68020
 /* the size of the exception stack on the 68020 varies with the type of
@@ -704,6 +704,7 @@ char* hex2mem(char *buf, char *mem, int count) {
    to return execution and allow handling of the error */
 
 void handle_buserror(void) {
+    debug_error("BUS ERROR!!!!!1!\n", "");
     longjmp(remcomEnv, 1);
 }
 
@@ -763,6 +764,20 @@ int computeSignal(int exceptionVector) {
     case 40:
         sigval = 8;
         break; /* floating point err  */
+
+        /* TODO Modern gdb uses TRAP#15 rather than TRAP#1 (which I guess it used 
+           back in the 90's when this stub was written) for breakpoints when
+           the Z command isn't supported (which it isn't here). This is likely 
+           going to cause us problems because of the Easy68k trap, but for now
+           this hack will do... 
+
+           See BPT_VECTOR: https://sourceware.org/git/?p=binutils-gdb.git;a=blob;f=gdb/m68k-tdep.c;h=5b2a29a350e53d2a7d366dcfcd95213d57b63897;hb=HEAD
+           
+           We should probably just support Z ...
+           */
+    case 47:
+        sigval = 5;
+        break; /* breakpoint          */
 
     case 48:
         sigval = 8;
@@ -867,15 +882,18 @@ void handle_exception(int exceptionVector) {
             /* mAA..AA,LLLL  Read LLLL bytes at address AA..AA */
         case 'm':
             if (setjmp(remcomEnv) == 0) {
+                debug_error("remcomEnv set with setjmp\n", "");
                 exceptionHandler(2, handle_buserror);
 
                 /* TRY TO READ %x,%x.  IF SUCCEED, SET PTR = 0 */
-                if (hexToInt(&ptr, &addr))
-                    if (*(ptr++) == ',')
+                if (hexToInt(&ptr, &addr)) {
+                    if (*(ptr++) == ',') {
                         if (hexToInt(&ptr, &length)) {
                             ptr = 0;
                             mem2hex((char *)addr, remcomOutBuffer, length);
                         }
+                    }
+                }
 
                 if (ptr) {
                     strcpy(remcomOutBuffer, "E01");
@@ -1070,6 +1088,9 @@ void set_debug_traps()
        people are being screwed by having this code the way it is?
        Is there a clean solution?  */
     exceptionHandler(40, _catchException);
+
+    /* modern gdb breakpoint exception (trap #15) */
+    exceptionHandler(47, _catchException);
 
     /* 48 to 54 are floating point coprocessor errors */
     for (exception = 48; exception <= 54; exception++) {
