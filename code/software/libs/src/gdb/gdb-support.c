@@ -13,6 +13,7 @@
  * ------------------------------------------------------------
  */
 
+#include <stdio.h>
 #include <stdbool.h>
 #include <machine.h>
 
@@ -25,7 +26,12 @@ static uint32_t *vector_table = (uint32_t*)0;
 
 void set_debug_traps(void);
 
+extern int remote_debug;
+
 bool start_debugger(void) {
+    // Set to enable debugging output from the stub
+    // remote_debug = 1;
+
     if (!mcCheckDeviceSupport()) {
         return false;
     }
@@ -50,5 +56,8 @@ void putDebugChar(int chr) {
 }
 
 void exceptionHandler(int exception_number, void *exception_address) {
+    if (remote_debug) {
+        printf("Set vector 0x%02x to 0x%08lx\n", exception_number, (uint32_t)exception_address);
+    }
     vector_table[exception_number] = (uint32_t)exception_address;
 }

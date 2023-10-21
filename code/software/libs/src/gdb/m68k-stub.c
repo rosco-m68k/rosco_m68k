@@ -109,6 +109,8 @@
 #include <string.h>
 #include <setjmp.h>
 
+#define mc68020
+
 #define fprintf(fp, ...)		printf(__VA_ARGS__)
 
 /************************************************************************
@@ -344,7 +346,7 @@ asm(R"(
 	movew   %d0,%d2           /* make a copy of format word   */
 	andiw   #0xf000,%d0      /* mask off format type         */
 	rolw    #5,%d0           /* rotate into the low byte *2  */
-	lea     _exceptionSize,%a1   
+	lea     exceptionSize,%a1   
 	addw    %d0,%a1           /* index into the table         */
 	movew   %a1@,%d0          /* get number of words in frame */
 	movew   %d0,%d3           /* save it                      */
