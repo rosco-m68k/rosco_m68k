@@ -4,7 +4,7 @@
  *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ *                     |_____|         libraries
  * ------------------------------------------------------------
  * Copyright (c)2023 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
@@ -17,11 +17,13 @@
 #define _ROSCOM68K_SETJMP_H
 
 #include <stdint.h>
+#include <stdnoreturn.h>
 
-typedef uint32_t jmp_buf[14];
+typedef uint16_t    jmp_buf[27];
 
-void longjmp (jmp_buf jmpb, int retval);
-int  setjmp (jmp_buf jmpb);
+noreturn void longjmp(jmp_buf jmpb, int retval);
+
+int  setjmp(jmp_buf jmpb);
 
 #endif// _ROSCOM68K_SETJMP_H
 

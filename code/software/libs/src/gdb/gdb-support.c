@@ -4,7 +4,7 @@
  *  ___ ___ ___ ___ ___       _____|  _| . | |_ 
  * |  _| . |_ -|  _| . |     |     | . | . | '_|
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
- *                     |_____|       firmware v1                 
+ *                     |_____|         libraries
  * ------------------------------------------------------------
  * Copyright (c)2023 Ross Bamford
  * See top-level LICENSE.md for licence information.
@@ -29,9 +29,6 @@ void set_debug_traps(void);
 extern int remote_debug;
 
 bool start_debugger(void) {
-    // Set to enable debugging output from the stub
-    // remote_debug = 1;
-
     if (!mcCheckDeviceSupport()) {
         return false;
     }
@@ -45,6 +42,7 @@ bool start_debugger(void) {
     }
 
     set_debug_traps();
+    return true;
 }
 
 int getDebugChar(void) {
@@ -55,9 +53,9 @@ void putDebugChar(int chr) {
     mcSendDevice((char)chr, &device);
 }
 
-void exceptionHandler(int exception_number, void *exception_address) {
+void exceptionHandler(int exception_number, void (*handler)(void)) {
     if (remote_debug) {
-        printf("Set vector 0x%02x to 0x%08lx\n", exception_number, (uint32_t)exception_address);
+        printf("Set vector 0x%02x to 0x%08lx\n", exception_number, (uint32_t)handler);
     }
-    vector_table[exception_number] = (uint32_t)exception_address;
+    vector_table[exception_number] = (uint32_t)handler;
 }
