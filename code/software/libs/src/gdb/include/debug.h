@@ -12,6 +12,7 @@
  * GDB support
  * ------------------------------------------------------------
  */
+
 #ifndef _ROSCOM68K_GDB_H
 #define _ROSCOM68K_GDB_H
 
