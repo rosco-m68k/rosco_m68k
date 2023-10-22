@@ -126,8 +126,10 @@
  ****************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <setjmp.h>
+#include <machine.h>
 
 #define mc68020
 
@@ -142,6 +144,7 @@ typedef void (*Function)(void);                 /* pointer to a function */
 
 extern void putDebugChar(int);                  /* write a single character      */
 extern int getDebugChar();                      /* read and return a single char */
+extern void cleanup_debugger(void);     
 
 extern Function exceptionHandler(int, void (*)(void));   /* assign an exception handler */
 extern ExceptionHook exceptionHook;             /* hook variable for errors/exceptions */
@@ -704,7 +707,6 @@ char* hex2mem(char *buf, char *mem, int count) {
    to return execution and allow handling of the error */
 
 void handle_buserror(void) {
-    debug_error("BUS ERROR!!!!!1!\n", "");
     longjmp(remcomEnv, 1);
 }
 
@@ -1050,6 +1052,9 @@ void handle_exception(int exceptionVector) {
 
             /* kill the program */
         case 'k': /* do nothing */
+            cleanup_debugger();
+            mcEnableInterrupts(0);
+            abort();
             break;
         } /* switch */
 
