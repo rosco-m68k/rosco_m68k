@@ -57,6 +57,10 @@ bool start_debugger(void) {
     return true;
 }
 
+void cleanup_debugger(void) {
+    duart_remove_interrupt();
+}
+
 int getDebugChar(void) {
     uint8_t n, buf;
 
