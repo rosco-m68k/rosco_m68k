@@ -1,7 +1,7 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the Version 2.4 release branch. If you are using Firmware 2.4 (regardless of base board revision), this is the branch you should be using to build the standard libraries and example programs.
+> **Note**: This is the **develop** branch, where the latest development files live. It is not guaranteed to contain stable code or working designs at any given point. If you are looking for code to use with your board or stable designs, these can be found on the relevant release branches: The [latest 2.4 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-2.4) for revision 2.x boards, the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3), the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2) for **revision 1.2** boards, or the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)) for **revision 1 boards**. Code built or PCBs manufactured from the develop branch are likely to contain development and pre-production bugs, be incomplete, or just plain not work. Code and designs here are liable to change in utterly-incompatible ways without notice!
 
 This repository holds design files, firmware and software for the Really Old-School Computer 
 (M68k) single-board computer, AKA the rosco_m68k. This is a fully-featured, programmable,
