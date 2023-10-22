@@ -980,7 +980,7 @@ void handle_exception(int exceptionVector) {
                  * be off by two due to re-executing the instruction
                  * replaced by the trap instruction.  Check for this.
                  */
-                if ((frame->exceptionVector == 33) && (frame->exceptionPC == (newPC + 2))) {
+                if ((frame->exceptionVector == 33 || frame->exceptionVector == 47) && (frame->exceptionPC == (newPC + 2))) {
                     break;
                 }
 
@@ -993,14 +993,15 @@ void handle_exception(int exceptionVector) {
 
             /*
              * If we found a match for the PC AND we are not returning
-             * as a result of a breakpoint (33),
+             * as a result of a breakpoint (33 or 47),
              * trace exception (9), nmi (31), jmp to
              * the old exception handler as if this code never ran.
              */
             if (frame) {
                 if ((frame->exceptionVector != 9) &&
                     (frame->exceptionVector != 31) &&
-                    (frame->exceptionVector != 33)) {
+                    (frame->exceptionVector != 33) &&       // TODO do we just dump TRAP#1 now? Not just here, obvs...
+                    (frame->exceptionVector != 47)) {       // TODO this last one is what breaks E68k...
 
                     /*
                      * invoke the previous handler.
