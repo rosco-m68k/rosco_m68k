@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     container: roscopeco/rosco_m68k:latest
     steps:
-        - uses: actions/checkout@v2
+        - name: Checkout code
+          uses: actions/checkout@v1
         - name: Hack GITHUB_WORKSPACE 🥷
           run: |
             sudo chown -R linuxbrew "$GITHUB_WORKSPACE"
