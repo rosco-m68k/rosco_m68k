@@ -30,7 +30,7 @@ jobs:
         - name: Build firmware - r2 Base
           run: |
             cd code/firmware/rosco_m68k_firmware
-            make clean all
+            make clean all test
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Build firmware - r2 Flash
