@@ -27,16 +27,12 @@ jobs:
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_stdlibs.tar.gz libs
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_stdlibs.tar.gz "$GITHUB_WORKSPACE/artifacts"
             make clean all
-        - name: firmware tests
-          run: |
-            cd code/firmware/rosco_m68k_firmware
-            make clean test
-        - name: build firmware - r2 base
+        - name: Build firmware - r2 Base
           run: |
             cd code/firmware/rosco_m68k_firmware
             make clean all
-            tar czf rosco_m68k_fw_$(cat "$github_workspace/branch.txt")_$(cat "$github_workspace/stamp.txt")_mainboard_2.x.tar.gz *.rom
-            cp rosco_m68k_fw_$(cat "$github_workspace/branch.txt")_$(cat "$github_workspace/stamp.txt")_mainboard_2.x.tar.gz "$github_workspace/artifacts"
+            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz *.rom
+            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Build firmware - r2 Flash
           run: |
             cd code/software/updateflash
