@@ -7,10 +7,10 @@ CPU?=68010
 ARCH?=$(CPU)
 TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g
-DEFINES:=$(DEFINES)
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
-       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks						\
+DEFINES:=$(DEFINES) -DROSCO_M68K_KERNEL_BUILD
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
+       -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks							\
        $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
@@ -79,6 +79,11 @@ ifeq ($(LATEBANNER),true)
 $(info === Building rosco_m68k firmware with late banner output at startup)
 DEFINES:=$(DEFINES) -DLATE_BANNER
 endif
+endif
+
+ifneq ($(NO_KERNEL),true)
+$(info === Building rosco_m68k firmware with ROM kernel for revision 2.x board)
+DEFINES:=$(DEFINES) -DWITH_KERNEL
 endif
 
 # Set up Size-specific things appropriately..
@@ -169,10 +174,13 @@ export MAME
 %.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
+kernel/kernel.a:
+	$(MAKE) -C kernel $(nodir $@)
+
 $(STAGE2) : $(STAGE2_DIR)
 	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
 
-$(ELF) : $(OBJECTS) $(STAGE2)
+$(ELF) : $(OBJECTS) $(STAGE2) kernel/kernel.a
 	$(LD) $(LDFLAGS) $^ -o $@
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
@@ -196,18 +204,22 @@ $(BINARY_EVEN): $(BINARY)
 $(BINARY_ODD): $(BINARY)
 	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
 
-.PHONY: all clean dump tools
-
+.PHONY: all clean dump tools test
 
 clean:
-	make -C $(STAGE2_DIR) clean	
+	$(MAKE) -C $(STAGE2_DIR) clean
+	$(MAKE) -C kernel clean
+	$(MAKE) -C tools/liblzg/src clean
 	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
+test:
+	$(MAKE) -C kernel test
+	
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
 tools: 
-	make -C tools/liblzg/src
+	$(MAKE) -C tools/liblzg/src
 
 ifeq ($(MAME),true)
 mame: $(BINARY)
