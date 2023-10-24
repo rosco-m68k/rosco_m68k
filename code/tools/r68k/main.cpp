@@ -8,6 +8,7 @@
 #include <sys/select.h>
 #include <fcntl.h>
 #include <iomanip>
+#include <vector>
 
 #include "musashi/m68k.h"
 #include "musashi/m68kcpu.h"
