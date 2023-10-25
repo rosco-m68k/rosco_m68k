@@ -1,4 +1,7 @@
 ROSCO_M68K_DIR=../../../../..
+
+-include $(ROSCO_M68K_DIR)/user.mk
+
 SRC_DIR=..
 R68K_DIR=../../../../tools/r68k
 SYSLIBROOT=$(ROSCO_M68K_DIR)/code/software/libs
@@ -31,7 +34,7 @@ ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 ARFLAGS=
 LIBS=-lrosco_m68k -lgcc
-GCC_LIBS=$(shell $(CC) --print-search-dirs 											\
+GCC_LIBS?=$(shell $(CC) --print-search-dirs 											\
 		| grep libraries:\ =														\
     | sed 's/libraries: =/-L/g' 													\
     | sed 's/:/m68000\/ -L/g')m68000/
