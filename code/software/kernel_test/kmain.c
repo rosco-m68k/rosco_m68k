@@ -17,6 +17,7 @@
 #include <stdnoreturn.h>
 #include <machine.h>
 #include <kernelapi.h>
+#include <stdlib.h>
 
 #define SYS_STACK_SIZE      0x800
 #define USER_STACK_SIZE     0x1000
@@ -38,6 +39,8 @@
 
 static uint32_t tinit_stack;
 static uint32_t tidle_stack;
+
+extern void* _end;
 
 // "User" task structs for playing with
 static Task *t1;
@@ -225,12 +228,30 @@ static void set_up_tasks(void) {
     // t3 struct and stack are allocated on the fly by t2...
 }
 
+// Give the PMM some memory to work with - ultimately this would
+// be handled in ROM, but for now it's the program's responsibility...
+static void init_pmm() {
+    uint32_t free_start = (uint32_t)&_end;
+    uint32_t free_aligned = free_start & 0xfffff000;
+
+    // Ensure aligned
+    if (free_aligned < free_start) {
+        free_aligned = free_aligned + 1024;
+    }
+
+    // Need at least a 1KiB block
+    if (free_aligned >= 0xefc00) {
+        printf("Out of memory\n");
+        abort();
+    }
+
+    Kernel->mem_free(free_aligned, 0xf0000);
+}
 
 noreturn void kmain() {
     Kernel = get_kernel_api();
 
-    printf("Start       @ 0x%08lx\n", (uint32_t)Kernel->start);
-    printf("Task init   @ 0x%08lx\n", (uint32_t)Kernel->task_init);
+    init_pmm();
     set_up_tasks();
 
     printf("tinit_stack @ 0x%08lx\n", (uint32_t)tinit_stack);

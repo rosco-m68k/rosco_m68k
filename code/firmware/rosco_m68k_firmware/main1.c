@@ -126,7 +126,6 @@ static void initialize_loader_efp() {
 static void initialize_kernel(void) {
     api_init();
     pmm_init();
-    pmm_free(0x20000, 0x30000);
     slab_init();    
     irq_init();
     task_init();
