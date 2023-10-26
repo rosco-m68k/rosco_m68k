@@ -354,5 +354,10 @@ uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, CharDevice *device);
  */
 uint8_t mcAddDevice(CharDevice *newDevice);
 
+/*
+ * Get vector base (either VBR or 0 depending on CPU).
+ */
+uint32_t mcGetVecBase();
+
 #endif
 
