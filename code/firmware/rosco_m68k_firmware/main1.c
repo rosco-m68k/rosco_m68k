@@ -16,10 +16,18 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdnoreturn.h>
+
 #include <stdbool.h>
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
+
+#include "kmachine.h"
+#include "pmm.h"
+#include "slab.h"
+#include "list.h"
+#include "task.h"
+#include "kernelapi.h"
 
 // only one Xosera console at a time
 #if defined(XOSERA_ANSI_CON)
@@ -114,9 +122,26 @@ static void initialize_loader_efp() {
     *program_loader_ptr = (uint32_t)default_program_loader;
 }
 
+#ifdef WITH_KERNEL
+static void initialize_kernel(void) {
+    api_init();
+    pmm_init();
+    slab_init();    
+    irq_init();
+    task_init();
+}
+#else
+#define initialize_kernel(...)
+#endif
+
+noreturn void pre_warm_boot() {
+    initialize_kernel();
+    warm_boot();
+}
+
 static void initialize_warm_reboot() {
     *init_stack_vector_ptr = *mem_size_sdb_ptr;
-    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)warm_boot;
+    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)pre_warm_boot;
 }
 
 void print_cpu_mem_info() {
@@ -218,6 +243,9 @@ if (!have_video) {
 
     // We have enough setup done now that we can handle future warm reboot. Let's set that up..
     initialize_warm_reboot();
+
+    // Initialize the kernel
+    initialize_kernel();
 
     // Reload stack pointer and call program loader
     hot_boot();
