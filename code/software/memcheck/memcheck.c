@@ -180,11 +180,13 @@ static KRESULT build_memory_map(volatile MEMINFO *header) {
         }
       }
       current += 16; // skip by 64 bytes to speed scanning
-    } else if (!block_started) {
-      // There is RAM here and we don't have a current block - start one
-      blocks[current_block].block_start = (uint32_t)current;
-      blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
-      block_started = true;
+    } else {
+      if (!block_started) {
+        // There is RAM here and we don't have a current block - start one
+        blocks[current_block].block_start = (uint32_t)current;
+        blocks[current_block].flags = RAMBLOCK_FLAG_EXPANSION;
+        block_started = true;
+      }
       current++;
     }
 
@@ -249,11 +251,9 @@ static KRESULT build_memory_map(volatile MEMINFO *header) {
 static void print_flags(uint32_t flags) {
   if ((flags & RAMBLOCK_FLAG_READONLY) != 0) {
     printf("[ROM] ");
-  }
-  else if ((flags & RAMBLOCK_FLAG_MAPPEDIO) != 0) {
+  } else if ((flags & RAMBLOCK_FLAG_MAPPEDIO) != 0) {
     printf("[I/O] ");
-  }
-  else {
+  } else {
     printf("[RAM] ");
   }
   if ((flags & RAMBLOCK_FLAG_ONBOARD) != 0) {
@@ -335,7 +335,7 @@ static void show_banner() {
   printf("*                                                         *\n");
   printf("*          \033[93mrosco_m68k\033[m SysInfo & MemCheck utility          *\n");
   printf("*        %s CPU with Firmware ", cpu_name);
-  printf("%d.%-2d", major, minor);
+  printf("%x.%02x", major, minor);  // hex version code
   if (snapshot) {
     printf(" [SNAPSHOT]");
   } else {
@@ -350,6 +350,36 @@ static void show_banner() {
   printf("\n");
 }
 
+/* memory testing routines */
+static uint64_t start_state;
+static uint32_t lfsr_val;
+
+static void init_LFSR() {
+  static uint32_t salt = 0xdeadbeef;
+  do {
+    start_state = _TIMER_100HZ;
+    start_state += salt++;
+    if (start_state > 0xffffffULL) {
+      start_state++;
+    }
+    lfsr_val = (uint32_t)start_state & 0xffffff;
+  } while (lfsr_val == 0);
+}
+
+static void reset_LFSR() {
+  lfsr_val = (uint32_t)start_state & 0xffffff;
+}
+
+static inline uint32_t next_LFSR() {
+  bool msb = lfsr_val & 0x800000; /* Get MSB (i.e., the output bit). */
+  lfsr_val = lfsr_val << 1;       /* Shift register */
+  if (msb)                        /* If the output bit is 1, */
+    lfsr_val ^= 0x80042B;         /*  apply toggle mask. */
+  lfsr_val &= 0xffffff;
+
+  return lfsr_val;
+}
+
 /* Build a memory map at _end (start of 'heap').
  *
  * This map always consists of one MEMINFO header,
@@ -359,13 +389,14 @@ static void show_banner() {
  * address. Blocks with zero start and size are
  * unused.
  */
-extern const void* _end;
-static MEMINFO* header = (MEMINFO*)&_end;
+extern const char _end[];
+static MEMINFO* header = (MEMINFO*)_end;
 
 int main(int argc, char **argv) {
   (void)argc;
   (void)argv;
 
+  delay(180000);  // wait a bit for terminal window/serial
   show_banner();
 
   INSTALL_BERR_HANDLER();
@@ -390,8 +421,137 @@ int main(int argc, char **argv) {
     printf("\nComplete; Found a total of %ld bytes of writeable RAM\n\n", header->ram_total);
   }
 
-  printf("(Press a key)\n");
+  // perform memory tests until a key is pressed
+  char *memtest_start = (char *)((((uintptr_t)_end) + sizeof(MEMINFO) + 0xfffU) & ~0xfffU);
+  char *memtest_end   = memtest_start;
+
+  for (uint8_t i = 0; i < MAX_RAMBLOCKS; i++) {
+    if (header->blocks[i].block_size == 0) {
+      break;
+    }
+    // if onboard or expansion memory block
+    if ((header->blocks[i].flags & (RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_EXPANSION)) != 0) {
+      // block too low, skip it
+      if (header->blocks[i].block_start + header->blocks[i].block_size < (uintptr_t)memtest_start) {
+        continue;
+      }
+      // non-contiguous
+      if (header->blocks[i].block_start > (uintptr_t)memtest_end) {
+        break;
+      }
+      if (header->blocks[i].block_start + header->blocks[i].block_size >= (uintptr_t)memtest_end) {
+        memtest_end = (char *)header->blocks[i].block_start + header->blocks[i].block_size;
+      }
+    }
+  }
+
+  while (checkchar()) {  // clear any queued input
+    readchar();
+  }
+
+  printf("Continuous testing from 0x%06x to 0x%06x (press a key to exit)\n",
+         (unsigned int)memtest_start,
+         (unsigned int)memtest_end - 1);
+
+  int          memtest_words   = (memtest_end - memtest_start) / sizeof(uint16_t);
+  uint16_t    *word_ptr        = (uint16_t *)memtest_start;
+  int          update_interval = 0x7000;
+  int          pass            = 1;
+  int          badpasses       = 0;
+  int          goodpasses      = 0;
+  int          errors          = 0;
+  unsigned int start_ts        = _TIMER_100HZ;
+  for (;;) {
+    bool pass_bad = false;
+
+    init_LFSR();
+
+    for (int i = 0; i < memtest_words; i += update_interval) {
+      if (checkchar()) {
+        break;
+      }
+      unsigned int ts = _TIMER_100HZ - start_ts;
+      unsigned int tm = ts / (60 * 100);
+      ts              = (ts - (tm * (60 * 100))) / 100;
+
+      printf("\r%u:%02u %s Pass #%d - Filling words @ 0x%06x (LFSR 0x%04x)...    ",
+             tm,
+             ts,
+             errors ? "[BAD]" : "[OK]",
+             pass,
+             (unsigned int)&word_ptr[i],
+             (unsigned int)lfsr_val & 0xffff);
+      int k = memtest_words > (i + update_interval) ? (i + update_interval) : memtest_words;
+      for (int j = i; j < k; j++) {
+        uint16_t v  = next_LFSR();
+        word_ptr[j] = v;
+      }
+    }
+
+    if (checkchar()) {
+      break;
+    }
+
+#if 0  // fake error testing
+    if (pass > 2) {
+      word_ptr[0xbaaad + pass] = 0xbaad;
+    }
+#endif
+
+    reset_LFSR();
+
+    for (int i = 0; i < memtest_words; i += update_interval) {
+      if (checkchar()) {
+        break;
+      }
+      unsigned int ts = _TIMER_100HZ - start_ts;
+      unsigned int tm = ts / (60 * 100);
+      ts              = (ts - (tm * (60 * 100))) / 100;
+      printf("\r%u:%02u %s Pass #%d - Verifying words @ 0x%06x (LFSR 0x%04x)...",
+             tm,
+             ts,
+             errors ? "[BAD]" : "[OK]",
+             pass,
+             (unsigned int)&word_ptr[i],
+             (unsigned int)lfsr_val & 0xffff);
+      int k = memtest_words > (i + update_interval) ? (i + update_interval) : memtest_words;
+      for (int j = i; j < k; j++) {
+        uint16_t v = next_LFSR();
+        if (word_ptr[j] != v) {
+          errors++;
+          if (!pass_bad) {
+            badpasses++;
+          }
+          pass_bad = true;
+
+          printf("\r > Err %d, pass %d, 0x%06x=0x%04x vs 0x%04x expected                 \n",
+                 errors,
+                 pass,
+                 (unsigned int)&word_ptr[j],
+                 word_ptr[j],
+                 v);
+        }
+      }
+    }
+    if (checkchar()) {
+      break;
+    }
+    if (!pass_bad) {
+      goodpasses++;
+    }
+    pass++;
+  }
   readchar();
 
+  unsigned int ts = _TIMER_100HZ - start_ts;
+  unsigned int tm = ts / (60 * 100);
+  ts              = (ts - (tm * (60 * 100))) / 100;
+  printf("\n\nTesting for %u:%02u, memcheck exiting...\n", tm, ts);
+  if (errors) {
+    printf(
+        "FAILED! %d failed passes, %d good (%d word errors total).", badpasses, goodpasses, errors);
+  } else if (goodpasses > 0) {
+    printf("PASSED! %d error-free test passes.", goodpasses);
+  }
   return 0;
 }

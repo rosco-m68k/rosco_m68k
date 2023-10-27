@@ -1,14 +1,13 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the Master branch, which contains the latest release - **Revision 2.12** and **Firmware 2.2**. If you are using Firmware 2.1, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.3, please use the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3). For firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
+> **Note**: This is the Master branch, which contains the latest release - **Revision 2.12** and **Firmware 2.4**. If you are using Firmware 2.4, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.3, please use the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3). For firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
 
 <a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
 
 This repository holds design files, firmware and software for the Really Old-School Computer 
 (M68k) single-board computer, AKA the rosco_m68k. This is a fully-featured, programmable,
-extensible and capable 16/32-bit retro computer that is completely open source and is
-available in kit form (Starting April 2020).
+extensible and capable 16/32-bit retro computer that is completely open source.
 
 This project contains all the design files and source code for the project. For 
 documentation (including assembly instructions) please see https://rosco-m68k.com
@@ -48,6 +47,14 @@ The hardware specifications for the rosco_m68k are:
 * Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 10.2.
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
+
+## Getting boards fabricated
+
+If you want to get boards fabricated, we recommend JLCPCB - they did all of our commercial boards
+when the rosco_m68k was offered for sale on Tindie. These are the options you'll want when
+ordering from them (these should be readily adaptable to other fabs too!)
+
+![JLCPCB Fab Options](images/jlcpcb-options.png)
 
 ## Certification
 

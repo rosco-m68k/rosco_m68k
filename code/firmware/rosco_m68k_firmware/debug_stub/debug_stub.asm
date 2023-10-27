@@ -11,7 +11,7 @@
 ; MIT License
 ; ------------------------------------------------------------
 
-; This adds a small (under 1 KiB) 680x0 exception handler stub so that if a
+; This adds a small (~1 KiB) 680x0 exception handler stub so that if a
 ; CPU exception occurs (i.e., a crash) it will print the CPU PC address where
 ; the exception occurred along with registers on the default output device.
 ; Often with just the PC crash address you can narrow down the source code
@@ -36,7 +36,6 @@
                 include "../rosco_m68k_private.asm"
 
                 section .text
-
                 align  2
 debug_stub::
                 moveq.l #10,d0
@@ -122,7 +121,7 @@ debug_stub::
                 clr.l   -12(sp)           ; Fault
                 cmp.w   #2<<1,d2          ; fault for addr & bus error only
                 bge     .nofault
-                move.l  16<<2+10(sp),-12(sp)
+                move.l  16<<2+10(sp),-12(sp) ; Fault
                 bra     .nofault
 
 ; NOTE: Table placed here so byte displacement branches above can reach
@@ -137,14 +136,14 @@ debug_stub::
                 dc.w    .Ainstr_str-.except_strtbl
                 dc.w    .Finstr_str-.except_strtbl
 
-.nofault        sub.l   #12,sp
-                move.l  EFP_PRINT.w,a1
+.nofault        sub.l   #12,sp                  ; room on stack for temps
+                lea.l   stub_print(pc),a1
                 lea.l   .exintro_str(pc),a0
                 jsr     (a1)                    ; print exception name
                 move.w	.except_strtbl(pc,d2.w),d0
                 lea.l   .except_strtbl(pc,d0.w),a0
                 jsr     (a1)
-                move.l  (sp),d2
+                move.l  (sp),d2                 ; ex_fault
                 beq     .nofault2
                 lea.l   .exfa_str(pc),a0
                 jsr     (a1)
@@ -153,29 +152,29 @@ debug_stub::
                 jsr     (a1)
 .nofault2       lea.l   .expc_str(pc),a0
                 jsr     (a1)
-                move.l  6(sp),d2
+                move.l  6(sp),d2                ; ex_pc
                 bsr     printhex                ; print PC
                 lea.l   .exop_str(pc),a0
                 jsr     (a1)
-                move.l  6(sp),a0
+                move.l  6(sp),a0                ; ex_pc
                 move.l  (a0),d2                 ; into upper word
                 moveq.l #4,d3                   ; 4 digits
                 bsr     printhex_n              ; print opcode
                 lea.l   .exsr_str(pc),a0
                 jsr     (a1)
-                move.l  10(sp),d2               ; into upper word
+                move.l  10(sp),d2               ; ex_sr into upper word
                 moveq.l #4,d3                   ; 4 digits
                 bsr     printhex_n              ; print SR
                 lea.l   .exus_str(pc),a0
                 jsr     (a1)
-                add.l   #12,sp
+                add.l   #12,sp                  ; restore stack
                 move.l  usp,a0
                 move.l  a0,d2
                 bsr     printhex                ; print USP
                 lea.l   .crlf_str(pc),a0
                 jsr     (a1)
                 moveq.l #0,d4                   ; register counter (a reg >= 8)
-                move.l  EFP_PRINTCHAR.w,a0
+                lea.l   stub_prchar(pc),a0
                 move.l  a7,a2
 .regloop        moveq.l #"d",d0
                 cmp.b   #8,d4
@@ -209,7 +208,7 @@ debug_stub::
 
 ; prints hex number, enter with d2.l, alters a0, d0, d2 & d3
 printhex        moveq.l #8,d3
-printhex_n      move.l  EFP_PRINTCHAR.w,a0
+printhex_n      lea.l   stub_prchar(pc),a0
 .hexloop        rol.l   #4,d2
                 move.b  d2,d0
                 and.w   #$F,d0
@@ -224,6 +223,30 @@ hexdigit        cmp.b   #10,d0
 .notalpha       add.w   #"0",d0
                 rts
 
-                section .bss._debug_stub,bss
-                align  2
+; print char, and echo on UART if different EFP function for PRINTCHAR and SENDCHAR
+stub_prchar     move.l  a0,-(sp)                ; save ptr to this function
+                move.l  EFP_PRINTCHAR.w,a0     ; print char to CONSOLE/UART
+                jsr     (a0)
+                cmp.l   EFP_SENDCHAR.w,a0      ; is CONSOLE same as UART?
+                beq     .skip_uart              ; skip UART if PRINTCHAR == SENDCHAR
+                move.l  EFP_SENDCHAR.w,a0      ; print char to UART
+                jsr     (a0)      
+.skip_uart      move.l  (sp)+,a0                ; restore ptr to this function
+                rts
 
+; print string, and echo on UART if different EFP function for PRINTCHAR and SENDCHAR
+stub_print      move.l  a1,-(sp)                ; save ptr to this function
+                move.l  a0,-(sp)                ; save ptr to string
+                move.l  EFP_PRINT.w,a1         ; print to CONSOLE/UART
+                jsr     (a1)
+                move.l  EFP_PRINTCHAR.w,a1     ; load PRINTCHAR
+                cmp.l   EFP_SENDCHAR.w,a1      ; is CONSOLE same as UART?
+                move.l  (sp)+,a0                ; restore ptr to string
+                beq     .skip_uart              ; skip UART if PRINTCHAR == SENDCHAR
+                move.l  EFP_SENDCHAR.w,a1      ; print string to UART
+.pr_loop        move.b  (a0)+,d0                ; load string char
+                beq.s   .skip_uart              ; if zero, branch done
+                jsr     (a1)                    ; print char
+                bra.s   .pr_loop                ; loop
+.skip_uart      move.l  (sp)+,a1                ; restore ptr to this function
+                rts

@@ -105,7 +105,7 @@ RESTORE_BERR_HANDLER::
     move.l  SAVEDHANDLER,$8
     rts
 
-    section .data
+    section .data,data
     align   2
 SAVEDHANDLER    dc.l  0
 
