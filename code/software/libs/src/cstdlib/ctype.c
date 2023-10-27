@@ -40,7 +40,7 @@ int isxdigit(int c) {
 }
 
 int iscntrl(int c) {
-    return (c >= 0x00 && c <=0x1F) || c == 0x7F;
+    return (c >= 0x00 && c <= 0x1F) || c == 0x7F;
 }
 
 int isgraph(int c) {
@@ -57,6 +57,13 @@ int isblank(int c) {
 
 int isprint(int c) {
     return isgraph(c) || c == ' ';
+}
+
+int ispunct(int c) {
+    return (c >= '!' && c <= '/') ||
+           (c >= ':' && c <= '@') ||
+           (c >= '[' && c <= '`') ||
+           (c >= '{' && c <= '~');
 }
 
 int tolower(int c) {

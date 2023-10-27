@@ -19,6 +19,7 @@
 **/*.dis
 **/*.sym
 **/*.elf
-.vscode/*
+**/.vscode/*
 code/software/lcd-ili9341/images/BMPToRLE555
 code/software/lcd-ili9341/rle_images.h
+user.mk

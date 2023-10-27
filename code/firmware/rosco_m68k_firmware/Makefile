@@ -11,7 +11,7 @@ DEFINES:=$(DEFINES)
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
        -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
        -fomit-frame-pointer -fno-delete-null-pointer-checks						\
-			 -mno-align-int -mno-strict-align $(DEFINES)
+       $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 CC=m68k-elf-gcc
@@ -22,6 +22,19 @@ OBJDUMP=m68k-elf-objdump
 SIZE=m68k-elf-size
 NM=m68k-elf-nm
 RM=rm -f
+
+# GCC-version-specific settings
+ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
+CC_VERSION:=$(shell $(CC) -dumpfullversion)
+CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
+# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
+ifeq ($(CC_MAJOR),12)
+CFLAGS+=--param=min-pagesize=0
+endif
+ifeq ($(CC_MAJOR),13)
+CFLAGS+=--param=min-pagesize=0
+endif
+endif
 
 # Output config
 BINARY_BASENAME=rosco_m68k
@@ -58,8 +71,23 @@ else
 $(info === Building rosco_m68k firmware for revision 2.x board with MC$(CPU) CPU)
 endif
 
+ifeq ($(NOBANNER),true)
+$(info === Building rosco_m68k firmware with no serial banner output at startup)
+DEFINES:=$(DEFINES) -DNO_BANNER
+else
+ifeq ($(LATEBANNER),true)
+$(info === Building rosco_m68k firmware with late banner output at startup)
+DEFINES:=$(DEFINES) -DLATE_BANNER
+endif
+endif
+
 # Set up Size-specific things appropriately..
 ifeq ($(REVISION1X),true)
+ifeq ($(MAME),true)
+$(info === Building rosco_m68k firmware for MAME (rosco))
+LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
+MAMESIZE=0x00010000
+else
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
@@ -70,6 +98,13 @@ $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
 ROMDEVICE=AT28C256
 endif
+endif
+else
+ifeq ($(MAME),true)
+$(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
+MAMESIZE=0x00100000
+LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
+DEFINES:=$(DEFINES) -DHUGEROM
 else
 ifeq ($(HUGEROM),false)
 $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
@@ -78,6 +113,7 @@ $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
 LDFLAGS:=-T ./rosco_m68k_firmware_1M.ld -Map=$(MAP)
 ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
+endif
 endif
 endif
 
@@ -125,7 +161,7 @@ export WITH_BLOCKDEV
 export WITH_KERMIT
 export CPU ARCH TUNE
 export REVISION1X
-
+export MAME
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
@@ -173,6 +209,8 @@ burn: $(BINARY_EVEN) $(BINARY_ODD)
 tools: 
 	make -C tools/liblzg/src
 
+ifeq ($(MAME),true)
 mame: $(BINARY)
-	srec_cat -output $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 0x00010000
+	srec_cat -output $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 $(MAMESIZE)
+endif
 

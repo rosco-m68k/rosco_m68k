@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
+#include "load.h"
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
@@ -31,31 +32,17 @@ extern void red_led_off();
 extern void mcBusywait(uint32_t);
 #endif
 
-/*
- * This is what a Kernel entry point should look like.
- */
-typedef void (*KMain)(volatile SystemDataBlock * const);
-
 // Linker defines
 extern uint32_t _bss_start, _bss_end;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
 
-// Kernels are loaded at the same address regardless of _how_ they're loaded
+// Flat binary kernels are loaded at the same address regardless of _how_ they're loaded
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
-static KMain kmain = (KMain) KERNEL_LOAD_ADDRESS;
+KMain kernel_entry = (KMain) KERNEL_LOAD_ADDRESS;
 
 #ifdef KERMIT_LOADER
 // This is provided by Kermit
 extern int receive_kernel();
-#endif
-
-#ifdef SDFAT_LOADER
-// This is provided by the SD/FAT loader
-extern bool sd_load_kernel();
-#endif
-#ifdef IDE_LOADER
-// This is provided by the IDE/FAT loader
-extern bool ide_load_kernel();
 #endif
 
 void linit() {
@@ -69,7 +56,7 @@ noreturn void lmain() {
 
 #ifndef MAME_FIRMWARE
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint("Searching for boot media... ");
+    mcPrint("Searching for boot media...\r\n");
 #  endif
 
 #  ifdef SDFAT_LOADER
@@ -83,7 +70,7 @@ noreturn void lmain() {
     }
 #  endif
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint(" None found\r\n");
+    mcPrint("No bootable media found\r\n");
 #  endif
 #  ifdef KERMIT_LOADER
     mcPrint("Ready for Kermit receive...\r\n");
@@ -114,7 +101,7 @@ have_kernel:
     red_led_off();
     mcPrint("\r\n");
 
-    kmain(sdb);
+    kernel_entry(sdb);
 
     mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 

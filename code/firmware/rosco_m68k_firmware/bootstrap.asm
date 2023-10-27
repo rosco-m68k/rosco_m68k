@@ -20,7 +20,7 @@
     section .text
 
 VECTORS:
-    dc.l    RAMLIMIT                    ; 00: Stack (top of on-board RAM)
+    dc.l    STAGE2_LOAD                 ; 00: Stack (below stage2)
     dc.l    START                       ; 01: Initial PC (start of ROM code)
 
     dc.l    BUS_ERROR_HANDLER           ; 02: Bus Error
@@ -83,6 +83,7 @@ START::
 
     bsr.w   INITSDB                     ; Initialise System Data Block
     bsr.w   INITEFPT                    ; Initialise Extension Function Pointer Table
+    bsr.w   INITDEVS                    ; Initialise device blocks
 
     ifd REVISION1X 
     jsr     INITMFP                     ; Initialise MC68901
@@ -91,8 +92,13 @@ START::
     jsr     INITDUART                   ; Initialise MC68681
     endif
 
-    bsr.w   INITMEMCOUNT                ; Initialise memory count in SDB    
+    bsr.w   INITMEMCOUNT                ; Initialise memory count in SDB
+
+    ifnd NO_BANNER
+    ifnd LATE_BANNER 
     bsr.s   PRINT_BANNER
+    endif
+    endif
 
     ifd REVISION1X
     ifd NO_TICK
@@ -116,13 +122,19 @@ START::
 ;
 ; Trashes: D0, MFP_UDR
 ; Modifies: A0 (Will point to address after null terminator)
+    ifnd NO_BANNER  
+    ifd LATE_BANNER
+PRINT_BANNER::
+    else
 PRINT_BANNER:
+    endif
     lea.l   SZ_BANNER0,A0               ; Load first string into A0
     move.l  EFP_PRINTLN,A3              ; Load function into A3
     
     jsr     (A3)                        ; Print all the banner lines
     
     rts                                 ; We're done
+    endif
 
 
 ; Initialise System Data Block
@@ -208,6 +220,22 @@ EFP_DUMMY_NEGONE_D0W::
     rts
 EFP_DUMMY_NEGONE_D0L::
     move.l  #-1,D0
+    rts
+
+
+; Initialize device blocks
+INITDEVS:
+    clr.w   DEVICE_COUNT    
+    move.w  #C_NUM_DEVICES,D0
+    lsl.w   #3,D0
+    lea.l   DEVICE_BLOCKS,A0
+    bra.s   .START
+
+.LOOP:
+    clr.l   (A0)+
+
+.START:
+    dbra.w  D0,.LOOP
     rts
 
 
@@ -343,6 +371,11 @@ GENERIC_HANDLER::
 
 
 ;------------------------------------------------------------
+; Char devices
+    section .early_data
+DEVICE_COUNT::  dc.w    0
+DEVICE_BLOCKS:: ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+
 ; Consts 
     section .rodata
 
@@ -351,6 +384,6 @@ SZ_BANNER1      dc.b    "                                 ___ ___ _   ", $D, $A
 SZ_BANNER2      dc.b    " ___ ___ ___ ___ ___       _____|  _| . | |_ ", $D, $A
 SZ_BANNER3      dc.b    "|  _| . |_ -|  _| . |     |     | . | . | '_|", $D, $A
 SZ_BANNER4      dc.b    "|_| |___|___|___|___|_____|_|_|_|___|___|_,_|", $D, $A
-SZ_BANNER5      dc.b    "                    |_____|", $1B, "[1;37m      Classic ", $1B, "[1;30m2.20", $1B, "[0m", $D, $A, 0
+SZ_BANNER5      dc.b    "                    |_____|", $1B, "[1;37m      Classic ", $1B, "[1;30m2.40", $1B, "[0m", $D, $A, 0
 
 SZ_CRLF::       dc.b    $D, $A, 0

@@ -7,10 +7,10 @@ CPU?=68010
 ARCH?=$(CPU)
 TUNE?=$(CPU)
 DEFINES=
-BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     												\
-       -fomit-frame-pointer -Wall -Werror -Wpedantic -Wno-unused-function             \
-			 -Ifat_io_lib -Iinclude -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
-			 -mno-align-int -mno-strict-align $(DEFINES)
+BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     															\
+            -fomit-frame-pointer -Wall -Werror -Wpedantic -Wno-unused-function							\
+            -Ifat_io_lib -Iinclude -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
+            $(DEFINES)
 EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os
@@ -20,6 +20,19 @@ CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
 RM=rm -f
+
+# GCC-version-specific settings
+ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
+CC_VERSION:=$(shell $(CC) -dumpfullversion)
+CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
+# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
+ifeq ($(CC_MAJOR),12)
+CFLAGS+=--param=min-pagesize=0
+endif
+ifeq ($(CC_MAJOR),13)
+CFLAGS+=--param=min-pagesize=0
+endif
+endif
 
 # Output config
 BINARY_BASENAME=loader2
@@ -45,6 +58,8 @@ ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
 endif
 ifeq ($(WITH_BLOCKDEV),true)
+include load/include.mk
+include part/include.mk
 include sdfat/include.mk
 include idehdd/include.mk
 endif

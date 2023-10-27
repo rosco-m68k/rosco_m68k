@@ -8,6 +8,8 @@ MEMORY
   ROM : org = phys, l = 1M
 }
 
+PROVIDE(STAGE2_LOAD     = 0x000F0000);
+
 /* minimal items for XANSI in C */
 PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
 PROVIDE(_EFP_CHECKCHAR  = 0x00000444);  /* Check char ready from UART   */
@@ -27,6 +29,7 @@ SECTIONS
 
   .data : AT(_code_end)
   {
+    *(.early_data*)
     _data_start = .;
     *(.data)
     _data_end = .;
