@@ -510,7 +510,7 @@ void timer_interrupt() {
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        cout << "Usage: xl86 <binary>" << endl;
+        cout << "Usage: r68k <binary>" << endl;
         return 1;
     } else {
         init_term();
