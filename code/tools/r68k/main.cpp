@@ -96,7 +96,7 @@ static char* print_unsigned(uint32_t num, uint8_t base) {
 }
 
 extern "C" {
-    rosco::m68k::emu::AddressDecoder* __mem;
+    rosco::m68k::emu::AddressDecoder* sys_mem;
     std::fstream ifs("rosco_sd.bin", std::ios::binary | std::ios::ate | std::ios::in | std::ios::out);
 
     int illegal_instruction_handler(int __attribute__((unused)) opcode) {
@@ -518,8 +518,8 @@ int main(int argc, char** argv) {
         std::filesystem::path path = std::filesystem::path(argv[0]).parent_path();
         path += "/firmware/rosco_m68k.rom";
 
-        __mem = new rosco::m68k::emu::AddressDecoder(0x40000, 0x100000, path.string().c_str());
-        __mem->LoadMemoryFile(0x40000, argv[1]);
+        sys_mem = new rosco::m68k::emu::AddressDecoder(0x40000, 0x100000, path.string().c_str());
+        sys_mem->LoadMemoryFile(0x40000, argv[1]);
 
         m68k_set_cpu_type(M68K_CPU_TYPE_68010);
         m68k_init();
@@ -537,7 +537,7 @@ int main(int argc, char** argv) {
         is_done = true;
         timer_thread.join();
 
-        delete(__mem);
+        delete(sys_mem);
         return 0;
     }
 }
