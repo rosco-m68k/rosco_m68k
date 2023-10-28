@@ -31,6 +31,10 @@ VECTORS_LOAD    equ     $00000000
 BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync
 BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
 
+; Memory layout
+RAMBASE         equ     $0          ; Base address for RAM
+RAMLIMIT        equ     $100000     ; Limit of onboard RAM
+
 ; Initialisation
 INIT_SSP        equ     RAMLIMIT
 
