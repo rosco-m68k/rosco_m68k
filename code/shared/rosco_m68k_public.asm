@@ -14,15 +14,6 @@
 ;------------------------------------------------------------
 
 ; ----------------------------------------------------------------------------
-; Memory layout
-;
-RAMBASE     equ     $0                    ; Base address for RAM
-RAMLIMIT    equ     $100000               ; Limit of onboard RAM
-IOBASE      equ     $F80000               ; Base address for IO space
-ROMBASE     equ     $FC0000               ; Base address for ROM space
-
-
-; ----------------------------------------------------------------------------
 ; System Data Block (SDB) layout
 ;
 SDB_MAGIC       equ     $400              ; SDB Magic (0xB105D47A)
@@ -75,10 +66,10 @@ EFP_ATA_WRITE   equ     $488
 EFP_ATA_IDENT   equ     $48C
 EFP_PROG_EXIT   equ     $490
 
-; MFP Location
-MFPBASE     equ     IOBASE
-
   ifd REVISION1X
+; MFP Location
+MFPBASE         equ     $F80000
+
 ; Equates for MC68901 Multi Function Peripheral
 ;
 ; The register layout is different on r0 boards, hence the
