@@ -128,6 +128,8 @@ extern "C" {
             int chars_left = 0;
             int chars_read = 0;
             int num = 0;
+
+            cout << flush;
             
             switch (op) {				
                 case 0:
@@ -138,6 +140,7 @@ extern "C" {
                             cout << c;
                          }
                     } while (c != 0);
+                    cout << flush;
 
                     break;
                 case 1:
@@ -156,7 +159,7 @@ extern "C" {
                     // printchar
                     c = (d0 & 0xFF);
                     if (c) {
-                        cout << c;
+                        cout << c << flush;
                     }
 
                     break;
@@ -174,7 +177,6 @@ extern "C" {
                     break;
                 case 5:
                     // read_char
-                    cout << flush;
                     c = read_char();
                     cout << flush;
                     m68k_set_reg(M68K_REG_D0, c);
@@ -257,20 +259,21 @@ extern "C" {
 
                     if (op == 0xD0) {
                         cout << endl;
+                    } else {
+                        cout << flush;
                     }
 
                     break;
                 case 0xD2:
                     // READSTR
                     if (m68k_read_memory_8(PROMPT_ON) == 1) {
-                        cout << "Input$> ";
+                        cout << "Input$> " << flush;
                     } 
 
                     chars_read = 0;
                     ptr = a1;  // save start of input buffer
                     
                     while (chars_read++ < 80) {
-                        cout << flush;
                         c = read_char();
                         cout << flush;
 
@@ -279,7 +282,7 @@ extern "C" {
                         }
 
                         if (m68k_read_memory_8(ECHO_ON) == 1) {
-                            cout << c;
+                            cout << c << flush;
                         }
 
                         m68k_write_memory_8(a1++, c);
@@ -289,6 +292,8 @@ extern "C" {
 
                     if (m68k_read_memory_8(LF_DISPLAY) == 1) {
                         cout << endl;
+                    } else {
+                        cout << flush;
                     }
 
                     m68k_set_reg(M68K_REG_D1, (chars_read - 1)); 
@@ -297,17 +302,16 @@ extern "C" {
                     break;
                 case 0xD3:
                     // DISPLAYNUM_SIGNED
-                    cout << (int)d1;
+                    cout << (int)d1 << flush;
 
                     break;
                 case 0xD4:
                     // READNUM
                     if (m68k_read_memory_8(PROMPT_ON) == 1) {
-                        cout << "Input#> ";
+                        cout << "Input#> " << flush;
                     }
                     
                     while (--chars_left) {
-                        cout << flush;
                         c = read_char();
                         cout << flush;
 
@@ -338,7 +342,7 @@ extern "C" {
                     break;
                 case 0xD6:
                     // SENDCHAR
-                    cout << (char) (d1 & 0xFF);
+                    cout << (char) (d1 & 0xFF) << flush;
                     
                     break;
                 case 0xD7:
@@ -360,7 +364,7 @@ extern "C" {
 
                     break;
                 // case 0xDA:
-                    // Note implemented
+                    // Not implemented
                     
                 case 0xDB:
                     // MOVEXY
@@ -395,12 +399,14 @@ extern "C" {
 
                     if (op == 0xDD) {
                         cout << endl;
+                    } else {
+                        cout << flush;
                     }
 
                     break;
                 case 0xDF:
                     // PRINT_UNSIGNED
-                    cout << print_unsigned(d1, d2);
+                    cout << print_unsigned(d1, d2) << flush;
 
                     break;
                 case 0xE0:
@@ -428,7 +434,7 @@ extern "C" {
                          }
                     } while (c != 0);
 
-                    cout << (int)d1;
+                    cout << (int)d1 << flush;
 
                     break;
                 case 0xE2:
@@ -436,14 +442,13 @@ extern "C" {
                     do {
                          c = m68k_read_memory_8(a1++);
                          if (c) {
-                            cout << c;
+                            cout << c << flush;
                          }
                     } while (c != 0);
                     
                     chars_left = 10;
                     
                     while (--chars_left) {
-                        cout << flush;
                         c = read_char();
                         cout << flush;
 
@@ -469,7 +474,7 @@ extern "C" {
 
                 case 0xE4:
                     // PRINTNUM_SIGNED_WIDTH
-                    cout << setw(d2) << (int)d1;
+                    cout << setw(d2) << (int)d1 << flush;
                     break;
                 
                 default:
