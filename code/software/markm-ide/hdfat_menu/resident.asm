@@ -14,8 +14,6 @@
 ; this should be a multiple of 4 and at least ~$800 (for 1st stage)
 resident_size   =       $800                    ; amount of memory to reserve
 
-                include "../../../shared/equates.S"
-
                 section .text.resident_init
                 align  2
 ; NOTE: This code assumes application uses its own non-system stack area!
