@@ -572,9 +572,8 @@ void handle_exception(int exceptionVector) {
     Frame *frame;
 
     tracef("\n$$$$EX ================\n");
-    if (remote_debug)
-        tracef("vector=%d, sr=0x%x, pc=0x%x\n",
-               exceptionVector, registers[PS], registers[PC]);
+    debugf("vector=%d, sr=0x%x, pc=0x%x\n",
+            exceptionVector, registers[PS], registers[PC]);
 
     /* reply to host that an exception has occurred */
     sigval = computeSignal(exceptionVector);

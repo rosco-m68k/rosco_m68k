@@ -78,6 +78,13 @@ catchException::
   lsr.w   #2,d2                           ; divide by 4 for vector number
   move.l  d2,-(a0)                        ; save it into the new lastFrame
 
+  cmp.l   #47,d2                          ; Was this a memory breakpoint?
+  bne     .go_on                          ; Just continue if not...
+
+  sub.l   #2,a4                           ; Otherwise, adjust saved PC to account for the trap
+  move.l  a4,68(a5)                       ; And update it in registers[]...
+
+.go_on:
   move.l  a4,-(a0)                        ; Save exception PC into new lastFrame
 
   move.l  lastFrame,a1                    ; last frame pointer into a1
