@@ -1,5 +1,5 @@
 LIB=gdb
-LIBOBJECTS=$(DIR)/buffer.o $(DIR)/interrupt.o $(DIR)/gdb-support.o $(DIR)/m68k-stub.o
+LIBOBJECTS=$(DIR)/buffer.o $(DIR)/interrupt.o $(DIR)/gdb-support.o $(DIR)/m68k-stub-asm.o $(DIR)/m68k-stub.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---

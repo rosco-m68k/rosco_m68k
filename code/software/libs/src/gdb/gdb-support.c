@@ -31,7 +31,7 @@ extern int remote_debug;
 static RingBuffer uart_b;
 
 bool start_debugger(void) {
-    // Set this to 1 for a lot of noisy output that helps debug stuff...
+    // Set this to 1 for a lot of noisy output that might help debug stuff...
     remote_debug = 0;
 
     vector_table = (uint32_t*)mcGetVecBase();
@@ -97,9 +97,5 @@ void putDebugChar(int chr) {
 }
 
 void exceptionHandler(int exception_number, void (*handler)(void)) {
-    if (remote_debug) {
-        printf("Set vector 0x%02x to 0x%08lx\n", exception_number, (uint32_t)handler);
-    }
-
     vector_table[exception_number] = (uint32_t)handler;
 }
