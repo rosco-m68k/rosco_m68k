@@ -12,9 +12,16 @@
  *
  * This file is available in the public domain.
  *
- * This is merely a tidied up, modernised version of the standard m68k 
+ * This is largely a tidied up, modernised version of the standard m68k 
  * debug stub included in the GDB source. See comments below for original
  * license and copyright notices.
+ * 
+ * Features/limitations:
+ * 
+ *      * No support for 68000
+ *      * Memory breakpoints cannot be set in ROM
+ *      * No threading / kernel support (baremetal only)
+ *      * No support for most of the more modern GDB protocol commands
  *
  ***************************************************************************/
 

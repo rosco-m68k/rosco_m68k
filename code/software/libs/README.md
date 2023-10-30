@@ -11,13 +11,16 @@ Specifically:
 | cstdlib             | Bare-minimum C stdlib required for examples    | `-lcstdlib`      |
 | debug_stub          | Provides handy crash reports on exceptions     | `-ldebug_stub`   |
 | easy68k             | C interface to the Easy68k compatibility layer | `-leasy68k`      |
+| gdb                 | GDB-compatible remote debugging library        | `-lgdb`          |
 | gpio                | Functions for intefacing with the GPIOs & SPI  | `-lgpio`         |
+| kernel              | Standard API for the ROM kernel                | `-lkernel`       |
 | machine             | Low-level functions and basic IO               | `-lmachine`      |
 | printf              | An implementation of `printf`                  | `-lprintf`(2)    |
 | sdfat               | Exposes firmware SD support (where available)  | `-lsdfat`        |
 | shmall              | A small third-party heap allocator             | `-lheap`         |
 | sst_flash           | Routines to interface with SST39SF0x0 Flash    | `-lsst_flash`    |
 | start_serial        | Link scripts and start files for programs      | `-lstart_serial` |
+| vterm               | ANSI C static library to control terminals     | `-lvterm`        |
 
 **Note 1**: The `printf` lib provides two versions of the library, 
 one with support for software floating point, and the other without.
@@ -73,20 +76,20 @@ always worth building them, even if you're not building the examples.
 
 ## Usage
 
-## The `serial_start` library
+### The `start_serial` library
 
-The `serial_start` library is special - it doesn't directly export any 
+The `start_serial` library is special - it doesn't directly export any 
 usable functions for your code. Instead, it provides the standard 
 initialisation and startup code for rosco_m68k programs. 
 
 The recommended way to build programs that will be loaded by the
-serial bootloader is to link against this library, and additionally
-use the link scripts that it provides. By doing this, you don't have
-to worry about relocating your code after it's loaded by the bootloader,
-or initialising the `.data` and `.bss` sections. The library takes care
-of all that for you.
+serial bootloader or from SD card is to link against this library, and 
+additionally use the link scripts that it provides. By doing this, you 
+don't have to worry about relocating your code after it's loaded by the
+bootloader, or initialising the `.data` and `.bss` sections. The library 
+takes care of all that for you.
 
-An example of linking correctly with the `serial_start` library and using
+An example of linking correctly with the `start_serial` library and using
 the correct linker script might be:
 
 ```
@@ -98,19 +101,72 @@ m68k-elf-ld T $LIBDIR/ld/serial/rosco_m68k_program.ld -L $LIBDIR -o myprog.bin m
 For a more complete example, see the `Makefile` in one of the example
 projects.
 
-> **Note** that the `serial_start` library expects the entry point of your
+> **Note** that the `start_serial` library expects the entry point of your
   program to be called `kmain`, not `main`. This helps when porting other
   software to the rosco_m68k, as it means you don't have to change the
   original source, and can do any initialisation you need to before
   calling `main` from your `kmain` function.
 
 > **Note**: For details of the specific environment at program entry when
-  using the `serial_start` library, see the README.md in the `serial_start`
+  using the `start_serial` library, see the README.md in the `start_serial`
   directory.
+
+### The GDB remote debugging library
+
+By linking your program to the `gdb` library and calling one (or two) 
+functions from your code, you gain the ability to remotely debug your code
+with the highly capable, full-featured GNU Project debugger, or GDB.
+
+Because the GDB protocols are widely understood and well supported, this
+also gives access to numerous graphical frontends, as well as neat
+integration with almost all IDEs and other tooling.
+
+To link the library, simply add the `-lgdb` parameter to your linker
+command (as demonstrated in the `start_serial` section above) and then
+`#include <debug.h>` and call the following somewhere near the beginning
+of your program:
+
+```c
+if (start_debugger()) {
+    printf("Awaiting debugger connection\n");
+    breakpoint();
+} else {
+    printf("Unable to start debugging\n");
+}
+```
+
+Debugging is done via UART B, so you will need a second hookup for that
+connected to your host. The line is set up the same as for the main 
+UART A - 115,200bps, 8N1.
+
+Once your program is listening for a connection, you can start debugging
+from your host with:
+
+```shell
+gdb -b 115200
+(gdb) set arch m68k
+(gdb) file <YOUR COMPILED ELF FILE>.elf
+(gdb) target remote /dev/<YOUR SERIAL DEVICE>
+```
+
+Additionally, you can add symbol files for e.g. the ROM firmware if you 
+wish - this will enable friendly source information and other data
+that can be useful when debugging code that steps into ROM.
+
+```shell
+add-symbol-file ../../firmware/rosco_m68k_firmware/rosco_m68k.elf
+```
+
+Once you execute the `target remote` command with the relevant serial \
+device, a connection will be established and you can use ordinary GDB
+commands to control the execution of the program.
+
+If you followed the example above, your program will be stopped at 
+a static breakpoint - issue the `c` command to continue.
 
 ### Linking against the libraries
 
-As seen in the previous section, linking against the libraries is pretty
+As seen in the previous sections, linking against the libraries is pretty
 simple: just tell `ld` the path to the built libraries (by default this
 will be the `build` subdirectory of the `libs` directory) and pass
 each library you want to link against with a `-l` argument, e.g. `-lcstdlib`.
