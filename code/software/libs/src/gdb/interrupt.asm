@@ -128,15 +128,6 @@ HANDLER:
 
 .contA
         move.b  DUART_RBA(A0),D0                ; Grab character from A receive buffer
-
-
-        ; DEBUGGER SPECIFIC
-        cmp.b   #3,D0
-        bne.s   .do_buffer_a
-        jsr     breakpoint
-        ; /DEBUGGER SPECIFIC
-
-.do_buffer_a:
         jsr     (A1)                            ; Call duart_buffer_char
 
         bra.s   .loopA                          ; And continue testing...
@@ -149,36 +140,6 @@ HANDLER:
         move.b  #$40,DUART_CRA(A0)              ; Reset overrun error status
 
 .notoverrun
-        ifd ERROR_REPORTING
-
-        btst    #5,D1                           ; Parity error?
-        beq.s   .notparity
-
-        move.b  #'P',D0
-        jsr     (A1)                            ; Call duart_buffer_char
-        move.b  #'?',D0
-        jsr     (A1)                            ; Call buffer_char
-
-.notparity
-        btst    #6,D1                           ; Frame error?
-        beq.s   .notframe
-
-        move.b  #'F',D0
-        jsr     (A1)                            ; Call duart_buffer_char
-        move.b  #'?',D0
-        jsr     (A1)                            ; Call duart_buffer_char
-
-.notframe
-        btst    #7,D1                           ; Break?
-        beq.s   .notbreak
-
-        move.b  #'B',D0
-        jsr     (A1)                            ; Call duart_buffer_char
-        move.b  #'?',D0
-        jsr     (A1)                            ; Call duart_buffer_char
-
-.notbreak
-        endif ; ERROR_REPORTING
         rts
         
 ;; UART B
@@ -201,9 +162,28 @@ HANDLER:
         move.b  DUART_RBB(A0),D0                ; Grab character from B receive buffer
 
         ; DEBUGGER SPECIFIC
-        cmp.b   #3,D0
-        bne.s   .do_buffer_b
-        jsr     breakpoint
+        cmp.b   #3,D0                           ; Did we get a ctrl-c?
+        bne.s   .do_buffer_b                    ; Continue with buffering if not...
+
+        ; This is about to get a bit hairy, stay with me...
+        move.l  (A7)+,TEMP_REGS+0               ; Unstack the saved registers for a sec
+        move.l  (A7)+,TEMP_REGS+4
+        move.l  (A7)+,TEMP_REGS+8
+        move.l  (A7)+,TEMP_REGS+12
+        move.l  (A7)+,TEMP_REGS+16
+
+        move.w  #$7c,6(A7)                      ; Fiddle the vector offset in the calling frame, make it look like NMI (translates to SIGINT)
+        move.w  #$114,-(A7)                     ; Create a new exception frame, with reason code 276 (user vec 0x45)...
+        move.l  #catchException,-(A7)           ; Returning to catchException...
+        move.w  sr,-(A7)                        ; With whatever SR we have right now...
+
+        move.l  TEMP_REGS+16,-(A7)              ; Restack those saved registers
+        move.l  TEMP_REGS+12,-(A7)
+        move.l  TEMP_REGS+8,-(A7)
+        move.l  TEMP_REGS+4,-(A7)
+        move.l  TEMP_REGS+0,-(A7)
+
+        bra.s   .loopB                          ; And go back to looping - don't bother buffering the ctrl-c
         ; /DEBUGGER SPECIFIC
 
 .do_buffer_b:
@@ -223,4 +203,5 @@ RINGBUF_A   dc.l        0                       ; Ringbuffer for UART A
 RINGBUF_B   dc.l        0                       ; Ringbuffer for UART B
 BASEADDR    dc.l        0                       ; DUART base address from CHAR_DEVICE struct     
 CHAIN       dc.l        0                       ; Chained ISR (timer tick probably)
+TEMP_REGS   ds.l        20
 
