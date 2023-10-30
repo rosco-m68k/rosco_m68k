@@ -1,5 +1,5 @@
 LIB=printf
-LIBOBJECTS=$(DIR)/putchar.o
+LIBOBJECTS=$(DIR)/putchar.o $(DIR)/printf-nofloat.o $(DIR)/printf-softfloat.o
 LIBINCLUDES=$(DIR)/include
 LOCAL_DEFINES=-DPRINTF_INCLUDE_CONFIG_H
 
