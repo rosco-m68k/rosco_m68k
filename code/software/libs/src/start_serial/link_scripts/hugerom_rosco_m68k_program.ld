@@ -49,7 +49,7 @@ PROVIDE(_SDB_MEM_SIZE   = 0x00000414);  /* contiguous memory size       */
 PROVIDE(_SDB_UART_BASE  = 0x00000418);  /* UART base address            */
 PROVIDE(_SDB_CPU_INFO   = 0x0000041C);  /* CPU Info (model and speed)   */
 
-/* NOTE: These need to be kept in sync with firmware equates.S! */
+/* NOTE: These need to be kept in sync with rosco_m68k_public.asm!      */
 PROVIDE(_EFP_TABLE      = 0x00000420);  /* Extension function ptr table */
 
 PROVIDE(_EFP_PRINT      = 0x00000420);  /* Print string to console      */
