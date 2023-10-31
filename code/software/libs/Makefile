@@ -11,7 +11,7 @@ FLAGS=-ffreestanding -ffunction-sections -fdata-sections				\
 			-nostartfiles -Wall -Wpedantic -Werror      				\
 			-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    				\
 			$(DEFINES)
-CFLAGS=-std=gnu11 $(FLAGS)
+CFLAGS=-std=c11 $(FLAGS)
 CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=

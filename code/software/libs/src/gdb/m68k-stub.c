@@ -242,7 +242,7 @@ static char remcomOutBuffer[BUFMAX];
 
 jmp_buf remcomEnv;
 
-#define BREAKPOINT()            asm("       trap #1\n\t")
+#define BREAKPOINT()            __asm__ volatile ("       trap #1\n\t")
 
 #define debugf(...)                                                         \
     do {                                                                    \
