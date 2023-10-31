@@ -109,6 +109,7 @@ duart_remove_interrupt::
 ; The interrupt handler (also chains to the original handler)
 HANDLER:
         movem.l D0-D1/A0-A2,-(A7)
+        clr.w   INTR_FLAG                       ; Clear the CTRL-C interrupt flag
         move.l  BASEADDR,A0                     ; Load BASEADDR pointer
         move.l  #duart_buffer_char,A1           ; Buffer routine in A1
         move.l  RINGBUF_A,A2                    ; UART A RingBuffer in A2
@@ -146,7 +147,7 @@ HANDLER:
 .uartB
         move.l  RINGBUF_B,A2                    ; UART B RingBuffer in A2
         cmp.l   #0,A2                           ; Is the pointer NULL?
-        beq.s   .chain                          ; Skip to chained handler if so...
+        beq.w   .chain                          ; Skip to chained handler if so...
 
 .loopB
         move.b  DUART_ISR(A0),D0
@@ -164,8 +165,25 @@ HANDLER:
         ; DEBUGGER SPECIFIC
         cmp.b   #3,D0                           ; Did we get a ctrl-c?
         bne.s   .do_buffer_b                    ; Continue with buffering if not...
-
+        
         ; This is about to get a bit hairy, stay with me...
+        ;
+        ; This handler, when done, chains a return to the original DUART handler, to keep
+        ; the timer tick and heartbeat flash working.
+        ;
+        ; What this code does is set up a fake exception frame on the stack, such that 
+        ; when the `rte` at the end of the chained handler is hit, it will "return to"
+        ; the debugger's `catchException` handler, with everything set up as if a NMI
+        ; has been triggered.
+        ;
+        ; That handler will then interpret that "NMI" as a SIGINT, and communicate back
+        ; to the gdb client that we've been interrupted, with frames etc set up correctly
+        ; to reflect the place in the calling code where _this_ DUART interrupt was 
+        ; triggered.
+        ;
+        tst.w   INTR_FLAG                       ; Have we already set up an interrupt frame?
+        bne.s   .loopB                          ; Just continue looping if so
+
         move.l  (A7)+,TEMP_REGS+0               ; Unstack the saved registers for a sec
         move.l  (A7)+,TEMP_REGS+4
         move.l  (A7)+,TEMP_REGS+8
@@ -183,13 +201,16 @@ HANDLER:
         move.l  TEMP_REGS+4,-(A7)
         move.l  TEMP_REGS+0,-(A7)
 
+        move.w  #1,INTR_FLAG                    ; Set the interrupt flag, so we don't set up another fake frame
+                                                ; (this is in case the user is sitting on CTRL-C).
+
         bra.s   .loopB                          ; And go back to looping - don't bother buffering the ctrl-c
         ; /DEBUGGER SPECIFIC
 
 .do_buffer_b:
         jsr     (A1)                            ; Call duart_buffer_char
 
-        bra.s   .loopB                          ; And continue testing...
+        bra.w   .loopB                          ; And continue testing...
 
 .chain
         movem.l (A7)+,D0-D1/A0-A2               ; Restore regs...
@@ -203,5 +224,5 @@ RINGBUF_A   dc.l        0                       ; Ringbuffer for UART A
 RINGBUF_B   dc.l        0                       ; Ringbuffer for UART B
 BASEADDR    dc.l        0                       ; DUART base address from CHAR_DEVICE struct     
 CHAIN       dc.l        0                       ; Chained ISR (timer tick probably)
-TEMP_REGS   ds.l        20
-
+TEMP_REGS   ds.l        20                      ; Temp register storage for HANDLER
+INTR_FLAG   dc.w        0                       ; Interrupt set flag for HANDLER
