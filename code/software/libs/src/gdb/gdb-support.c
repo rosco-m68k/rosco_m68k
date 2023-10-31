@@ -48,12 +48,7 @@ bool start_debugger(void) {
         return false;
     }
 
-    CharDevice duart_b;
-    mcGetDevice(1, &duart_b);
-
-    duart_install_interrupt(&duart_b, NULL, &uart_b);
-
-    mcGetDevice(1, &duart_b);
+    duart_install_interrupt(&device, NULL, &uart_b);
 
     set_debug_traps();
     return true;
