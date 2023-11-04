@@ -9,7 +9,7 @@ UPPERLIB := $(shell echo $(LIB) | tr '[:lower:]' '[:upper:]')
 SOFTFLOAT_BINARY := lib$(LIB)-softfloat.a
 NOFLOAT_BINARY := lib$(LIB).a
 CFLAGS  := $(CFLAGS) -I$(LIBINCLUDES) -DBUILD_ROSCOM68K_$(UPPERLIB)_LIB $(LOCAL_DEFINES)
-OBJECTS := $(OBJECTS) $(LIBOBJECTS)
+OBJECTS := $(OBJECTS) $(LIBOBJECTS) $(DIR)/printf-nofloat.o $(DIR)/printf-softfloat.o
 INCLUDES := $(INCLUDES) $(DIR)/include/*
 LIBS := $(LIBS) $(DIR)/$(SOFTFLOAT_BINARY) $(DIR)/$(NOFLOAT_BINARY)
 

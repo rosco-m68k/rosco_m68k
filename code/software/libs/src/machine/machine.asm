@@ -294,4 +294,21 @@ mcDeviceCtrl::
     rts
 
 
+; Get vector base (either VBR or 0 depending on CPU)
+;
+; Modifies: D0 (return value)
+SDB_CPUINFO     equ     $41C
+mcGetVecBase::
+  move.l    SDB_CPUINFO,d0                ; Get CPU info from SDB
+  and.l     #$e0000000,d0                 ; Just the CPU model bits
+  tst.l     d0                            ; is it 68000?
+  beq       .is68000
 
+  mc68010
+  movec.l   vbr,d0                        ; Not a 68000, so get VBR
+  mc68000
+  rts
+
+.is68000:
+  move.l    #$0,d0                        ; Is a 68000, vector base is at $0
+  rts
