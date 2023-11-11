@@ -857,7 +857,7 @@
     (uuid fb1a635e-b207-4b36-b0fb-e877e480e86a)
   )
 
-  (text "See also IC14 on GALs sheet" (at 156.21 80.01 180)
+  (text "See also IC5 on GALs sheet" (at 156.21 80.01 180)
     (effects (font (size 1.27 1.27)) (justify right bottom))
     (uuid 28b01cd2-da3a-46ec-8825-b0f31a0b8987)
   )
