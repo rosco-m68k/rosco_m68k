@@ -1069,7 +1069,7 @@
     )
   )
 
-  (symbol (lib_id "rosco_m68k-rescue:GAL22V10") (at 176.53 99.06 0) (unit 1)
+  (symbol (lib_id "rosco_m68k-rescue:GAL22V10") (at 176.53 99.06 0)
     (in_bom yes) (on_board yes)
     (uuid 00000000-0000-0000-0000-00006161caa3)
     (property "Reference" "IC5" (id 0) (at 176.53 76.5556 0)
