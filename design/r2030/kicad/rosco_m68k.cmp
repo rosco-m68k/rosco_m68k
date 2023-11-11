@@ -1,0 +1,627 @@
+Cmp-Mod V01 Created by PcbNew   date = Sunday, 29 March 2020 at 00:03:34
+
+BeginCmp
+TimeStamp = 5E732609
+Path = 
+Reference = REF**;
+ValeurCmp = KiCad-Logo2_5mm_SilkScreen;
+IdModule  = Symbol:KiCad-Logo2_5mm_SilkScreen;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E71B7BB
+Path = 
+Reference = OSHW_Mono_0.25_Scale;
+ValeurCmp = UK000006;
+IdModule  = rosco_m68k:OSHW_Mono_0.25_Scale;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E71DF16
+Path = /5E53BC83/600521A7
+Reference = J5;
+ValeurCmp = GPIO-PANEL;
+IdModule  = Connector_PinHeader_2.54mm:PinHeader_2x08_P2.54mm_Vertical;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5395F5
+Path = /5E53B952/3922B072
+Reference = C25;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E71E6B0
+Path = /5E53BC83/600B8632
+Reference = R1;
+ValeurCmp = 10K;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E71E696
+Path = /5E53BC83/6009E518
+Reference = R19;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E71E67C
+Path = /5E53BC83/6009D68E
+Reference = R18;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539787
+Path = /5E53B630/0C92C25F
+Reference = IC4;
+ValeurCmp = MC68901P;
+IdModule  = rosco_m68k:DIL48;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6EC7EC
+Path = /5E53B952/CEBFFD5E
+Reference = S1;
+ValeurCmp = 10-XX;
+IdModule  = rosco_m68k:B3F-10XX;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539A85
+Path = /5E53B952/59846CAA
+Reference = R14;
+ValeurCmp = 330R;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6EB866
+Path = /5E53BC83/5FDB084C
+Reference = H4;
+ValeurCmp = MountingHole;
+IdModule  = MountingHole:MountingHole_3.2mm_M3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6ECD73
+Path = /5E53BC83/5FDB0846
+Reference = H3;
+ValeurCmp = MountingHole;
+IdModule  = MountingHole:MountingHole_3.2mm_M3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6EB856
+Path = /5E53BC83/5FDB0840
+Reference = H2;
+ValeurCmp = MountingHole;
+IdModule  = MountingHole:MountingHole_3.2mm_M3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6EB84E
+Path = /5E53BC83/5FDB083A
+Reference = H1;
+ValeurCmp = MountingHole;
+IdModule  = MountingHole:MountingHole_3.2mm_M3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5394C3
+Path = /5E53B630/38F91BEE
+Reference = C9;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5394D8
+Path = /5E53B630/0D700831
+Reference = C10;
+ValeurCmp = 33pF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5394ED
+Path = /5E53B630/EB8ED7A2
+Reference = C11;
+ValeurCmp = 33pF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539502
+Path = /5E53B630/4D37E82F
+Reference = C12;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539517
+Path = /5E53B630/85E9F438
+Reference = C13;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E53952C
+Path = /5E53B630/613C36D4
+Reference = C14;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539541
+Path = /5E53B810/C6962C83
+Reference = C16;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539553
+Path = /5E53B810/1CA3CA5D
+Reference = C17;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539565
+Path = /5E53B810/7627B900
+Reference = C18;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539577
+Path = /5E53B4B8/3E9ECBAC
+Reference = C1;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6ECAB3
+Path = /5E53B810/429AAC70
+Reference = C19;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5395A1
+Path = /5E53B952/88BEBDCA
+Reference = C20;
+ValeurCmp = 22pF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5395B6
+Path = /5E53B952/16E29A2C
+Reference = C21;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5395CB
+Path = /5E53B952/F30D3666
+Reference = C22;
+ValeurCmp = 22pF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5395E0
+Path = /5E53B952/DA218AC8
+Reference = C24;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539607
+Path = /5E53B952/3410F41C
+Reference = C26;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E53961C
+Path = /5E53B4B8/4D986015
+Reference = C2;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E72B01A
+Path = /5E53B952/0D735E1F
+Reference = C27;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E72B146
+Path = /5E53B952/FBED0E41
+Reference = C28;
+ValeurCmp = 400uF;
+IdModule  = rosco_m68k:E3,5-10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539650
+Path = /5E53B4B8/15F46D77
+Reference = C3;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539665
+Path = /5E53B4B8/0CDF4B57
+Reference = C4;
+ValeurCmp = 100uF;
+IdModule  = rosco_m68k:E2,5-5;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539677
+Path = /5E53B4B8/E602F468
+Reference = C5;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E53968C
+Path = /5E53B4B8/E176B0C6
+Reference = C6;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5396A1
+Path = /5E53B4B8/A6F2A611
+Reference = C7;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5396B6
+Path = /5E53B4B8/7D0E483A
+Reference = C8;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5396CB
+Path = /5E53B952/46D5F863
+Reference = IC7;
+ValeurCmp = 7404N;
+IdModule  = rosco_m68k:DIL14;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5396E2
+Path = /5E53B952/FEE713EA
+Reference = IC8;
+ValeurCmp = 555N;
+IdModule  = rosco_m68k:DIL08;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5396F3
+Path = /5E53B952/F64B6C5C
+Reference = IC9;
+ValeurCmp = 74LS01N;
+IdModule  = rosco_m68k:DIL14;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E72CC78
+Path = /5E53B4B8/8B1E8DB7
+Reference = IC1;
+ValeurCmp = MC68010P10;
+IdModule  = rosco_m68k:DIL64;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539753
+Path = /5E53B630/5FE9651B
+Reference = IC2;
+ValeurCmp = ATF16V8BQL-15PU;
+IdModule  = rosco_m68k:DIL20;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539770
+Path = /5E53B630/5ED25CA7
+Reference = IC3;
+ValeurCmp = 7493N;
+IdModule  = rosco_m68k:DIL14;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5397C0
+Path = /5E53B810/6A4BA564
+Reference = IC6;
+ValeurCmp = 74174N;
+IdModule  = rosco_m68k:DIL16;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5397D9
+Path = /5E53B630/164BC77E
+Reference = JP1;
+ValeurCmp = UART;
+IdModule  = rosco_m68k:1X04;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539801
+Path = /5E53B952/3FCB3712
+Reference = JP2;
+ValeurCmp = PWR;
+IdModule  = rosco_m68k:1X02;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539817
+Path = /5E53BC83/ACD8E5B6
+Reference = JP3;
+ValeurCmp = PINHD-2X30;
+IdModule  = rosco_m68k:2X30;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539965
+Path = /5E53BC83/47274FB3
+Reference = JP4;
+ValeurCmp = PINHD-2X2;
+IdModule  = rosco_m68k:2X02;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E53997F
+Path = /5E53B630/3C888371
+Reference = LED1;
+ValeurCmp = GREEN;
+IdModule  = rosco_m68k:LED5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6EDAFA
+Path = /5E53B630/1A089B2F
+Reference = LED2;
+ValeurCmp = RED;
+IdModule  = rosco_m68k:LED5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E53999B
+Path = /5E53B952/273DB787
+Reference = LED3;
+ValeurCmp = RED;
+IdModule  = rosco_m68k:LED5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5399A9
+Path = /5E53B952/E47C4FF9
+Reference = LED4;
+ValeurCmp = GREEN;
+IdModule  = rosco_m68k:LED5MM;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5399B7
+Path = /5E53B630/55305305
+Reference = Q1;
+ValeurCmp = 3.6864MHz;
+IdModule  = rosco_m68k:HC49_S;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E5399D3
+Path = /5E53B952/8AC56962
+Reference = Q2;
+ValeurCmp = 8MHz;
+IdModule  = rosco_m68k:HC49_S;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539A08
+Path = /5E53B952/949C8759
+Reference = R9;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539A21
+Path = /5E53B952/7B8B8F0B
+Reference = R10;
+ValeurCmp = 1K2;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E72CAEE
+Path = /5E53B952/755AD31A
+Reference = R11;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539A53
+Path = /5E53B952/F401FE7E
+Reference = R12;
+ValeurCmp = 2K2;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E6ECBF8
+Path = /5E53B952/BDE9F7DA
+Reference = R13;
+ValeurCmp = 270R;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E72AE4D
+Path = /5E53B952/FD2CBBBB
+Reference = R15;
+ValeurCmp = 330R;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539AB7
+Path = /5E53B952/1CDB656C
+Reference = R16;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539AD0
+Path = /5E53B952/120757BD
+Reference = R17;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539AE9
+Path = /5E53B630/FD9490FA
+Reference = R2;
+ValeurCmp = 330R;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B02
+Path = /5E53B630/5A2A5731
+Reference = R3;
+ValeurCmp = 330R;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B1B
+Path = /5E53B952/51A2EE5C
+Reference = R4;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B34
+Path = /5E53B952/76E91BB6
+Reference = R5;
+ValeurCmp = 1K2;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B4D
+Path = /5E53B952/5F990599
+Reference = R6;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B66
+Path = /5E53B952/A57FCB1C
+Reference = R7;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539B7F
+Path = /5E53B952/88AE9C44
+Reference = R8;
+ValeurCmp = 4K7;
+IdModule  = rosco_m68k:0207_10;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539BD5
+Path = /5E53B4B8/5FF11175
+Reference = U1;
+ValeurCmp = AT28C64B-15PU;
+IdModule  = rosco_m68k:DIP254P1524X482-28;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539C8F
+Path = /5E53B4B8/5FF13753
+Reference = U2;
+ValeurCmp = AT28C64B-15PU;
+IdModule  = rosco_m68k:DIP254P1524X482-28;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539D49
+Path = /5E53B4B8/5FE46869
+Reference = U3;
+ValeurCmp = AS6C4008-55PCN;
+IdModule  = rosco_m68k:DIP254P1524X393-32;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539E1B
+Path = /5E53B4B8/5FE4AB28
+Reference = U4;
+ValeurCmp = AS6C4008-55PCN;
+IdModule  = rosco_m68k:DIP254P1524X393-32;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539EED
+Path = /5E53B810/5FE89F94
+Reference = IC5;
+ValeurCmp = ATF16V8BQL;
+IdModule  = rosco_m68k:DIL20;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539F0A
+Path = /5E53B810/82FD5692
+Reference = C15;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+BeginCmp
+TimeStamp = 5E539F1F
+Path = /5E53B952/6D2DCFB6
+Reference = C23;
+ValeurCmp = 100nF;
+IdModule  = rosco_m68k:C2.5-3;
+EndCmp
+
+EndListe
