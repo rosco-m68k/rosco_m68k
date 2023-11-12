@@ -5,7 +5,7 @@ CLEAN_FILES=r68k *.o rosco_m68k_glue/*.o machine/*.o
 R68K_OBJS=machine/AddressDecoder.o machine/Memory.o rosco_m68k_glue/cpuglue.o rosco_m68k_glue/memoryglue.o main.o
 MUSASHI_OBJS=musashi/m68kcpu.o musashi/m68kdasm.o musashi/m68kops.o musashi/softfloat/softfloat.o
 ROM_BINARY=firmware/rosco_m68k.rom
-CXXFLAGS=-Wall -Wextra -Wpedantic -Iinclude
+CXXFLAGS=-Wall -Wextra -Wpedantic -Iinclude #-DDEBUG_LOG_IO
 
 .PHONY: clean all
 
