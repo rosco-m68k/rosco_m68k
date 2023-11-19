@@ -399,6 +399,11 @@ int main(int argc, char **argv) {
   delay(180000);  // wait a bit for terminal window/serial
   show_banner();
 
+  if (GET_CPU_ID() == 0) {
+    printf("Memcheck requires 68010 or higher, but found a 68000; Exiting\n\n");
+    return 1;
+  }
+
   INSTALL_BERR_HANDLER();
 
   printf("Building memory map, please wait this may take a while...\n\n");
