@@ -334,11 +334,6 @@ INSTALL_TEMP_BERR_HANDLER::
     move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     rts
 
-; Convenience to install temporary BERR handler from C
-; Does all of the above, plus sets up the 68000 return address
-INSTALL_TEMP_BERR_HANDLER_C::
-    move.l  4(A7),BERR_CONT_ADDR        ; Move the function argument to BERR_CONT_ADDR
-    bra     INSTALL_TEMP_BERR_HANDLER
 
 ; Convenience to restore BERR handler from C, after a
 ; call to INSTALL_TEM_BERR_HANDLER.

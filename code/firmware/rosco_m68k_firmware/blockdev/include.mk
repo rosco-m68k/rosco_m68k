@@ -10,7 +10,7 @@ EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K_SDCARD -DSD_BLOCK_READ_ONLY -DBLOCK
 
 ifneq ($(HUGEROM),false)
 ifeq ($(WITH_ATA),true)
-OBJECTS := $(OBJECTS) blockdev/ata.o
+OBJECTS := $(OBJECTS) blockdev/ata_disable_interrupt.o blockdev/ata.o
 EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DROSCO_M68K_ATA
 endif
 
