@@ -9,7 +9,7 @@ endif
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
-CPU?=68010
+CPU?=68000
 ARCH?=$(CPU)
 TUNE?=$(CPU)
 
