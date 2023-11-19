@@ -86,7 +86,7 @@ HAVE_V9958::
 
     ; Install temp bus error handler in case card not installed
     move.l  $8,BERR_SAVED
-    move.l  #.POST_WRITE,SDB_STATUS   ; In case we're on 68000, give a return address...
+    move.l  #.POST_WRITE,BERR_CONT_ADDR   ; In case we're on 68000, give a return address...
     move.l  #BERR_HANDLER,$8
 
     ; Zero Bus Error flag

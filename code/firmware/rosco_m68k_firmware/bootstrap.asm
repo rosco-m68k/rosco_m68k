@@ -253,7 +253,7 @@ INITMEMCOUNT:
 
     move.b  #0,BERR_FLAG                ; Zero bus error flag
     move.l  $8,BERR_SAVED               ; Save the original bus error handler
-    move.l  #.POST_TEST,SDB_STATUS
+    move.l  #.POST_TEST,BERR_CONT_ADDR  ; Save continuation address for 68000
     move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     move.l  #.BLOCKSIZE,A0
 .LOOP
@@ -281,7 +281,7 @@ INITMEMCOUNT:
 
 ; Temporary bus error handler;
 ;
-; Requires a return address be placed in SDB_STATUS for the case
+; Requires a return address be placed in BERR_CONT_ADDR for the case
 ; where the CPU is a 68000 (which cannot return from bus errors).
 ;
 BERR_HANDLER::
@@ -311,7 +311,7 @@ BERR_HANDLER::
     move.b  #1,BERR_FLAG
     move.l  (A7)+,D0
     addq.l  #8,A7
-    move.l  SDB_STATUS,2(A7)
+    move.l  BERR_CONT_ADDR,2(A7)
     rte
 
 .IS020
@@ -330,7 +330,6 @@ BERR_HANDLER::
 ; for a subsequent RESTORE_BERR_HANDLER.
 INSTALL_TEMP_BERR_HANDLER::
     move.b  #0,BERR_FLAG                ; Zero bus error flag
-
     move.l  $8,BERR_SAVED               ; Save the original bus error handler
     move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     rts
@@ -338,7 +337,7 @@ INSTALL_TEMP_BERR_HANDLER::
 ; Convenience to install temporary BERR handler from C
 ; Does all of the above, plus sets up the 68000 return address
 INSTALL_TEMP_BERR_HANDLER_C::
-    move.l  4(A7),SDB_STATUS            ; Move the function argument to SDB_STATUS
+    move.l  4(A7),BERR_CONT_ADDR        ; Move the function argument to BERR_CONT_ADDR
     bra     INSTALL_TEMP_BERR_HANDLER
 
 ; Convenience to restore BERR handler from C, after a
@@ -387,8 +386,9 @@ GENERIC_HANDLER::
 ;------------------------------------------------------------
 ; Char devices
     section .early_data
-DEVICE_COUNT::  dc.w    0
-DEVICE_BLOCKS:: ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+DEVICE_COUNT::      dc.w    0
+DEVICE_BLOCKS::     ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+BERR_CONT_ADDR::    ds.l    1
 
 ; Consts 
     section .rodata

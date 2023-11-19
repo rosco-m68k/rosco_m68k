@@ -161,9 +161,9 @@ INITDUART_ATBASE:
     ; for this on the first access, and if we get one, just bail immediately.
     move.b  #0,BERR_FLAG              ; Zero bus error flag
 
-    move.l  $8,BERR_SAVED             ; Save the original bus error handler
-    move.l  #.POST_WRITE,SDB_STATUS   ; In case we're on 68000, give a return address...
-    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
+    move.l  $8,BERR_SAVED                   ; Save the original bus error handler
+    move.l  #.POST_WRITE,BERR_CONT_ADDR     ; In case we're on 68000, give a return address...
+    move.l  #BERR_HANDLER,$8                ; Install temporary bus error handler
 
     move.b  #$0,DUART_IMR(A0)         ; Mask all interrupts
 

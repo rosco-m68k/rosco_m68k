@@ -236,10 +236,6 @@ if (!have_video) {
     INSTALL_BLOCKDEV_HANDLERS();
 #endif
 
-    // Reset the SDB_STATUS, since we (ab)use it for various things during hardware init...
-    uint32_t *sdb_status = (uint32_t*)0x404;
-    *sdb_status = 0xC001C001;
-
 #ifdef HAVE_DEBUG_STUB
     debug_stub();
 #endif
