@@ -86,6 +86,7 @@ HAVE_V9958::
 
     ; Install temp bus error handler in case card not installed
     move.l  $8,BERR_SAVED
+    move.l  #.POST_WRITE,SDB_STATUS   ; In case we're on 68000, give a return address...
     move.l  #BERR_HANDLER,$8
 
     ; Zero Bus Error flag
@@ -93,6 +94,7 @@ HAVE_V9958::
 
     move.b  #1,(PORT_WREG_SETUP,A0)   ; Write 1 (SR#1)...\
 
+.POST_WRITE:
     tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .NO_9958                  ; Bail now if so...
    

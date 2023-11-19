@@ -316,16 +316,16 @@ static void ata_probe() {
 // This means ata_init **must** be called before any video devices are
 // initialized!
 
-extern void INSTALL_TEMP_BERR_HANDLER(void);
-extern void RESTORE_BERR_HANDLER(void);
 static uint8_t *berr_flag = (uint8_t*)BERR_FLAG;
 
 void ata_init() {
-    INSTALL_TEMP_BERR_HANDLER();
+    INSTALL_TEMP_BERR_HANDLER_C(&&post_write);      // Yes, this is a GCC extension.
+                                                    // No, I do not care. :D
 
     // Disable interrupt
     idereg[ATA_REG_WR_DEVICE_CONTROL] = 0x0002;
 
+post_write:
     RESTORE_BERR_HANDLER();
 
     FW_PRINT_C("Initializing hard drives... ");

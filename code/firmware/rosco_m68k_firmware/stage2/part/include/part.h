@@ -19,7 +19,11 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+
+#ifdef ROSCO_M68K_ATA
 #include "ata.h"
+#endif
+
 #include "bbsd.h"
 #include "part_mbr.h"
 
@@ -38,20 +42,26 @@ typedef struct {
 } RuntimePart;
 
 typedef enum {
+#ifdef ROSCO_M68K_ATA
     PART_DEVICE_TYPE_ATA,
+#endif
     PART_DEVICE_TYPE_BBSD,
 } PartDeviceType;
 
 typedef struct {
     PartDeviceType device_type;
     union {
+#ifdef ROSCO_M68K_ATA
         ATADevice   *ata_device;
+#endif
         BBSDCard    *bbsd_device;
     };
     RuntimePart parts[4];
 } PartHandle;
 
+#ifdef ROSCO_M68K_ATA
 PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device);
+#endif
 PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device);
 uint32_t Part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count);
 bool Part_valid(PartHandle *handle, uint8_t part);

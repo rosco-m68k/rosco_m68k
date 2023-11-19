@@ -162,6 +162,7 @@ INITDUART_ATBASE:
     move.b  #0,BERR_FLAG              ; Zero bus error flag
 
     move.l  $8,BERR_SAVED             ; Save the original bus error handler
+    move.l  #.POST_WRITE,SDB_STATUS   ; In case we're on 68000, give a return address...
     move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
 
     move.b  #$0,DUART_IMR(A0)         ; Mask all interrupts
@@ -189,6 +190,7 @@ INITDUART_ATBASE:
     cmp.b   #$50,D0                   ; to 0x50.
     bne.s   .DONE                     ; If not as expected, no DUART...
 
+.POST_WRITE:
     ; If any of that generated a bus error, then it doesn't appear to be a 68681...
     tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .DONE                     ; Bail now if so...

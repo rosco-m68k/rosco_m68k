@@ -196,6 +196,8 @@ void FW_PRINTLN_C(char *str);
  */
 void BUSYWAIT_C(uint32_t ticks);
 
+typedef void (*voidfunc)(void);
+
 /*
  * Install temporary bus error handler that will set a flag if an error
  * occurs, and not retry the instruction.
@@ -206,8 +208,17 @@ void BUSYWAIT_C(uint32_t ticks);
  *
  * The flag will be set at BERR_FLAG (defined above). The flag will
  * be zeroed when this function is called.
+ * 
+ * You must provide a return address to be used in case the CPU is a
+ * 68000 - this will typically be the instruction after the faulting 
+ * one, and will not be used on 68010 or above.
+ * 
+ * This **must** only be used during early initialization, it is not
+ * reentrant and it (ab)uses the SDB_STATUS for temporary storage.
+ * 
+ * Do not leak pointers to this into stage 2 or user code!
  */
-extern void INSTALL_TEMP_BERR_HANDLER(void);
+extern void INSTALL_TEMP_BERR_HANDLER_C(voidfunc return68k);
 
 /*
  * Restore original bus error handler, saved by a prior call to
