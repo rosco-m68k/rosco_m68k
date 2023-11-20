@@ -51,8 +51,11 @@ LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o machine.o main2.o
 
+ifeq ($(WITH_ATA), true)
+DEFINES:=$(DEFINES) -DROSCO_M68K_ATA
 ifeq ($(ATA_DEBUG),true)
 DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
 endif
 ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
@@ -61,7 +64,9 @@ ifeq ($(WITH_BLOCKDEV),true)
 include load/include.mk
 include part/include.mk
 include sdfat/include.mk
+ifeq ($(WITH_ATA), true)
 include idehdd/include.mk
+endif
 endif
 ifeq ($(REVISION1X),true)
 DEFINES:=$(DEFINES) -DREVISION1X

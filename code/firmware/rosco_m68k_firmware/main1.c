@@ -230,7 +230,9 @@ if (!have_video) {
     print_cpu_mem_info();
 
 #ifdef BLOCKDEV_SUPPORT
+#ifdef ROSCO_M68K_ATA
     ata_init();
+#endif
     INSTALL_BLOCKDEV_HANDLERS();
 #endif
 

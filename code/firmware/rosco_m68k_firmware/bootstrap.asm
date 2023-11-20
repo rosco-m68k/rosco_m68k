@@ -253,12 +253,14 @@ INITMEMCOUNT:
 
     move.b  #0,BERR_FLAG                ; Zero bus error flag
     move.l  $8,BERR_SAVED               ; Save the original bus error handler
+    move.l  #.POST_TEST,BERR_CONT_ADDR  ; Save continuation address for 68000
     move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
     move.l  (A0),D0
 
+.POST_TEST:
     tst.b   BERR_FLAG                   ; Was there a bus error?
     bne.s   .DONE                       ; Fail fast if so...
 
@@ -277,7 +279,11 @@ INITMEMCOUNT:
     rts
 
 
-; Temporary bus error handler
+; Temporary bus error handler;
+;
+; Requires a return address be placed in BERR_CONT_ADDR for the case
+; where the CPU is a 68000 (which cannot return from bus errors).
+;
 BERR_HANDLER::
     move.l  D0,-(A7)
     move.w  ($A,A7),D0                  ; Get format
@@ -301,9 +307,12 @@ BERR_HANDLER::
     beq.w   .IS020 
 
     ; If we're here, assume it's a 68000.
-    ; We can't return from a bus error, signal error.
+    ; Set up the stack with the supplied return address for rte
+    move.b  #1,BERR_FLAG
     move.l  (A7)+,D0
-    jmp     BUS_ERROR_HANDLER
+    addq.l  #8,A7
+    move.l  BERR_CONT_ADDR,2(A7)
+    rte
 
 .IS020
     move.w  ($E,A7),D0                  ; If we're here, it's an 020 frame...                
@@ -316,12 +325,11 @@ BERR_HANDLER::
     rte
 
 
-; Convenience to install temporary BERR handler from C
+; Convenience to install temporary BERR handler
 ; Zeroes bus error flag (at BERR_FLAG) and stores old handler
 ; for a subsequent RESTORE_BERR_HANDLER.
 INSTALL_TEMP_BERR_HANDLER::
     move.b  #0,BERR_FLAG                ; Zero bus error flag
-
     move.l  $8,BERR_SAVED               ; Save the original bus error handler
     move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     rts
@@ -373,8 +381,9 @@ GENERIC_HANDLER::
 ;------------------------------------------------------------
 ; Char devices
     section .early_data
-DEVICE_COUNT::  dc.w    0
-DEVICE_BLOCKS:: ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+DEVICE_COUNT::      dc.w    0
+DEVICE_BLOCKS::     ds.b    C_DEVICE_SIZE*C_NUM_DEVICES
+BERR_CONT_ADDR::    ds.l    1
 
 ; Consts 
     section .rodata
