@@ -1,12 +1,12 @@
-G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,(6.0.0-0)*
-G04 #@! TF.CreationDate,2023-11-11T14:10:32+00:00*
+G04 #@! TF.GenerationSoftware,KiCad,Pcbnew,7.0.9*
+G04 #@! TF.CreationDate,2023-11-26T21:11:25+00:00*
 G04 #@! TF.ProjectId,rosco_m68k,726f7363-6f5f-46d3-9638-6b2e6b696361,030-1.00*
 G04 #@! TF.SameCoordinates,Original*
 G04 #@! TF.FileFunction,Paste,Top*
 G04 #@! TF.FilePolarity,Positive*
 %FSLAX46Y46*%
 G04 Gerber Fmt 4.6, Leading zero omitted, Abs format (unit mm)*
-G04 Created by KiCad (PCBNEW (6.0.0-0)) date 2023-11-11 14:10:32*
+G04 Created by KiCad (PCBNEW 7.0.9) date 2023-11-26 21:11:25*
 %MOMM*%
 %LPD*%
 G01*
