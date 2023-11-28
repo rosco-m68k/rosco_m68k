@@ -57,12 +57,7 @@
         }
       ],
       "drc_exclusions": [
-        "courtyards_overlap|76605001|63550001|00000000-0000-0000-0000-00005ece305d|3524244b-05ef-4c99-ad40-99162ffd7e72",
-        "silk_overlap|77075000|64020000|31ae1ddb-55f8-4875-b94d-87a4d0c86414|6326063d-88aa-433b-85a2-ce17eb023a5a",
-        "silk_overlap|77195000|64020000|31ae1ddb-55f8-4875-b94d-87a4d0c86414|b1e86af5-5f6a-44ff-acf5-5c164c276d92",
-        "silk_overlap|77195000|64020000|3a41f6b2-d64e-4fc9-9c78-62461e28f42c|b1e86af5-5f6a-44ff-acf5-5c164c276d92",
-        "silk_overlap|77195000|66620000|3a41f6b2-d64e-4fc9-9c78-62461e28f42c|7d37319f-1088-48dc-b617-dbb6d2562491",
-        "silk_overlap|77195000|74300000|3a41f6b2-d64e-4fc9-9c78-62461e28f42c|f08827db-5483-4734-be2f-19b29136361d"
+        "courtyards_overlap|76605001|63550001|00000000-0000-0000-0000-00005ece305d|3524244b-05ef-4c99-ad40-99162ffd7e72"
       ],
       "meta": {
         "filename": "board_design_settings.json",
@@ -133,7 +128,7 @@
         "min_microvia_drill": 0.09999999999999999,
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.7999999999999999,
+        "min_text_height": 0.575,
         "min_text_thickness": 0.08,
         "min_through_hole_diameter": 0.25,
         "min_track_width": 0.152,
