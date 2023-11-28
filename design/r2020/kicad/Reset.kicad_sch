@@ -29,7 +29,7 @@
       (property "Datasheet" "" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_keywords" "power-flag" (at 0 0 0)
+      (property "ki_keywords" "global power" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
       (property "ki_description" "Power symbol creates a global label with name \"GND\" , ground" (at 0 0 0)
@@ -69,7 +69,7 @@
       (property "Datasheet" "" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_keywords" "power-flag" (at 0 0 0)
+      (property "ki_keywords" "global power" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
       (property "ki_description" "Power symbol creates a global label with name \"VCC\"" (at 0 0 0)
@@ -126,7 +126,7 @@
       )
       (symbol "10-XX_1_0"
         (circle (center 0 -2.54) (radius 0.127)
-          (stroke (width 0.4064) (type default))
+          (stroke (width 0.4064) (type solid))
           (fill (type none))
         )
         (polyline
@@ -134,7 +134,7 @@
             (xy -4.445 -1.905)
             (xy -3.175 -1.905)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -142,7 +142,7 @@
             (xy -4.445 0)
             (xy -4.445 -1.905)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -150,7 +150,7 @@
             (xy -4.445 0)
             (xy -3.175 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -158,7 +158,7 @@
             (xy -4.445 1.905)
             (xy -4.445 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -166,7 +166,7 @@
             (xy -4.445 1.905)
             (xy -3.175 1.905)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -174,7 +174,7 @@
             (xy -2.54 0)
             (xy -1.905 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -182,7 +182,7 @@
             (xy -1.27 0)
             (xy -0.635 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -190,7 +190,7 @@
             (xy 0 -2.54)
             (xy -1.27 1.905)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -198,7 +198,7 @@
             (xy 0 1.905)
             (xy 0 2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -206,7 +206,7 @@
             (xy 2.54 -2.54)
             (xy 0 -2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -214,11 +214,11 @@
             (xy 2.54 2.54)
             (xy 0 2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (circle (center 0 2.54) (radius 0.127)
-          (stroke (width 0.4064) (type default))
+          (stroke (width 0.4064) (type solid))
           (fill (type none))
         )
         (pin passive line (at 0 5.08 270) (length 2.54)
@@ -261,7 +261,7 @@
             (xy -7.62 -10.16)
             (xy 7.62 -10.16)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -269,7 +269,7 @@
             (xy -7.62 10.16)
             (xy -7.62 -10.16)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -277,7 +277,7 @@
             (xy 7.62 -10.16)
             (xy 7.62 10.16)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -285,7 +285,7 @@
             (xy 7.62 10.16)
             (xy -7.62 10.16)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (pin power_in line (at -10.16 -7.62 0) (length 2.54)
@@ -340,11 +340,11 @@
       )
       (symbol "C2,5-3_1_0"
         (rectangle (start -2.032 -2.032) (end 2.032 -1.524)
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (rectangle (start -2.032 -1.016) (end 2.032 -0.508)
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (polyline
@@ -352,7 +352,7 @@
             (xy 0 -2.54)
             (xy 0 -2.032)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -360,7 +360,7 @@
             (xy 0 0)
             (xy 0 -0.508)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (pin passive line (at 0 2.54 270) (length 2.54)
@@ -391,7 +391,7 @@
       )
       (symbol "CPOL-EUE2.5-5_1_0"
         (rectangle (start -1.651 -2.54) (end 1.651 -1.651)
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (polyline
@@ -399,7 +399,7 @@
             (xy -1.524 -0.889)
             (xy 1.524 -0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -407,7 +407,7 @@
             (xy -1.524 0)
             (xy -1.524 -0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -415,7 +415,7 @@
             (xy -1.524 0)
             (xy 1.524 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -423,7 +423,7 @@
             (xy 1.524 -0.889)
             (xy 1.524 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (text "+" (at -0.5842 0.4064 900)
@@ -461,7 +461,7 @@
             (xy -1.27 0)
             (xy 1.27 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -469,7 +469,7 @@
             (xy 0 -1.27)
             (xy -1.27 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -477,7 +477,7 @@
             (xy 1.27 0)
             (xy 0 -1.27)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (pin power_in line (at 0 2.54 270) (length 2.54)
@@ -508,7 +508,7 @@
             (xy -2.032 -0.762)
             (xy -3.429 -2.159)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -516,7 +516,7 @@
             (xy -1.905 -1.905)
             (xy -3.302 -3.302)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -524,7 +524,7 @@
             (xy 0 -2.54)
             (xy -1.27 -2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -532,7 +532,7 @@
             (xy 0 -2.54)
             (xy -1.27 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -540,7 +540,7 @@
             (xy 0 0)
             (xy -1.27 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -548,7 +548,7 @@
             (xy 1.27 -2.54)
             (xy 0 -2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -556,7 +556,7 @@
             (xy 1.27 0)
             (xy 0 -2.54)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -564,7 +564,7 @@
             (xy 1.27 0)
             (xy 0 0)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -573,7 +573,7 @@
             (xy -3.048 -1.27)
             (xy -2.54 -1.778)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (polyline
@@ -582,7 +582,7 @@
             (xy -2.921 -2.413)
             (xy -2.413 -2.921)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (pin passive line (at 0 2.54 270) (length 2.54)
@@ -617,7 +617,7 @@
             (xy -2.54 -0.889)
             (xy -2.54 0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -625,7 +625,7 @@
             (xy -2.54 -0.889)
             (xy 2.54 -0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -633,7 +633,7 @@
             (xy 2.54 -0.889)
             (xy 2.54 0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -641,7 +641,7 @@
             (xy 2.54 0.889)
             (xy -2.54 0.889)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (pin passive line (at -5.08 0 0) (length 2.54)

@@ -117,7 +117,7 @@
       (property "Datasheet" "" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_keywords" "power-flag" (at 0 0 0)
+      (property "ki_keywords" "global power" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
       (property "ki_description" "Power symbol creates a global label with name \"GND\" , ground" (at 0 0 0)
@@ -157,7 +157,7 @@
       (property "Datasheet" "" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
-      (property "ki_keywords" "power-flag" (at 0 0 0)
+      (property "ki_keywords" "global power" (at 0 0 0)
         (effects (font (size 1.27 1.27)) hide)
       )
       (property "ki_description" "Power symbol creates a global label with name \"VCC\"" (at 0 0 0)
@@ -214,11 +214,11 @@
       )
       (symbol "C2,5-3_1_0"
         (rectangle (start -2.032 -2.032) (end 2.032 -1.524)
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (rectangle (start -2.032 -1.016) (end 2.032 -0.508)
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type outline))
         )
         (polyline
@@ -226,7 +226,7 @@
             (xy 0 -2.54)
             (xy 0 -2.032)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (polyline
@@ -234,7 +234,7 @@
             (xy 0 0)
             (xy 0 -0.508)
           )
-          (stroke (width 0) (type default))
+          (stroke (width 0) (type solid))
           (fill (type none))
         )
         (pin passive line (at 0 2.54 270) (length 2.54)
@@ -275,7 +275,7 @@
       )
       (symbol "GAL22V10_0_1"
         (rectangle (start -8.89 13.97) (end 8.89 -13.97)
-          (stroke (width 0.254) (type default))
+          (stroke (width 0.254) (type solid))
           (fill (type background))
         )
       )
@@ -1111,6 +1111,9 @@
     (instances
       (project "rosco_m68k"
         (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7/00000000-0000-0000-0000-0000617d19f3"
+          (reference "IC5") (unit 1)
+        )
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7/00000000-0000-0000-0000-00006162e38e"
           (reference "IC5") (unit 1)
         )
       )
