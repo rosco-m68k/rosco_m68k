@@ -218,7 +218,7 @@ is indicated by any other value. Again, see sdfat.h for details.
 
 **Arguments**
 
-* `D0.L` - 1 (Function code)
+* `D0.L` - 2 (Function code)
 * `D1.L` - Block number to read
 * `A1`   - Pointer to an initialized SDCard struct
 * `A2`   - Pointer to a 512-byte buffer
@@ -243,7 +243,7 @@ indicates success.
 
 **Arguments**
 
-* `D0.L` - 1 (Function code)
+* `D0.L` - 3 (Function code)
 * `D1.L` - Block number to write
 * `A1`   - Pointer to an initialized SDCard struct
 * `A2`   - Pointer to a 512-byte buffer
@@ -268,7 +268,7 @@ indicates success.
 
 **Arguments**
 
-* `D0.L` - 1 (Function code)
+* `D0.L` - 4 (Function code)
 * `D1.L` - Register number to read (translates directly to a CMD)
 * `A1`   - Pointer to an initialized SDCard struct
 * `A2`   - Pointer to a 16-byte buffer
@@ -371,7 +371,7 @@ Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
 
 **Modifies**
 
-* `D0.L` -  Byte received
+* `D0.L` - Byte received
 * `A0`   - Modified arbitrarily
 
 **Description**
