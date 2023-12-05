@@ -56,9 +56,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        "courtyards_overlap|76605001|63550001|00000000-0000-0000-0000-00005ece305d|3524244b-05ef-4c99-ad40-99162ffd7e72"
-      ],
+      "drc_exclusions": [],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -452,7 +450,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "rosco_m68k.net",
-      "specctra_dsn": "temp/rosco_m68k.dsn",
+      "specctra_dsn": "../rosco_m68k.dsn",
       "step": "",
       "vrml": ""
     },
