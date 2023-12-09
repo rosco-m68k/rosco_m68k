@@ -66,7 +66,7 @@ typedef struct {
       // 18 words of internal registers may follow (long bus fault frame)
     } fmt020;
   };
-} __attribute__((packed)) CPUExceptionFrame;
+} __attribute__((packed)) __attribute__((aligned(2))) CPUExceptionFrame;
 
 #ifndef ROSCOM68K_QUIET_INCLUDES
 /* Format codes */
