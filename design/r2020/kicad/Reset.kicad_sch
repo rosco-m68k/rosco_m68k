@@ -6,13 +6,13 @@
 
   (title_block
     (title "ROSCO_M68K CLASSIC MC68020 EDITION")
-    (date "2022-03-30")
+    (date "2023-12-10")
     (rev "1.0")
     (company "The Really Old-School Company Limited")
     (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
     (comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
     (comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
-    (comment 4 "Copyright 2019-2022 Ross Bamford and Contributors")
+    (comment 4 "Copyright 2019-2023 Ross Bamford and Contributors")
   )
 
   (lib_symbols
