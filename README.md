@@ -7,6 +7,8 @@
 
 > **The best way to support this project is to buy PCBs and kits - visit the <a href='https://store.rosco-m68k.com'>Official Store</a>!**
 
+> Alternatively, you can <a href="https://ko-fi.com/rosco_m68k">buy us a coffee</a> if you like, it would be much appreciated! 😊
+
 ## What is this?
 
 This repository holds design files, firmware and software for the Really Old-School Computer 
