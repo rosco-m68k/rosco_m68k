@@ -6,7 +6,7 @@
 
   (title_block
     (title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
-    (date "2023-08-17")
+    (date "2023-12-10")
     (rev "2.13-DEV")
     (company "The Really Old-School Company Limited")
     (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
