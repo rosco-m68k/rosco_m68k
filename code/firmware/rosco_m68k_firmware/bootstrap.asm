@@ -251,10 +251,8 @@ INITMEMCOUNT:
 .MEMTOP    equ $E00000
     endif
 
-    move.b  #0,BERR_FLAG                ; Zero bus error flag
-    move.l  $8,BERR_SAVED               ; Save the original bus error handler
+    jsr     INSTALL_TEMP_BERR_HANDLER   ; Install temporary bus error handler
     move.l  #.POST_TEST,BERR_CONT_ADDR  ; Save continuation address for 68000
-    move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
@@ -274,7 +272,7 @@ INITMEMCOUNT:
     bra.s   .LOOP                       ; ... continue testing.
 
 .DONE
-    move.l  BERR_SAVED,$8               ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER        ; Restore bus error handler
     move.l  A0,SDB_MEMSIZE
     rts
 

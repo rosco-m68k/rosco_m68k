@@ -115,7 +115,7 @@ HAVE_V9958::
     trap    #15
 
 .DONE
-    move.l  BERR_SAVED,$8             ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER      ; Restore bus error handler
 
     move.b  D1,D0                     ; Result in D0.B
     movem.l (A7)+,D1/A0-A1
