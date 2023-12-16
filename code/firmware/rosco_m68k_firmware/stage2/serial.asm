@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2021 Ross Bamford and contributors
+; Copyright (c)2019-2023 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; This is low-level UART stuff and exception handlers for the
@@ -15,6 +15,10 @@
     include "../rosco_m68k_private.asm"
 
     section .text
+
+; Send a single character via UART from C
+SENDCHAR_C::
+    move.l  4(A7),D0
 
 ; Send a single character via UART
 ;
