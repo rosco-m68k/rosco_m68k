@@ -231,7 +231,7 @@ EFP_DUMMY_ENDSTR::
 INITDEVS:
     clr.w   DEVICE_COUNT    
     move.w  #C_NUM_DEVICES,D0
-    lsl.w   #3,D0
+    mulu.w  #(C_DEVICE_SIZE/4),D0   ; Divide by 4 because we clear long words
     lea.l   DEVICE_BLOCKS,A0
     bra.s   .START
 
