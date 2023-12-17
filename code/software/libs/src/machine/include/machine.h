@@ -164,7 +164,7 @@ typedef struct {
     uint16_t reserved: 13;
     uint8_t major;
     uint8_t minor;
-} __attribute__((packed)) RomVersionInfo;
+} __attribute__((packed)) __attribute__((aligned(2))) RomVersionInfo;
 
 /*
  * The SystemDataBlock is a global reserved structure at _SDB.
@@ -180,7 +180,7 @@ typedef struct {
   uint32_t      uartbase;             /* Base address of default UART */
   uint32_t      cpu_model:3;          /* CPU type */
   uint32_t      cpu_speed:29;         /* CPU speed */
-} __attribute__ ((packed)) SystemDataBlock;
+} __attribute__((packed)) __attribute__((aligned(2))) SystemDataBlock;
 
 /*
  * Represents a character device known to the firmware
@@ -196,7 +196,7 @@ typedef struct {
     uint16_t    capabilities;
     uint8_t     flags;
     uint8_t     device_type;
-} __attribute__((packed)) CharDevice;
+} __attribute__((packed)) __attribute__((aligned(2))) CharDevice;
 
 /*
  * Absolute symbols defined in linker script
