@@ -200,7 +200,7 @@ INITDUART_ATBASE:
 
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
  .DONE:
-    move.l  BERR_SAVED,$8             ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER      ; Restore bus error handler
     rts
 
 

@@ -251,10 +251,8 @@ INITMEMCOUNT:
 .MEMTOP    equ $E00000
     endif
 
-    move.b  #0,BERR_FLAG                ; Zero bus error flag
-    move.l  $8,BERR_SAVED               ; Save the original bus error handler
+    jsr     INSTALL_TEMP_BERR_HANDLER   ; Install temporary bus error handler
     move.l  #.POST_TEST,BERR_CONT_ADDR  ; Save continuation address for 68000
-    move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
@@ -274,49 +272,60 @@ INITMEMCOUNT:
     bra.s   .LOOP                       ; ... continue testing.
 
 .DONE
-    move.l  BERR_SAVED,$8               ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER        ; Restore bus error handler
     move.l  A0,SDB_MEMSIZE
     rts
 
 
-; Temporary bus error handler;
+; Temporary bus error handler for the MC68000 CPU
 ;
-; Requires a return address be placed in BERR_CONT_ADDR for the case
-; where the CPU is a 68000 (which cannot return from bus errors).
+; Requires a return address be placed in BERR_CONT_ADDR since
+; the MC68000 cannot return from bus errors.
 ;
-BERR_HANDLER::
-    move.l  D0,-(A7)
-    move.w  ($A,A7),D0                  ; Get format
-    and.w   #$F000,D0                   ; Mask vector
-    cmp.w   #$8000,D0                   ; Is it an 010 BERR frame?
-    bne.w   .NOT010                     ; May be a longer (later CPU) frame if not
-                                        ; For 020, this would be either A000 or B000 -
-                                        ; for our purposes, they are equivalent. 
-                                        ; TODO this might need checking again on later
-                                        ; CPUs!
-
-    move.w  ($C,A7),D0                  ; If we're here, it's an 010 frame...                
-    bset    #15,D0                      ; ... so just set the RR (rerun) flag
-    move.w  D0,($C,A7)
-    bra.s   .DONE 
-
-.NOT010:
-    cmp.w   #$A000,D0                   ; Is it an 020 BERR frame?
-    beq.w   .IS020 
-    cmp.w   #$B000,D0
-    beq.w   .IS020 
-
-    ; If we're here, assume it's a 68000.
+BERR_HANDLER_MC68000::
     ; Set up the stack with the supplied return address for rte
     move.b  #1,BERR_FLAG
-    move.l  (A7)+,D0
     addq.l  #8,A7
     move.l  BERR_CONT_ADDR,2(A7)
     rte
 
+
+; Temporary bus error handler for other MC680x0 CPUs
+;
+BERR_HANDLER_MC680X0::
+    move.l  D0,-(A7)
+    move.w  ($A,A7),D0                  ; Get format
+    and.w   #$F000,D0                   ; Mask vector
+
+    cmp.w   #$8000,D0                   ; Is it an 010 BERR frame?
+    beq.w   .IS010                      ; May be a longer (later CPU) frame if not
+
+.NOT010
+    cmp.w   #$A000,D0                   ; Is it an 020 (030) BERR frame?
+    beq.w   .IS020 
+    cmp.w   #$B000,D0
+    beq.w   .IS020 
+
+.NOT020
+    ; If we're here, we don't support this CPU, fall back on saved BERR handler
+    move.l  (A7)+,D0
+    jmp     (BERR_SAVED).l
+
+.IS010
+    move.w  ($C,A7),D0                  ; If we're here, it's an 010 frame...                
+    bset    #15,D0                      ; ... so just set the RR (rerun) flag to software rerun
+    move.w  D0,($C,A7)
+    bra.s   .DONE
+
 .IS020
-    move.w  ($E,A7),D0                  ; If we're here, it's an 020 frame...                
-    bclr    #8,D0                       ; ... we only care about data faults here... Hopefully :D
+    move.w  ($E,A7),D0                  ; If we're here, it's an 020 frame...
+    btst    #8,D0                       ; ... check that this is a data fault
+    bne.w   .IS020_DAT
+.IS020_NONDAT                           ; It's not a data fault...
+    move.l  (A7)+,D0                    ; ... so fall back to the saved BERR handler
+    jmp     (BERR_SAVED)
+.IS020_DAT
+    bclr    #8,D0                       ; Is a data fault, so clear the DF flag to skip rerun
     move.w  D0,($E,A7)    
 
 .DONE
@@ -325,23 +334,28 @@ BERR_HANDLER::
     rte
 
 
-; Convenience to install temporary BERR handler
+; Install temporary BERR handler
 ; Zeroes bus error flag (at BERR_FLAG) and stores old handler
 ; for a subsequent RESTORE_BERR_HANDLER.
 INSTALL_TEMP_BERR_HANDLER::
     move.b  #0,BERR_FLAG                ; Zero bus error flag
     move.l  $8,BERR_SAVED               ; Save the original bus error handler
-    move.l  #BERR_HANDLER,$8            ; Install temporary bus error handler
+    cmpi.b  #$20,SDB_CPUINFO+0          ; Compare the CPU model in SDB (highest 3 bits) against 1
+    blt     .IS000                      ; Is it an MC68000?
+.NOT000
+    move.l  #BERR_HANDLER_MC680X0,$8    ; Install other MC680x0 temporary bus error handler
+    rts
+.IS000
+    move.l  #BERR_HANDLER_MC68000,$8    ; Install MC68000 temporary bus error handler
     rts
 
 
-; Convenience to restore BERR handler from C, after a
-; call to INSTALL_TEM_BERR_HANDLER.
+; Restore BERR handler, after a call to INSTALL_TEMP_BERR_HANDLER.
 RESTORE_BERR_HANDLER::
     move.l  BERR_SAVED,$8               ; Restore bus error handler
     rts
 
-    
+
 ;------------------------------------------------------------
 ; Routines for include/machine.h
 HALT::
