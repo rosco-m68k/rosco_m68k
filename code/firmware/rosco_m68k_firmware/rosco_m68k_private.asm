@@ -35,9 +35,6 @@ BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kep
 RAMBASE         equ     $0          ; Base address for RAM
 RAMLIMIT        equ     $100000     ; Limit of onboard RAM
 
-; Initialisation
-INIT_SSP        equ     RAMLIMIT
-
 ; Char devices
 C_DEVICE_SIZE   equ     $20         ; Size of single device block (**must** be a multiple of 4!)
 C_NUM_DEVICES   equ     $10         ; Number of device blocks to allocate
