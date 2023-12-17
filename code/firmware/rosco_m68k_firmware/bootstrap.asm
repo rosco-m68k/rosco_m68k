@@ -249,12 +249,6 @@ INITMEMCOUNT:
 .TESTVALUE equ $12345678
 .BLOCKSIZE equ $80000
 
-    ifd REVISION1X
-.MEMTOP    equ $F80000
-    else
-.MEMTOP    equ $E00000
-    endif
-
     jsr     INSTALL_TEMP_BERR_HANDLER   ; Install temporary bus error handler
     move.l  #.POST_TEST,BERR_CONT_ADDR  ; Save continuation address for 68000
     move.l  #.BLOCKSIZE,A0
@@ -269,7 +263,7 @@ INITMEMCOUNT:
     cmp.l   #.TESTVALUE,D0              ; Did we get test value back?
     bne.s   .DONE                       ; Fail fast if not...
 
-    cmp.l   #.MEMTOP,A0                 ; Are we at the top of memory?
+    cmp.l   #RAM_TOP,A0                 ; Are we at the top of memory?
     beq.s   .DONE                       ; We're done if so...
 
     add.l   #.BLOCKSIZE,A0              ; Failing all that...
