@@ -350,7 +350,7 @@ INSTALL_TEMP_BERR_HANDLER::
     rts
 
 
-; Restore BERR handler, after a call to INSTALL_TEM_BERR_HANDLER.
+; Restore BERR handler, after a call to INSTALL_TEMP_BERR_HANDLER.
 RESTORE_BERR_HANDLER::
     move.l  BERR_SAVED,$8               ; Restore bus error handler
     rts
