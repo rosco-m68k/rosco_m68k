@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v1                 
 ;------------------------------------------------------------
-; Copyright (c)2020 Ross Bamford
+; Copyright (c)2020-2023 Ross Bamford & contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; System call implementations 
@@ -312,3 +312,30 @@ mcGetVecBase::
 .is68000:
   move.l    #$0,d0                        ; Is a 68000, vector base is at $0
   rts
+
+
+; Call the INPUTCHAR function of the firmware
+;
+; Trashes: MFP_UDR
+; Modifies: D0 (return)
+    section .text.mcInputchar
+mcInputchar::
+    move.l  D1,-(A7)                  ; Save regs
+    move.l  #17,D1                    ; Func code is 17 INPUTCHAR
+    trap    #14                       ; TRAP to firmware
+    move.l  (A7)+,D1                  ; Restore regs
+    rts                               ; We're done.
+
+; Call the CHECKINPUT function of the firmware
+;
+; Trashes: Nothing (MFP_UDR?)
+; Modifies: D0 (return)
+    section .text.mcCheckInput
+mcCheckInput::
+    move.l  D1,-(A7)                  ; Save regs
+    move.l  #18,D1                    ; Func code is 18 CHECKINPUT
+    trap    #14                       ; TRAP to firmware
+    ext.w   D0                        ; extend D0.B return for C
+    ext.l   D0
+    move.l  (A7)+,D1                  ; Restore regs
+    rts                               ; We're done.

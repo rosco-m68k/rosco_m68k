@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2021 Ross Bamford and contributors
+; Copyright (c)2019-2023 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; TRAP #14 handler and extended function wrappers
@@ -26,7 +26,7 @@ TRAP_14_HANDLER::
     move.l  A1,-(A7)
     move.l  D1,-(A7)
 
-    cmp.l   #16,D1                      ; Is function code in range?
+    cmp.l   #18,D1                      ; Is function code in range?
     bhi.s   .EPILOGUE                   ; Nope, leave...
 
     add.l   D1,D1                       ; Multiply FC...
@@ -47,11 +47,13 @@ TRAP_14_HANDLER::
     dc.l    .GET_DEVICE                 ; FC == 9  ; GET_DEVICE if so...
     dc.l    .ADD_DEVICE                 ; FC == 10 ; ADD_DEVICE if so...
     dc.l    .DEV_RECVCHAR               ; FC == 11 ; DEV_RECVCHAR if so...
-    dc.l    .DEV_SENDCHAR               ; FC == 12 ; DEV_SENCCHAR if so...
+    dc.l    .DEV_SENDCHAR               ; FC == 12 ; DEV_SENDCHAR if so...
     dc.l    .DEV_CHECKCHAR              ; FC == 13 ; DEV_CHECKCHAR if so...
     dc.l    .EPILOGUE                   ; FC == 14 ; RESERVED
     dc.l    .EPILOGUE                   ; FC == 15 ; RESERVED
     dc.l    .DEV_CTRL                   ; FC == 16 ; DEV_CTRL if so...
+    dc.l    .INPUTCHAR                  ; FC == 17 ; INPUTCHAR if so...
+    dc.l    .CHECKINPUT                 ; FC == 18 ; CHECKINPUT if so...
     
 .EPILOGUE
     move.l  (A7)+,D1
@@ -99,78 +101,44 @@ TRAP_14_HANDLER::
     bra.s   .EPILOGUE
 
 .GET_DEVICE_COUNT
-    move.w  DEVICE_COUNT,D0
+    jsr     GET_CHAR_DEVICE_COUNT
     bra.s   .EPILOGUE
 
 ; **********************************
 .GET_DEVICE
-    cmp.w   DEVICE_COUNT,D0
-    bhs.s   .NO_DEVICE
-
-    lea.l   DEVICE_BLOCKS,A1
-    lsl.w   #5,D0
-    add.w   D0,A1
-
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-    move.l  (A1)+,(A0)+
-
-    move.b  #1,D0
-    bra.s   .EPILOGUE
-
-.NO_DEVICE
-    clr.b   D0
+    jsr     GET_CHAR_DEVICE
     bra.s   .EPILOGUE
 ; **********************************
 
 .ADD_DEVICE
-    move.w  DEVICE_COUNT,D0
-    cmp.w   #15,D0
-    bhi.w   .EPILOGUE
-
-    lea.l   DEVICE_BLOCKS,A1
-    lsl.w   #5,D0
-    add.w   D0,A1
-
-    ; Copy 32 bytes of device struct
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-    move.l  (A0)+,(A1)+
-
-    addi.w  #1,DEVICE_COUNT
-    lsr.w   #5,D0               ; Re-shift for return value
-
+    jsr     ADD_CHAR_DEVICE
     bra.w   .EPILOGUE
 
 ; **********************************
 
 .DEV_RECVCHAR
-    move.l  8(A0),A1
-    jsr     (A1)
+    jsr     CHAR_DEV_RECVCHAR
     bra.w   .EPILOGUE
 
 .DEV_SENDCHAR
-    move.l  12(A0),A1
-    jsr     (A1)
+    jsr     CHAR_DEV_SENDCHAR
     bra.w   .EPILOGUE
 
 .DEV_CHECKCHAR
-    move.l  4(A0),A1
-    jsr     (A1)
+    jsr     CHAR_DEV_CHECKCHAR
     bra.w   .EPILOGUE
 
 .DEV_CTRL
-    move.l  24(A0),A1
+    jsr     CHAR_DEV_CTRL
+    bra.w   .EPILOGUE
+
+.INPUTCHAR
+    move.l  EFP_INPUTCHAR,A1
+    jsr     (A1)
+    bra.w   .EPILOGUE
+    
+.CHECKINPUT
+    move.l  EFP_CHECKINPUT,A1
     jsr     (A1)
     bra.w   .EPILOGUE
 
