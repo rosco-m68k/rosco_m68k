@@ -39,14 +39,14 @@ typedef struct {
       uint16_t insn_in_buffer;      /* 68010 Instruction input buffer   */
 
       // |VERSION NUMBER| (?) / 16 words of internal registers may follow
-    } fmt010;
+    } __attribute__((packed)) fmt010;
     struct {
       union {
         uint32_t insn_address;      /* 68020 Instruction address        */
         struct {
           uint16_t reserved0;
           uint16_t ssw;             /* 68020 Special Status Word        */
-        };
+        } __attribute__((packed));
       }; 
       uint16_t pipe_stage_c;        /* 68020 Instruction pipe - Stage C */
       uint16_t pipe_state_b;        /* 68020 Instruction pipe - Stage B */
@@ -64,7 +64,7 @@ typedef struct {
       uint16_t reserved7: 12;
 
       // 18 words of internal registers may follow (long bus fault frame)
-    } fmt020;
+    } __attribute__((packed)) fmt020;
   };
 } __attribute__((packed)) __attribute__((aligned(2))) CPUExceptionFrame;
 
