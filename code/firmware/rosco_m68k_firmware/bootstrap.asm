@@ -158,8 +158,8 @@ INITSDB:
 ;
 INITEFPT:
     ; Basic IO Routines
-    move.l  #EFP_DUMMY_NOOP,EFP_PRINT
-    move.l  #EFP_DUMMY_NOOP,EFP_PRINTLN
+    move.l  #EFP_DUMMY_ENDSTR,EFP_PRINT
+    move.l  #EFP_DUMMY_ENDSTR,EFP_PRINTLN
     move.l  #EFP_DUMMY_NOOP,EFP_PRINTCHAR
     move.l  #EFP_DUMMY_NOOP,EFP_SENDCHAR
     move.l  #EFP_DUMMY_LOOP,EFP_RECVCHAR
@@ -220,6 +220,10 @@ EFP_DUMMY_NEGONE_D0W::
     rts
 EFP_DUMMY_NEGONE_D0L::
     move.l  #-1,D0
+    rts
+EFP_DUMMY_ENDSTR::
+    tst.b   (A0)+
+    bne     EFP_DUMMY_ENDSTR
     rts
 
 
