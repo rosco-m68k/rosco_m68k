@@ -23,11 +23,14 @@
 
 static MBR buffer;
 
+#ifdef ROSCO_M68K_ATA
 #ifdef ATA_DEBUG
 extern void mcPrint(char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 #endif
+#endif
 
+#ifdef ROSCO_M68K_ATA
 PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device) {
 #ifdef ATA_DEBUG
     mcPrint("S2: Reading ");
@@ -63,6 +66,7 @@ PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device) {
         return PART_INIT_READ_FAILURE;
     }
 }
+#endif
 
 PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device) {
     if (BBSD_read_block(device, 0, (uint8_t*)&buffer)) {
@@ -86,6 +90,7 @@ PartInitStatus Part_init_BBSD(PartHandle *handle, BBSDCard *device) {
     }
 }
 
+#ifdef ROSCO_M68K_ATA
 static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
     if (part_num > 3 || handle->parts[part_num].type == 0) {
         return 0;
@@ -131,6 +136,7 @@ static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buf
         }
     }
 }
+#endif
 
 static uint32_t Part_read_BBSD(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
     if (part_num > 3 || handle->parts[part_num].type == 0) {
@@ -159,8 +165,10 @@ static uint32_t Part_read_BBSD(PartHandle *handle, uint8_t part_num, uint8_t *bu
 
 uint32_t Part_read(PartHandle *handle, uint8_t part_num, uint8_t *buffer, uint32_t start, uint32_t count) {
     switch (handle->device_type) {
+#ifdef ROSCO_M68K_ATA
     case PART_DEVICE_TYPE_ATA:
         return Part_read_ATA(handle, part_num, buffer, start, count);
+#endif
     case PART_DEVICE_TYPE_BBSD:
         return Part_read_BBSD(handle, part_num, buffer, start, count);
     default:

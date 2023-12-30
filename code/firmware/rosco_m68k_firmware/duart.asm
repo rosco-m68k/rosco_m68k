@@ -159,10 +159,8 @@ INITDUART_ATBASE:
 
     ; On r1.2, not having a 68681 will generate a bus error. We can look
     ; for this on the first access, and if we get one, just bail immediately.
-    move.b  #0,BERR_FLAG              ; Zero bus error flag
-
-    move.l  $8,BERR_SAVED             ; Save the original bus error handler
-    move.l  #BERR_HANDLER,$8          ; Install temporary bus error handler
+    jsr     INSTALL_TEMP_BERR_HANDLER       ; Install temporary bus error handler
+    move.l  #.POST_WRITE,BERR_CONT_ADDR     ; In case we're on 68000, give a return address...
 
     move.b  #$0,DUART_IMR(A0)         ; Mask all interrupts
 
@@ -189,6 +187,7 @@ INITDUART_ATBASE:
     cmp.b   #$50,D0                   ; to 0x50.
     bne.s   .DONE                     ; If not as expected, no DUART...
 
+.POST_WRITE:
     ; If any of that generated a bus error, then it doesn't appear to be a 68681...
     tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .DONE                     ; Bail now if so...
@@ -201,7 +200,7 @@ INITDUART_ATBASE:
 
     move.b  #1,D5                     ; Set D5 to indicate to INITSDB that there's a DUART present...
  .DONE:
-    move.l  BERR_SAVED,$8             ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER      ; Restore bus error handler
     rts
 
 

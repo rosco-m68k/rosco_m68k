@@ -332,10 +332,14 @@ SPI_BUFFER_OP:
 ;  A0   - Modified arbitrarily
 ;  A1   - May be modified arbitrarily
 FW_ATA_INIT:
+    ifd ROSCO_M68K_ATA
     move.l  A1,-(A7)
     move.l  D1,-(A7)
     jsr     ATA_init
     add.l   #8,A7
+    else
+    move.l  #1,D0       ; failure: no device
+    endif
     rts
 
 ; Arguments:
@@ -353,6 +357,7 @@ FW_ATA_INIT:
 ;  A1    - May be modified arbitrarily
 ;  A2    - May be modified arbitrarily
 FW_ATA_READ:
+    ifd ROSCO_M68K_ATA
     move.l  #ATA_read_sectors,A0
 
 ATA_XFER_OP:
@@ -362,6 +367,9 @@ ATA_XFER_OP:
     move.l  A2,-(A7)
     jsr     (A0)
     add.l   #16,A7
+    else
+    clr.l   d0
+    endif
     rts
 
 ; Arguments:
@@ -379,8 +387,12 @@ ATA_XFER_OP:
 ;  A1    - May be modified arbitrarily
 ;  A2    - May be modified arbitrarily
 FW_ATA_WRITE:
+    ifd ROSCO_M68K_ATA
     move.l  #ATA_write_sectors,A0
     bra.s   ATA_XFER_OP
+    else
+    clr.l   d0
+    endif
 
 ; Arguments:
 ;
@@ -396,10 +408,14 @@ FW_ATA_WRITE:
 ;  A1   - May be modified arbitrarily
 ;  A2   - May be modified arbitrarily
 FW_ATA_IDENT:
+    ifd ROSCO_M68K_ATA
     move.l  A1,-(A7)
     move.l  A2,-(A7)
     jsr     ATA_ident
     add.l   #8,A7
+    else
+    clr.l   d0
+    endif
     rts
 
 * ************************************************************************** *

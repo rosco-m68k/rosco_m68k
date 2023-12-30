@@ -3,7 +3,7 @@
 # Copyright (c)2019-2022 Ross Bamford
 # See LICENSE
 
-CPU?=68010
+CPU?=68000
 ARCH?=$(CPU)
 TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g
@@ -61,6 +61,7 @@ OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
 WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
+WITH_ATA?=true
 
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
@@ -137,9 +138,14 @@ endif
 ifneq ($(WITH_BLOCKDEV),false)
 $(info === Building rosco_m68k firmware with block device support)
 include blockdev/include.mk
+ifeq ($(WITH_ATA),true)
+$(info === Building rosco_m68k firmware with ATA support)
 ifeq ($(ATA_DEBUG),true)
 $(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
 DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
+else
+$(info === Building rosco_m68k firmware without ATA support)
 endif
 endif
 
@@ -161,6 +167,7 @@ endif
 
 include easy68k/include.mk
 
+export WITH_ATA
 export ATA_DEBUG
 export WITH_BLOCKDEV
 export WITH_KERMIT

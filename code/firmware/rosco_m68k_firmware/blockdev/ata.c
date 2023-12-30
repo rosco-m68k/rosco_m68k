@@ -316,17 +316,12 @@ static void ata_probe() {
 // This means ata_init **must** be called before any video devices are
 // initialized!
 
-extern void INSTALL_TEMP_BERR_HANDLER(void);
-extern void RESTORE_BERR_HANDLER(void);
 static uint8_t *berr_flag = (uint8_t*)BERR_FLAG;
 
+void TRY_DISABLE_ATA_INTERRUPT(volatile uint16_t *idereg);
+
 void ata_init() {
-    INSTALL_TEMP_BERR_HANDLER();
-
-    // Disable interrupt
-    idereg[ATA_REG_WR_DEVICE_CONTROL] = 0x0002;
-
-    RESTORE_BERR_HANDLER();
+    TRY_DISABLE_ATA_INTERRUPT(idereg);
 
     FW_PRINT_C("Initializing hard drives... ");
 

@@ -100,7 +100,7 @@ typedef struct {
   // 0xF
   unsigned crc : 7;
   unsigned always1 : 1;
-} __attribute__ ((packed)) SDCard_CSD1;
+} __attribute__ ((packed)) __attribute__((aligned(2))) SDCard_CSD1;
 
 //------------------------------------------------------------------------------
 // CSD for version 2.00 cards
@@ -158,7 +158,7 @@ typedef struct {
   // 0xF
   unsigned crc : 7;
   unsigned always1 : 1;
-} __attribute__ ((packed)) SDCard_CSD2;
+} __attribute__ ((packed)) __attribute__((aligned(2))) SDCard_CSD2;
 
 typedef union {
   SDCard_CSD1 v1;

@@ -196,25 +196,5 @@ void FW_PRINTLN_C(char *str);
  */
 void BUSYWAIT_C(uint32_t ticks);
 
-/*
- * Install temporary bus error handler that will set a flag if an error
- * occurs, and not retry the instruction.
- *
- * Saves the existing handler for use by a subsequent RESTORE_BERR_HANDLER.
- *
- * Supports various m68k models.
- *
- * The flag will be set at BERR_FLAG (defined above). The flag will
- * be zeroed when this function is called.
- */
-extern void INSTALL_TEMP_BERR_HANDLER(void);
-
-/*
- * Restore original bus error handler, saved by a prior call to
- * INSTALL_TEMP_BERR_HANDLER.
- */
-extern void RESTORE_BERR_HANDLER(void);
-
-
 #endif
 

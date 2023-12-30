@@ -204,6 +204,9 @@ extern "C" {
                         ifs.clear();
                         ifs.seekg(d1 * 512, std::ios::beg);
                         ifs.read(&buf.front(), 512);
+#ifdef DEBUG_LOG_IO
+                        cerr << "READ " << hex << d1*512 << endl;
+#endif
 
                         if (ifs.gcount() == 512) {
                             for (auto data : buf) {
@@ -213,10 +216,16 @@ extern "C" {
                             m68k_set_reg(M68K_REG_D0, 1);		    // succeed
                         } else {
                             cout << "!!! Bad Read" << endl;
+#ifdef DEBUG_LOG_IO
+                            cerr << "!!! Bad Read" << endl;
+#endif
                             m68k_set_reg(M68K_REG_D0, 0);		// fail
                         }
                     } else {						
                         cout << "!!! Not init" << endl;
+#ifdef DEBUG_LOG_IO
+                        cerr << "!!! Not init" << endl;
+#endif
                         m68k_set_reg(M68K_REG_D0, 0);		// fail
                     }
 
@@ -234,14 +243,24 @@ extern "C" {
                         ifs.seekg(d1 * 512, std::ios::beg);
                         ifs.write(&buf.front(), 512);
 
+#ifdef DEBUG_LOG_IO
+                        cerr << "WRITE " << hex << d1*512 << endl;
+#endif
+
                         if (ifs.gcount() == 512) {
                             m68k_set_reg(M68K_REG_D0, 1);		    // succeed
                         } else {
                             cout << "!!! Bad Write" << endl;
+#ifdef DEBUG_LOG_IO
+                            cerr << "!!! Bad Write" << endl;
+#endif
                             m68k_set_reg(M68K_REG_D0, 0);		// fail
                         }
                     } else {						
                         cout << "!!! Not init or out of bounds" << endl;
+#ifdef DEBUG_LOG_IO
+                        cerr << "!!! Not init or out of bounds" << endl;
+#endif
                         m68k_set_reg(M68K_REG_D0, 0);		// fail
                     }
 

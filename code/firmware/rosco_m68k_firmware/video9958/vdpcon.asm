@@ -84,15 +84,12 @@ HAVE_V9958::
     movem.l D1/A0-A1,-(A7)
     move.l  #PORT_RWDATA,A0           ; Use A0 as port base register
 
-    ; Install temp bus error handler in case card not installed
-    move.l  $8,BERR_SAVED
-    move.l  #BERR_HANDLER,$8
-
-    ; Zero Bus Error flag
-    move.b  #0,BERR_FLAG
+    jsr     INSTALL_TEMP_BERR_HANDLER     ; Install temporary bus error handler
+    move.l  #.POST_WRITE,BERR_CONT_ADDR   ; In case we're on 68000, give a return address...
 
     move.b  #1,(PORT_WREG_SETUP,A0)   ; Write 1 (SR#1)...\
 
+.POST_WRITE:
     tst.b   BERR_FLAG                 ; Was there a bus error?
     bne.s   .NO_9958                  ; Bail now if so...
    
@@ -118,7 +115,7 @@ HAVE_V9958::
     trap    #15
 
 .DONE
-    move.l  BERR_SAVED,$8             ; Restore bus error handler
+    jsr     RESTORE_BERR_HANDLER      ; Restore bus error handler
 
     move.b  D1,D0                     ; Result in D0.B
     movem.l (A7)+,D1/A0-A1
