@@ -23,7 +23,9 @@
 #include <basicio.h>
 #include <machine.h>
 
-extern void main(int argc, char **argv);
+void main(int argc, char **argv);
+void enable_cache(void);
+void restore_cache(void);
 
 // time function for rosco_m68k
 long time() {
@@ -32,5 +34,7 @@ long time() {
 
 void kmain()
 {
+//    enable_cache();
     main(0, NULL);
+//    restore_cache();
 }

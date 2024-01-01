@@ -32,11 +32,14 @@ Last updated 20/11/2020 by roscopeco
  * rosco_m68k   68010-10Mhz     ROM             gcc-10.2.0       -      2173 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-7.5.0        -      2604 (-O1)
  * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2860 (-O1)
- * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2941 (-O1 -mtune=68020)
+ * rosco_m68k   68020-12Mhz     ROM             gcc-10.2.0       -      2941 (-O1 -mtune=68020, no icache)
  * Gould PN9080 custom ECL      UTX-32 1.1C     cc              4745    4992
- * rosco_m68k   68020-20Mhz     ROM             gcc-11.2.0       -      5000 (-O1 -mtune=68020)
+ * rosco_m68k   68020-20Mhz     ROM             gcc-11.2.0       -      5000 (-O1 -mtune=68020, no icache)
  * VAX-784      -               Mach/4.3        cc              5263    5555 &4
+ * rosco_m68k   68030-20Mhz     ROM             gcc-11.2.0       -      6125 (-O1, no caches)
  * VAX 8600     -               4.3 BSD         cc              6329    6423
+ * rosco_m68k   68020-20Mhz     ROM             gcc-11.2.0       -      8333 (-O1, icache enabled)
+ * rosco_m68k   68030-20Mhz     ROM             gcc-11.2.0       -     12500 (-O1, icache & dcache enabled)
  * Amdahl 5860  -               UTS sysV        cc 1.22        28735   28846
  * IBM3090/200  -               ?               ?              31250   31250
  *
