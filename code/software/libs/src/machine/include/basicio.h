@@ -32,6 +32,8 @@
 #define println mcPrintln
 /* busy wait delay (500 ~= 1ms @ 10MHz 68K) */
 #define delay mcBusywait
+/* char ready on default user input */
+#define checkinput mcCheckInput
 /* read char from default user input */
 #define inputchar mcInputchar
 
