@@ -1,0 +1,127 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 9031bb33-c6aa-4758-bf5c-3274ed3ebab7)
+
+  (paper "A4")
+
+  (title_block
+    (title "ROSCO_M68K CLASSIC MC68030 EDITION")
+    (date "2023-12-10")
+    (rev "2.0")
+    (company "The Really Old-School Company Limited")
+    (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
+    (comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
+    (comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
+    (comment 4 "Copyright 2019-2023 Ross Bamford and Contributors")
+  )
+
+  (lib_symbols
+  )
+
+
+  (sheet (at 81.28 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005e53b4b8)
+    (property "Sheetname" "CPU" (at 81.28 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "CPU.kicad_sch" (at 81.28 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "2"))
+      )
+    )
+  )
+
+  (sheet (at 201.93 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00005e53bc83)
+    (property "Sheetname" "Expansion" (at 201.93 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Expansion.kicad_sch" (at 201.93 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "4"))
+      )
+    )
+  )
+
+  (sheet (at 129.54 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-000061622e90)
+    (property "Sheetname" "DUART" (at 129.54 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "DUART.kicad_sch" (at 129.54 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "3"))
+      )
+    )
+  )
+
+  (sheet (at 177.8 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-00006162e38e)
+    (property "Sheetname" "Reset" (at 177.8 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Reset.kicad_sch" (at 177.8 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "7"))
+      )
+    )
+  )
+
+  (sheet (at 105.41 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-0000616b7c9b)
+    (property "Sheetname" "Memory" (at 105.41 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "Memory.kicad_sch" (at 105.41 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "6"))
+      )
+    )
+  )
+
+  (sheet (at 153.67 81.28) (size 15.24 25.4) (fields_autoplaced)
+    (stroke (width 0) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 00000000-0000-0000-0000-0000617d19f3)
+    (property "Sheetname" "GALs" (at 153.67 80.5684 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "GALs.kicad_sch" (at 153.67 107.2646 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "rosco_m68k"
+        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "5"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

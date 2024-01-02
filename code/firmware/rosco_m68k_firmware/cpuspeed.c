@@ -25,6 +25,8 @@ uint32_t cpuspeed(uint8_t model) {
       mult = 26;
     } else if (model == 2) {
       mult = 30;
+    } else if (model == 3) {
+      mult = 32;
     } else {
       mult = 0;
     }
