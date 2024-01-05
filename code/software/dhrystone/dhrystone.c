@@ -463,6 +463,10 @@ extern boolean		Func2();
 #include <string.h>
 #include <stdio.h>
 
+#if defined(ROSCO_M68K)
+#include <machine/cache.h>
+#endif
+
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>
@@ -566,6 +570,11 @@ void Proc0()
 #ifdef TIMES
 	times(&tms); starttime = tms.tms_utime;
 #endif
+
+#if defined(ROSCO_M68K) && !defined(NO_CACHE) 
+    uint32_t stored_cacr = mcStoreCaches();
+    mcEnableCaches();
+#endif
 	for (i = 0; i < LOOPS; ++i)
 	{
 //		if ((i & 0xfff) == 0)
@@ -594,6 +603,11 @@ void Proc0()
 		IntLoc2 = 7 * (IntLoc3 - IntLoc2) - IntLoc1;
 		Proc2(&IntLoc1);
 	}
+
+#if defined(ROSCO_M68K) && !defined(NO_CACHE)
+    mcRestoreCaches(stored_cacr);
+#endif
+
 
 /*****************
 -- Stop Timer --

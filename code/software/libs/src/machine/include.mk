@@ -1,5 +1,5 @@
 LIB=machine
-LIBOBJECTS=$(DIR)/machine.o $(DIR)/basicio.o
+LIBOBJECTS=$(DIR)/machine.o $(DIR)/basicio.o $(DIR)/cache.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---
