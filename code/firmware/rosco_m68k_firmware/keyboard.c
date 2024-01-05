@@ -47,49 +47,13 @@ static bool detect_keyboard(CharDevice *device) {
     // Send "IDENT" command
     CHAR_DEV_SENDCHAR_C(CMD_IDENT, device);
 
-    int chr = try_get_char(device);
-    if (chr != 'r') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'o') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 's') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'c') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'o') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != '_') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'k') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'b') {
-        return false;
-    }
-
-    chr = try_get_char(device);
-    if (chr != 'd') {
-        return false;
+    int chr;
+    char *id_str = "rosco_kbd";
+    for (int i = 0; i < 9; i++) {
+        chr = try_get_char(device);
+        if (chr != *id_str++) {
+            return false;
+        }
     }
 
     chr = try_get_char(device);
@@ -132,14 +96,14 @@ static bool detect_keyboard(CharDevice *device) {
 
 void initialize_keyboard() {
     if (GET_CHAR_DEVICE_COUNT() < 2) {
-#ifdef DEBUG_KEYBOARD_DETECT    
+#ifdef DEBUG_KEYBOARD_DETECT
         FW_PRINT_C("ERROR: Insufficient devices\r\n");
 #endif
         return;
     }
 
     if (!GET_CHAR_DEVICE_C(1, &keyboard_device)) {
-#ifdef DEBUG_KEYBOARD_DETECT    
+#ifdef DEBUG_KEYBOARD_DETECT
         FW_PRINT_C("ERROR: Unable to get device\r\n");
 #endif
         return;
@@ -149,7 +113,7 @@ void initialize_keyboard() {
         // setup keyboard EFPs...
         INSTALL_KEYBOARD_HANDLERS();
 
-#ifdef DEBUG_KEYBOARD_DETECT    
+#ifdef DEBUG_KEYBOARD_DETECT
         FW_PRINT_C("Found rosco_m68k keyboard...\r\n");
     } else {
         FW_PRINT_C("No keyboard detected\r\n");
