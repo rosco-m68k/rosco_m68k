@@ -91,6 +91,7 @@ endif
 
 # Set up Size-specific things appropriately..
 ifeq ($(REVISION1X),true)
+HUGEROM?=false
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
@@ -108,6 +109,7 @@ ROMDEVICE=AT28C256
 endif
 endif
 else
+HUGEROM?=true
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
 MAMESIZE=0x00100000
