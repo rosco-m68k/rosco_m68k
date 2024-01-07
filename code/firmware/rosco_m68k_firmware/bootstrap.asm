@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2022 Ross Bamford and contributors
+; Copyright (c)2019-2023 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; This is the main bootstrap code for the system. 
@@ -109,7 +109,10 @@ START::
     endif
 
     and.w   #$F2FF,SR                   ; Enable interrupts (except video)
-  
+
+    move.l  EFP_RECVCHAR,EFP_INPUTCHAR  ; Default to UART for input, may get switched to keyboard later...
+    move.l  EFP_CHECKCHAR,EFP_CHECKINPUT
+
     jmp     linit                       ; Init C land, calls through to main1
 
 ; main1 is noreturn, so That's All, Folks(tm).

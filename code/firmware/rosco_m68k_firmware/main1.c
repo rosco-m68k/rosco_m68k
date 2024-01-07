@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2019-2022 Ross Bamford and contributors
+ * Copyright (c)2019-2023 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * This is the entry point for the Kernel.
@@ -56,6 +56,7 @@ extern noreturn void hot_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern uint32_t cpuspeed(uint8_t model);
 extern void print_unsigned(uint32_t num, uint8_t base);
+extern void initialize_keyboard();
 #ifdef LATE_BANNER
 extern void PRINT_BANNER(void);
 #endif
@@ -239,6 +240,9 @@ if (!have_video) {
 #ifdef HAVE_DEBUG_STUB
     debug_stub();
 #endif
+
+    // Initialize the keyboard if available
+    initialize_keyboard();
 
     // Initialize the EFP's PROGRAM_LOADER func with the default loader to begin with
     initialize_loader_efp();
