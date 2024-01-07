@@ -5,22 +5,13 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2021 Ross Bamford and contributors
+; Copyright (c)2019-2023 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; Public equates for rosco_m68k firmware
 ;
 ; 
 ;------------------------------------------------------------
-
-; ----------------------------------------------------------------------------
-; Memory layout
-;
-RAMBASE     equ     $0                    ; Base address for RAM
-RAMLIMIT    equ     $100000               ; Limit of onboard RAM
-IOBASE      equ     $F80000               ; Base address for IO space
-ROMBASE     equ     $FC0000               ; Base address for ROM space
-
 
 ; ----------------------------------------------------------------------------
 ; System Data Block (SDB) layout
@@ -74,11 +65,13 @@ EFP_ATA_READ    equ     $484
 EFP_ATA_WRITE   equ     $488
 EFP_ATA_IDENT   equ     $48C
 EFP_PROG_EXIT   equ     $490
-
-; MFP Location
-MFPBASE     equ     IOBASE
+EFP_INPUTCHAR   equ     $494
+EFP_CHECKINPUT  equ     $498
 
   ifd REVISION1X
+; MFP Location
+MFPBASE         equ     $F80000
+
 ; Equates for MC68901 Multi Function Peripheral
 ;
 ; The register layout is different on r0 boards, hence the

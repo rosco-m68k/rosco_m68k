@@ -1,16 +1,16 @@
 # Make rosco_m68k ROM images
 # 
-# Copyright (c)2019-2022 Ross Bamford
+# Copyright (c)2019-2023 Ross Bamford
 # See LICENSE
 
-CPU?=68010
+CPU?=68000
 ARCH?=$(CPU)
 TUNE?=$(CPU)
 EXTRA_CFLAGS?=-g
-DEFINES:=$(DEFINES)
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror	\
-       -Iinclude -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os				\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks						\
+DEFINES:=$(DEFINES) -DROSCO_M68K_KERNEL_BUILD
+CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
+       -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks							\
        $(DEFINES)
 LDFLAGS=-Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
@@ -53,14 +53,17 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
-OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
-				decompress.o ansicon.o serial.o trap14.o cpuspeed.o		\
-				cputype.o warmboot.o main1.o 
+OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o			\
+				decompress.o ansicon.o serial.o char_device.o trap14.o 	\
+				cpuspeed.o cputype.o warmboot.o							\
+				keyboard_efp.o keyboard.o								\
+				main1.o 
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
+WITH_ATA?=true
 
 all: $(BINARY_EVEN) $(BINARY_ODD)
 
@@ -79,6 +82,11 @@ ifeq ($(LATEBANNER),true)
 $(info === Building rosco_m68k firmware with late banner output at startup)
 DEFINES:=$(DEFINES) -DLATE_BANNER
 endif
+endif
+
+ifneq ($(NO_KERNEL),true)
+$(info === Building rosco_m68k firmware with ROM kernel for revision 2.x board)
+DEFINES:=$(DEFINES) -DWITH_KERNEL
 endif
 
 # Set up Size-specific things appropriately..
@@ -132,9 +140,14 @@ endif
 ifneq ($(WITH_BLOCKDEV),false)
 $(info === Building rosco_m68k firmware with block device support)
 include blockdev/include.mk
+ifeq ($(WITH_ATA),true)
+$(info === Building rosco_m68k firmware with ATA support)
 ifeq ($(ATA_DEBUG),true)
 $(info === Building rosco_m68k firmware with ATA_DEBUG IDE)
 DEFINES:=$(DEFINES) -DATA_DEBUG
+endif
+else
+$(info === Building rosco_m68k firmware without ATA support)
 endif
 endif
 
@@ -156,6 +169,7 @@ endif
 
 include easy68k/include.mk
 
+export WITH_ATA
 export ATA_DEBUG
 export WITH_BLOCKDEV
 export WITH_KERMIT
@@ -169,10 +183,13 @@ export MAME
 %.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
 
+kernel/kernel.a:
+	$(MAKE) -C kernel $(nodir $@)
+
 $(STAGE2) : $(STAGE2_DIR)
 	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
 
-$(ELF) : $(OBJECTS) $(STAGE2)
+$(ELF) : $(OBJECTS) $(STAGE2) kernel/kernel.a
 	$(LD) $(LDFLAGS) $^ -o $@
 	$(NM) --numeric-sort $@ >$(SYM)
 	$(SIZE) $@
@@ -196,18 +213,22 @@ $(BINARY_EVEN): $(BINARY)
 $(BINARY_ODD): $(BINARY)
 	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
 
-.PHONY: all clean dump tools
-
+.PHONY: all clean dump tools test
 
 clean:
-	make -C $(STAGE2_DIR) clean	
+	$(MAKE) -C $(STAGE2_DIR) clean
+	$(MAKE) -C kernel clean
+	$(MAKE) -C tools/liblzg/src clean
 	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
+test:
+	$(MAKE) -C kernel test
+	
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
 tools: 
-	make -C tools/liblzg/src
+	$(MAKE) -C tools/liblzg/src
 
 ifeq ($(MAME),true)
 mame: $(BINARY)

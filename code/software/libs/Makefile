@@ -7,8 +7,8 @@ CPU?=68010
 EXTRA_CFLAGS?=-g -O2
 EXTRA_CXXFLAGS?=-g -O2
 DEFINES:=$(DEFINES) -DROSCO_M68K_SYSLIBS
-FLAGS=-ffreestanding -ffunction-sections -fdata-sections	\
-			-nostartfiles -Wall -pedantic -Werror       				\
+FLAGS=-ffreestanding -ffunction-sections -fdata-sections				\
+			-nostartfiles -Wall -Wpedantic -Werror      				\
 			-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU)    				\
 			$(DEFINES)
 CFLAGS=-std=c11 $(FLAGS)
@@ -47,6 +47,10 @@ include src/vterm/include.mk
 include src/libm/include.mk
 include src/sst_flash/include.mk
 include src/shmall/include.mk
+include src/kernel/include.mk
+include src/gdb/include.mk
+
+# Keep this at the end, or it'll error out _sometimes_ and we don't really know why...
 include src/printf/include.mk
 
 %.o : %.c

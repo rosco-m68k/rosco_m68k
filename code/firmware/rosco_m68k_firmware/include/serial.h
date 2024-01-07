@@ -24,7 +24,7 @@ void DISABLE_XMIT();
 void ENABLE_XMIT();
 
 uint8_t RECVCHAR();
-void SENDCHAR(uint8_t);
+void SENDCHAR_C(uint8_t);
 
 
 #endif

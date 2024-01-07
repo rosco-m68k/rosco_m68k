@@ -19,28 +19,13 @@ PROVIDE(_FIRMWARE_REV   = 0x00FC0400);  /* firmware revision code       */
 
 SECTIONS
 {
-  .bss kram :
-  {
-    _bss_start = .;
-    *(.bss)
-    _bss_end = .;
-    . = ALIGN(2);
-  } > KRAM
-
-  .data : AT(_code_end)
-  {
-    *(.early_data*)
-    _data_start = .;
-    *(.data)
-    _data_end = .;
-    . = ALIGN(2);
-  } > KRAM
-  
-  .text phys :
+  .text : 
   {
     _code = .;
-    *(.text)
+    *(.text*)
+    . = ALIGN(2);
     *(.rodata*)
+    . = ALIGN(2);
     _zip_start = .;
     *(.zipdata)
     _zip_end = .;
@@ -48,6 +33,24 @@ SECTIONS
     _code_end = .;
   } > ROM
 
+  .data :
+  {
+    *(.early_data*)
+    _data_start = .;
+    . = ALIGN(2);
+    *(.data*)
+    _data_end = .;
+    . = ALIGN(2);
+  } > KRAM AT > ROM
+
+   .bss (NOLOAD) : 
+  {
+    _bss_start = .;
+    *(.bss*)
+    _bss_end = .;
+    . = ALIGN(2);
+  } > KRAM
+ 
   _end = .;
 }
 

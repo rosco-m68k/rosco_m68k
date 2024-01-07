@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2019 Ross Bamford
+ * Copyright (c)2019-2023 Ross Bamford & contributors
  * See top-level LICENSE.md for licence information.
  *
  * C prototypes for system routines implemented in assembly.
@@ -164,7 +164,7 @@ typedef struct {
     uint16_t reserved: 13;
     uint8_t major;
     uint8_t minor;
-} __attribute__((packed)) RomVersionInfo;
+} __attribute__((packed)) __attribute__((aligned(2))) RomVersionInfo;
 
 /*
  * The SystemDataBlock is a global reserved structure at _SDB.
@@ -180,7 +180,7 @@ typedef struct {
   uint32_t      uartbase;             /* Base address of default UART */
   uint32_t      cpu_model:3;          /* CPU type */
   uint32_t      cpu_speed:29;         /* CPU speed */
-} __attribute__ ((packed)) SystemDataBlock;
+} __attribute__((packed)) __attribute__((aligned(2))) SystemDataBlock;
 
 /*
  * Represents a character device known to the firmware
@@ -196,7 +196,7 @@ typedef struct {
     uint16_t    capabilities;
     uint8_t     flags;
     uint8_t     device_type;
-} __attribute__((packed)) CharDevice;
+} __attribute__((packed)) __attribute__((aligned(2))) CharDevice;
 
 /*
  * Absolute symbols defined in linker script
@@ -353,6 +353,22 @@ uint32_t mcDeviceCtrl(uint32_t command, uint32_t data, CharDevice *device);
  * Returns 0-15 index of the device. Any other value indicates failure.
  */
 uint8_t mcAddDevice(CharDevice *newDevice);
+
+/*
+ * Get vector base (either VBR or 0 depending on CPU).
+ */
+uint32_t mcGetVecBase();
+
+/*
+ * Read character on from default user input (may block)
+ */
+char mcInputchar();
+
+/*
+ * Check if character waiting on default user input
+ */
+bool mcCheckInput(); // returns true if char waiting
+
 
 #endif
 

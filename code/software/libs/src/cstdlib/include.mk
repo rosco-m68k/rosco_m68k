@@ -1,5 +1,5 @@
 LIB=cstdlib
-LIBOBJECTS=$(DIR)/ctype.o $(DIR)/strings.o $(DIR)/string.o $(DIR)/fgets.o $(DIR)/stdlib.o
+LIBOBJECTS=$(DIR)/ctype.o $(DIR)/strings.o $(DIR)/string.o $(DIR)/fgets.o $(DIR)/stdlib.o $(DIR)/setjmp.o
 LIBINCLUDES=$(DIR)/include
 
 # ---===---

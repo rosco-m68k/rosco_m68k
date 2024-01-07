@@ -20,9 +20,9 @@
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
   ifd HUGEROM
-RELEASE_VER     equ     $60000240
+RELEASE_VER     equ     $60000242
   else
-RELEASE_VER     equ     $40000240
+RELEASE_VER     equ     $40000242
   endif
 
 VECTORS_LOAD    equ     $00000000
@@ -30,6 +30,10 @@ VECTORS_LOAD    equ     $00000000
 ; Bits we use in the firmware reserved area (non-BSS).
 BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync
 BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
+
+; Memory layout
+RAMBASE         equ     $0          ; Base address for RAM
+RAMLIMIT        equ     $100000     ; Limit of onboard RAM
 
 ; Initialisation
 INIT_SSP        equ     RAMLIMIT

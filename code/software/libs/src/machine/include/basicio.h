@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2019 Ross Bamford
+ * Copyright (c)2019-2023 Ross Bamford & contributors
  * See top-level LICENSE.md for licence information.
  *
  * Some basic IO routines for rosco_m68k.
@@ -32,6 +32,10 @@
 #define println mcPrintln
 /* busy wait delay (500 ~= 1ms @ 10MHz 68K) */
 #define delay mcBusywait
+/* char ready on default user input */
+#define checkinput mcCheckInput
+/* read char from default user input */
+#define inputchar mcInputchar
 
 void printuint(uint32_t num);
 void printuchar(uint8_t num);

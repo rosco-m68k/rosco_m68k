@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2019-2021 Ross Bamford and contributors
+ * Copyright (c)2019-2023 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * Stage 2 Kermit loader
@@ -70,7 +70,7 @@ static int readpkt(struct k_data * k, UCHAR *p, int len) {
 
 static int tx_data(struct k_data * k, UCHAR *p, int n) {
     for (int i = 0; i < n; i++) {
-        SENDCHAR(*p++);
+        SENDCHAR_C(*p++);
     }
 
     return(X_OK);                                   /* Success */

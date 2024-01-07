@@ -1,9 +1,15 @@
 # Really Old-School Computer - M68K
 ## A Motorola 68k Single-Board Computer
 
-> **Note**: This is the Master branch, which contains the latest release - **Revision 2.12** and **Firmware 2.4**. If you are using Firmware 2.4, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.3, please use the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3). For firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
+> **Note**: This is the Master branch, which contains the latest release - **Revision 2.12** and **Firmware 2.42**. If you are using Firmware 2.42, this is the branch you should be using to build the standard libraries and example programs. If you are on a 1.2 board with Firmware 1.3, please use the [1.3 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/version-1.3). For firmware 1.2, please use the [1.2 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.2). If you have a revision 1 board, please use the [1.1 release branch](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.1) (or the [1.01 release branch if you have firmware 1.01](https://github.com/rosco-m68k/rosco_m68k/tree/release/revision-1.01)).
 
-<a href="https://www.tindie.com/stores/rosco/?ref=offsite_badges&utm_source=sellers_roscopeco&utm_medium=badges&utm_campaign=badge_large"><img src="https://d2ss6ovg47m0r5.cloudfront.net/badges/tindie-larges.png" alt="I sell on Tindie" width="200" height="104"></a>
+## Boards & Kits Available
+
+> **The best way to support this project is to buy PCBs and kits - visit the <a href='https://store.rosco-m68k.com'>Official Store</a>!**
+
+> Alternatively, you can <a href="https://ko-fi.com/rosco_m68k">buy us a coffee</a> if you like, it would be much appreciated! 😊
+
+## What is this?
 
 This repository holds design files, firmware and software for the Really Old-School Computer 
 (M68k) single-board computer, AKA the rosco_m68k. This is a fully-featured, programmable,

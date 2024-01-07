@@ -48,14 +48,14 @@ int fatfs_add_free_space(struct fatfs *fs, uint32 *startCluster, uint32 clusters
     uint32 nextcluster;
     uint32 start = *startCluster;
 
-    // Set the next free cluster hint to unknown
-    if (fs->next_free_cluster != FAT32_LAST_CLUSTER)
-        fatfs_set_fs_info_next_free_cluster(fs, FAT32_LAST_CLUSTER);
+    // Set the next free cluster hint if it was set to unknown
+    if (fs->next_free_cluster == FAT32_LAST_CLUSTER)
+        fatfs_set_fs_info_next_free_cluster(fs, fs->rootdir_first_cluster);
 
     for (i=0;i<clusters;i++)
     {
         // Start looking for free clusters from the beginning
-        if (fatfs_find_blank_cluster(fs, fs->rootdir_first_cluster, &nextcluster))
+        if (fatfs_find_blank_cluster(fs, fs->next_free_cluster, &nextcluster))
         {
             // Point last to this
             fatfs_fat_set_cluster(fs, start, nextcluster);
@@ -65,8 +65,10 @@ int fatfs_add_free_space(struct fatfs *fs, uint32 *startCluster, uint32 clusters
 
             // Adjust argument reference
             start = nextcluster;
-            if (i == 0)
+            if (i == 0) {
                 *startCluster = nextcluster;
+                fatfs_set_fs_info_next_free_cluster(fs, *startCluster);
+            }
         }
         else
             return 0;
@@ -88,9 +90,9 @@ int fatfs_allocate_free_space(struct fatfs *fs, int newFile, uint32 *startCluste
     if (size==0)
         return 0;
 
-    // Set the next free cluster hint to unknown
-    if (fs->next_free_cluster != FAT32_LAST_CLUSTER)
-        fatfs_set_fs_info_next_free_cluster(fs, FAT32_LAST_CLUSTER);
+    // Set the next free cluster hint if it was set to unknown
+    if (fs->next_free_cluster == FAT32_LAST_CLUSTER)
+        fatfs_set_fs_info_next_free_cluster(fs, fs->rootdir_first_cluster);
 
     // Work out size and clusters
     clusterSize = fs->sectors_per_cluster * FAT_SECTOR_SIZE;
@@ -103,7 +105,7 @@ int fatfs_allocate_free_space(struct fatfs *fs, int newFile, uint32 *startCluste
     // Allocated first link in the chain if a new file
     if (newFile)
     {
-        if (!fatfs_find_blank_cluster(fs, fs->rootdir_first_cluster, &nextcluster))
+        if (!fatfs_find_blank_cluster(fs, fs->next_free_cluster, &nextcluster))
             return 0;
 
         // If this is all that is needed then all done
@@ -111,6 +113,7 @@ int fatfs_allocate_free_space(struct fatfs *fs, int newFile, uint32 *startCluste
         {
             fatfs_fat_set_cluster(fs, nextcluster, FAT32_LAST_CLUSTER);
             *startCluster = nextcluster;
+            fatfs_set_fs_info_next_free_cluster(fs, *startCluster);
             return 1;
         }
     }

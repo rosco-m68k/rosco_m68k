@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2019-2022 Ross Bamford and contributors
+ * Copyright (c)2019-2023 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * This is the entry point for the Kernel.
@@ -16,10 +16,18 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdnoreturn.h>
+
 #include <stdbool.h>
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
+
+#include "kmachine.h"
+#include "pmm.h"
+#include "slab.h"
+#include "list.h"
+#include "task.h"
+#include "kernelapi.h"
 
 // only one Xosera console at a time
 #if defined(XOSERA_ANSI_CON)
@@ -48,6 +56,7 @@ extern noreturn void hot_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern uint32_t cpuspeed(uint8_t model);
 extern void print_unsigned(uint32_t num, uint8_t base);
+extern void initialize_keyboard();
 #ifdef LATE_BANNER
 extern void PRINT_BANNER(void);
 #endif
@@ -114,9 +123,26 @@ static void initialize_loader_efp() {
     *program_loader_ptr = (uint32_t)default_program_loader;
 }
 
+#ifdef WITH_KERNEL
+static void initialize_kernel(void) {
+    api_init();
+    pmm_init();
+    slab_init();    
+    irq_init();
+    task_init();
+}
+#else
+#define initialize_kernel(...)
+#endif
+
+noreturn void pre_warm_boot() {
+    initialize_kernel();
+    warm_boot();
+}
+
 static void initialize_warm_reboot() {
     *init_stack_vector_ptr = *mem_size_sdb_ptr;
-    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)warm_boot;
+    *prog_exit_ptr = *reset_vector_ptr = (uint32_t)pre_warm_boot;
 }
 
 void print_cpu_mem_info() {
@@ -205,7 +231,9 @@ if (!have_video) {
     print_cpu_mem_info();
 
 #ifdef BLOCKDEV_SUPPORT
+#ifdef ROSCO_M68K_ATA
     ata_init();
+#endif
     INSTALL_BLOCKDEV_HANDLERS();
 #endif
 
@@ -213,11 +241,17 @@ if (!have_video) {
     debug_stub();
 #endif
 
+    // Initialize the keyboard if available
+    initialize_keyboard();
+
     // Initialize the EFP's PROGRAM_LOADER func with the default loader to begin with
     initialize_loader_efp();
 
     // We have enough setup done now that we can handle future warm reboot. Let's set that up..
     initialize_warm_reboot();
+
+    // Initialize the kernel
+    initialize_kernel();
 
     // Reload stack pointer and call program loader
     hot_boot();

@@ -1,0 +1,10 @@
+**/*.o
+**/*.bin
+**/*.dis
+**/*.elf
+**/*.map
+**/*.rom
+**/*.sym
+r68k
+.vscode/*
+*.stackdump
