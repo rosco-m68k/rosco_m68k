@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2019 Ross Bamford
+ * Copyright (c)2019-2023 Ross Bamford & contributors
  * See top-level LICENSE.md for licence information.
  *
  * C prototypes for system routines implemented in assembly.
@@ -358,6 +358,17 @@ uint8_t mcAddDevice(CharDevice *newDevice);
  * Get vector base (either VBR or 0 depending on CPU).
  */
 uint32_t mcGetVecBase();
+
+/*
+ * Read character on from default user input (may block)
+ */
+char mcInputchar();
+
+/*
+ * Check if character waiting on default user input
+ */
+bool mcCheckInput(); // returns true if char waiting
+
 
 #endif
 

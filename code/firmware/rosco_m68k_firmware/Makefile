@@ -1,6 +1,6 @@
 # Make rosco_m68k ROM images
 # 
-# Copyright (c)2019-2022 Ross Bamford
+# Copyright (c)2019-2023 Ross Bamford
 # See LICENSE
 
 CPU?=68000
@@ -54,8 +54,10 @@ BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
 OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
-				decompress.o ansicon.o trap14.o cpuspeed.o cputype.o	\
-				warmboot.o main1.o 
+				decompress.o ansicon.o char_device.o trap14.o	\
+				cpuspeed.o cputype.o warmboot.o					\
+				keyboard_efp.o keyboard.o						\
+				main1.o
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
