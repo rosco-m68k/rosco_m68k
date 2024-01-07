@@ -54,6 +54,8 @@ as possible, and will be kept updated as firmware 2.0 is developed.
       * 1.2.2.15 RESERVED (Function #14)
       * 1.2.2.16 RESERVED (Function #15)
       * 1.2.2.17 DEVICE_CTRL (Function #16)
+      * 1.2.2.18 INPUTCHAR (Function #17)
+      * 1.2.2.19 CHECKINPUT (Function #18)
   * 1.3. Easy68k compatibility layer (TRAP 15)
     * 1.3.1 Example Usage
     * 1.3.2 Functions
@@ -970,7 +972,7 @@ This function code is reserved for future use and should not be called.
 
 **Arguments**
 
-* `D1.L` - 13 (Function code)
+* `D1.L` - 16 (Function code)
 * `D0.L` - Command (low-byte) and optional data
 * `D2.L` - 32-bit command-specific parameter
 * `A0`   - Pointer to the `CHAR_DEVICE` structure (obtained via `GET_DEVICE`)
@@ -990,6 +992,44 @@ of this function are all device specific. See the specific documentation
 for the device (which can be identified by the device type in the 
 `CHAR_DEVICE` block) for details.
 
+#### 1.2.2.18 INPUTCHAR (Function #17)
+
+**Arguments**
+
+* `D1.L` - 17 (Function code)
+
+**Modifies**
+
+* `D0.B` - The read character
+
+**Description**
+
+Read a character from the default input device. Will block until a
+character is available.
+
+In systems where the rosco_m68k (or compatible) keyboard is connected to the
+second UART, this will check the keyboard. 
+
+Otherwise, the default input will usually be the main UART.
+
+#### 1.2.2.19 CHECKINPUT (Function #18)
+
+**Arguments**
+
+* `D1.L` - 18 (Function code)
+
+**Modifies**
+
+* `D0.B` - 0 if no character waiting, nonzero otherwise
+
+**Description**
+
+Check the default input device for a waiting character.
+
+In systems where the rosco_m68k (or compatible) keyboard is connected to the
+second UART, this will check the keyboard. 
+
+Otherwise, the default input will usually be the main UART.
 
 ## 1.3. Easy68k compatibility layer (TRAP 15)
 
@@ -1583,6 +1623,8 @@ must be accessed through the public TRAP functions!
 | 0x488   | FW_ATA_WRITE - Write to ATA device                                                                |
 | 0x48C   | FW_ATA_IDENT - `IDENTIFY` ATA device                                                              |
 | 0x490   | FW_PROG_EXIT - Vector used by library code to support the exit() function                         |
+| 0x494   | FW_INPUTCHAR - Blocking read from default input device                                            |
+| 0x498   | FW_CHECKINPUT - Check if a character is available on default input device                         |
 
 **Note 1**: FW_GOTOXY takes the coordinates to move to from D1.W. The high
 byte is the X coordinate (Column) and the low byte is the Y coordinate (Row).

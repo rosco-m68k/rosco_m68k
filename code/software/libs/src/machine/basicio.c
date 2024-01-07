@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v1                 
  * ------------------------------------------------------------
- * Copyright (c)2020 Ross Bamford
+ * Copyright (c)2020-2023 Ross Bamford & contributors
  * See top-level LICENSE.md for licence information.
  *
  * Stdlib-like routines for POC kernel.
@@ -24,7 +24,7 @@ int readline(char *buf, int buf_size) {
   register uint8_t i = 0;
 
   while (i < buf_size - 1) {
-    c = buf[i] = mcReadchar();
+    c = buf[i] = mcInputchar();
 
     switch (c) {
     case 0x08:

@@ -132,12 +132,12 @@ static unsigned int crc32b(unsigned int crc, const void * buf, size_t size)
 bool       ctrl_c_flag;
 static int check_ctrlc()
 {
-    if (!checkchar())
+    if (!checkinput())
     {
         return 0;
     }
 
-    char c = readchar();
+    char c = inputchar();
 
     if (c == 3)
     {
@@ -159,7 +159,7 @@ static int check_pause()
     }
     else if (rc > 0)
     {
-        if (readchar() == 3)
+        if (inputchar() == 3)
         {
             rc = -1;
             printf("^C\n");
@@ -179,7 +179,7 @@ static int prompt_readline(char * buf, int buf_size)
     int len = 0;
     while (true)
     {
-        char c = readchar();
+        char c = inputchar();
 
         // accept string
         if (c == '\r')
@@ -349,7 +349,7 @@ static void check_sd_card()
     while (!SD_FAT_initialize())
     {
         printf("\nNo SD card detected. SPACE to retry, other key to warm-boot: ");
-        char key = readchar();
+        char key = inputchar();
         if (key != ' ')
         {
             printf("exit\n");
@@ -715,7 +715,7 @@ static void file_del(char * name)
 {
     const char * filename = fullpath(name);
     printf("Delete \"%s\", are you sure? ", filename);
-    char k = readchar();
+    char k = inputchar();
     if (tolower(k) == 'y')
     {
         printf("yes\nDelete \"%s\"...", filename);
@@ -1055,7 +1055,7 @@ void sdfat_menu()
     }
 
     // clear pending input character, if it was a 'k' pending, assume kermit wants to upload
-    if (checkchar() && readchar() == 'k')
+    if (checkinput() && inputchar() == 'k')
     {
         warm_boot(true);
     }
@@ -1106,7 +1106,7 @@ void sdfat_menu()
         do
         {
             getnewkey   = false;
-            char rawkey = readchar();
+            char rawkey = inputchar();
             char key    = toupper(rawkey);
 
             if (key == '\r')
@@ -1122,9 +1122,9 @@ void sdfat_menu()
                 // loop on checkchar 10000 times (~1/4 second)
                 for (int retry = 0; retry < 10000; retry++)
                 {
-                    if (checkchar())
+                    if (checkinput())
                     {
-                        rawkey = readchar();
+                        rawkey = inputchar();
                         if (rawkey == '\x01')        // ^A upload key
                         {
                             key = rawkey;
@@ -1167,7 +1167,7 @@ void sdfat_menu()
                     file_operation(n, op_type);
 
                     printf("Press any key:");
-                    readchar();
+                    inputchar();
                     printf("\n");
                 }
                 else

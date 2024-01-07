@@ -450,8 +450,8 @@ int main(int argc, char **argv) {
     }
   }
 
-  while (checkchar()) {  // clear any queued input
-    readchar();
+  while (checkinput()) {  // clear any queued input
+    inputchar();
   }
 
   printf("Continuous testing from 0x%06x to 0x%06x (press a key to exit)\n",
@@ -472,7 +472,7 @@ int main(int argc, char **argv) {
     init_LFSR();
 
     for (int i = 0; i < memtest_words; i += update_interval) {
-      if (checkchar()) {
+      if (checkinput()) {
         break;
       }
       unsigned int ts = _TIMER_100HZ - start_ts;
@@ -493,7 +493,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    if (checkchar()) {
+    if (checkinput()) {
       break;
     }
 
@@ -506,7 +506,7 @@ int main(int argc, char **argv) {
     reset_LFSR();
 
     for (int i = 0; i < memtest_words; i += update_interval) {
-      if (checkchar()) {
+      if (checkinput()) {
         break;
       }
       unsigned int ts = _TIMER_100HZ - start_ts;
@@ -538,7 +538,7 @@ int main(int argc, char **argv) {
         }
       }
     }
-    if (checkchar()) {
+    if (checkinput()) {
       break;
     }
     if (!pass_bad) {
@@ -546,7 +546,7 @@ int main(int argc, char **argv) {
     }
     pass++;
   }
-  readchar();
+  inputchar();
 
   unsigned int ts = _TIMER_100HZ - start_ts;
   unsigned int tm = ts / (60 * 100);
