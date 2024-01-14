@@ -20,7 +20,6 @@
 #include <stdbool.h>
 #include "machine.h"
 #include "system.h"
-#include "serial.h"
 
 #include "kmachine.h"
 #include "pmm.h"

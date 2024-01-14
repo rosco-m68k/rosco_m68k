@@ -192,14 +192,25 @@ FW_PRINTCHAR::
     move.l  (A7)+,A1
     rts
 
-; Move cursor to X,Y coordinates contained in D1.W.
-; High byte is X, low byte is Y.
-; Uses PRINTCHAR function pointed to by EFP table.
+; Send a single character via UART
 ;
+; Trashes: Nothing
 ; Modifies: Nothing
-FW_MOVEXY::
+FW_SENDCHAR::
     move.l  A1,-(A7)
-    move.l  EFP_MOVEXY,A1
+    move.l  EFP_SENDCHAR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+
+; Receive a single character via UART.
+; Ignores overrun errors.
+;
+; Trashes: Nothing
+; Modifies: D0 (return)
+FW_RECVCHAR::
+    move.l  A1,-(A7)
+    move.l  EFP_RECVCHAR,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
@@ -211,6 +222,18 @@ FW_MOVEXY::
 FW_CLRSCR::
     move.l  A1,-(A7)
     move.l  EFP_CLRSCR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+
+; Move cursor to X,Y coordinates contained in D1.W.
+; High byte is X, low byte is Y.
+; Uses PRINTCHAR function pointed to by EFP table.
+;
+; Modifies: Nothing
+FW_MOVEXY::
+    move.l  A1,-(A7)
+    move.l  EFP_MOVEXY,A1
     jsr     (A1)
     move.l  (A7)+,A1
     rts
