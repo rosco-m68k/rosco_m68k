@@ -53,11 +53,11 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
-OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o			\
-				decompress.o ansicon.o serial.o char_device.o trap14.o 	\
-				cpuspeed.o cputype.o warmboot.o							\
-				keyboard_efp.o keyboard.o								\
-				main1.o 
+OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
+				decompress.o ansicon.o char_device.o trap14.o	\
+				cpuspeed.o cputype.o warmboot.o					\
+				keyboard_efp.o keyboard.o						\
+				main1.o
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
@@ -91,6 +91,7 @@ endif
 
 # Set up Size-specific things appropriately..
 ifeq ($(REVISION1X),true)
+HUGEROM?=false
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco))
 LDFLAGS:=-T ./rosco_m68k_firmware_64k.ld -Map=$(MAP)
@@ -108,6 +109,7 @@ ROMDEVICE=AT28C256
 endif
 endif
 else
+HUGEROM?=true
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
 MAMESIZE=0x00100000

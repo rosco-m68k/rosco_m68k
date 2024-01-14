@@ -17,7 +17,7 @@ ANSI_MOVEXY::
     movem.l D0-D2/A0,-(A7)
     move.w  D1,D2                       ; Use D2 for coords..
 
-    lea.l   ANSI_START,A0               ; Load ANSI initiator...
+    lea.l   ANSI_START_SZ,A0            ; Load ANSI initiator...
     bsr.w   FW_PRINT                    ; ... and print it
 
     eor.l   D0,D0                       ; Zero D0
@@ -27,8 +27,8 @@ ANSI_MOVEXY::
     move.l  D0,-(A7)                    ; ... and Y coord
     bsr.w   print_unsigned              ; ... and print
 
-    lea.l   ANSI_SEP,A0                 ; Load separator...
-    bsr.w   FW_PRINT                    ; ... and print it
+    moveq   #ANSI_SEP,D0                ; Load separator...
+    bsr.w   FW_PRINTCHAR                ; ... and print it
 
     eor.l   D0,D0                       ; Zero D0 again
 
@@ -39,24 +39,22 @@ ANSI_MOVEXY::
 
     addq    #8,A7                       ; Cleanup stack
 
-    lea.l   ANSI_XYEND,A0               ; Load XY end command
-    bsr.w   FW_PRINT                    ; ... and print it
+    moveq   #ANSI_XYEND,D0              ; Load XY end command
+    bsr.w   FW_PRINTCHAR                ; ... and print it
 
     movem.l (A7)+,D0-D2/A0              ; Restore regs
     rts                                 ; and done!
 
 ANSI_CLRSCR::
     move.l  A0,-(A7)
-    lea.l   ANSI_CLR,A0                 ; Load ANSI Clear Screen...
+    lea.l   ANSI_CLR_SZ,A0              ; Load ANSI Clear Screen...
     bsr.w   FW_PRINT                    ; ... and print it
     move.l  (A7)+,A0
     rts
 
     section .rodata
 
-; TODO Quite inefficient doing this with sz strings!
-ANSI_START    dc.b        $1B, "[", 0
-ANSI_CLR      dc.b        $1B, "[H", $1B, "[2J" ,0   ; per DEC, [2J does not home cursor, so added [H
-ANSI_SEP      dc.b        ";", 0
-ANSI_XYEND    dc.b        "H", 0
-
+ANSI_START_SZ dc.b        $1B, "[", 0
+ANSI_CLR_SZ   dc.b        $1B, "[H", $1B, "[2J" ,0   ; per DEC, [2J does not home cursor, so added [H
+ANSI_SEP      equ         ';'
+ANSI_XYEND    equ         'H'

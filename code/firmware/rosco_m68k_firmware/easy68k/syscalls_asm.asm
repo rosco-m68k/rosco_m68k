@@ -123,7 +123,7 @@ READLN_STR:
     bra.s   .LOOP                       ; Start looping...
 
 .RECV:
-    bsr.w   RECVCHAR                    ; Receive a character
+    bsr.w   FW_RECVCHAR                 ; Receive a character
     cmp.b   #$0D,D0                     ; Is it CR?
     beq.s   .DONE                       ; Done if so, else
     move.b  D0,(A1)+                    ; Store char in buffer and advance
@@ -188,7 +188,7 @@ READLN_NUM_IMPL:
 
 .RECV:
     move.b  ECHO_ON,D2                  ; Get echo flag into D2
-    bsr.w   RECVCHAR                    ; Receive a character
+    bsr.w   FW_RECVCHAR                 ; Receive a character
     cmp.b   #$0D,D0                     ; Is it CR?
     beq.s   .DONE                       ; Done if so, else
 
@@ -230,7 +230,7 @@ READLN_NUM_IMPL:
 
 * ************************************************************************** *
 READ_CHAR:
-    bsr.w   RECVCHAR                    ; Call RECVCHAR
+    bsr.w   FW_RECVCHAR                 ; Call RECVCHAR
     move.l  D0,D1                       ; Platform code returns in D0...
     bra.w   EPILOGUE                   
 
