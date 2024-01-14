@@ -56,9 +56,8 @@ The hardware specifications for the rosco_m68k are:
 
 ## Getting boards fabricated
 
-If you want to get boards fabricated, we recommend JLCPCB - they did all of our commercial boards
-when the rosco_m68k was offered for sale on Tindie. These are the options you'll want when
-ordering from them (these should be readily adaptable to other fabs too!)
+If you want to get boards fabricated, we recommend JLCPCB - they do all of our commercial boards. 
+These are the options you'll want when ordering from them (these should be readily adaptable to other fabs too!)
 
 ![JLCPCB Fab Options](images/jlcpcb-options.png)
 
