@@ -9,6 +9,9 @@ MEMORY
 }
 
 PROVIDE(STAGE2_LOAD     = 0x000F0000);
+PROVIDE(RAMBASE         = 0x00000000);
+PROVIDE(RAMLIMIT        = 0x00100000);
+PROVIDE(EXPTOP          = phys);
 
 /* minimal items for XANSI in C */
 PROVIDE(_EFP_RECVCHAR   = 0x00000434);  /* Receive a character via UART */
