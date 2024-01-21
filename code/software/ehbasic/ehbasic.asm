@@ -225,8 +225,22 @@ kmain::
 
     ifd     ROSCO_M68K					* Xark - calculate rosco_m68k memory size
 
+  MOVE.L  SDB_CPUINFO,d0              ; get cpu info from sdb
+  AND.L   #$e0000000,d0               ; just the high three bits
+
+  CMP.L   #$40000000,d0               ; if it's less than 020...
+  BLT.S   .cachedone                  ; don't enable caches...
+
+  mc68020
+  MOVEC.L cacr,d0                     ; fetch cacr
+  OR.L    #$00000001,d0               ; enable instruction cache **only**,
+                                      ; ehbasic is **not** data cache friendly yet!
+  MOVEC.L d0,cacr
+.cachedone
+    mc68000
+
 	MOVEA.l	#FREE_MEM,a0		* tell BASIC where RAM starts
-  	MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
+	MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
 	SUB.l	a0,d0	            * minus starting RAM address
 
     else
