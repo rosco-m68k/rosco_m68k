@@ -189,6 +189,9 @@ noreturn void main1() {
     START_HEART();
 #endif
 
+    // Initialize the keyboard if available
+    initialize_keyboard();
+
     INSTALL_EASY68K_TRAP_HANDLERS();
 
 #if defined(XOSERA_API_MINIMAL)
@@ -239,9 +242,6 @@ if (!have_video) {
 #ifdef HAVE_DEBUG_STUB
     debug_stub();
 #endif
-
-    // Initialize the keyboard if available
-    initialize_keyboard();
 
     // Initialize the EFP's PROGRAM_LOADER func with the default loader to begin with
     initialize_loader_efp();
