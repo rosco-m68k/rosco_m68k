@@ -234,6 +234,7 @@
 #define INT_CTRL_AUD0_EN_B    8             // audio channel 0 ready (START addr was loaded)
 #define INT_CTRL_AUD0_EN_W    1             // audio channel 0 ready (START addr was loaded)
 #define INT_CTRL_AUD0_EN_F    0x0100        // audio channel 0 interrupt enable
+#define INT_CTRL_AUD_EN_ALL_F 0x0F00        // all audio channels interrupt enable
 #define INT_CTRL_UNUSED_7_B   7             // timer match read interrupt (status, write acknowledge)
 #define INT_CTRL_UNUSED_7_W   1             // timer match read interrupt (status, write acknowledge)
 #define INT_CTRL_UNUSED_7_F   0x0080        // timer match read interrupt (status, write acknowledge)
@@ -258,7 +259,7 @@
 #define INT_CTRL_AUD0_INTR_B  0             // audio channel ready interrupt (read status, write acknowledge)
 #define INT_CTRL_AUD0_INTR_W  1             // audio channel ready interrupt (read status, write acknowledge)
 #define INT_CTRL_AUD0_INTR_F  0x0001        // audio channel ready interrupt (read status, write acknowledge)
-#define INT_CTRL_AUD_ALL_F    0x000F        // all audio channels status/acknowledge
+#define INT_CTRL_AUD_ALL_F    0x000F        // all audio channels clear/acknowledge
 #define INT_CTRL_CLEAR_ALL_F  0x007F        // clear all interrupts
 // UART status bit definitions (NOTE: high/even byte of XM_UART)
 #define UART_RXF_B 7           // UART receive buffer full (data waiting)
@@ -383,6 +384,15 @@
 #define HV_FSCALE_V_FRAC_B 0
 #define HV_FSCALE_V_FRAC_W 3
 #define HV_FSCALE_V_FRAC_F 0x0700
+// XR_AUDx_VOL bit definitions
+#define AUD_VOL_LEFT_B  8
+#define AUD_VOL_LEFT_W  8
+#define AUD_VOL_LEFT_F  0xFF00
+#define AUD_VOL_RIGHT_B 0
+#define AUD_VOL_RIGHT_W 8
+#define AUD_VOL_RIGHT_F 0x00FF
+// XR_AUDx_VOL constants
+#define AUD_VOL_FULL 0x80        // AUDx_VOL left/right 100% volume level (0% attenuation)
 // XR_AUDx_PERIOD bit definitions
 #define AUD_PERIOD_RESTART_B 15        // AUDx_PERIOD bit 15 is force channel restart
 #define AUD_PERIOD_RESTART_W 1
@@ -482,6 +492,9 @@
 // MAKE_V_SCROLL(repeat_scrl, tileline_scrl) - make V_SCROLL reg value
 #define MAKE_V_SCROLL(vrepeat_scrl, tileline_scrl)                                                                     \
     (XB_(vrepeat_scrl, V_SCROLL_FINE_B, V_SCROLL_FINE_W) | XB_(tileline_scrl, V_SCROLL_TILE_B, V_SCROLL_TILE_W))
+// MAKE_AUD_VOL(left_vol, right_vol) - make AUDn_VOL reg value
+#define MAKE_AUD_VOL(left_vol, right_vol)                                                                              \
+    (XB_(left_vol, AUD_VOL_LEFT_B, AUD_VOL_LEFT_W) | (XB_(right_vol, AUD_VOL_RIGHT_B, AUD_VOL_RIGHT_W)))
 // MAKE_AUD_PERIOD(restart, period) - make AUDn_PERIOD reg value
 #define MAKE_AUD_PERIOD(restart, period)                                                                               \
     (XB_(restart, AUD_PERIOD_RESTART_B, AUD_PERIOD_RESTART_W) | ((period) & AUD_PERIOD_F))

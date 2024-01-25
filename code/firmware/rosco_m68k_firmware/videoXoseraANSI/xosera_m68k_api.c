@@ -22,10 +22,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <machine.h>        // rosco_m68k I/O
-
 // building XANSI in firmware
-#if !defined(XOSERA_ANSI_CON)
+#if !defined(XOSERA_API_MINIMAL)
+#include <machine.h>        // rosco_m68k I/O
 #include <basicio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,7 +33,6 @@
 #if !defined(ROSCO_M68K)
 #define ROSCO_M68K
 #endif
-#define XV_PREP_REQUIRED
 #include "xosera_m68k_api.h"
 
 #define SYNC_RETRIES 250        // ~1/4 second
@@ -90,7 +88,7 @@ void xosera_delay(uint32_t ms)
 }
 
 // building XANSI in firmware
-#if !defined(XOSERA_ANSI_CON)
+#if !defined(XOSERA_API_MINIMAL)
 
 // return true if Xosera XANSI firmware detected (safe from BUS ERROR if no hardware present)
 bool xosera_xansi_detect(bool hide_cursor)
@@ -232,14 +230,14 @@ bool xosera_reset_state(void)
         xm_setw(PIXEL_X, 0x0000);
         xm_setw(PIXEL_Y, 0x0000);
         xm_setbh(SYS_CTRL, 0x00);
-        xm_setbl(SYS_CTRL, 0x0F);
-        xm_setw(INT_CTRL, 0x0000);
+        xm_setbl(SYS_CTRL, SYS_CTRL_WR_MASK_F);
+        xm_setw(INT_CTRL, INT_CTRL_CLEAR_ALL_F);
         xm_setw(RD_INCR, 0x0000);
         xm_setw(RD_ADDR, 0x0000);
         xm_setw(WR_INCR, 0x0000);
         xm_setw(WR_ADDR, 0x0000);
         // restore XR defaults
-        xreg_setw(VID_CTRL, 0x0008);        // grey border color
+        xreg_setw(VID_CTRL, MAKE_VID_CTRL(0, 0x08));        // grey border color
         for (uint16_t xr = XR_COPP_CTRL; xr < XR_BLIT_CTRL; xr++)
         {
             xreg_setw_next(0x0000);        // zero default
@@ -248,7 +246,7 @@ bool xosera_reset_state(void)
         xreg_setw(PA_GFX_CTRL, MAKE_GFX_CTRL(0x00, 0, 0, GFX_4_BPP, GFX_1X, GFX_1X));
         xreg_setw_next(/* PA_TILE_CTRL, */ MAKE_TILE_CTRL(0x0000, 0, 0, 16));
         xreg_setw(PA_LINE_LEN, width / 8);
-        xreg_setw(PB_GFX_CTRL, 0x0080);
+        xreg_setw(PB_GFX_CTRL, MAKE_GFX_CTRL(0x00, 1, 0, GFX_1_BPP, GFX_1X, GFX_1X));
         xreg_setw_next(/* PB_TILE_CTRL, */ MAKE_TILE_CTRL(0x0000, 0, 0, 16));
         xreg_setw(PB_LINE_LEN, width / 8);
         // clear VRAM
@@ -337,10 +335,3 @@ bool xosera_get_info(xosera_info_t * info)
 
     return valid;
 }
-
-// define xosera_ptr so GCC doesn't see const value (so it tries to keep it in a register vs reloading it).
-__asm__(
-    "               .section    .text\n"
-    "               .align      2\n"
-    "               .globl      xosera_ptr\n"
-    "xosera_ptr:    .long       " XM_STR(XM_BASEADDR) "\n");

@@ -29,7 +29,7 @@
 #include "kernelapi.h"
 
 // only one Xosera console at a time
-#if defined(XOSERA_ANSI_CON)
+#if defined(XOSERA_API_MINIMAL)
 #include "xosera_ansiterm_m68k.h"
 #endif
 #ifdef VIDEO9958_CON
@@ -191,7 +191,7 @@ noreturn void main1() {
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 
-#if defined(XOSERA_ANSI_CON)
+#if defined(XOSERA_API_MINIMAL)
     if (XANSI_HAVE_XOSERA() && XANSI_CON_INIT()) {
 #ifdef LATE_BANNER
         have_video = true;
@@ -210,7 +210,7 @@ noreturn void main1() {
     }
 #endif
 
-#if defined(XOSERA_ANSI_CON)
+#if defined(XOSERA_API_MINIMAL)
 skip9958:
 #endif
 
