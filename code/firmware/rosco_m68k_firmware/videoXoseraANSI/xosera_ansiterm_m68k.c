@@ -39,8 +39,8 @@
 #define DEBUG 0        // must be zero (no printf in firmware)
 // thse are missing from kernel machine.h
 extern unsigned int _FIRMWARE_REV;        // rosco ROM firmware revision
-extern void         (*_EFP_RECVCHAR)();
-extern void         (*_EFP_CHECKCHAR)();
+extern void         (*_EFP_INPUTCHAR)();
+extern void         (*_EFP_CHECKINPUT)();
 
 #endif
 
@@ -50,7 +50,6 @@ extern void         (*_EFP_CHECKCHAR)();
 
 #include "xosera_ansiterm_m68k.h"
 
-#define XV_PREP_REQUIRED        // require Xosera xv_prep() function (for speed)
 #if !defined(ROSCO_M68K)
 #define ROSCO_M68K
 #endif
@@ -106,8 +105,8 @@ typedef struct xansiterm_data
     uint16_t cur_addr;                // +0x0: next VRAM address to draw text
     int8_t   send_index;              // +0x2: index into send_buffer or -1 if no query
     bool     cursor_drawn;            // +0x3: flag if cursor_save/cursor_word data valid
-    void *   device_recvchar;         // +0x4: trap handler for console RECVCHAR (wrapped, for asm)
-    void *   device_checkchar;        // +0x8: trap handler for console CHECKCHAR (wrapped, for asm)
+    void *   device_inputchar;        // +0x4: trap handler for console INPUTCHAR (wrapped, for asm)
+    void *   device_checkinput;       // +0x8: trap handler for console CHECKINPUT (wrapped, for asm)
     uint16_t vram_base;               // base VRAM address for text screen
     uint16_t vram_size;               // size of text screen in current mode (init clears to allow 8x8 font)
     uint16_t vram_end;                // ending address for text screen in current mode
@@ -1893,8 +1892,8 @@ bool xansiterm_INIT()
     xansiterm_data * td = get_xansi_data();
     xosera_memclear(td, sizeof(*td));
     // default values (others will be zero or computed)
-    td->device_recvchar  = _EFP_RECVCHAR;
-    td->device_checkchar = _EFP_CHECKCHAR;
+    td->device_inputchar  = _EFP_INPUTCHAR;
+    td->device_checkinput = _EFP_CHECKINPUT;
     td->gfx_ctrl = MAKE_GFX_CTRL(0x00, 0, 0, 0, 0, 0);          // 16-colors 0-15, 1-BPP tiled, H repeat x1, V repeat x1
     td->tile_ctrl[0] = MAKE_TILE_CTRL(0x0000, 0, 0, 16);        // 1st font in tile RAM (8x16 ST font - default)
     td->tile_ctrl[1] = MAKE_TILE_CTRL(0x0800, 0, 0, 8);         // 2nd font in tile RAM (8x8 ST font)

@@ -228,6 +228,8 @@ extern void           (*_EFP_MOVEXY)();
 extern void           (*_EFP_SETCURSOR)(); 
 extern void           (*_EFP_CHECKCHAR)();  
 extern void           (*_EFP_PROGLOADER)();
+extern void           (*_EFP_INPUTCHAR)();
+extern void           (*_EFP_CHECKINPUT)();
 
 extern char           _FIRMWARE[];          // ROM firmware start address
 extern uint32_t       _FIRMWARE_REV;        // rosco ROM firmware revision
