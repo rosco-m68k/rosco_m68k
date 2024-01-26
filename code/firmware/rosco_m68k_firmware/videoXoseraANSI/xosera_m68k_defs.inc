@@ -204,6 +204,7 @@ INT_CTRL_AUD1_EN_F      equ     $0200       ; audio channel 1 interrupt enable
 INT_CTRL_AUD0_EN_B      equ     8           ; audio channel 0 ready (START addr was loaded)
 INT_CTRL_AUD0_EN_W      equ     1           ; audio channel 0 ready (START addr was loaded)
 INT_CTRL_AUD0_EN_F      equ     $0100       ; audio channel 0 interrupt enable
+INT_CTRL_AUD_EN_ALL_F   equ     $0F00       ; all audio channels interrupt enable
 INT_CTRL_UNUSED_7_B     equ     7           ; timer match read interrupt (status, write acknowledge)
 INT_CTRL_UNUSED_7_W     equ     1           ; timer match read interrupt (status, write acknowledge)
 INT_CTRL_UNUSED_7_F     equ     $0080       ; timer match read interrupt (status, write acknowledge)
@@ -228,7 +229,7 @@ INT_CTRL_AUD1_INTR_F    equ     $0002       ; audio channel ready interrupt (rea
 INT_CTRL_AUD0_INTR_B    equ     0           ; audio channel ready interrupt (read status, write acknowledge)
 INT_CTRL_AUD0_INTR_W    equ     1           ; audio channel ready interrupt (read status, write acknowledge)
 INT_CTRL_AUD0_INTR_F    equ     $0001       ; audio channel ready interrupt (read status, write acknowledge)
-INT_CTRL_AUD_ALL_F      equ     $000F       ; all audio channels status/acknowledge
+INT_CTRL_AUD_ALL_F      equ     $000F       ; all audio channels clear/acknowledge
 INT_CTRL_CLEAR_ALL_F    equ     $007F       ; clear all interrupts
 ; UART status bit definitions (NOTE: high/even byte of XM_UART)
 UART_RXF_B              equ     7           ; UART receive buffer full (data waiting)
@@ -353,6 +354,15 @@ HV_FSCALE_H_FRAC_F      equ     $0700
 HV_FSCALE_V_FRAC_B      equ     0
 HV_FSCALE_V_FRAC_W      equ     3
 HV_FSCALE_V_FRAC_F      equ     $0700
+; XR_AUDx_VOL bit definitions
+AUD_VOL_LEFT_B          equ     8
+AUD_VOL_LEFT_W          equ     8
+AUD_VOL_LEFT_F          equ     $FF00
+AUD_VOL_RIGHT_B         equ     0
+AUD_VOL_RIGHT_W         equ     8
+AUD_VOL_RIGHT_F         equ     $00FF
+; XR_AUDx_VOL constants
+AUD_VOL_FULL            equ     $80        ; AUDx_VOL left/right 100% volume level (0% attenuation)
 ; XR_AUDx_PERIOD bit definitions
 AUD_PERIOD_RESTART_B    equ     15          ; AUDx_PERIOD bit 15 is force channel restart
 AUD_PERIOD_RESTART_W    equ     1

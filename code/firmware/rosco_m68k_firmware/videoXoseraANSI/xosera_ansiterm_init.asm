@@ -46,12 +46,10 @@ XANSI_CON_DATA_END      equ     $57F            ; 128 bytes reserved (~0x60 used
 XANSI_HAVE_XOSERA::
                 move.l  a0,-(sp)
                 jsr     INSTALL_TEMP_BERR_HANDLER
-                move.l  #.POST_WRITE,BERR_CONT_ADDR
 
                 move.l  #XM_BASEADDR,a0
                 move.b  (a0),d0
 
-.POST_WRITE:
                 tst.b   BERR_FLAG
                 bne.s   .NOXVID
 
@@ -123,8 +121,8 @@ XANSI_CON_SETCURSOR::
 
 ; Input:        -
 ; Modified:     D0
-; NOTE: XANSI_CON_RECVCHAR needs to be fast for 115.2Kbaud kermit, so in asm
-XANSI_CON_RECVCHAR::
+; NOTE: XANSI_CON_INPUTCHAR needs to be fast for 115.2Kbaud kermit, so in asm
+XANSI_CON_INPUTCHAR::
                 movem.l d2/a1-a2,-(sp)
 
                 ifnd    TEST_FIRMWARE
@@ -144,9 +142,9 @@ XANSI_CON_RECVCHAR::
                 rts
 .NOQUERY
                 moveq.l #32,d2                  ; check 32 times before updating cursor
-                move.l  8(a2),a1                ; a1=checkchar
+                move.l  8(a2),a1                ; a1=checkinput
 .CHECKLOOPFAST
-                jsr     (a1)                    ; checkchar
+                jsr     (a1)                    ; checkinput
                 tst.b   d0
                 bne.s   .GOTCHARFAST
 
@@ -159,9 +157,9 @@ XANSI_CON_RECVCHAR::
                 movem.l (sp)+,d1/a0
 
                 moveq.l #32,d2                  ; update cursor every 32 checks
-                move.l  8(a2),a1                ; a1=checkchar
+                move.l  8(a2),a1                ; a1=checkinput
 .CHECKLOOP
-                jsr     (a1)                    ; checkchar
+                jsr     (a1)                    ; checkinput
                 tst.b   d0
                 bne.s   .GOTCHAR
 
@@ -171,8 +169,8 @@ XANSI_CON_RECVCHAR::
                 bra.s   .CHECKSLOW
 
 .GOTCHAR
-                move.l  4(a2),a1                ; a1=recvchar
-                jsr     (a1)                    ; recvchar
+                move.l  4(a2),a1                ; a1=inputchar
+                jsr     (a1)                    ; inputchar
 
                 movem.l d0-d1/a0,-(sp)
                 jsr     xansiterm_ERASECURSOR
@@ -182,15 +180,15 @@ XANSI_CON_RECVCHAR::
                 rts
 
 .GOTCHARFAST
-                move.l  4(a2),a1                ; a1=recvchar
-                jsr     (a1)                    ; recvchar
+                move.l  4(a2),a1                ; a1=inputchar
+                jsr     (a1)                    ; inputchar
 
                 movem.l (sp)+,d2/a1-a2
                 rts
 
 ; Input:        -
 ; Modified:     D0
-XANSI_CON_CHECKCHAR::
+XANSI_CON_CHECKINPUT::
                 movem.l d1/a0-a1,-(sp)
 
                 ifnd    TEST_FIRMWARE
@@ -202,8 +200,8 @@ XANSI_CON_CHECKCHAR::
                 tst.b   2(a1)                   ; check for query (send_index >= 0)
                 bpl.s   .CHARREADY
 
-                move.l  8(a1),a0                ; a0=checkchar
-                jsr     (a0)                    ; checkchar
+                move.l  8(a1),a0                ; a0=checkinput
+                jsr     (a0)                    ; checkinput
                 tst.b   d0
                 bne.s   .CHARREADY
 
@@ -240,8 +238,8 @@ XANSI_CON_INIT::
                 move.l  #XANSI_CON_PRINTCHAR,EFP_PRINTCHAR.w
                 move.l  #XANSI_CON_SETCURSOR,EFP_SETCURSOR.w
                 ; xansiterm_INIT will have saved previous input handlers (to wrap them)
-                move.l  #XANSI_CON_RECVCHAR,EFP_RECVCHAR.w
-                move.l  #XANSI_CON_CHECKCHAR,EFP_CHECKCHAR.w
+                move.l  #XANSI_CON_INPUTCHAR,EFP_INPUTCHAR.w
+                move.l  #XANSI_CON_CHECKINPUT,EFP_CHECKINPUT.w
 
 .INITDONE
                 move.w  d3,sr                   ; restore SR

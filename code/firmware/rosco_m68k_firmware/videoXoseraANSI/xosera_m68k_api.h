@@ -144,7 +144,8 @@ bool xosera_xansi_detect(bool hide_cursor);        // detect if XANSI firmware r
 void xosera_xansi_restore(void);                   // restore XANSI text mode
 bool xosera_init(xosera_mode_t mode);              // detect Xosera, set configuration (traps if not present)
 bool xosera_reset_state(void);                     // reset to default state w/o config, clears VRAM (xrmem unaltered)
-bool xosera_sync(void);                            // quick check if Xosera responding (traps if not present)
+bool xosera_sync(void);                            // immediate check if Xosera responding (traps if not present)
+bool xosera_wait_sync(void);                       // wait a bit and see if Xosera starts responding (traps if not present)
 bool xosera_get_info(xosera_info_t * info);        // retrieve init xosera_info_t (valid after Xosera reconfig)
 void cpu_delay(int ms);                            // delay approx milliseconds with CPU busy wait
 void xosera_delay(uint32_t ms);                    // delay milliseconds using Xosera TIMER register
@@ -191,11 +192,8 @@ typedef struct _xosera_info
 
 _Static_assert(sizeof(struct _xosera_info) == XV_INFO_BYTES, "unexpected xosera_info_t size");
 
-// Xosera XM register base ptr
+// Xosera XM register base ptr type
 typedef volatile xmreg_t * const xosera_ptr_t;
-#if !defined(XV_PREP_REQUIRED)        // if XV_PREP_REQUIRED defined, then an error if xv_prep() is not used
-extern xosera_ptr_t xosera_ptr;
-#endif
 
 // C preprocessor "stringify" to embed #define into inline asm string
 #define _XM_STR(s) #s
@@ -211,15 +209,8 @@ extern xosera_ptr_t xosera_ptr;
 // GCC "sees" the constant pointer value, it seems to want to load it over and over as needed.  This method gets GCC to
 // load the pointer once (using more efficient immediate addressing mode) and keep it loaded in an address register.)
 
-// void xv_prep() - preload xosera_ptr into register for faster/smaller code (vs global load)
-#define xv_prep()                                                                                                      \
-    _Pragma("GCC diagnostic push") _Pragma("GCC diagnostic ignored \"-Wshadow\"")                                      \
-        _Pragma("GCC diagnostic ignored \"-Wpedantic\"") volatile xmreg_t * const xosera_ptr = ({                      \
-            xmreg_t * ptr;                                                                                             \
-            __asm__ __volatile__("lea.l " XM_STR(XM_BASEADDR) ",%[ptr]" : [ptr] "=a"(ptr) : :);                        \
-            ptr;                                                                                                       \
-        });                                                                                                            \
-    _Pragma("GCC diagnostic pop")(void) 0
+// void xv_prep() - declare and load xosera_ptr (tries to use local/register for faster/smaller code vs global)
+#define xv_prep() volatile xmreg_t * const xosera_ptr = ((volatile xmreg_t *)XM_BASEADDR)
 
 // void xm_setbh(xmreg_name, high_byte) - set XM_<xmreg_name> bits [15:8] (high/even byte) to high_byte
 #define xm_setbh(xmreg_name, high_byte) (xosera_ptr[(XM_##xmreg_name) >> 2].b.h = (high_byte))

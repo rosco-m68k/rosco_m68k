@@ -159,7 +159,7 @@ include video9958/include.mk
 endif
 
 # only one Xosera console at a time
-ifneq ($(XOSERA_ANSI_CON),false)
+ifneq ($(XOSERA_API_MINIMAL),false)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)
 include videoXoseraANSI/include.mk
 endif
