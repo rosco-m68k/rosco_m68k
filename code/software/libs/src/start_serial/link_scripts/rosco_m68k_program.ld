@@ -80,6 +80,8 @@ PROVIDE(_EFP_ATA_INIT   = 0x00000480);  /* ATA init                     */
 PROVIDE(_EFP_ATA_READ   = 0x00000484);  /* ATA read                     */
 PROVIDE(_EFP_ATA_WRITE  = 0x00000488);  /* ATA write                    */
 PROVIDE(_EFP_ATA_IDENT  = 0x0000048C);  /* ATA identify                 */
+PROVIDE(_EFP_INPUTCHAR  = 0x00000494);  /* Receive a character via input*/
+PROVIDE(_EFP_CHECKINPUT = 0x00000498);  /* Check char ready from input  */
 
 /* ROM absolute addresses */
 PROVIDE(_FIRMWARE       = 0x00FC0000);  /* firmware address             */

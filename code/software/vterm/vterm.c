@@ -26,7 +26,7 @@ char* uart_getline(char* buff, int len)
     /* Keep getting input until we get the enter key */
     while (buff_index < len && in != 0x0d)
     {
-        in = mcReadchar();
+        in = mcInputchar();
 
         /* Handle characters than can be displayed */
         if (in >= ASCII_VALID_START && in <= ASCII_VALID_END)
@@ -50,10 +50,10 @@ char* uart_getline(char* buff, int len)
         }
 
         /* Handle escape sequences */
-        if (in == 0x1B && mcReadchar() == 0x5B)
+        if (in == 0x1B && mcInputchar() == 0x5B)
         {
             /* Handle arrow keys */
-            switch (mcReadchar())
+            switch (mcInputchar())
             {
                 case 0x41:
                     vt_move_cursor_up("1"); break;
@@ -229,7 +229,7 @@ int main(int argc, char **argv)
         else if (strcmp(input, "fill") == 0)
         {
             printf("Enter a character to fill the screen with: ");
-            char in = mcReadchar();
+            char in = mcInputchar();
 
             vt_fill_screen(in);
         
