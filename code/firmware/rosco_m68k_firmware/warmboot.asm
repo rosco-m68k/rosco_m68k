@@ -32,7 +32,7 @@ warm_boot::
     blt.s   .cachedone            ; don't disable caches...
 
     mc68020
-    clr.l   D0                    ; Disable all caches
+    move.l  #$00000808,D0         ; Clear and disable all caches
     movec.l D0,cacr
 
 .cachedone
