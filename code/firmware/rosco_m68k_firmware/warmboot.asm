@@ -25,6 +25,18 @@
 ;
 warm_boot::
     move.l  VECTORS_LOAD,A7       ; Reset stack from reset stack pointer
+    move.l  SDB_CPUINFO,D0        ; get cpu info from sdb
+    and.l   #$e0000000,D0         ; just the high three bits
+
+    cmp.l   #$40000000,D0         ; if it's less than 020...
+    blt.s   .cachedone            ; don't disable caches...
+
+    mc68020
+    move.l  #$00000808,D0         ; Clear and disable all caches
+    movec.l D0,cacr
+
+.cachedone
+    mc68000    
     lea.l   BANNER,A0             ; Load banner...
     jsr     FW_PRINT              ; ... and print it
     bra.s   hot_boot_no_load_sp   ; Continue to program loader
