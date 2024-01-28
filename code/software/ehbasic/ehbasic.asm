@@ -124,7 +124,7 @@ L_DUART_RBA      equ     $f80026      ; R register 3
 VEC_IN:
     movem.l d1-d7/a0-a6,-(sp)   ; overkill, but just D1 was not enough
 
-    move.l  #6,D1               ; CHECKCHAR trap function code
+    move.l  #18,D1              ; CHECKINPUT trap function code
     trap    #14
 
     tst.b   D0
@@ -135,7 +135,7 @@ VEC_IN:
     rts                           ; And return
 
 .GOTKEY
-    move.l  #3,D1               ; RECVCHAR trap function code
+    move.l  #17,D1              ; INPUTCHAR trap function code
     trap    #14
 
 		cmp.b		#$7F,D0							; is it DEL key?
