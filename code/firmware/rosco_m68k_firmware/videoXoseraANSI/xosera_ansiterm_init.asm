@@ -46,10 +46,12 @@ XANSI_CON_DATA_END      equ     $57F            ; 128 bytes reserved (~0x60 used
 XANSI_HAVE_XOSERA::
                 move.l  a0,-(sp)
                 jsr     INSTALL_TEMP_BERR_HANDLER
+                move.l  #.POST_WRITE,BERR_CONT_ADDR
 
                 move.l  #XM_BASEADDR,a0
                 move.b  (a0),d0
 
+.POST_WRITE:
                 tst.b   BERR_FLAG
                 bne.s   .NOXVID
 
