@@ -1,0 +1,265 @@
+#!/bin/sh
+
+#This script is a small wrapper around the CUPL compiler -- avoiding common pitfalls and setting sensible default options.
+
+#This section is concerned with the device library CUPL will use. We're assuming you're using what comes with Atmel WinCUPL (Atmel.dl), however,
+#if you have device libraries from other packages (like PLDmaster from Logical Devices, you may be able to target other / obsolete devices).
+#We're not covering other devices outside of the Atmel Library simply because none seem to be active parts anymore, but, this is how you'd do it if you wanted to.
+
+#If you want to override you can set DEVICE_LIB in your .profile, or at runtime like this:
+#    DEVICE_LIB="c:/Wincupl/Shared/pldmstr.dl" 5vcomp yourfile.pld
+
+#Or you could uncomment one of the below lines and risk it being overwritten by an update.
+#DEVICE_LIB="c:/Wincupl/Shared/Atmel.dl" #The library provided by Atmel WinCUPL from either 3/31/04 or 10/24/00
+#DEVICE_LIB="c:/Wincupl/Shared/totaldes.dl" #The library provided by Total Designer from 8/14/99
+#DEVICE_LIB="c:/Wincupl/Shared/pldmstr.dl" #The library provided by PLDmaster from 2/21/00
+#DEVICE_LIB="c:/Wincupl/Shared/palxprt.dl" #The library provided by PALexpert from 6/20/99
+
+DEFAULT_DEVICE_LIB="c:/Wincupl/Shared/Atmel.dl" #Do not change this.
+
+#You can override the options passed to CUPL here by either
+#Seting CUPL_OPTIONS at rutime, setting it in your environment (.profile), or by uncommenting below (and risking it being overwritten with an update):
+#CUPL_OPTIONS="m1jn"
+CUPL_DEFAULT_OPTIONS="m1jn" #These are the options that will be passed to the CUPL.EXE compiler if not explicitly set in CUPL_OPTIONS.
+CUPL_SIMULATION_OPTIONS="sw" #These options are added only if an .SI file is found and no CUPL options have been explicitly set.
+
+#A summary of the most relevant/important options to CUPL is here. See documentation for a full list/explanation.
+#
+#-m1 quick minimization
+# -l  create listing file
+# -x create expanded product-terms in documentation file
+# -f create fuse plot/chip diagram in documentation file
+# -j create jedec file. If -s is specified, CSIM will append test vectors to the .JED file.
+# -n use name of input file for output file
+# -a create absolute file
+# -b create berkeley pla format
+# -e create expanded macro definitions
+#
+# -s run simulation; create a .SO file. Expects a .SI file to be present. If -j is specified, will append test vectors to the .JED file. Automatically implies -a generation of an .ABS file.
+# -w run simulation; create a .W file.  Expects a .SI file to be present, Automatically implies -a generation of an .ABS file.
+
+#Known issues:
+#we should probably insist that the find150x.exe files be replaced with the corresponding fit150x.exe files in the fitters directory.
+#This might be preventing the fitters from being called automatically when working with the CPLD parts that require a fitter.
+
+RED='\033[0;31m'
+GRN='\033[1;32m'
+CYN='\033[1;36m'
+YEL='\033[1;33m'
+NC='\033[0m' # No Color
+
+printf "${CYN} = 5vpld CUPL Compiler Helper - A light wrapper on top of CUPL.EXE = ${NC}\n\n"
+
+#echo $1
+
+#Standard error regarding prerequisites
+prerequisite_error()
+{
+    printf "\nThis script requires the following:\n"
+    printf "* Wine is installed, and assumes the default prefix is used.\n"
+    printf "* WinCUPL is installed into the default path of c:/Wincupl\n"
+    printf "* The fitters inside of c:/Wincupl//WinCupl/Fitters/\n"
+    printf "  have been replaced with the latest version (available inside Atmel Prochip)\n\n"
+    printf "A future release might simply try to make this work without WinCUPL installation as only the CUPL compiler and the fitters are required.\n"
+    printf "For now this remains the recommended workflow as WinCUPL does come with decent examples and help files.\n\n"
+    pause_before_exit
+    exit 3
+}
+
+pause_before_exit()
+{
+    printf "\nPress enter to exit"
+    read a
+}
+
+if [ $# -ne 1 ]; then #Show 5vcomp script usage message if we weren't passed a file.
+    printf "USAGE: Please pass the name of a .PLD file to be compiled. Example:\n"
+    printf "${YEL}5vcomp COUNTER.PLD${NC}\n\n"
+    printf "This script will attempt to compile it using reasonable defaults passed to CUPL.EXE\n"
+    printf "Additionally, DEVICE_LIB and CUPL_OPTIONS can be set as environment variables if defaults are not acceptable\n"
+    pause_before_exit
+    exit 1
+fi
+
+#We check the version of Wine installed:
+WINE_VERSION=`wine --version`
+if [ $? -ne 0 ]; then
+    printf "${RED}ERROR: This script requires Wine to run. Could not determine version of wine installed.${NC}\n"
+    prerequisite_error
+fi
+
+if [ -z "${DEVICE_LIB}" ]; then #If the device library has not been explicitly specified, use the default Atmel.dl
+    echo "INFO: Using default Atmel.dl Device Library"
+    DEVICE_LIB=${DEFAULT_DEVICE_LIB}
+else
+    echo "INFO: Using device library explicitly defined in: DEVICE_LIB=${DEVICE_LIB}"
+fi
+
+if [ ! -f `WINEDEBUG="fixme-hid" winepath -u "${DEVICE_LIB}"` ]; then
+    printf "${RED} * ERROR: Could not find device library in path: ${DEVICE_LIB}${NC}\n"
+    pause_before_exit
+    exit 1
+fi
+
+#We check to see if the latest known version of fitters are installed. The original Atmel fitters included with WinCUPL are old.
+FIT1502PATH=`WINEDEBUG="fixme-hid" winepath -u "c:/Wincupl//WinCupl/Fitters/fit1502.exe"`
+FIT1504PATH=`WINEDEBUG="fixme-hid" winepath -u "c:/Wincupl//WinCupl/Fitters/fit1504.exe"`
+FIT1508PATH=`WINEDEBUG="fixme-hid" winepath -u "c:/Wincupl//WinCupl/Fitters/fit1508.exe"`
+
+if [ ! -f ${FIT1502PATH} ] || [ ! -f ${FIT1504PATH} ] || [ ! -f ${FIT1508PATH} ]; then
+    printf "${RED}ERROR: Could not find fitters inside of c:/Wincupl//WinCupl/Fitters/\nThis script assumes the following\n* You have installed WinCUPL into the default path c:/Wincupl${NC}\n"
+    prerequisite_error
+fi
+
+SUMFAIL=false
+
+if [ "fbcd61cd5348b05000ccad3d0e08cf8a8fb94538" != `sha1sum $FIT1502PATH | awk '{print $1}'` ]; then
+    echo "FIT1502.exe checksum failure."
+    SUMFAIL=true
+fi
+
+if [ "e99b14f68fa5de131aa388503535c51ecdf31295" != `sha1sum $FIT1504PATH | awk '{print $1}'` ]; then
+    echo "FIT1504.exe checksum failure."
+    SUMFAIL=true
+fi
+
+if [ "5f1ef6d220466dff8ac031acbce4e7a55dfed153" != `sha1sum $FIT1508PATH | awk '{print $1}'` ]; then
+    echo "FIT1508.exe checksum failure."
+    SUMFAIL=true
+fi
+
+if [ $SUMFAIL = "true" ]; then
+    printf "${RED}ERROR: Fitter version incorrect.${NC}\n"
+    echo " * It looks like you might be using the original fitters that came with WinCUPL."
+    echo "   * Please replace the fitters located in c:/Wincupl/WinCupl/Fitters/ with the latest ones from Atmel Prochip."
+    echo "     * This can either be done by:"
+    echo "       * Installing Atmel Prochip and pulling the files from C:\ATMEL_PLS_Tools\Prochip\PLDFit"
+    echo "       * Using innoextract on ProChip5_setup.exe"
+    echo "     * https://ww1.microchip.com/downloads/en/DeviceDoc/ProChip5.0.1.zip"
+    echo " * The fitters should identify as \"Version 1918 (3-21-07)\" when run from the command line."
+    echo " * You should also delete every find150X.exe file and replace it with a copy of the corresponding fit150X.exe file."
+    prerequisite_error
+fi
+
+
+#Since the Atmel fitter will include the whole file path in an EDIF when when requested to create one, it will contain invalid characters. Instead, we switch to the containing directory of the file we are passed.
+cd "$(dirname "$1")"
+if [ $? -ne 0 ]; then
+    printf "${RED}ERROR: Failed to change to directory $(dirname "$1")${NC}\n"
+    pause_before_exit
+    exit 1
+fi
+#echo "Current Directory is:"
+#pwd
+
+FILENAME=$(basename "$1")
+
+#Since CUPL.EXE accepts files with or without a file extension, we try to do the same and append the extension if necessary.
+#We'd simply pass $1 directly to CUPL.EXE but we really want to identify the actual filename as the length is important (too long or multiple periods and it breaks CSIM.EXE).
+if [ ! -f "${FILENAME}" ]; then
+    if [ -f "${FILENAME}.pld" ]; then
+	printf "INFO: Appending .pld to input filename.${NC}\n"
+        FILENAME="${FILENAME}.pld"
+        continue
+    fi
+    if [ -f "${FILENAME}.PLD" ]; then
+	printf "INFO: Appending .PLD to input filename.${NC}\n"
+        FILENAME="${FILENAME}.PLD"
+        continue
+    fi
+fi
+
+if [ ! -f "${FILENAME}" ]; then
+    printf "${RED}ERROR: Cannot find file: ${FILENAME}${NC}\n"
+    pause_before_exit
+    exit 1
+fi
+
+#FILENAME=$(basename "$1")
+#FILENAME_NOPATH=`basename ${FILENAME}`
+
+#Too long filenames is a horrible bug in CSIM.EXE that took forever to figure out.
+if [ ${#FILENAME} -gt 19 ]; then
+    printf "${RED}ERROR: Filenames longer than 19 total characters cause problems with CSIM.EXE\nUse 15 characters max for filename + 1 dot + 3 file extension.${NC}\n"
+    pause_before_exit
+    exit 1
+fi
+
+#Multiple periods in the filename also cause CSIM.EXE to break.
+if [ `echo ${FILENAME} | grep -o "\." | wc -l` -gt 1 ]; then
+    printf "${RED}ERROR: Filenames containing more than one period cause problems with CSIM.EXE\nFilenames should only contain 1 period.${NC}\n"
+    pause_before_exit
+    exit 1
+fi
+
+#Filenames containing spaces will cause Atmel Fitter Generated EDIF files to have spaces in them, which is invalid EDIF, but we allow it anyway.
+if [ `echo ${FILENAME} | grep -o " " | wc -l` -gt 0 ]; then
+    printf "${RED}WARNING: Filenames containing spaces cause problems with any EDIF files that are generated. Continuing Anyway...${NC}\n"
+fi
+
+
+BASEFILENAME=${FILENAME%.*} #This strips off the file extension
+
+#Determine the options we'll use for the CUPL Compiler. If none are explicitly specified, we use sensible defaults.
+if [ -z "${CUPL_OPTIONS}" ]; then
+    CUPL_OPTIONS=${CUPL_DEFAULT_OPTIONS}
+    #If we detect a corresponding .SI file, then we add on the -s and -w options as well so that simulation is performed.
+    if [ -f "${BASEFILENAME}.SI" -o -f "${BASEFILENAME}.si" ]; then
+        CUPL_OPTIONS=${CUPL_OPTIONS}${CUPL_SIMULATION_OPTIONS}
+    else
+        echo "INFO: Corresponding .SI input file not found. Simulation / Test vector generation will not be performed."
+    fi
+else
+    echo "Using compiler options explicitly specified: ${CUPL_OPTIONS}"
+fi
+
+#If we are passed a path along with the filename, we need to turn it into something CUPL.EXE will recognize
+FILENAME_FULLPATH=`WINEDEBUG="fixme-hid" winepath -w "${1}"`
+
+#Time to run CUPL.EXE
+printf "${GRN}Running CUPL.EXE with the following command line: ${NC}\n"
+echo "${YEL}c:/Wincupl/Shared/cupl.exe -${CUPL_OPTIONS} -u ${DEVICE_LIB} ${FILENAME}${NC}"
+echo "\n"
+#We supress the most common wine debug warnings as none have been found to create issues with CUPL. There is still one "fixme:imm" that seems to be coming from a child process.
+WINEDEBUG="fixme-hid,fixme-ntdll,fixme-imm" wine c:/Wincupl/Shared/cupl.exe -${CUPL_OPTIONS} -u ${DEVICE_LIB} "${FILENAME}"
+
+if [ $? -eq 0 ]; then
+    printf "${GRN}SUCCESS: CUPL returned successfully.${NC}\n"
+    printf "${GRN} * A .JED file should have been produced, which can be used to program the target device.${NC}\n"
+    if [ -f "${BASEFILENAME}.edn" ]; then
+        printf "INFO: An EDIF file has been detected.\n * In the future, we may process this further using Spydrnet to either convert to a Graphviz visualization or to generate verilog.\n"
+        ediftimestamp.sh ${BASEFILENAME}.edn
+        #EDIF2V_LOC=`which edif2v.py`
+        #if [ $? -eq 0 ]; then
+        #    printf " * Trying to create a verilog file..."
+        #    python3 ${EDIF2V_LOC} ${BASEFILENAME}.edn
+        #fi
+        EDIF2DOT_LOC=`which edif2dot.py`
+        if [ $? -eq 0 ]; then
+            printf " * Trying to create Graphviz visualization files...\n"
+            python3 ${EDIF2DOT_LOC} ${BASEFILENAME}.edn
+        fi
+    fi
+    sleep 2
+else
+    printf "${RED}ERROR: CUPL returns a non-zero exit code: ${?}${NC}\n"
+    if [ -n ${CUPL_SIMULATION_OPTIONS} ]; then
+        printf "${RED}\nBecause simulation was requested, the problem may be limited to just the last stage (simulation)${NC}\n\n"
+    fi
+    printf "${RED}Check above for clues to what may have gone wrong.${NC}\n"
+    printf "${RED}Please note that messages containing ':fixme:' are actually coming from Wine.\nThese ':fixme:' messages are almost certainly not the problem.${NC}\n"
+    printf "${RED}Additionally, you may find this key useful to understand the various stages / modules within CUPL:\n\n\
+CUPL  processor ck \n\
+CUPLX preprocessor cx \n\
+CUPLA source file parser ca \n\
+CUPLB equation fitter cb \n\
+CUPLM minimizer cm \n\
+CUPLC fusemap generator cc \n\
+CSIM  processor sk \n\
+CSIMA logic simulator sa \n \
+
+Finally, references to fit/find are from the Atmel fitters.${NC}
+
+"
+    pause_before_exit
+fi

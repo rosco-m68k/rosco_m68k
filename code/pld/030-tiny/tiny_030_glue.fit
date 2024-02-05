@@ -1,0 +1,733 @@
+Atmel ATF1504 Fitter Version 1918 ,running Sun Feb 04 19:55:04 2024
+
+
+
+
+fit1504
+-i tiny_030_glue.tt2
+-CUPL 
+-dev P1504T100
+-JTAG ON
+
+****** Initial fitting strategy and property ******
+ Netlist_in_file = tiny_030_glue.tt2
+ Netlist_out_file = tiny_030_glue.tt3
+ Jedec_file = tiny_030_glue.jed
+ Vector_file = tiny_030_glue.tmv
+ verilog_file = tiny_030_glue.vt
+ Log_file = tiny_030_glue.fit
+ Device_name = TQFP100
+ Tech_name = ATF1504AS 
+ Package_type = TQFP
+ Preassignment = keep 
+ Security_mode = OFF
+ Pin-Keeper = OFF
+ supporter = CUPL
+ optimize = ON
+ Xor_synthesis =  ON
+ Foldback_logic = OFF
+ Cascade_logic =  on
+ Output_fast = ON
+ SSTL_input = off
+ *******************************
+ Power down pin 1 = OFF
+ Power down pin 2 = OFF
+ power_reset = OFF
+ JTAG = ON
+ TDI pullup = OFF
+ TMS pullup = OFF
+ MC_power = OFF
+ Open_collector = OFF
+ ITD0 = ON
+ ITD1 = ON
+ ITD2 = ON
+ Fast_inlatch = off
+ Latch_synthesis = off 
+ Push_gate = on 
+ Verilog_sim = off 
+ VHDL_sim = off 
+ Out_Edif = off 
+ Logic Doubling = on 
+ ****** End of fitting strategy and property ******
+Info: tiny_030_glue uses 95% of the pins available in device TQFP100
+  If you wish to have more pins available for future logic changes
+  Atmel  recommends using a larger device
+---------------------------------------------------------
+ Fitter_Pass 1, Preassign = KEEP, LOGIC_DOUBLING : ON 
+ ... 
+
+Performing global Output Enable pin assignments ...
+
+Performing global pin assignments ...
+--------------------------------------
+
+
+
+Final global control pins assignment (if applicable)...
+-------------------------------------------------------
+AS assigned to pin  90
+GCLK assigned to pin  87
+HWRST assigned to pin  88
+
+
+
+Performing input pin pre-assignments ...
+------------------------------------
+AS assigned to pin  90
+GCLK assigned to pin  87
+A3 assigned to pin  89
+HWRST assigned to pin  88
+DSACK0.OE equation needs patching.
+1 control equation needs patching
+
+Attempt to place floating signals ...
+------------------------------------
+A16 is placed at pin 14 (MC 1)
+A17 is placed at pin 13 (MC 2)
+A18 is placed at pin 12 (MC 3)
+A19 is placed at pin 10 (MC 4)
+A20 is placed at pin 9 (MC 5)
+A21 is placed at pin 8 (MC 6)
+A22 is placed at pin 6 (MC 7)
+TDI is placed at pin 4 (MC 8)
+A23 is placed at pin 100 (MC 9)
+A24 is placed at pin 99 (MC 10)
+A25 is placed at pin 98 (MC 11)
+A26 is placed at pin 97 (MC 12)
+A27 is placed at pin 96 (MC 13)
+OB_IOSEL1 is placed at pin 94 (MC 14)
+DUASEL is placed at pin 93 (MC 15)
+OB_IOSEL2 is placed at pin 92 (MC 16)
+SIZ0 is placed at pin 37 (MC 17)
+AX2M is placed at feedback node 617 (MC 17)
+A13 is placed at pin 36 (MC 18)
+AX1M is placed at feedback node 618 (MC 18)
+A1 is placed at pin 35 (MC 19)
+DSACK0.OE is placed at feedback node 619 (MC 19)
+A0 is placed at pin 33 (MC 20)
+WDQ0 is placed at feedback node 620 (MC 20)
+IOSEL is placed at pin 32 (MC 21)
+CI is placed at pin 31 (MC 22)
+DSACK1 is placed at pin 30 (MC 23)
+RAM0_L is placed at pin 29 (MC 24)
+RAM1_U is placed at pin 25 (MC 25)
+RAM1_L is placed at pin 23 (MC 26)
+RAM0_U is placed at pin 21 (MC 27)
+ODDROM is placed at pin 20 (MC 28)
+EVENROM is placed at pin 19 (MC 29)
+WDEN is placed at foldback expander node 329 (MC 29)
+A28 is placed at pin 17 (MC 30)
+RAM0 is placed at foldback expander node 330 (MC 30)
+EXPSEL is placed at pin 16 (MC 31)
+RAM1 is placed at foldback expander node 331 (MC 31)
+TMS is placed at pin 15 (MC 32)
+WDQ1 is placed at feedback node 632 (MC 32)
+A29 is placed at pin 40 (MC 33)
+RESET is placed at pin 41 (MC 34)
+AX4M is placed at feedback node 634 (MC 34)
+A30 is placed at pin 42 (MC 35)
+FC0 is placed at pin 44 (MC 36)
+WDQ2 is placed at feedback node 636 (MC 36)
+A31 is placed at pin 45 (MC 37)
+FC1 is placed at pin 46 (MC 38)
+WDQ3 is placed at feedback node 638 (MC 38)
+WR is placed at pin 47 (MC 39)
+RUNLED is placed at pin 48 (MC 40)
+DUAIACK is placed at pin 52 (MC 41)
+IACK is placed at pin 54 (MC 42)
+BERR is placed at pin 56 (MC 43)
+UUDS is placed at pin 57 (MC 44)
+UMDS is placed at pin 58 (MC 45)
+LMDS is placed at pin 60 (MC 46)
+LLDS is placed at pin 61 (MC 47)
+TCK is placed at pin 62 (MC 48)
+PBERR is placed at feedback node 648 (MC 48)
+FB_3_WDEN is placed at foldback expander node 348 (MC 48)
+RW is placed at pin 63 (MC 49)
+A7 is placed at pin 64 (MC 50)
+A8 is placed at pin 65 (MC 51)
+A9 is placed at pin 67 (MC 52)
+A10 is placed at pin 68 (MC 53)
+A11 is placed at pin 69 (MC 54)
+A12 is placed at pin 71 (MC 55)
+TDO is placed at pin 73 (MC 56)
+BQ1 is placed at feedback node 656 (MC 56)
+SIZ1 is placed at pin 75 (MC 57)
+A14 is placed at pin 76 (MC 58)
+A15 is placed at pin 79 (MC 59)
+A6 is placed at pin 80 (MC 60)
+HALT is placed at pin 81 (MC 61)
+BQ0 is placed at feedback node 661 (MC 61)
+FC2 is placed at pin 83 (MC 62)
+BQ2 is placed at feedback node 662 (MC 62)
+A2 is placed at pin 84 (MC 63)
+BOOT is placed at feedback node 663 (MC 63)
+DSACK0 is placed at pin 85 (MC 64)
+
+                                       O     O                                                  
+                                       B     B                                                  
+                                       _     _                                                  
+                                       I  D  I                    D                             
+                                       O  U  O           H        S                             
+                                       S  A  S           W  G     A           H                 
+                     A  A  A  A  A  G  E  S  E  V        R  C  G  C     F  V  A     A        A  
+                     2  2  2  2  2  N  L  E  L  C  A  A  S  L  N  K  A  C  C  L  A  1  N  N  1  
+                     3  4  5  6  7  D  1  L  2  C  S  3  T  K  D  0  2  2  C  T  6  5  C  C  4  
+                 +------------------------------------------------------------------------------+
+                 | 100 99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80 79 78 77 76  |
+               NC| 1                                                                         75 |SIZ1
+               NC| 2                                                                         74 |GND
+              VCC| 3                                                                         73 |TDO
+              TDI| 4                                                                         72 |NC
+               NC| 5                                                                         71 |A12
+              A22| 6                                                                         70 |NC
+               NC| 7                                                                         69 |A11
+              A21| 8                                                                         68 |A10
+              A20| 9                                                                         67 |A9
+              A19| 10                                                                        66 |VCC
+              GND| 11                                                                        65 |A8
+              A18| 12                                ATF1504                                 64 |A7
+              A17| 13                             100-Lead TQFP                              63 |RW
+              A16| 14                                                                        62 |TCK
+              TMS| 15                                                                        61 |LLDS
+           EXPSEL| 16                                                                        60 |LMDS
+              A28| 17                                                                        59 |GND
+              VCC| 18                                                                        58 |UMDS
+          EVENROM| 19                                                                        57 |UUDS
+           ODDROM| 20                                                                        56 |BERR
+           RAM0_U| 21                                                                        55 |NC
+               NC| 22                                                                        54 |IACK
+           RAM1_L| 23                                                                        53 |NC
+               NC| 24                                                                        52 |DUAIACK
+           RAM1_U| 25                                                                        51 |VCC
+                 |  26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50  |
+                 +------------------------------------------------------------------------------+
+                     G  N  N  R  D  C  I  A  V  A  A  S  G  V  A  R  A  G  F  A  F  W  R  N  N  
+                     N  C  C  A  S  I  O  0  C  1  1  I  N  C  2  E  3  N  C  3  C  R  U  C  C  
+                     D        M  A     S     C     3  Z  D  C  9  S  0  D  0  1  1     N        
+                              0  C     E              0           E                    L        
+                              _  K     L                          T                    E        
+                              L  1                                                     D        
+
+
+
+
+VCC = Supply Voltage pin for the device core
+
+GND = GND pin which must be connected to ground
+
+TMS,TDI,TDO,TDI = JTAG pins reserved for JTAG interface
+
+NC = Unused I/O pins which must be unconnected on the board
+
+Universal-Interconnect-Multiplexer assignments
+------------------------------------------------
+FanIn assignment for block A [27]
+{
+A25,A16,A6,A31,A28,A17,A7,A24,A8,A14,A18,A23,A9,A15,A26,A19,A27,A20,A29,A30,A11,A12,A22,A13,A21,A10,
+LLDS,
+}
+Multiplexer assignment for block A
+A25			(MC11	P)   : MUX 0		Ref (A11p)
+A16			(MC2	P)   : MUX 1		Ref (A1p)
+A6			(MC27	P)   : MUX 2		Ref (D60p)
+A31			(MC18	P)   : MUX 3		Ref (C37p)
+A28			(MC15	P)   : MUX 4		Ref (B30p)
+A17			(MC3	P)   : MUX 5		Ref (A2p)
+LLDS			(MC1	P)   : MUX 6		Ref (C47p)
+A7			(MC19	P)   : MUX 7		Ref (D50p)
+A24			(MC10	P)   : MUX 8		Ref (A10p)
+A8			(MC20	P)   : MUX 9		Ref (D51p)
+A14			(MC25	P)   : MUX 10		Ref (D58p)
+A18			(MC4	P)   : MUX 11		Ref (A3p)
+A23			(MC9	P)   : MUX 12		Ref (A9p)
+A9			(MC21	P)   : MUX 13		Ref (D52p)
+A15			(MC26	P)   : MUX 14		Ref (D59p)
+A26			(MC12	P)   : MUX 16		Ref (A12p)
+A19			(MC5	P)   : MUX 17		Ref (A4p)
+A27			(MC13	P)   : MUX 20		Ref (A13p)
+A20			(MC6	P)   : MUX 21		Ref (A5p)
+A29			(MC16	P)   : MUX 23		Ref (C33p)
+A30			(MC17	P)   : MUX 25		Ref (C35p)
+A11			(MC23	P)   : MUX 27		Ref (D54p)
+A12			(MC24	P)   : MUX 29		Ref (D55p)
+A22			(MC8	P)   : MUX 31		Ref (A7p)
+A13			(MC14	P)   : MUX 33		Ref (B18p)
+A21			(MC7	P)   : MUX 35		Ref (A6p)
+A10			(MC22	P)   : MUX 37		Ref (D53p)
+
+FanIn assignment for block B [27]
+{
+A25,A28,A24,A23,A26,A31,AS,A27,A20,A29,A30,AX1M,A22,AX2M,A21,AX4M,
+BOOT,
+EVENROM,
+IOSEL,IACK,
+LLDS,LMDS,
+ODDROM,
+UMDS,UUDS,
+WDQ1,WDQ0,
+}
+Multiplexer assignment for block B
+A25			(MC20	P)   : MUX 0		Ref (A11p)
+IOSEL			(MC4	P)   : MUX 1		Ref (B21p)
+EVENROM			(MC6	P)   : MUX 2		Ref (B29p)
+A28			(MC23	P)   : MUX 4		Ref (B30p)
+WDQ1			(MC7	FB)  : MUX 5		Ref (B32fb)
+LLDS			(MC13	P)   : MUX 6		Ref (C47p)
+A24			(MC19	P)   : MUX 8		Ref (A10p)
+LMDS			(MC12	P)   : MUX 10		Ref (C46p)
+A23			(MC18	P)   : MUX 12		Ref (A9p)
+UMDS			(MC11	P)   : MUX 14		Ref (C45p)
+A26			(MC21	P)   : MUX 16		Ref (A12p)
+A31			(MC26	P)   : MUX 17		Ref (C37p)
+AS			(MC27	FB)  : MUX 18		Ref (OE2)
+A27			(MC22	P)   : MUX 20		Ref (A13p)
+A20			(MC15	P)   : MUX 21		Ref (A5p)
+ODDROM			(MC5	P)   : MUX 22		Ref (B28p)
+A29			(MC24	P)   : MUX 23		Ref (C33p)
+UUDS			(MC10	P)   : MUX 24		Ref (C44p)
+A30			(MC25	P)   : MUX 25		Ref (C35p)
+AX1M			(MC2	FB)  : MUX 26		Ref (B18fb)
+A22			(MC17	P)   : MUX 27		Ref (A7p)
+AX2M			(MC1	FB)  : MUX 28		Ref (B17fb)
+IACK			(MC9	P)   : MUX 30		Ref (C42p)
+A21			(MC16	P)   : MUX 35		Ref (A6p)
+WDQ0			(MC3	FB)  : MUX 36		Ref (B20fb)
+AX4M			(MC8	FB)  : MUX 38		Ref (C34fb)
+BOOT			(MC14	FB)  : MUX 39		Ref (D63fb)
+
+FanIn assignment for block C [27]
+{
+A16,A17,A18,AS,A19,AX2M,AX1M,A1,AX4M,A2,A0,A3,
+BOOT,
+FC1,FC0,FC2,
+HWRST,HALT,
+IACK,
+PBERR,
+RW,
+SIZ1,SIZ0,
+WDQ3,WDQ1,WDQ2,WDQ0,
+}
+Multiplexer assignment for block C
+FC1			(MC20	P)   : MUX 1		Ref (C38p)
+WDQ3			(MC7	FB)  : MUX 2		Ref (C38fb)
+A16			(MC12	P)   : MUX 3		Ref (A1p)
+A17			(MC13	P)   : MUX 5		Ref (A2p)
+A18			(MC14	P)   : MUX 7		Ref (A3p)
+SIZ1			(MC22	P)   : MUX 8		Ref (D57p)
+WDQ1			(MC4	FB)  : MUX 9		Ref (B32fb)
+RW			(MC21	P)   : MUX 11		Ref (D49p)
+AS			(MC25	FB)  : MUX 12		Ref (OE2)
+HWRST			(MC27	FB)  : MUX 13		Ref (OE1)
+PBERR			(MC9	FB)  : MUX 15		Ref (C48fb)
+A19			(MC15	P)   : MUX 17		Ref (A4p)
+WDQ2			(MC6	FB)  : MUX 20		Ref (C36fb)
+SIZ0			(MC16	P)   : MUX 21		Ref (B17p)
+IACK			(MC8	P)   : MUX 22		Ref (C42p)
+FC0			(MC19	P)   : MUX 23		Ref (C36p)
+AX2M			(MC1	FB)  : MUX 24		Ref (B17fb)
+AX1M			(MC2	FB)  : MUX 26		Ref (B18fb)
+HALT			(MC10	P)   : MUX 28		Ref (D61p)
+FC2			(MC23	P)   : MUX 30		Ref (D62p)
+A1			(MC17	P)   : MUX 31		Ref (B19p)
+AX4M			(MC5	FB)  : MUX 32		Ref (C34fb)
+A2			(MC24	P)   : MUX 34		Ref (D63p)
+A0			(MC18	P)   : MUX 35		Ref (B20p)
+WDQ0			(MC3	FB)  : MUX 36		Ref (B20fb)
+A3			(MC26	FB)  : MUX 38		Ref (GCLR)
+BOOT			(MC11	FB)  : MUX 39		Ref (D63fb)
+
+FanIn assignment for block D [6]
+{
+BQ2,BQ1,BQ0,
+DSACK0.OE,
+HALT,
+RESET,
+}
+Multiplexer assignment for block D
+RESET			(MC2	P)   : MUX 21		Ref (C34p)
+BQ2			(MC6	FB)  : MUX 23		Ref (D62fb)
+BQ1			(MC3	FB)  : MUX 24		Ref (D56fb)
+BQ0			(MC4	FB)  : MUX 25		Ref (D61fb)
+HALT			(MC5	P)   : MUX 28		Ref (D61p)
+DSACK0.OE		(MC1	FB)  : MUX 30		Ref (B19fb)
+
+Creating JEDEC file tiny_030_glue.jed ...
+
+TQFP100 programmed logic:
+-----------------------------------
+AX4M.D = !AX4M.Q;
+
+BERR = 0;
+
+BOOT.D = ((BQ2.Q & RESET.PIN)
+	# (BQ2.Q & HALT.PIN));
+
+BQ0.D = (!HALT.PIN & !RESET.PIN);
+
+BQ1.D = ((!BQ0.Q & RESET.PIN)
+	# (!BQ0.Q & HALT.PIN));
+
+BQ2.D = ((BQ1.Q & RESET.PIN)
+	# (BQ1.Q & HALT.PIN));
+
+DSACK0 = 0;
+
+!DUAIACK = (!A1 & !A2 & A3 & A16 & A17 & A18 & A19 & !AS & FC0 & FC1 & FC2 & !HWRST);
+
+CI = 0;
+
+DSACK1 = 0;
+
+!IACK = (A16 & A17 & A18 & A19 & !AS & FC0 & FC1 & FC2 & !HWRST);
+
+HALT = 0;
+
+LLDS = ((!RW & !SIZ0 & SIZ1 & !A1)
+	# (!RW & SIZ0 & !A1 & !A0)
+	# !BOOT.Q
+	# (!RW & SIZ0 & !SIZ1 & !A0)
+	# (!RW & SIZ0 & !SIZ1 & !A1));
+
+LMDS = ((!RW & !A1 & !SIZ0 & SIZ1 & !A0)
+	# !BOOT.Q
+	# (!RW & A1 & A0)
+	# (!RW & !A1 & SIZ0 & !SIZ1));
+
+RESET = 0;
+
+RUNLED = !HALT.PIN;
+
+UMDS = (!BOOT.Q
+	# (!RW & A1)
+	# (!RW & !A0 & SIZ0 & !SIZ1));
+
+!UUDS = ((BOOT.Q & !A0 & !A1)
+	# (BOOT.Q & RW));
+
+WR = !RW;
+
+ATM_150 = (AX4M.Q & AX2M.Q);
+
+!DUASEL = (!LLDS & !A6 & !A7 & !A8 & !A9 & !A10 & !A11 & !A12 & !A13 & !A14 & !A15 & !A16 & !A17 & !A18 & A19 & A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31);
+
+!EVENROM = ((IACK & !LMDS & !AS & !BOOT.Q)
+	# (IACK & !LMDS & !AS & !A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31));
+
+!IOSEL = (IACK & A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31);
+
+!OB_IOSEL2 = (!LLDS & !A6 & A7 & !A8 & !A9 & !A10 & !A11 & !A12 & !A13 & !A14 & !A15 & !A16 & !A17 & !A18 & A19 & A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31);
+
+!OB_IOSEL1 = (!LLDS & A6 & !A7 & !A8 & !A9 & !A10 & !A11 & !A12 & !A13 & !A14 & !A15 & !A16 & !A17 & !A18 & A19 & A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31);
+
+!RAM1 = (IACK & A21 & !A22 & !A23 & !A24 & !A25 & !A26 & !A27 & !A28 & !A29 & !A30 & !A31 & !AS & BOOT.Q);
+
+!ODDROM = ((IACK & !LLDS & !AS & !BOOT.Q)
+	# (IACK & !LLDS & !AS & !A20 & A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31));
+
+!RAM0 = (IACK & !A21 & !A22 & !A23 & !A24 & !A25 & !A26 & !A27 & !A28 & !A29 & !A30 & !A31 & !AS & BOOT.Q);
+
+!WDEN = (IACK & AS);
+
+AX2M.D = AX2M.Q $ AX4M.Q;
+
+AX1M.D = ATM_150 $ AX1M.Q;
+
+RAM0_L = (RAM0
+	# (LLDS & LMDS));
+
+EXPSEL = ((!A22 & !A23 & !A24 & !A25 & !A26 & !A27 & !A28 & !A29 & !A30 & !A31)
+	# (A21 & A22 & A23 & A24 & A25 & A26 & A27 & A28 & A29 & A30 & A31 & !A20)
+	# AS
+	# !BOOT.Q
+	# !IACK
+	# !IOSEL);
+
+PBERR.D = ((WDEN & PBERR.Q)
+	# (WDEN & WDQ3.Q));
+
+RAM0_U = ((UMDS & UUDS)
+	# RAM0);
+
+RAM1_L = (RAM1
+	# (LLDS & LMDS));
+
+RAM1_U = ((UMDS & UUDS)
+	# RAM1);
+
+WDQ0.D = ((WDEN & !WDQ0.Q & AX4M.Q & AX2M.Q & AX1M.Q)
+	# (WDEN & WDQ0.Q & !AX1M.Q)
+	# (WDEN & WDQ0.Q & !AX2M.Q)
+	# (WDEN & WDQ0.Q & !AX4M.Q));
+
+WDQ1.D = ((WDEN & WDQ1.Q & !AX4M.Q)
+	# (WDEN & !WDQ1.Q & AX2M.Q & AX4M.Q & AX1M.Q & WDQ0.Q)
+	# (WDEN & WDQ1.Q & !WDQ0.Q)
+	# (WDEN & WDQ1.Q & !AX1M.Q)
+	# (WDEN & WDQ1.Q & !AX2M.Q));
+
+WDQ2.D = ((WDEN & WDQ2.Q & !AX2M.Q)
+	# (WDEN & WDQ2.Q & !AX4M.Q)
+	# (WDEN & !WDQ2.Q & AX1M.Q & AX2M.Q & AX4M.Q & WDQ0.Q & WDQ1.Q)
+	# (WDEN & WDQ2.Q & !WDQ1.Q)
+	# (WDEN & WDQ2.Q & !WDQ0.Q)
+	# (WDEN & WDQ2.Q & !AX1M.Q));
+
+WDQ3.D = ((WDEN & WDQ3.Q & !AX1M.Q)
+	# (WDEN & WDQ3.Q & !AX2M.Q)
+	# (WDEN & WDQ3.Q & !AX4M.Q)
+	# (WDEN & !WDQ3.Q & WDQ0.Q & AX1M.Q & AX2M.Q & AX4M.Q & WDQ1.Q & WDQ2.Q)
+	# (WDEN & WDQ3.Q & !WDQ2.Q)
+	# (WDEN & WDQ3.Q & !WDQ1.Q)
+	# (WDEN & WDQ3.Q & !WDQ0.Q));
+
+AX4M.C = GCLK;
+
+BERR.OE = PBERR.Q;
+
+BOOT.C = AS;
+
+BOOT.AR = (!HALT.PIN & !RESET.PIN);
+
+BQ0.C = AS;
+
+BQ0.AP = (!HALT.PIN & !RESET.PIN);
+
+BQ1.C = AS;
+
+BQ1.AR = (!HALT.PIN & !RESET.PIN);
+
+BQ2.C = AS;
+
+BQ2.AR = (!HALT.PIN & !RESET.PIN);
+
+!DSACK0.OE = (!IACK
+	# (EVENROM & ODDROM & RAM0 & RAM1));
+
+CI.OE = !IOSEL;
+
+DSACK1.OE = (IACK & !A22 & !A23 & !A24 & !A25 & !A26 & !A27 & !A28 & !A29 & !A30 & !A31 & !AS & BOOT.Q);
+
+HALT.OE = HWRST;
+
+RESET.OE = HWRST;
+
+AX2M.C = GCLK;
+
+AX1M.C = GCLK;
+
+PBERR.C = GCLK;
+
+WDQ0.C = GCLK;
+
+WDQ1.C = GCLK;
+
+WDQ2.C = GCLK;
+
+WDQ3.C = GCLK;
+
+
+TQFP100 Pin/Node Placement:
+------------------------------------
+Pin 4  = TDI; /* MC 8 */
+Pin 6  = A22; /* MC 7 */
+Pin 8  = A21; /* MC 6 */
+Pin 9  = A20; /* MC 5 */
+Pin 10 = A19; /* MC  4 */
+Pin 12 = A18; /* MC  3 */
+Pin 13 = A17; /* MC  2 */
+Pin 14 = A16; /* MC  1 */
+Pin 15 = TMS; /* MC 32 */ 
+Pin 16 = EXPSEL; /* MC 31 */ 
+Pin 17 = A28; /* MC 30 */ 
+Pin 19 = EVENROM; /* MC 29 */ 
+Pin 20 = ODDROM; /* MC 28 */ 
+Pin 21 = RAM0_U; /* MC 27 */ 
+Pin 23 = RAM1_L; /* MC 26 */ 
+Pin 25 = RAM1_U; /* MC 25 */ 
+Pin 29 = RAM0_L; /* MC 24 */ 
+Pin 30 = DSACK1; /* MC 23 */ 
+Pin 31 = CI; /* MC 22 */ 
+Pin 32 = IOSEL; /* MC 21 */ 
+Pin 33 = A0; /* MC 20 */ 
+Pin 35 = A1; /* MC 19 */ 
+Pin 36 = A13; /* MC 18 */ 
+Pin 37 = SIZ0; /* MC 17 */ 
+Pin 40 = A29; /* MC 33 */ 
+Pin 41 = RESET; /* MC 34 */ 
+Pin 42 = A30; /* MC 35 */ 
+Pin 44 = FC0; /* MC 36 */ 
+Pin 45 = A31; /* MC 37 */ 
+Pin 46 = FC1; /* MC 38 */ 
+Pin 47 = WR; /* MC 39 */ 
+Pin 48 = RUNLED; /* MC 40 */ 
+Pin 52 = DUAIACK; /* MC 41 */ 
+Pin 54 = IACK; /* MC 42 */ 
+Pin 56 = BERR; /* MC 43 */ 
+Pin 57 = UUDS; /* MC 44 */ 
+Pin 58 = UMDS; /* MC 45 */ 
+Pin 60 = LMDS; /* MC 46 */ 
+Pin 61 = LLDS; /* MC 47 */ 
+Pin 62 = TCK; /* MC 48 */ 
+Pin 63 = RW; /* MC 49 */ 
+Pin 64 = A7; /* MC 50 */ 
+Pin 65 = A8; /* MC 51 */ 
+Pin 67 = A9; /* MC 52 */ 
+Pin 68 = A10; /* MC 53 */ 
+Pin 69 = A11; /* MC 54 */ 
+Pin 71 = A12; /* MC 55 */ 
+Pin 73 = TDO; /* MC 56 */ 
+Pin 75 = SIZ1; /* MC 57 */ 
+Pin 76 = A14; /* MC 58 */ 
+Pin 79 = A15; /* MC 59 */ 
+Pin 80 = A6; /* MC 60 */ 
+Pin 81 = HALT; /* MC 61 */ 
+Pin 83 = FC2; /* MC 62 */ 
+Pin 84 = A2; /* MC 63 */ 
+Pin 85 = DSACK0; /* MC 64 */ 
+Pin 87 = GCLK;
+Pin 88 = HWRST;
+Pin 89 = A3;
+Pin 90 = AS;
+Pin 92 = OB_IOSEL2; /* MC 16 */ 
+Pin 93 = DUASEL; /* MC 15 */ 
+Pin 94 = OB_IOSEL1; /* MC 14 */ 
+Pin 96 = A27; /* MC 13 */ 
+Pin 97 = A26; /* MC 12 */ 
+Pin 98 = A25; /* MC 11 */ 
+Pin 99 = A24; /* MC 10 */ 
+Pin 100 = A23; /* MC  9 */
+PINNODE 329 = WDEN; /* MC 29 Foldback */
+PINNODE 330 = RAM0; /* MC 30 Foldback */
+PINNODE 331 = RAM1; /* MC 31 Foldback */
+PINNODE 348 = FB_3_WDEN; /* MC 48 Foldback */
+PINNODE 617 = AX2M; /* MC 17 Feedback */
+PINNODE 618 = AX1M; /* MC 18 Feedback */
+PINNODE 619 = DSACK0.OE; /* MC 19 Feedback */
+PINNODE 620 = WDQ0; /* MC 20 Feedback */
+PINNODE 632 = WDQ1; /* MC 32 Feedback */
+PINNODE 634 = AX4M; /* MC 34 Feedback */
+PINNODE 636 = WDQ2; /* MC 36 Feedback */
+PINNODE 638 = WDQ3; /* MC 38 Feedback */
+PINNODE 648 = PBERR; /* MC 48 Feedback */
+PINNODE 656 = BQ1; /* MC 56 Feedback */
+PINNODE 661 = BQ0; /* MC 61 Feedback */
+PINNODE 662 = BQ2; /* MC 62 Feedback */
+PINNODE 663 = BOOT; /* MC 63 Feedback */
+
+** Resource Usage **
+
+
+DCERP Field = Summary of Allocations.
+|||||
+|||||_Preset [p,-]       ==  p = PT preset, - No Preset.
+||||
+||||__Reset [g,r,-]      ==  g= Global AR, r = PT reset, - No reset.
+|||
+|||___Clock Enable [e,-] ==  e = Product Term, - always enabled.
+||
+||____Clock [c,g,-],     ==  c = Product term, g = Global term, - No Clock.
+|
+|_____Type [C,D,L,T],    ==  Register type C= combin, D=dff, L=latch, T=tff.
+
+For input only = INPUT.
+
+
+SO Pin Options Field = Summary of Allocations.
+||
+||_OpenCol [o,-]      ==  o = Open Collector enabled, - CMOS drive.
+|
+|__Slew [s,f]         ==  Output Slew/Drive rate, s = slow/low, f = fast/hi drive.
+
+
+MCell Pin# Oe   PinDrive  DCERP  FBDrive   DCERP  Foldback  CascadeOut     TotPT SO
+MC1   14   --   A16       INPUT  --               --        --             0     f- 
+MC2   13   --   A17       INPUT  --               --        --             0     f- 
+MC3   12   --   A18       INPUT  --               --        --             0     f- 
+MC4   10   --   A19       INPUT  --               --        --             0     f- 
+MC5   9    --   A20       INPUT  --               --        --             0     f- 
+MC6   8    --   A21       INPUT  --               --        --             0     f- 
+MC7   6    --   A22       INPUT  --               --        --             0     f- 
+MC8   4    --   TDI       INPUT  --               --        --             0     f- 
+MC9   100  --   A23       INPUT  --               --        --             0     f- 
+MC10  99   --   A24       INPUT  --               --        --             0     f- 
+MC11  98   --   A25       INPUT  --               --        --             0     f- 
+MC12  97   --   A26       INPUT  --               --        --             0     f- 
+MC13  96   --   A27       INPUT  --               --        --             0     f- 
+MC14  94   on   OB_IOSEL1 C----  --               --        --             1     f- 
+MC15  93   on   DUASEL    C----  --               --        --             1     f- 
+MC16  92   on   OB_IOSEL2 C----  --               --        --             1     f- 
+MC17  37   --   SIZ0      INPUT  AX2M      Dg---  --        --             2     f- 
+MC18  36   --   A13       INPUT  AX1M      Dg---  --        --             2     f- 
+MC19  35   --   A1        INPUT  DSACK0.OE C----  --        --             2     f- 
+MC20  33   --   A0        INPUT  WDQ0      Dg---  --        --             4     f- 
+MC21  32   on   IOSEL     C----  --               --        --             1     f- 
+MC22  31   PT   CI        C----  --               --        --             1     f- 
+MC23  30   PT   DSACK1    C----  --               --        --             1     f- 
+MC24  29   on   RAM0_L    C----  --               --        --             2     f- 
+MC25  25   on   RAM1_U    C----  --               --        --             2     f- 
+MC26  23   on   RAM1_L    C----  --               --        --             2     f- 
+MC27  21   on   RAM0_U    C----  --               --        --             2     f- 
+MC28  20   on   ODDROM    C----  --               --        --             2     f- 
+MC29  19   on   EVENROM   C----  --               WDEN      --             3     f- 
+MC30  17   --   A28       INPUT  --               RAM0      -> EXPSEL      5     f- 
+MC31  16   on   EXPSEL    C----  --               RAM1      --             3     f- 
+MC32  15   --   TMS       INPUT  WDQ1      Dg---  NA        --             5     f- 
+MC33  40   --   A29       INPUT  --               --        --             0     f- 
+MC34  41   OE0  RESET     C----  AX4M      Dg---  --        --             2     f- 
+MC35  42   --   A30       INPUT  --               --        -> WDQ2        5     f- 
+MC36  44   --   FC0       INPUT  WDQ2      Dg---  --        --             1     f- 
+MC37  45   --   A31       INPUT  --               --        -> WDQ3        5     f- 
+MC38  46   --   FC1       INPUT  WDQ3      Dg---  --        --             2     f- 
+MC39  47   on   WR        C----  --               --        --             1     f- 
+MC40  48   on   RUNLED    C----  --               --        --             1     f- 
+MC41  52   on   DUAIACK   C----  --               --        --             1     f- 
+MC42  54   on   IACK      C----  --               --        --             1     f- 
+MC43  56   PT   BERR      C----  --               --        --             1     f- 
+MC44  57   on   UUDS      C----  --               --        --             2     f- 
+MC45  58   on   UMDS      C----  --               --        --             3     f- 
+MC46  60   on   LMDS      C----  --               --        --             4     f- 
+MC47  61   on   LLDS      C----  --               NA        --             5     f- 
+MC48  62   --   TCK       INPUT  PBERR     Dg---  FB_3_WDEN --             3     f- 
+MC49  63   --   RW        INPUT  --               --        --             0     f- 
+MC50  64   --   A7        INPUT  --               --        --             0     f- 
+MC51  65   --   A8        INPUT  --               --        --             0     f- 
+MC52  67   --   A9        INPUT  --               --        --             0     f- 
+MC53  68   --   A10       INPUT  --               --        --             0     f- 
+MC54  69   --   A11       INPUT  --               --        --             0     f- 
+MC55  71   --   A12       INPUT  --               --        --             0     f- 
+MC56  73   --   TDO       C----  BQ1       Dg-r-  --        --             3     f- 
+MC57  75   --   SIZ1      INPUT  --               --        --             0     f- 
+MC58  76   --   A14       INPUT  --               --        --             0     f- 
+MC59  79   --   A15       INPUT  --               --        --             0     f- 
+MC60  80   --   A6        INPUT  --               --        --             0     f- 
+MC61  81   OE0  HALT      C----  BQ0       Dg--p  --        --             3     f- 
+MC62  83   --   FC2       INPUT  BQ2       Dg-r-  --        --             3     f- 
+MC63  84   --   A2        INPUT  BOOT      Dg-r-  --        --             3     f- 
+MC64  85   PT   DSACK0    C----  --               --        --             1     f- 
+MC0   90        AS        INPUT  --               --        --             0     f- 
+MC0   89        A3        INPUT  --               --        --             0     f- 
+MC0   88        HWRST     INPUT  --               --        --             0     f- 
+MC0   87        GCLK      INPUT  --               --        --             0     f- 
+
+Logic Array Block			Macro Cells	I/O Pins	Foldbacks	TotalPT	FanIN		Cascades
+A: MC1	- MC16		3/16(18%)	16/16(100%)	0/16(0%)	3/80(3%)	27/40(67%)	0
+B: MC17	- MC32		15/16(93%)	16/16(100%)	3/16(18%)	39/80(48%)	27/40(67%)	1
+C: MC33	- MC48		14/16(87%)	16/16(100%)	1/16(6%)	37/80(46%)	27/40(67%)	2
+D: MC49	- MC64		7/16(43%)	16/16(100%)	0/16(0%)	13/80(16%)	6/40(15%)	0
+
+Total dedicated input used:	4/4 	(100%)
+Total I/O pins used		64/64 	(100%)
+Total Macro cells used 		42/64 	(65%)
+Total Flip-Flop used 		12/64 	(18%)
+Total Foldback logic used 	4/64 	(6%)
+Total Nodes+FB/MCells 		43/64 	(67%)
+Total cascade used 		3
+Total input pins 			42
+Total output pins 		26
+Total Pts 				92
+Creating pla file tiny_030_glue.tt3 with 0 inputs 0 outputs, 0 pins 0 nodes and 0 pterms...
+
+----------------  End fitter, Design FITS
+$Device TQFP100 fits; JTAG ON; Secure OFF
+FIT1504 completed in 0.00 seconds

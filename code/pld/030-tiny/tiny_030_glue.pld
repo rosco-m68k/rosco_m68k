@@ -1,0 +1,301 @@
+Name     rosco_1502 ;
+PartNo   00 ;
+Date     03/02/2024 ;
+Revision 01 ;
+Designer ross ;
+Company  The Really Old-School Company Limited ;
+Assembly None ;
+Location  ;
+Device   f1504isptqfp100 ;
+
+property   atmel {cascade_logic=on};
+property   atmel {logic_doubling=on};
+property   atmel {output_fast=on};
+property   atmel {pin_keep=off};
+property   atmel {preassign=keep};
+property   atmel {security=off};
+property   atmel {xor_synthesis=on};
+
+/* *************** INPUT PINS *********************/
+PIN    = A0             ;
+PIN    = A1             ;
+PIN    = A2             ;
+PIN    = A3             ;
+PIN    = A4             /* Not allocated on IC */ ;
+PIN    = A5             /* Not allocated on IC */ ;
+PIN    = A6             ;
+PIN    = A7             ;
+PIN    = A8             ;
+PIN    = A9             ;
+PIN    = A10            ;
+PIN    = A11            ;
+PIN    = A12            ;
+PIN    = A13            ;
+PIN    = A14            ;
+PIN    = A15            ;
+PIN    = A16            ;
+PIN    = A17            ;
+PIN    = A18            ;
+PIN    = A19            ;
+PIN    = A20            ;
+PIN    = A21            ;
+PIN    = A22            ;
+PIN    = A23            ;
+PIN    = A24            ;
+PIN    = A25            ;
+PIN    = A26            ;
+PIN    = A27            ;
+PIN    = A28            ;
+PIN    = A29            ;
+PIN    = A30            ;
+PIN    = A31            ;
+PIN    = RW             ;
+PIN 90 = AS             ;
+PIN    = DS             ;
+PIN    = SIZ0           ;
+PIN    = SIZ1           ;
+PIN 88 = HWRST          /* Active high */ ;
+PIN    = FC0            ;
+PIN    = FC1            ;
+PIN    = FC2            ;
+PIN 87 = GCLK           ;
+
+/* *************** OUTPUT PINS *********************/
+PIN    = RAM0_L         ;
+PIN    = RAM1_L         ;
+PIN    = RAM0_U         ;
+PIN    = RAM1_U         ;
+PIN    = EVENROM        ;
+PIN    = ODDROM         ;
+PIN    = IOSEL          ;
+PIN    = EXPSEL         ;
+PIN    = DUASEL         ;
+PIN    = OB_IOSEL1      ;
+PIN    = OB_IOSEL2      ;
+PIN    = WR             ;
+PIN    = DSACK0         ;
+PIN    = DSACK1         ;
+PIN    = BERR           ;
+PIN    = HALT           ;
+PIN    = RESET          ;
+PIN    = RUNLED         ;
+PIN    = IACK           ;
+PIN    = DUAIACK        ;
+PIN    = CI             ;
+PIN    = LLDS           ;
+PIN    = LMDS           ;
+PIN    = UMDS           ;
+PIN    = UUDS           ;
+
+PINNODE= RAM0;
+PINNODE= RAM1;
+
+/* Boot */
+PINNODE= BQ0;
+PINNODE= BQ1;
+PINNODE= BQ2;
+PINNODE= BOOT;
+
+/* Watchdog */
+PINNODE= AX1M;
+PINNODE= AX2M;
+PINNODE= AX4M;
+PINNODE= WDQ0;
+PINNODE= WDQ1;
+PINNODE= WDQ2;
+PINNODE= WDQ3;
+PINNODE= WDEN;
+PINNODE= PBERR;
+
+/* E clock (extended) */
+PINNODE= EEQ0;
+PINNODE= EEQ1;
+PINNODE= EEQ2;
+PINNODE= EEQ3;
+
+
+FIELD 	address = [A31..A0];
+
+!LLDS       = BOOT & !RW & !SIZ0 & !SIZ1 & !A0 & !A1
+            # BOOT & !RW & !SIZ0 & !SIZ1 & !A0 &  A1
+            # BOOT & !RW & !SIZ0 &  SIZ1 & !A0 &  A1
+            # BOOT & !RW &  SIZ0 &  SIZ1 & !A0 &  A1
+            # BOOT & !RW & !SIZ0 & !SIZ1 &  A0 & !A1
+            # BOOT & !RW &  SIZ0 &  SIZ1 &  A0 & !A1
+            # BOOT & !RW &  A0   &  A1
+            # BOOT &  RW
+            ;
+
+!LMDS       = BOOT & !RW & !SIZ0 & !SIZ1 & !A0 & !A1
+            # BOOT & !RW &  SIZ0 &  SIZ1 & !A0 & !A1
+            # BOOT & !RW & !SIZ0 & !SIZ1 &  A0 & !A1
+            # BOOT & !RW & !SIZ0 &  SIZ1 &  A0 & !A1
+            # BOOT & !RW &  SIZ0 &  SIZ1 &  A0 & !A1
+            # BOOT & !RW & !A0 &  A1
+            # BOOT &  RW
+            ;
+
+!UMDS       = BOOT & !RW & !SIZ0 & !SIZ1 & !A0 & !A1
+            # BOOT & !RW & !SIZ0 &  SIZ1 & !A0 & !A1
+            # BOOT & !RW &  SIZ0 &  SIZ1 & !A0 & !A1
+            # BOOT & !RW &  A0 & !A1
+            # BOOT &  RW
+            ;
+
+!UUDS       = BOOT & !RW & !A0 & !A1
+            # BOOT &  RW
+            ;
+
+!RAM0       =  address:[00000000..001fffff] & IACK & !AS &  BOOT;
+!RAM1       =  address:[00200000..003fffff] & IACK & !AS &  BOOT;
+
+!RAM0_L     = !RAM0 & !LLDS
+            # !RAM0 & !LMDS
+            ;
+
+!RAM0_U     = !RAM0 & !UMDS
+            # !RAM0 & !UUDS
+            ;
+
+!RAM1_L     = !RAM1 & !LLDS
+            # !RAM1 & !LMDS
+            ;
+
+!RAM1_U     = !RAM1 & !UMDS
+            # !RAM1 & !UUDS
+            ;
+
+!ROM        = (address:[ffe00000..ffefffff] & IACK & !AS &  BOOT)
+            # (IACK & !AS & !BOOT)
+            ;
+
+!EVENROM    = (address:[ffe00000..ffefffff] & IACK & !AS &  BOOT & !LMDS)
+            # (IACK & !AS & !LMDS & !BOOT)
+            ;
+
+!ODDROM     = (address:[ffe00000..ffefffff] & IACK & !AS &  BOOT & !LLDS)
+            # (IACK & !AS & !LLDS & !BOOT)
+            ;
+
+!IOSEL      =  address:[fff00000..ffffffff] & IACK;
+
+!EXPSEL     =  IOSEL & RAM0 & RAM1 & ROM & IACK & !AS;
+
+!DUASEL     =  address:[fff80000..fff8003f] & !LLDS;
+!OB_IOSEL1  =  address:[fff80040..fff8007f] & !LLDS;
+!OB_IOSEL2  =  address:[fff80080..fff800bf] & !LLDS;
+
+CI          = 'b'0;
+CI.OE       = !IOSEL;
+
+DSACK0      = 'b'0;
+DSACK1      = 'b'0;
+
+/* 8/32-bit ports */
+DSACK0.OE   = (IACK & !EVENROM)
+            # (IACK & !ODDROM)
+            # (IACK & !RAM0)
+            # (IACK & !RAM1)
+            ;
+
+/* 16/32-bit ports */
+DSACK1.OE   = (IACK & !RAM0)
+            # (IACK & !RAM1)
+            ;
+
+WR          = !RW;
+
+HALT        = 'b'0;
+HALT.OE     = HWRST;
+
+RESET       = 'b'0;
+RESET.OE    = HWRST;
+
+RUNLED      = !HALT;
+
+BQ0.CK      = AS;
+BQ0.AR      = !HALT  & !RESET;
+BQ0.D       =  HALT  #  RESET;
+
+BQ1.CK      = AS;
+BQ1.AR      = !HALT  & !RESET;
+BQ1.D       =  HALT  &  BQ0
+            #  RESET &  BQ0
+            ;
+
+BQ2.CK      = AS;
+BQ2.AR      = !HALT  & !RESET;
+BQ2.D       =  HALT  &  BQ1
+            #  RESET &  BQ1
+            ;
+
+BOOT.CK     = AS;
+BOOT.AR     = !HALT  & !RESET;
+BOOT.D      =  HALT  &  BQ2
+            #  RESET &  BQ2
+            ;
+
+!IACK       = !HWRST & FC0 & FC1 & FC2 & !AS & A19 & A18 & A17 & A16;
+!DUAIACK    = !HWRST & FC0 & FC1 & FC2 & !AS & A19 & A18 & A17 & A16 & A3 & !A2 & !A1;
+
+/* Watchdog */
+AX4M.CK     = GCLK;
+AX4M.D      = !AX4M;
+
+AX2M.CK     = GCLK;
+AX2M.D      = (!AX4M &  AX2M)
+            # ( AX4M & !AX2M)
+            ;
+
+AX1M.CK     = GCLK;
+AX1M.D      = ( AX1M & !AX2M)
+            # ( AX1M & !AX4M)
+            # (!AX1M &  AX2M &  AX4M)
+            ;
+
+WDEN        = !AS
+            # !IACK
+            ;
+
+WDQ0.CK     = GCLK;
+WDQ0.D      = (WDEN &  WDQ0 & !AX1M)
+            # (WDEN &  WDQ0 & !AX2M)
+            # (WDEN &  WDQ0 & !AX4M)
+            # (WDEN & !WDQ0 &  AX1M &  AX2M &  AX4M)
+            ;
+
+WDQ1.CK     = GCLK;
+WDQ1.D      = (WDEN &  WDQ1 & !WDQ0)
+            # (WDEN &  WDQ1 & !AX1M)
+            # (WDEN &  WDQ1 & !AX2M)
+            # (WDEN &  WDQ1 & !AX4M)
+            # (WDEN & !WDQ1 &  WDQ0 &  AX1M &  AX2M &  AX4M)
+            ;
+
+WDQ2.CK     = GCLK;
+WDQ2.D      = (WDEN &  WDQ2 & !WDQ1)
+            # (WDEN &  WDQ2 & !WDQ0)
+            # (WDEN &  WDQ2 & !AX1M)
+            # (WDEN &  WDQ2 & !AX2M)
+            # (WDEN &  WDQ2 & !AX4M)
+            # (WDEN & !WDQ2 &  WDQ1 &  WDQ0 &  AX1M &  AX2M &  AX4M)
+            ;
+
+WDQ3.CK     = GCLK;
+WDQ3.D      = (WDEN &  WDQ3 & !WDQ2)
+            # (WDEN &  WDQ3 & !WDQ1)
+            # (WDEN &  WDQ3 & !WDQ0)
+            # (WDEN &  WDQ3 & !AX1M)
+            # (WDEN &  WDQ3 & !AX2M)
+            # (WDEN &  WDQ3 & !AX4M)
+            # (WDEN & !WDQ3 &  WDQ2 &  WDQ1 &  WDQ0 &  AX1M &  AX2M &  AX4M)
+            ;
+
+PBERR.CK    = GCLK;
+PBERR.D     = (WDEN & WDQ3)
+            # (WDEN & PBERR)
+            ;
+
+BERR        = 'b'0;
+BERR.OE     = PBERR;
+
