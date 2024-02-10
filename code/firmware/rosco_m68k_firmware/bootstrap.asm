@@ -257,7 +257,8 @@ INITMEMCOUNT:
     move.l  #.BLOCKSIZE,A0
 .LOOP
     move.l  #.TESTVALUE,(A0)
-    move.l  (A0),D0
+    nop                                 ; NOP freezes instruction execution until pending...
+    move.l  (A0),D0                     ; ... bus cycles complete on MC68020 and above
 
 .POST_TEST:
     tst.b   BERR_FLAG                   ; Was there a bus error?
