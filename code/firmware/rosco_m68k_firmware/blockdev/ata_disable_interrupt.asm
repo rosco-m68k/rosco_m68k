@@ -12,6 +12,8 @@
 ; ASM interrupt disable with bus error check for probing
 ; ------------------------------------------------------------
 
+                section .text
+
 ATA_REG_WR_DEVICE_CTL   equ     28
 
 ; Try to disable the ATA interrupt.
