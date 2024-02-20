@@ -1,24 +1,44 @@
 OUTPUT_FORMAT("elf32-m68k")
 ENTRY(START)
-kram = 0x00001800;
-phys = 0x00E00000;
+
+/* Board memory map */
 MEMORY
 {
-  KRAM : org = kram, l = 2K
-  ROM : org = phys, l = 1M
+  BASERAM : org = 0x00000000, l = 1M
+  EXPRAM  : org = 0x00100000, l = 13M
+  ROMSPC  : org = 0x00E00000, l = 1M
+  IOSPC   : org = 0x00F00000, l = 1M
+}
+
+/* Installed flash memory map */
+MEMORY
+{
+  FLASH   : org = ORIGIN(ROMSPC), l = 256K  /* Minimum flash chip size */
+}
+
+/* Firmware RAM map */
+MEMORY
+{
+  VECTS   : org = 0x00000000, l = 0x000400
+  SDB     : org = 0x00000400, l = 0x000020
+  EFPT    : org = 0x00000420, l = 0x0000E0
+  VDA     : org = 0x00000500, l = 0x000C80
+  KRES1   : org = 0x00001180, l = 0x000680
+  KRES2   : org = 0x00001800, l = 0x000800
+  UMEM    : org = 0x00002000, l = LENGTH(BASERAM) - ORIGIN(BASERAM) - ORIGIN(UMEM)
 }
 
 PROVIDE(STAGE2_LOAD     = 0x000F0000);
-PROVIDE(RAMBASE         = 0x00000000);
-PROVIDE(RAMLIMIT        = 0x00100000);
-PROVIDE(EXPTOP          = phys);
+PROVIDE(RAMBASE         = ORIGIN(BASERAM));
+PROVIDE(RAMLIMIT        = ORIGIN(UMEM)    + LENGTH(UMEM));
+PROVIDE(EXPTOP          = ORIGIN(EXPRAM)  + LENGTH(EXPRAM));
 
-/* minimal items for XANSI in C */
-PROVIDE(_EFP_INPUTCHAR  = 0x00000494);  /* Receive a character via input */
-PROVIDE(_EFP_CHECKINPUT = 0x00000498);  /* Check char ready from input   */
-PROVIDE(XANSI_CON_DATA  = 0x00000500);  /* XANSI data ($0500-$057F)      */
+/* Minimal items for XANSI in C */
+PROVIDE(_EFP_INPUTCHAR  = ORIGIN(EFPT)  + 0x094); /* Receive a character via input  */
+PROVIDE(_EFP_CHECKINPUT = ORIGIN(EFPT)  + 0x098); /* Check char ready from input    */
+PROVIDE(XANSI_CON_DATA  = ORIGIN(VDA)   + 0x000); /* XANSI data ($0500-$057F)       */
 
-PROVIDE(_FIRMWARE_REV   = 0x00E00400);  /* firmware revision code       */
+PROVIDE(_FIRMWARE_REV   = ORIGIN(FLASH) + 0x400); /* Firmware revision code         */
 
 SECTIONS
 {
@@ -34,7 +54,7 @@ SECTIONS
     _zip_end = .;
     . = ALIGN(2);
     _code_end = .;
-  } > ROM
+  } >FLASH
 
   .data :
   {
@@ -44,7 +64,7 @@ SECTIONS
     *(.data*)
     _data_end = .;
     . = ALIGN(2);
-  } > KRAM AT > ROM
+  } >KRES2 AT>FLASH
 
    .bss (NOLOAD) : 
   {
@@ -52,9 +72,7 @@ SECTIONS
     *(.bss*)
     _bss_end = .;
     . = ALIGN(2);
-  } > KRAM
+  } >KRES2
  
   _end = .;
 }
-
-
