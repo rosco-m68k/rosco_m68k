@@ -13,7 +13,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror		\
        -fomit-frame-pointer -fno-delete-null-pointer-checks					\
        $(DEFINES)
 LDFLAGS=-T ./rosco_m68k_translator.ld -Map=$(MAP)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
