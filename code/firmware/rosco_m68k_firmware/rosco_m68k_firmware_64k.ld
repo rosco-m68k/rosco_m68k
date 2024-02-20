@@ -1,3 +1,5 @@
+OUTPUT_FORMAT("elf32-m68k")
+
 /* Board memory map */
 MEMORY
 {

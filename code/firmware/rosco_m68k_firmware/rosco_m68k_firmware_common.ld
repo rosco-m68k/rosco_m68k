@@ -1,4 +1,3 @@
-OUTPUT_FORMAT("elf32-m68k")
 ENTRY(START)
 
 /* Firmware RAM map */
