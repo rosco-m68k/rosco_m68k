@@ -15,7 +15,7 @@ EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os
 LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
