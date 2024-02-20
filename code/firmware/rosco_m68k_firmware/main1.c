@@ -67,7 +67,7 @@ typedef void (*Stage2)(void);
 
 // Linker defines
 extern uint16_t _data_start, _data_end, _code_end, _bss_start, _bss_end;
-extern char _zip_start, _zip_end;
+extern unsigned char _zip_start, _zip_end;
 
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock *)0x400;
 static uint32_t * const init_stack_vector_ptr = (uint32_t *)INIT_STACK_VEC_ADDRESS;
