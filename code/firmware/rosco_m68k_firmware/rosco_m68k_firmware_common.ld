@@ -18,8 +18,8 @@ PROVIDE(RAMLIMIT        = ORIGIN(UMEM)    + LENGTH(UMEM));
 PROVIDE(EXPTOP          = ORIGIN(EXPRAM)  + LENGTH(EXPRAM));
 
 /* Minimal items for XANSI in C */
-PROVIDE(_EFP_INPUTCHAR  = ORIGIN(EFPT)  + 0x094); /* Receive a character via input  */
-PROVIDE(_EFP_CHECKINPUT = ORIGIN(EFPT)  + 0x098); /* Check char ready from input    */
+PROVIDE(_EFP_INPUTCHAR  = ORIGIN(EFPT)  + 0x074); /* Receive a character via input  */
+PROVIDE(_EFP_CHECKINPUT = ORIGIN(EFPT)  + 0x078); /* Check char ready from input    */
 PROVIDE(XANSI_CON_DATA  = ORIGIN(VDA)   + 0x000); /* XANSI data ($0500-$057F)       */
 
 PROVIDE(_FIRMWARE_REV   = ORIGIN(FLASH) + 0x400); /* Firmware revision code         */
