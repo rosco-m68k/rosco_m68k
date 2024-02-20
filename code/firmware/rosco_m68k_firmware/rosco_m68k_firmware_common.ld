@@ -26,36 +26,30 @@ PROVIDE(_FIRMWARE_REV   = ORIGIN(FLASH) + 0x400); /* Firmware revision code     
 
 SECTIONS
 {
-  .text : 
+  .text : ALIGN(4)
   {
     _code = .;
     *(.text*)
-    . = ALIGN(2);
     *(.rodata*)
-    . = ALIGN(2);
     _zip_start = .;
     *(.zipdata)
     _zip_end = .;
-    . = ALIGN(2);
     _code_end = .;
   } >FLASH
 
-  .data :
+  .data : ALIGN(4)
   {
     *(.early_data*)
     _data_start = .;
-    . = ALIGN(2);
     *(.data*)
     _data_end = .;
-    . = ALIGN(2);
   } >KRES2 AT>FLASH
 
-   .bss (NOLOAD) : 
+   .bss (NOLOAD) : ALIGN(4)
   {
     _bss_start = .;
     *(.bss*)
     _bss_end = .;
-    . = ALIGN(2);
   } >KRES2
  
   _end = .;

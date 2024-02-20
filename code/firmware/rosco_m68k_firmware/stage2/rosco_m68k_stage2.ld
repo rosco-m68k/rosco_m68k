@@ -28,14 +28,14 @@ SECTIONS
     _code_end = .;
   } >BASERAM
 
-  .data ALIGN(4) :
+  .data : ALIGN(4)
   {
     _data_start = .;
     *(.data*)
     _data_end = .;
   } >BASERAM
   
-  .bss ALIGN(4) :
+  .bss : ALIGN(4)
   {
     _bss_start = .;
     *(COMMON)
