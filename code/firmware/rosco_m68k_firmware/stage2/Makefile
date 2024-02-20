@@ -1,6 +1,6 @@
 # Make rosco_m68k programs
 # 
-# Copyright (c)2020 Ross Bamford
+# Copyright (c)2020-2024 Ross Bamford
 # See LICENSE
 
 CPU?=68010
