@@ -46,8 +46,10 @@ SECTIONS
   {
     *(.early_data*)
     _data_start = .;
+    _data_load_start = _data_start - ADDR(.data) + LOADADDR(.data);
     *(.data*)
     _data_end = .;
+    _data_load_end = _data_end - ADDR(.data) + LOADADDR(.data);
   } >KRES2 AT>FLASH
 
    .bss (NOLOAD) : ALIGN(4)
