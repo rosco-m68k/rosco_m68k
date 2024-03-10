@@ -463,7 +463,7 @@
       "idf": "",
       "netlist": "rosco_m68k.net",
       "specctra_dsn": "../rosco_m68k.dsn",
-      "step": "",
+      "step": "rosco_m68k.step",
       "vrml": ""
     },
     "page_layout_descr_file": ""
