@@ -6,11 +6,13 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
 ;                     |_____|
 ; ------------------------------------------------------------
-; Copyright (c) 2023 Ross Bamford & Contributors
+; Copyright (c) 2023-2024 Ross Bamford & Contributors
 ; MIT License
 ;
 ; ASM interrupt disable with bus error check for probing
 ; ------------------------------------------------------------
+
+                section .text
 
 ATA_REG_WR_DEVICE_CTL   equ     28
 

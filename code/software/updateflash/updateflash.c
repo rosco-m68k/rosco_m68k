@@ -33,7 +33,7 @@ extern void reboot_to_init();
 static bool write_boot_rom(void *buffer, uint32_t size) {
     bool result = false;
     uint8_t next_sector = 0;
-    int half_size = size / 2;
+    int half_size = (size + 1) / 2;
     uint8_t *cbuf = (uint8_t*)buffer;
 
     for (int i = 0; i < half_size; i++) {

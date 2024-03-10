@@ -1,6 +1,6 @@
 # Make rosco_m68k ROM images
 # 
-# Copyright (c)2019-2023 Ross Bamford
+# Copyright (c)2019-2024 Ross Bamford
 # See LICENSE
 
 CPU?=68000
@@ -13,7 +13,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
        -fomit-frame-pointer -fno-delete-null-pointer-checks							\
        $(DEFINES)
 LDFLAGS=-Map=$(MAP)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot

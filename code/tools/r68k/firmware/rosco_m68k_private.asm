@@ -5,7 +5,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
 ;                     |_____|       firmware v2
 ;------------------------------------------------------------
-; Copyright (c)2019-2022 Ross Bamford and contributors
+; Copyright (c)2019-2024 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
 ; Global equates for firmware code
@@ -30,10 +30,6 @@ VECTORS_LOAD    equ     $00000000
 ; Bits we use in the firmware reserved area (non-BSS).
 BERR_SAVED      equ     $1180       ; N.B. Duplicated in machine.h - must be kept in sync
 BERR_FLAG       equ     $1184       ; N.B. Duplicated in machine.h - must be kept in sync
-
-; Memory layout
-RAMBASE         equ     $0          ; Base address for RAM
-RAMLIMIT        equ     $100000     ; Limit of onboard RAM
 
 ; Char devices
 C_DEVICE_SIZE   equ     $20         ; Size of single device block (**must** be a multiple of 4!)
