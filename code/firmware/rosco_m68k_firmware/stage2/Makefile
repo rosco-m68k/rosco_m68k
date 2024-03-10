@@ -1,6 +1,6 @@
 # Make rosco_m68k programs
 # 
-# Copyright (c)2020 Ross Bamford
+# Copyright (c)2020-2024 Ross Bamford
 # See LICENSE
 
 CPU?=68010
@@ -15,7 +15,7 @@ EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os
 LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
+ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 AS=vasmm68k_mot
