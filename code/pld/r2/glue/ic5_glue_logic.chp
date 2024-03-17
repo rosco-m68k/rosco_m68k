@@ -7,7 +7,7 @@
                           |                 |
                     IOSEL |  2           23 | DUIACK
                           |                 |
-                    HWRST |  3           22 | ANYIACK
+                    HWRST |  3           22 | CPUSP
                           |                 |
                       FC2 |  4           21 | BOOT
                           |                 |

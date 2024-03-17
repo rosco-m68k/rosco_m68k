@@ -23,7 +23,7 @@
   19   | BQ1      | Output
   20   | BQ2      | Output
   21   | BOOT     | Output
-  22   | ANYIACK  | Output
+  22   | CPUSP    | Output
   23   | DUIACK   | Output
   24   | VCC      | VCC
 

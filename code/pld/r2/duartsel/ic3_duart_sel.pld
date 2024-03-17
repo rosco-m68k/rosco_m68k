@@ -2,9 +2,12 @@ GAL22V10
 DUARTSEL
 
 A6    A7    A8    A9    A10   A11   A12    A13     A14   A15    A16   GND
-NC    A19   NC    A17   A18   LDS   IOSEL  DUASEL  NC    NC     NC    VCC
+NC    A19   NC    A17   A18   LDS   IOSEL  DUASEL  FC0   FC1    FC2   VCC
 
-/DUASEL     = /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
+/DUASEL     =  FC0 * /FC1 * /FC2 * /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
+            + /FC0 *  FC1 * /FC2 * /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
+            +  FC0 * /FC1 *  FC2 * /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
+            + /FC0 *  FC1 *  FC2 * /A6 * /A7 * /A8 * /A9 * /A10 * /A11 * /A12 * /A13 * /A14 * /A15 * /A16 * /A17 * /A18 * /A19 * /LDS * /IOSEL
 
 DESCRIPTION
 

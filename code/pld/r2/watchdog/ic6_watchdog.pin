@@ -4,8 +4,8 @@
 -----------------------------
    1   | CLK      | Clock/Input
    2   | AS       | Input
-   3   | IACK     | Input
-   4   | NC       | Input
+   3   | CPUSP    | Input
+   4   | A19      | Input
    5   | NC       | Input
    6   | NC       | Input
    7   | NC       | Input
