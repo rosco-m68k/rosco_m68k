@@ -3,7 +3,7 @@
 AR
   0  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 23 = FC2          S0 = 0   S1 = 0
+Pin 23 = NC           S0 = 0   S1 = 0
   1  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   2  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -14,7 +14,7 @@ Pin 23 = FC2          S0 = 0   S1 = 0
   8  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   9  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 22 = FC1          S0 = 0   S1 = 0
+Pin 22 = NC           S0 = 0   S1 = 0
  10  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  11  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -27,7 +27,7 @@ Pin 22 = FC1          S0 = 0   S1 = 0
  19  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  20  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 21 = FC0          S0 = 0   S1 = 0
+Pin 21 = NC           S0 = 0   S1 = 0
  21  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  22  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  23  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -44,10 +44,10 @@ Pin 21 = FC0          S0 = 0   S1 = 0
 
 Pin 20 = DUASEL       S0 = 0   S1 = 0
  34  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 35  -x-x -x-x -xx- -x-- -x-x -x-x -x-x -x-x -x-- -x-x -x--
- 36  -x-x -xx- -x-x -x-- -x-x -x-x -x-x -x-x -x-- -x-x -x--
- 37  -xx- -x-x -xx- -x-- -x-x -x-x -x-x -x-x -x-- -x-x -x--
- 38  -xx- -xx- -x-x -x-- -x-x -x-x -x-x -x-x -x-- -x-x -x--
+ 35  -x-- -x-- -x-- -x-- -x-x -x-x -x-x -x-x -x-- -x-x -x--
+ 36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  40  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  41  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

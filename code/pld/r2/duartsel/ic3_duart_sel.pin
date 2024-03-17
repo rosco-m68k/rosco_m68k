@@ -22,8 +22,8 @@
   18   | LDS      | Input
   19   | IOSEL    | Input
   20   | DUASEL   | Output
-  21   | FC0      | Input
-  22   | FC1      | Input
-  23   | FC2      | Input
+  21   | NC       | NC
+  22   | NC       | NC
+  23   | NC       | NC
   24   | VCC      | VCC
 
