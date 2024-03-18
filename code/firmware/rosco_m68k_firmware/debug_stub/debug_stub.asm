@@ -114,14 +114,15 @@ debug_stub::
                 fail    "exception handler target size mismatch"
         endif
 
-.debug_dump     move.w  16<<2(sp),-2(sp)  ; SR
-                move.l  16<<2+2(sp),a0
-                move.l  a0,-6(sp)         ; PC
-                move.w  (a0),-8(sp)       ; Opcode
-                clr.l   -12(sp)           ; Fault
-                cmp.w   #2<<1,d2          ; fault for addr & bus error only
+.debug_dump     sub.l   #12,sp                ; room on stack for temps
+                move.w  12+16<<2+0(sp),10(sp) ; SR
+                move.l  12+16<<2+2(sp),a0
+                move.l  a0,6(sp)              ; PC
+                move.w  (a0),4(sp)            ; Opcode
+                clr.l   0(sp)                 ; Fault
+                cmp.w   #2<<1,d2              ; fault for addr & bus error only
                 bge     .nofault
-                move.l  16<<2+10(sp),-12(sp) ; Fault
+                move.l  12+16<<2+10(sp),0(sp) ; Fault
                 bra     .nofault
 
 ; NOTE: Table placed here so byte displacement branches above can reach
@@ -136,8 +137,7 @@ debug_stub::
                 dc.w    .Ainstr_str-.except_strtbl
                 dc.w    .Finstr_str-.except_strtbl
 
-.nofault        sub.l   #12,sp                  ; room on stack for temps
-                lea.l   stub_print(pc),a1
+.nofault        lea.l   stub_print(pc),a1
                 lea.l   .exintro_str(pc),a0
                 jsr     (a1)                    ; print exception name
                 move.w	.except_strtbl(pc,d2.w),d0
