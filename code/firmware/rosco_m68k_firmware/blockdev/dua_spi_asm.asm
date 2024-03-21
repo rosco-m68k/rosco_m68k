@@ -82,6 +82,9 @@ spi_send_buffer::
                 moveq.l #SPI_SCK|SPI_COPI,d4    ;    4  d4 = SCK|COPI bit mask
                                                 ;       d5 = temp COPI LO
                                                 ;       d6 = temp COPI HI
+
+                btst.b  #1,SDB_SYSFLAGS         ;    8  Is sysflag (high byte) bit 1 set?
+                beq.s   .spi_sb_loop            ; 6/10  skip if not...
                 move.b  #RED_LED,(a1)           ;   12  RED LED on (active LO)
 
 .spi_sb_loop:   move.b  (a0)+,d1                ;    8  load send byte
@@ -102,8 +105,11 @@ spi_send_buffer::
                 subq.l  #1,d0
                 bne     .spi_sb_loop  
 
+                btst.b  #1,SDB_SYSFLAGS         ;    8  Is sysflag (high byte) bit 1 set?
+                beq.s   .spi_sb_done            ; 6/10  skip if not...
                 move.b  #RED_LED,(a2)           ;   12  RED LED off (active LO)
-                movem.l (a7)+,d2-d6/a2          ;12+48  restore regs
+
+.spi_sb_done:   movem.l (a7)+,d2-d6/a2          ;12+48  restore regs
                 rts
 
 ; read byte from DUART GPIO SPI
@@ -153,7 +159,11 @@ spi_read_buffer::
                 moveq.l #SPI_CIPO_B,d2          ;    4  d2 = CIPO bit num
                                                 ;       d3 = temp bit
                                                 ;       d4 = temp byte
-                move.b  #RED_LED,(a1)           ;   12  RED LED on (active LO)
+
+                btst.b  #1,SDB_SYSFLAGS         ;    8  Is sysflag (high byte) bit 1 set?
+                beq.s   .spi_rb_loop            ; 6/10  skip if not...
+                move.b  #RED_LED,(a2)           ;   12  RED LED on (active LO)
+
 .spi_rb_loop:
             rept    8
 ; read bits 7...0
@@ -169,8 +179,11 @@ spi_read_buffer::
                 subq.l  #1,d0                   ;    8  decrement count
                 bne.s   .spi_rb_loop            ; 8/10  loop if not zero
 
-                move.b  #RED_LED,(a2)           ;   12  RED LED off (active LO)
-                movem.l (a7)+,d2-d4/a2-a3       ;12+40  restore regs
+                btst.b  #1,SDB_SYSFLAGS         ;    8  Is sysflag (high byte) bit 1 set?
+                beq.s   .spi_rb_done            ; 6/10  skip if not...
+                move.b  #RED_LED,(a3)           ;   12  RED LED off (active LO)
+
+.spi_rb_done:   movem.l (a7)+,d2-d4/a2-a3       ;12+40  restore regs
                 rts
 
             ifd WIP_UNTESTED_CODE               ; untested below, ignore

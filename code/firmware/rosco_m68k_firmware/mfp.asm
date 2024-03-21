@@ -154,13 +154,10 @@ CHECKCHAR_MFP:
 ; Modifies: Nothing
 SENDCHAR_MFP:
     move.l  D1,-(A7)              ; Save D1
-    move.l  D2,-(A7)              ; Save D2
 
-    move.b  SDB_SYSFLAGS,D2       ; Get sysflags (high byte)
-    move.b  MFP_GPDR,D1           ; Get GPDR
-    or.b    #$80,D1               ; Raise (inhibit) bit 7 (RTS)
-    and.b   D2,D1                 ; Mask with flags
-    move.b  D1,MFP_GPDR           ; Set GPDR
+    move.b  SDB_SYSFLAGS,D1       ; Get sysflags (high byte)
+    and.b   #$80,D1               ; Raise (inhibit) bit 7 (RTS)
+    or.b    D1,MFP_GPDR           ; Update GPDR
 
 .BEGIN    
     move.b  MFP_TSR,D1            ; Get TSR
@@ -168,7 +165,6 @@ SENDCHAR_MFP:
     beq.s   .BEGIN                ; No - loop until it is
 
     move.b  D0,MFP_UDR            ; Put func arg in UDR
-    move.l  (A7)+,D2              ; Restore D2
     move.l  (A7)+,D1              ; Restore D1
     rts
 
@@ -179,13 +175,10 @@ SENDCHAR_MFP:
 ; Trashes: MFP_UDR
 ; Modifies: D0 (return)
 RECVCHAR_MFP:
-    move.l  D1,-(A7)              ; Store D1
-    move.b  SDB_SYSFLAGS,D1       ; Get sysflags (high byte)
-    
-    move.b  MFP_GPDR,D0           ; Get GPDR
-    and.b   #$7F,D0               ; Lower bit 7 (RTS)
-    and.b   D1,D0                 ; Mask with flags
-    move.b  D0,MFP_GPDR           ; Set GPDR
+    move.b  SDB_SYSFLAGS,D0       ; Get sysflags (high byte)
+    not.b   D0                    ; Invert sysflags
+    or.b    #$7F,D0               ; Mask to lower bit 7 (RTS) if allowed
+    and.b   D0,MFP_GPDR           ; Update GPDR
 
 .BEGIN
     move.b  MFP_RSR,D0            ; Get RSR
@@ -198,15 +191,13 @@ RECVCHAR_MFP:
 
 .GOTERR
     move.b  MFP_UDR,D0            ; Empty buffer
-    move.b  MFP_GPDR,D0           ; Get GPDR
-    eor.b   #2,D0                 ; Toggle I1
-    and.b   D1,D0                 ; Mask with flags
-    move.b  D0,MFP_GPDR           ; Set GPDR
+    move.b  SDB_SYSFLAGS,D0       ; Get sysflags (high byte)
+    and.b   #2,D0                 ; Mask bit 1 to toggle with flags
+    eor.b   D0,MFP_GPDR           ; Toggle GPDR
     bra.s   .BEGIN                ; And continue testing...
     
 .GOTCHR
     move.b  MFP_UDR,D0            ; Get the data
-    move.l  (A7)+,D1              ; Restore D1
     rts
 
     endif
