@@ -153,7 +153,7 @@ spi_read_buffer::
                 moveq.l #SPI_CIPO_B,d2          ;    4  d2 = CIPO bit num
                                                 ;       d3 = temp bit
                                                 ;       d4 = temp byte
-                move.b  #RED_LED,(a1)           ;   12  RED LED on (active LO)
+                move.b  #RED_LED,(a2)           ;   12  RED LED on (active LO)
 .spi_rb_loop:
             rept    8
 ; read bits 7...0
@@ -169,7 +169,7 @@ spi_read_buffer::
                 subq.l  #1,d0                   ;    8  decrement count
                 bne.s   .spi_rb_loop            ; 8/10  loop if not zero
 
-                move.b  #RED_LED,(a2)           ;   12  RED LED off (active LO)
+                move.b  #RED_LED,(a3)           ;   12  RED LED off (active LO)
                 movem.l (a7)+,d2-d4/a2-a3       ;12+40  restore regs
                 rts
 
