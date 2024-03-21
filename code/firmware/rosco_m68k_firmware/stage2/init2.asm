@@ -28,7 +28,10 @@ red_led_off::
     and.b   #2,D0                       ; Turn off I1
     or.b    D0,MFP_GPDR                 ; Update GPDR
     else
+    btst.b  #1,SDB_SYSFLAGS             ; Is sysflag (high byte) bit 1 set?
+    beq.s   .no_red_led_off             ; skip if not...
     move.l  SDB_UARTBASE,A0
     move.b  #$08,W_OPR_RESETCMD(A0)     ; Turn off red LED on r2.x boards
+.no_red_led_off:
     endif
     rts
