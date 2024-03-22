@@ -6,9 +6,9 @@
    2   | AS       | Input
    3   | CPUSP    | Input
    4   | A19      | Input
-   5   | NC       | Input
-   6   | NC       | Input
-   7   | NC       | Input
+   5   | A18      | Input
+   6   | A16      | Input
+   7   | A17      | Input
    8   | NC       | Input
    9   | NC       | Input
   10   | NC       | Input

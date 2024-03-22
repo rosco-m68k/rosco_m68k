@@ -1,7 +1,7 @@
 GAL22V10
 WATCHDOG
 
-CLK    AS     CPUSP  A19    NC      NC      NC      NC     NC     NC     NC     GND
+CLK    AS     CPUSP  A19    A18     A16     A17     NC     NC     NC     NC     GND
 /OE    AX4M   AX2M   AX1M   WDQ0    WDQ1    WDQ2    WDQ3   WDEN   PBERR  BERR   VCC
 
 AX4M.R  = /AX4M
