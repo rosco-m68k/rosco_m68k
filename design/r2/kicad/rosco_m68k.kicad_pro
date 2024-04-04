@@ -56,7 +56,26 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        "extra_footprint|119150000|68150000|00000000-0000-0000-0000-0000616471cb|00000000-0000-0000-0000-000000000000",
+        "extra_footprint|124085000|57600000|00000000-0000-0000-0000-0000616471b0|00000000-0000-0000-0000-000000000000",
+        "extra_footprint|199487760|129926597|00000000-0000-0000-0000-000061749850|00000000-0000-0000-0000-000000000000",
+        "extra_footprint|206221400|150723600|6e1a9034-2023-4e3e-b5e8-a3a941312aa7|00000000-0000-0000-0000-000000000000",
+        "extra_footprint|82570000|150320000|00000000-0000-0000-0000-00006164812a|00000000-0000-0000-0000-000000000000",
+        "extra_footprint|84960000|105752400|00000000-0000-0000-0000-000061748dfd|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|184708800|125476000|de15ae76-aea7-419a-9ad8-11a7572102e0|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|184708800|130581400|f7958f5f-dbb4-43b5-8928-057a2dad5d3f|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|190064500|125476000|581d1d58-485c-4733-845c-53c43f1c6a35|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|190064500|130581400|3c14d645-61a7-4f32-a6e3-0285fc3f681d|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|206994200|124627000|1a3fbc24-d1fd-40d4-a4d2-c3ccc5de979c|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|211150000|138590000|5d962102-492f-42db-ae61-60061f3a9631|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|214683900|118338600|a608edf7-1ef2-4b01-b421-4461072e178b|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|215767500|127920000|eeb5419d-7603-4af8-9de5-732e6d4f04c6|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|216792500|136650000|0d536cb0-ec12-4891-8e34-d813c049c76c|00000000-0000-0000-0000-000000000000",
+        "lib_footprint_mismatch|223865000|140010000|092c91cc-487f-4e8f-9c7f-031d20839fbd|00000000-0000-0000-0000-000000000000",
+        "silk_overlap|225903995|105369000|fa9acfa7-a3d7-4a99-b362-82d63fa8b3b9|28449fbe-c83c-4caf-9302-16b9df6b395f",
+        "silk_overlap|226724561|101403000|1876986b-8de3-4aee-b565-bab81aee23c9|922db659-b88c-4732-a911-2b45c05f13fc"
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -88,7 +107,7 @@
         "microvia_drill_out_of_range": "error",
         "missing_courtyard": "ignore",
         "missing_footprint": "warning",
-        "net_conflict": "warning",
+        "net_conflict": "ignore",
         "npth_inside_courtyard": "ignore",
         "padstack": "error",
         "pth_inside_courtyard": "ignore",
@@ -127,7 +146,7 @@
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
         "min_text_height": 0.575,
-        "min_text_thickness": 0.08,
+        "min_text_thickness": 0.075,
         "min_through_hole_diameter": 0.25,
         "min_track_width": 0.15239999999999998,
         "min_via_annular_width": 0.049999999999999996,
@@ -422,7 +441,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.1524,
+        "clearance": 0.15,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -450,7 +469,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "rosco_m68k.net",
-      "specctra_dsn": "",
+      "specctra_dsn": "rosco_m68k.dsn",
       "step": "rosco_m68k.step",
       "vrml": ""
     },
@@ -528,6 +547,10 @@
     [
       "00000000-0000-0000-0000-00006162e38e",
       "Reset"
+    ],
+    [
+      "6adec69a-411a-403d-8d52-6c6bad743b78",
+      "FTDI (Optional)"
     ]
   ],
   "text_variables": {}
