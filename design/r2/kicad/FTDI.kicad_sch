@@ -2165,6 +2165,9 @@
     (property "Datasheet" "~" (at 248.92 20.32 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "LCSC" "C82155" (at 248.92 20.32 90)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid f3603b1b-2f7c-49e7-ace7-a386f1812524))
     (pin "2" (uuid a487fbf6-d396-4244-8d22-a8f6ac25aaa8))
     (instances
