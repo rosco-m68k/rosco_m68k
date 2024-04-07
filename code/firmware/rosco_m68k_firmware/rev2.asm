@@ -67,8 +67,7 @@ TICK_HANDLER::
     
     ; counted to zero, so toggle indicator 0 (if allowed) 
     ; and reset counter
-    move.b  SDB_SYSFLAGS,D1           ; Get sysflags (high byte)
-    btst    #1,D1                     ; Is sysflag bit 1 set?
+    btst.b  #0,SDB_SYSFLAGS           ; Is sysflag (high byte) bit 0 set?
     beq.s   .TICKRESET                ; bail now if not...
 
     move.b  SDB_INTFLAGS,D1
