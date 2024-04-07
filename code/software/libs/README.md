@@ -12,7 +12,6 @@ Specifically:
 | debug_stub          | Provides handy crash reports on exceptions     | `-ldebug_stub`   |
 | easy68k             | C interface to the Easy68k compatibility layer | `-leasy68k`      |
 | gdb                 | GDB-compatible remote debugging library        | `-lgdb`          |
-| gpio                | Functions for intefacing with the GPIOs & SPI  | `-lgpio`         |
 | kernel              | Standard API for the ROM kernel                | `-lkernel`       |
 | machine             | Low-level functions and basic IO               | `-lmachine`      |
 | printf              | An implementation of `printf`                  | `-lprintf`(2)    |

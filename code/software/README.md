@@ -11,17 +11,20 @@ Specifically:
 |:-------------------:|------------------------------------------------|
 | 2dmaze              | A 2d maze demo of libm (thanks to mattuna15)   |
 | adventure           | A port of Jeff Tranter's 'Adventure' (game).   | 
+| chardevs            | Simple test of firmware character devices      |
 | dhrystone           | Dhrystone benchmark (thanks to Xark)           |
 | easy68k-demo        | Demo of the easy68k firmware interface         |
 | ehbasic             | Lee Davison's ehBASIC (rosco_m68k port)        |
-| lcd-ili9341         | SPI demo with ILI9341 LCD (thanks to Xark)     |
+| kernel_test         | Simple test of firmware kernel support         |
+| libm-test           | Simple test of embedded libm                   |
 | libs                | All shared functions are built as libraries.   |
 | life                | Conway's Game of Life (thanks to mattuna15)    |
 | memcheck            | Memory checker / basic sysinfo tool            |
 | sdfat_demo          | Demo code for using firmware SD interface      |
 | sdfat_menu          | **Awesome** SD Card bootload menu (thanks Xark)| 
-| gpiodemo            | Stupid-simple GPIO example                     |
+| updateflash         | SST Flash ROM update program                   |
 | vterm               | ANSI terminal emulation (thanks to mattuna15)  |
+| warmboot            | Simple test of firmware warm-reboot support    |
  
 ## Getting Started
 
