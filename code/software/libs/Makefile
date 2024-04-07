@@ -39,7 +39,6 @@ decoy:
 include src/cstdlib/include.mk
 include src/sdfat/include.mk
 include src/machine/include.mk
-include src/gpio/include.mk
 include src/easy68k/include.mk
 include src/debug_stub/include.mk
 include src/start_serial/include.mk

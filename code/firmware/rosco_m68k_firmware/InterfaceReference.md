@@ -344,9 +344,8 @@ appropriate modes (input vs output).
 
 **Description**
 
-Assert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
-Note that asserting one line *does not* automatically deassert 
-the other!
+Assert the appropriate CS line. Note that asserting one line 
+*does not* automatically deassert the other!
 
 #### 1.1.2.9 SPI_DEASSERT_CS (Function #8)
 
@@ -362,7 +361,7 @@ the other!
 
 **Description**
 
-Deassert the appropriate CS line. CS 0 is GPIO 1, CS 1 is GPIO 5.
+Deassert the appropriate CS line. 
 
 #### 1.1.2.10 SPI_TRANSFER_BYTE (Function #9)
 
@@ -1526,36 +1525,35 @@ For initialisation and usage, see `bootstrap.S` and the Easy68k `syscalls_asm.S`
 ### System flags word (0x40A)
 
 This word contains various flags that control system behaviour. The main use
-at the moment is to prevent the system from using certain GPIOs (e.g. the
-LEDs).
+at the moment is to prevent the system from using the on-board LEDs.
 
 | Bit | Description                                       |
 |-----|---------------------------------------------------|
-|  15 | Allow system use of CTS (MFP GPIP7)               |
-|  14 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
-|  13 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
-|  12 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
-|  11 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
-|  10 | Reserved - MUST BE 1 FOR SPI/SD SUPPORT!          |
-|   9 | Allow system use of LED1 (MFP GPIP1)              |
-|   8 | Allow system use of LED0 (MFP GPIP0)              |
+|  15 | Reserved                                          |
+|  14 | Reserved                                          |
+|  13 | Reserved                                          |
+|  12 | Reserved                                          |
+|  11 | Reserved                                          |
+|  10 | Reserved                                          |
+|   9 | Allow system use of LED1                          |
+|   8 | Allow system use of LED0                          |
 | 0-7 | Reserved                                          |
 
-The default value for the flags word is $FFXX (XX being reserved bits which can
-have any value). This allows the system to take control of the two LEDs I0 and I1,
-and the CTS line and allows the firmware SD/SPI interface to function normally.
+The default value for the flags word is $XFXX (XX being reserved bits which can
+have any value). This allows the system to take control of the two LEDs I0 and I1.
 
 User code may clear any of the non-reserved bits to take full control of the appropriate
 lines. 
 
-**Note** that, in systems where the firmware SPI/SD interfaces are being used,
-setting bits 10-14 to zero will result in undefined behaviour and possible data loss.
+**Note** that changing any reserved bits from their default values will result in 
+undefined behaviour and possible data loss.
 
-**Note** that, in the case of total system crash, these bits will not be honored
-and the system will revert to blinking the red LED as normal in a crash situation.
+**Note** that, in the case of total system crash (i.e. a crash that is unrecoverable
+without a hardware button-push reset), these bits will not be honored and the system 
+will assume full control.
 
-**Note** also that clearing these bits has no effect on the actual state of the GPIP lines.
-User code should set the lines to a known state after setting this word.
+**Note** also that clearing these bits has no effect on the actual state of the relevant
+lines, and user code should set the lines to a known state after setting this word.
 
 ### CPU Info (0x41C)
 
