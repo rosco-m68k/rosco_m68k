@@ -7,7 +7,7 @@
 ; |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
 ;                     |_____|
 ; ------------------------------------------------------------
-; Copyright (c) 2020 Xark
+; Copyright (c) 2020-2024 Xark
 ; MIT License
 ; ------------------------------------------------------------
 
@@ -114,14 +114,33 @@ debug_stub::
                 fail    "exception handler target size mismatch"
         endif
 
-.debug_dump     move.w  16<<2(sp),-2(sp)  ; SR
-                move.l  16<<2+2(sp),a0
-                move.l  a0,-6(sp)         ; PC
-                move.w  (a0),-8(sp)       ; Opcode
-                clr.l   -12(sp)           ; Fault
-                cmp.w   #2<<1,d2          ; fault for addr & bus error only
+.debug_dump     lea     16<<2(sp),a6        ; Exception stack frame to A6
+                sub.l   #12,sp              ; Room on stack for temps
+                move.w  0(a6),10(sp)        ; SR
+                move.l  2(a6),a0
+                move.l  a0,6(sp)            ; PC
+                move.w  (a0),4(sp)          ; Opcode
+                clr.l   0(sp)               ; No fault by default
+                cmp.w   #2<<1,d2            ; Fault for addr & bus error only
                 bge     .nofault
-                move.l  16<<2+10(sp),-12(sp) ; Fault
+                cmpi.b  #$20,SDB_CPUINFO+0  ; Compare the CPU model in SDB (highest 3 bits) against 1
+                blt     .fault_h0a          ; Is an MC68000, fault at offset $0A
+                move.w  6(a6),d0            ; Else, format and vector offset to D0
+                andi.w  #$F000,d0           ; Isolate format
+                cmpi.w  #$7000,d0
+                beq     .fault_h14          ; Format 7, fault at offset $14
+                cmpi.w  #$8000,d0
+                beq     .fault_h0a          ; Format 8, fault at offset $0A
+                cmpi.w  #$a000,d0
+                beq     .fault_h10          ; Format A, fault at offset $10
+                cmpi.w  #$b000,d0
+                beq     .fault_h10          ; Format B, fault at offset $10
+                bra     .nofault            ; Not a handled fault exception
+.fault_h0a      move.l  $0A(a6),0(sp)   
+                bra     .nofault
+.fault_h10      move.l  $10(a6),0(sp)  
+                bra     .nofault
+.fault_h14      move.l  $14(a6),0(sp)  
                 bra     .nofault
 
 ; NOTE: Table placed here so byte displacement branches above can reach
@@ -136,8 +155,7 @@ debug_stub::
                 dc.w    .Ainstr_str-.except_strtbl
                 dc.w    .Finstr_str-.except_strtbl
 
-.nofault        sub.l   #12,sp                  ; room on stack for temps
-                lea.l   stub_print(pc),a1
+.nofault        lea.l   stub_print(pc),a1
                 lea.l   .exintro_str(pc),a0
                 jsr     (a1)                    ; print exception name
                 move.w	.except_strtbl(pc,d2.w),d0
