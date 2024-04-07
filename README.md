@@ -35,7 +35,7 @@ on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew
 The hardware specifications for the rosco_m68k are:
 
 * MC68010P10 at 10MHz.
-* XR68C681P provides UART, Timers and SD Card / SPI / GPIO
+* XR68C681P provides UART, Timers and SD Card / SPI
 * 1MB RAM (0x0 - 0xFFFFF)
 * 1MB ROM (0xE00000 - 0xEFFFFF)
 * 1MB IO space (0xF00000 - 0xFFFFFF)
