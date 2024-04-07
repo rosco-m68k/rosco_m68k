@@ -160,7 +160,7 @@ return_to_any::
 ; /* if the previous interrupt level was 7 then we're already servicing  */
 ; /* this interrupt and an rte is in order to return to the debugger.    */
 debug_level7::
-  move.w  d0,(a7)-                        ; Stash a0
+  move.w  d0,-(a7)                        ; Stash a0
   move.w  2(a7),d0                        ; Get SR
   andi.w  #$700,d0                        ; Is IPL 7?
   cmpi.w  #$700,d0
