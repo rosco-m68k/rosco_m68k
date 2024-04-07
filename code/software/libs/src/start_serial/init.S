@@ -62,14 +62,6 @@ POSTINIT:                         ; running from copied run addr location
 
 _start::                          ; entrypoint at copied run addr location
     move.l  SDB_MEMSIZE,A7        ; reset stack to top of memory
-
-    ; Save existing program exit EFP
-    ; Cannot use stack as we may jump directly with exit() or abort(),
-    ; from arbitrarily nested code...
-    move.l  EFP_PROG_EXIT,SAVE_PROG_EXIT
-
-    ; And set up new one at POSTMAIN
-    move.l  #.POSTMAIN,EFP_PROG_EXIT
  
     lea.l   __kinit,A0
     jsr     (A0)                  ; prepare C environment
@@ -77,18 +69,20 @@ _start::                          ; entrypoint at copied run addr location
     lea.l   kmain,A0
     jsr     (A0)                  ; Fly user program, Fly!
 
-.POSTMAIN:
-    ; Restore EFP_PROG_EXIT
-    move.l  SAVE_PROG_EXIT,EFP_PROG_EXIT
+exit::
+    ;; If user code called exit directly, there'll be an exit code on the stack here...
+    ;; Just ignore it, we don't care about it anyhow, but predec the stack to load the
+    ;; null dso_handle anyway in case we fell through and the stack is empty...
+    ;;
     move.l  #0,-(A7)              ; Call __cxa_finalize with NULL dso_handle
     lea.l   __cxa_finalize,A0
     jsr     (A0)
     add.l   #4,A7
     bsr.s   CALL_DTORS            ; Call global destructors
-    move.l  $0004,A0              ; And jump to soft reset
+    move.l  EFP_PROG_EXIT,A0      ; And jump to PROG_EXIT
     jmp     (A0) 
 
-CALL_CTORS::
+CALL_CTORS:
     movem.l A2-A4,-(A7)
 
     move.l  #_ctors,A2
@@ -110,7 +104,7 @@ CALL_CTORS::
     rts
 
 
-CALL_DTORS::
+CALL_DTORS:
     movem.l A2-A4,-(A7)
 
     move.l  #_dtors,A2
@@ -132,6 +126,3 @@ CALL_DTORS::
 
     section .bss,bss
     align  4
-
-SAVE_PROG_EXIT  ds.l  1
-

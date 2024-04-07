@@ -5,18 +5,26 @@
 #define LONG_MIN -2147483648
 #define LONG_MAX 2147483647
 
-void exit(int status)
-{
-  // Jump to EFP_PROG_EXIT when quit
-  __asm__ __volatile__ (
-      "moveal 0x490.l, %a0\n\t"
-      "jmp %a0@\n\t"
-  );
-}
+// THIS IS NO LONGER DEFINED HERE, BUT IN start_serial's init.S, BECAUSE
+// the implementation is tightly coupled with `start_serial` anyway...
+//   
+// void exit(int status)
+// {
+//   // Jump to EFP_PROG_EXIT when quit
+//   __asm__ __volatile__ (
+//       "moveal 0x490.l, %a0\n\t"
+//       "jmp %a0@\n\t"
+//   );
+// }
 
+// THIS IS STILL DEFINED HERE, RATHER THAN IN start_serial's init.S, BECAUSE
+// it just takes a sledgehammer to the runtime environment, doesn't care about
+// any of the C runtime set up in `start_serial` and jumps directly to the 
+// hardware vector "owned by" the firmware...
+//
 void abort(void)
 {
-  // Jump to reset vector when abort
+  // Jump directly to reset vector when abort
   __asm__ __volatile__ (
       "moveal 0x4.l, %a0\n\t"
       "jmp %a0@\n\t"
