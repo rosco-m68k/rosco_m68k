@@ -6,7 +6,7 @@
 
   (title_block
     (title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
-    (date "2024-04-03")
+    (date "2024-04-15")
     (rev "2.2")
     (company "The Really Old-School Company Limited")
     (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
@@ -2054,6 +2054,12 @@
     (property "Datasheet" "~" (at 151.13 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "LCSC" "C376778" (at 151.13 148.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Field5" "" (at 151.13 148.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid c0ba03a3-4edc-4ce1-9854-17e61e7831da))
     (pin "2" (uuid 41a676b5-9e08-4660-930d-67726277de0e))
     (instances
@@ -3191,6 +3197,12 @@
     (property "Datasheet" "~" (at 140.97 148.59 0)
       (effects (font (size 1.27 1.27)) hide)
     )
+    (property "LCSC" "C376778" (at 140.97 148.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
+    (property "Field5" "" (at 140.97 148.59 0)
+      (effects (font (size 1.27 1.27)) hide)
+    )
     (pin "1" (uuid da129fb7-8c68-4627-b644-b43b4b33ff90))
     (pin "2" (uuid 13dc0490-7485-4d0a-a1eb-9673914ffc45))
     (instances
@@ -3513,7 +3525,7 @@
     (property "Datasheet" "https://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf" (at 189.23 101.6 0)
       (effects (font (size 1.27 1.27)) hide)
     )
-    (property "LCSC" "C193662" (at 189.23 101.6 0)
+    (property "LCSC" "C27882" (at 189.23 101.6 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Field5" "" (at 189.23 101.6 0)
