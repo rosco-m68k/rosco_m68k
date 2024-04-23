@@ -10,9 +10,9 @@ EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES) -DROSCO_M68K_KERNEL_BUILD
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
        -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks							\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks $(EXTRA_CFLAGS)			\
        $(DEFINES)
-LDFLAGS=-Map=$(MAP) -L .
+LDFLAGS=-Map=$(MAP) -L . -T $(LINKER_SCRIPT)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -36,6 +36,13 @@ CFLAGS+=--param=min-pagesize=0
 endif
 endif
 
+STAGE1_DIR=stage1
+STAGE1_FILE=stage1.elf
+STAGE1=$(STAGE1_DIR)/$(STAGE1_FILE)
+STAGE2_DIR=stage2
+STAGE2_FILE=loader2.bin.zip.o
+STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
+
 # Output config
 BINARY_BASENAME=rosco_m68k
 BINARY_EXT=rom
@@ -46,27 +53,18 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 DISASM=$(BINARY_BASENAME).dis
 SYM=$(BINARY_BASENAME).sym
 MAP=$(BINARY_BASENAME).map
-STAGE1_DIR=stage1
-STAGE1_FILE=stage1.elf
-STAGE1=$(STAGE1_DIR)/$(STAGE1_FILE)
-STAGE2_DIR=stage2
-STAGE2_FILE=loader2.bin.zip.o
-STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 
 ROMDEVICE?=SST39SF040
-# OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
-# 				decompress.o ansicon.o char_device.o trap14.o	\
-# 				cpuspeed.o cputype.o warmboot.o					\
-# 				keyboard_efp.o keyboard.o						\
-# 				main1.o
 
 # Big ROM configuration (enable everything) is now default
 WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 WITH_ATA?=true
+
+.PHONY: all clean tools test
 
 all: $(BINARY_EVEN) $(BINARY_ODD) $(SYM) $(DISASM)
 
@@ -75,17 +73,17 @@ ifeq ($(REVISION1X),true)
 HUGEROM?=false
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco))
-LDFLAGS+=-T rosco_m68k_firmware_64k.ld
+LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
 MAMESIZE=0x00010000
 else
 ifeq ($(HUGEROM),true)
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
+LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
 ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 else
 $(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
-LDFLAGS+=-T rosco_m68k_firmware_64k.ld
+LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
 ROMDEVICE=AT28C256
 endif
 endif
@@ -94,20 +92,21 @@ HUGEROM?=true
 ifeq ($(MAME),true)
 $(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
 MAMESIZE=0x00100000
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
+LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
 DEFINES:=$(DEFINES) -DHUGEROM
 else
 ifeq ($(HUGEROM),false)
 $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
 else
 $(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
+LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
 ROMDEVICE=SST39SF040
 DEFINES:=$(DEFINES) -DHUGEROM
 endif
 endif
 endif
 
+export LINKER_SCRIPT
 export NO68681
 export NO_TICK
 export WITH_BLOCKDEV
@@ -124,17 +123,11 @@ export MAME
 export NOBANNER
 export LATEBANNER
 
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
-
-%.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
-
 $(STAGE1) : $(STAGE1_DIR)
-	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $< $(STAGE1_FILE)
+	make -C $< $(STAGE1_FILE)
 
-$(STAGE2) : $(STAGE2_DIR) $(STAGE1)
-	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $< $(STAGE2_FILE)
+$(STAGE2) : $(STAGE2_DIR) $(STAGE1) tools
+	make -C $< $(STAGE2_FILE)
 
 $(ELF) : $(STAGE1) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
@@ -162,13 +155,11 @@ $(BINARY_EVEN): $(BINARY)
 $(BINARY_ODD): $(BINARY)
 	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
 
-.PHONY: all clean tools test
-
 clean:
 	$(MAKE) -C $(STAGE1_DIR) clean
 	$(MAKE) -C $(STAGE2_DIR) clean
 	$(MAKE) -C tools/liblzg/src clean
-	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(DISASM) $(SYM) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
+	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(ELF) $(DISASM) $(SYM) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
 test:
 	$(MAKE) -C $(STAGE1_DIR) test

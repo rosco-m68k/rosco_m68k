@@ -12,8 +12,8 @@ BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     															\
             -Ifat_io_lib -Iinclude -I../stage1/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
             $(DEFINES)
 EXTRA_CFLAGS=
-CFLAGS=$(BASE_CFLAGS) -O9
-SIZE_CFLAGS=$(BASE_CFLAGS) -Os
+CFLAGS=$(BASE_CFLAGS) -O9 $(EXTRA_CFLAGS)
+SIZE_CFLAGS=$(BASE_CFLAGS) -Os $(EXTRA_CFLAGS)
 LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
@@ -37,8 +37,9 @@ endif
 # Output config
 BINARY_BASENAME=loader2
 BINARY_EXT=bin
-MAP=$(BINARY_BASENAME).map
+
 BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
+MAP=$(BINARY_BASENAME).map
 BINARY_ZIP=$(BINARY).zip
 BINARY_ZIP_OBJ=$(BINARY_ZIP).o
 
@@ -72,20 +73,15 @@ ifeq ($(REVISION1X),true)
 DEFINES:=$(DEFINES) -DREVISION1X
 endif
 
-export CFLAGS
-
 .PHONY: all clean
 
 all: $(BINARY_ZIP_OBJ)
 
 main2.o: main2.c
-	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
+	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
 common.o: common.c
-	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
-
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
+	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
 %.o : %.asm
 	$(AS) $(ASFLAGS) -o $@ $<
@@ -100,9 +96,5 @@ $(BINARY_ZIP): $(BINARY) $(LZG)
 $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
 	m68k-elf-objcopy -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
 
-$(LZG): $(LZG_SRC)
-	make -C $^
-
 clean: 
 	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)
-

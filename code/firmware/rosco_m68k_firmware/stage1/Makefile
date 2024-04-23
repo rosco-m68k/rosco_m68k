@@ -12,7 +12,7 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
        -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
        -fomit-frame-pointer -fno-delete-null-pointer-checks							\
        $(DEFINES)
-LDFLAGS=-Map=$(MAP) -L ..
+LDFLAGS=-Map=$(MAP) -L .. -T $(LINKER_SCRIPT)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
@@ -83,37 +83,10 @@ $(info === Building rosco_m68k firmware with ROM kernel for revision 2.x board)
 DEFINES:=$(DEFINES) -DWITH_KERNEL
 endif
 
-# Set up Size-specific things appropriately..
-ifeq ($(REVISION1X),true)
-HUGEROM?=false
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco))
-LDFLAGS+=-T rosco_m68k_firmware_64k.ld
-else
-ifeq ($(HUGEROM),true)
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
-DEFINES:=$(DEFINES) -DHUGEROM
-else
-$(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
-LDFLAGS+=-T rosco_m68k_firmware_64k.ld
-endif
-endif
-else
+# Add HUGEROM define, inherited from the top-level Makefile
 HUGEROM?=true
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
+ifeq ($(HUGEROM),true)
 DEFINES:=$(DEFINES) -DHUGEROM
-else
-ifeq ($(HUGEROM),false)
-$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
-else
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LDFLAGS+=-T rosco_m68k_firmware_1M.ld
-DEFINES:=$(DEFINES) -DHUGEROM
-endif
-endif
 endif
 
 ifeq ($(NO68681),true)
@@ -159,14 +132,6 @@ include debug_stub/include.mk
 endif
 
 include easy68k/include.mk
-
-export WITH_ATA
-export ATA_DEBUG
-export WITH_BLOCKDEV
-export WITH_KERMIT
-export CPU ARCH TUNE
-export REVISION1X
-export MAME
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
