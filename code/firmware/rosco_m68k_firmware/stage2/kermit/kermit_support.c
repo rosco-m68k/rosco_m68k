@@ -15,12 +15,11 @@
 
 #include "cdefs.h"
 #include "kermit.h"
+#include "machine.h"
 #include "platform.h"
 #include "serial.h"
 #include "rtlsupport.h"
 
-extern void mcPrint(char *str);
-extern void mcBusywait(uint32_t nops);
 
 /* Large kermit structures are kept in free memory 0x02000-0x40000 */
 UCHAR o_buf[OBUFLEN+8] __attribute__ ((section (".kermit")));   /* File output buffer */
@@ -138,10 +137,10 @@ int receive_kernel() {
     k.writef = writefile;                           /* for writing to output file */
     k.closef = closefile;                           /* for closing files */
 
-    mcBusywait(100000);
+    BUSYWAIT_C(100000);
     status = kermit(K_INIT, &k, 0, 0, "", &response);
     if (status != X_OK) {
-        mcPrint("\x1b[1;31mSEVERE\x1b[0m: Kermit Init failed\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Kermit Init failed\r\n");
         return 0;
     }
 
@@ -152,7 +151,7 @@ int receive_kernel() {
         if (rx_len < 1) {                           /* No data was read */
             freerslot(&k,r_slot);                   /* So free the window slot */
             if (rx_len < 0) {                       /* If there was a fatal error */
-               mcPrint("\x1b[1;31mSEVERE\x1b[0m: Read failed\r\n");
+               FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Read failed\r\n");
                return 0;                            /* give up */
             }   
         }
@@ -163,7 +162,7 @@ int receive_kernel() {
         case X_DONE:
             break;                                  /* Finished */
         case X_ERROR:
-            mcPrint("\x1b[1;31mSEVERE\x1b[0m: Run failed\r\n");
+            FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Run failed\r\n");
             return 0;                               /* Failed */
         }
     }

@@ -19,8 +19,6 @@
 #define BUF_LEN 78
 #define BUF_MAX BUF_LEN - 2
 
-extern void FW_PRINT_C(char *str);
-
 static uint8_t buf[BUF_LEN];
 
 extern uint8_t digit(unsigned char digit);

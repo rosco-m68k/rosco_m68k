@@ -17,9 +17,9 @@
 #include <stdint.h>
 #include "ata.h"
 #include "load.h"
+#include "machine.h"
 #include "part.h"
 
-extern void mcPrint(char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 extern bool ATA_support_check();
 
@@ -29,39 +29,39 @@ static bool try_boot(uint8_t device_id) {
 
 #ifdef ATA_DEBUG
         if (device_id == ATA_MASTER) {
-             mcPrint("Master ");
+             FW_PRINT_C("Master ");
         } else {
-            mcPrint("Slave ");
+            FW_PRINT_C("Slave ");
         }
-        mcPrint("initialized\r\n");
+        FW_PRINT_C("initialized\r\n");
 #endif
 
-        mcPrint("ATA Device ");
+        FW_PRINT_C("ATA Device ");
         print_unsigned(device_id, 10);
-        mcPrint(":\r\n");
+        FW_PRINT_C(":\r\n");
 
         PartHandle part;
         PartInitStatus pinit = Part_init_ATA(&part, &device);
 
         if (pinit == PART_INIT_OK) {
 #ifdef ATA_DEBUG
-            mcPrint("Partition table initialized\r\n");
+            FW_PRINT_C("Partition table initialized\r\n");
 #endif
             return load_kernel(&part);
         } else if (pinit == PART_INIT_BAD_SIGNATURE) {
-            mcPrint("  Bad partition signature\r\n");
+            FW_PRINT_C("  Bad partition signature\r\n");
         } else if (pinit == PART_INIT_READ_FAILURE) {
-            mcPrint("  Partition read failure\r\n");
+            FW_PRINT_C("  Partition read failure\r\n");
         } else if (pinit == PART_INIT_GENERAL_FAILURE) {
-            mcPrint("  Partition init general failure\r\n");
+            FW_PRINT_C("  Partition init general failure\r\n");
         } else {
-            mcPrint("  Partition init - unknown result!\r\n");
+            FW_PRINT_C("  Partition init - unknown result!\r\n");
         }
 #ifdef ATA_DEBUG
     } else {
-        mcPrint("IDE device ");
+        FW_PRINT_C("IDE device ");
         print_unsigned(device_id, 10);
-        mcPrint(" not initialized\r\n");
+        FW_PRINT_C(" not initialized\r\n");
 #endif
     }
 
@@ -70,7 +70,7 @@ static bool try_boot(uint8_t device_id) {
 
 bool ide_load_kernel() {
     if (!ATA_support_check()) {
-        mcPrint("Warning: No IDE support in ROM - This may indicate your ROMs are not built correctly!\r\n");
+        FW_PRINT_C("Warning: No IDE support in ROM - This may indicate your ROMs are not built correctly!\r\n");
         return false;
     }
 

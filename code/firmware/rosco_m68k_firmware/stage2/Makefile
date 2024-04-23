@@ -49,7 +49,7 @@ endif
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS=init2.o common.o serial.o machine.o main2.o
+OBJECTS=init2.o common.o serial.o main2.o
 
 ifeq ($(WITH_ATA), true)
 DEFINES:=$(DEFINES) -DROSCO_M68K_ATA

@@ -16,13 +16,12 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <machine.h>
 #include "ata.h"
 #include "ata_identify.h"
+#include "machine.h"
 
 #define OP_TIMEOUT 500000
 
-extern void FW_PRINT_C(char *);
 #ifdef ATA_DEBUG
 extern void print_unsigned(uint32_t, uint8_t);
 #endif

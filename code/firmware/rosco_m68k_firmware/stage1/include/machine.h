@@ -178,17 +178,17 @@ void SET_INTR(uint8_t priority);
  *
  * Don't use this after START_HEART has been called. 
  */
-void EARLY_PRINT_C(char *str);
+void EARLY_PRINT_C(const char *str);
 
 /*
  * Firmware PRINT function (uses pointer at $414)
  */
-void FW_PRINT_C(char *str);
+void FW_PRINT_C(const char *str);
 
 /*
  * Firmware PRINTLN function (uses pointer at $418)
  */
-void FW_PRINTLN_C(char *str);
+void FW_PRINTLN_C(const char *str);
 
 /*
  * Busywait for a while. The actual time is wholly dependent

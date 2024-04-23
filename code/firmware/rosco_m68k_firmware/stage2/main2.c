@@ -23,14 +23,8 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
-extern void mcPrint(char*);
-extern void mcHalt();
 extern void ENABLE_RECV();
 extern void red_led_off();
-
-#ifdef KERMIT_LOADER
-extern void mcBusywait(uint32_t);
-#endif
 
 // Linker defines
 extern uint32_t _bss_start, _bss_end;
@@ -56,7 +50,7 @@ noreturn void lmain() {
 
 #ifndef MAME_FIRMWARE
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint("Searching for boot media...\r\n");
+    FW_PRINT_C("Searching for boot media...\r\n");
 #  endif
 
 #  ifdef SDFAT_LOADER
@@ -70,27 +64,27 @@ noreturn void lmain() {
     }
 #  endif
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
-    mcPrint("No bootable media found\r\n");
+    FW_PRINT_C("No bootable media found\r\n");
 #  endif
 #  ifdef KERMIT_LOADER
-    mcPrint("Ready for Kermit receive...\r\n");
+    FW_PRINT_C("Ready for Kermit receive...\r\n");
 
-    mcBusywait(100000);
+    BUSYWAIT_C(100000);
 
     while (!receive_kernel()) {
-        mcPrint("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Receive failed; Ready for retry...\r\n");
     }
 
     // Wait a short while for the user's terminal to come back...
-    mcBusywait(400000);
+    BUSYWAIT_C(400000);
     
-    mcPrint("Kernel received okay; Starting...\r\n");
+    FW_PRINT_C("Kernel received okay; Starting...\r\n");
 #  else
-    mcPrint("No bootable media found & no Kermit support; Halting...\r\n");
+    FW_PRINT_C("No bootable media found & no Kermit support; Halting...\r\n");
     goto halt;
 #  endif
 #else
-    mcPrint("Starting MAME Quickload kernel...\r\n");
+    FW_PRINT_C("Starting MAME Quickload kernel...\r\n");
 #endif
 
 #if !defined(MAME_FIRMWARE)
@@ -99,16 +93,16 @@ have_kernel:
 #  endif
 #endif
     red_led_off();
-    mcPrint("\r\n");
+    FW_PRINT_C("\r\n");
 
     kernel_entry(sdb);
 
-    mcPrint("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
+    FW_PRINT_C("\x1b[1;31mSEVERE\x1b: Kernel should not return! Halting\r\n");
 
 #ifndef KERMIT_LOADER
 halt:
 #endif
     while (true) {
-        mcHalt();
+        HALT();
     }
 }

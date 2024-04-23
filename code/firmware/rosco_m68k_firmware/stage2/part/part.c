@@ -16,6 +16,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "machine.h"
 #include "part.h"
 #include "part_mbr.h"
 #include "ata.h"
@@ -25,7 +26,6 @@ static MBR buffer;
 
 #ifdef ROSCO_M68K_ATA
 #ifdef ATA_DEBUG
-extern void mcPrint(char *str);
 extern void print_unsigned(uint32_t num, uint8_t base);
 #endif
 #endif
@@ -33,17 +33,17 @@ extern void print_unsigned(uint32_t num, uint8_t base);
 #ifdef ROSCO_M68K_ATA
 PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device) {
 #ifdef ATA_DEBUG
-    mcPrint("S2: Reading ");
+    FW_PRINT_C("S2: Reading ");
     print_unsigned(1, 10);
-    mcPrint(" sector(s) @ ");
+    FW_PRINT_C(" sector(s) @ ");
     print_unsigned(0, 10);
-    mcPrint(" from drive ");
+    FW_PRINT_C(" from drive ");
     print_unsigned(device->device_num, 10);
-    mcPrint(" into buffer at 0x");
+    FW_PRINT_C(" into buffer at 0x");
     print_unsigned((uint32_t)&buffer, 16);
-    mcPrint(" [device is at 0x");
+    FW_PRINT_C(" [device is at 0x");
     print_unsigned((uint32_t)device, 16);
-    mcPrint("]\r\n");
+    FW_PRINT_C("]\r\n");
 #endif
 
     if (ATA_read_sectors((uint8_t*)&buffer, 0, 1, device) == 1) {
@@ -97,28 +97,28 @@ static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buf
     } else {
 
 #ifdef ATA_DEBUG
-        mcPrint("S2: Reading ");
+        FW_PRINT_C("S2: Reading ");
         print_unsigned(count, 10);
-        mcPrint(" sector(s) @ ");
+        FW_PRINT_C(" sector(s) @ ");
         print_unsigned(start, 10);
-        mcPrint(" [logical] from partition ");
+        FW_PRINT_C(" [logical] from partition ");
         print_unsigned(part_num, 10);
-        mcPrint(" on drive ");
+        FW_PRINT_C(" on drive ");
         print_unsigned(handle->device->device_num, 10);
-        mcPrint(" into buffer at 0x");
+        FW_PRINT_C(" into buffer at 0x");
         print_unsigned((uint32_t)buffer, 16);
-        mcPrint(" [part is at 0x");
+        FW_PRINT_C(" [part is at 0x");
         print_unsigned((uint32_t)handle, 16);
-        mcPrint(" ; device is at 0x");
+        FW_PRINT_C(" ; device is at 0x");
         print_unsigned((uint32_t)handle->device, 16);
-        mcPrint("]\r\n");
+        FW_PRINT_C("]\r\n");
 #endif
 
         RuntimePart *part = &handle->parts[part_num];
         if (start >= part->sector_count) {
             // Out of range for partition
 #ifdef ATA_DEBUG
-            mcPrint("  --> OUT OF RANGE\r\n");
+            FW_PRINT_C("  --> OUT OF RANGE\r\n");
 #endif
             return 0;
         } else {
@@ -127,9 +127,9 @@ static uint32_t Part_read_ATA(PartHandle *handle, uint8_t part_num, uint8_t *buf
             }
 
 #ifdef ATA_DEBUG
-            mcPrint("  --> Physical sector is ");
+            FW_PRINT_C("  --> Physical sector is ");
             print_unsigned(part->lba_start + start, 10);
-            mcPrint("\r\n");
+            FW_PRINT_C("\r\n");
 #endif
 
             return ATA_read_sectors(buffer, part->lba_start + start, count, handle->ata_device);

@@ -15,6 +15,7 @@
  */
 
 #include <stdint.h>
+#include "machine.h"
 #include "rtlsupport.h"
 
 void* memset(void *str, int c, long unsigned int n) {
@@ -48,7 +49,6 @@ size_t strlen(const char *s) {
 #define BUF_MAX BUF_LEN - 2
 
 static uint8_t buf[BUF_LEN];
-extern void mcPrint(char *str);
 
 static uint8_t digit(unsigned char digit) {
   if (digit < 10) {
@@ -74,7 +74,7 @@ void print_unsigned(uint32_t num, uint8_t base) {
     }
   }
 
-  mcPrint((char*)&buf[bp+1]);
+  FW_PRINT_C((char*)&buf[bp+1]);
 }
 
 
