@@ -17,7 +17,7 @@
 ; depend on the specific function - See README for details.
 ;------------------------------------------------------------
 
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
 
     section .text
 

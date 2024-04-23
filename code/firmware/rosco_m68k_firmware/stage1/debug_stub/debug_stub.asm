@@ -33,7 +33,7 @@
 ; crash on the default output device, and then warm-reset back to the loader.
 
                 include "../../../shared/rosco_m68k_public.asm"
-                include "../rosco_m68k_private.asm"
+                include "rosco_m68k_private.asm"
 
                 section .text
                 align  2

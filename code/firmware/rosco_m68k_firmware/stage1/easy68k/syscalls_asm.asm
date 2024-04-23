@@ -14,7 +14,7 @@
 ; bytes for configuration at 0x410-0x412.
 ;------------------------------------------------------------
     include "../../../shared/rosco_m68k_public.asm"
-    include "../rosco_m68k_private.asm"
+    include "rosco_m68k_private.asm"
 
     section .text
 

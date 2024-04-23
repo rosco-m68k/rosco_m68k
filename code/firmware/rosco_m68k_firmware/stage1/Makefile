@@ -37,7 +37,7 @@ endif
 endif
 
 # Output config
-BINARY_BASENAME=rosco_m68k
+BINARY_BASENAME=../rosco_m68k
 BINARY_EXT=rom
 ELF_EXT=elf
 
@@ -46,7 +46,7 @@ BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
 DISASM=$(BINARY_BASENAME).dis
 SYM=$(BINARY_BASENAME).sym
 MAP=$(BINARY_BASENAME).map
-STAGE2_DIR=stage2
+STAGE2_DIR=../stage2
 STAGE2_FILE=loader2.bin.zip.o
 STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
@@ -220,7 +220,7 @@ $(BINARY_ODD): $(BINARY)
 clean:
 	$(MAKE) -C $(STAGE2_DIR) clean
 	$(MAKE) -C kernel clean
-	$(MAKE) -C tools/liblzg/src clean
+	$(MAKE) -C ../tools/liblzg/src clean
 	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
 test:
@@ -230,7 +230,7 @@ burn: $(BINARY_EVEN) $(BINARY_ODD)
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
 tools: 
-	$(MAKE) -C tools/liblzg/src
+	$(MAKE) -C ../tools/liblzg/src
 
 ifeq ($(MAME),true)
 mame: $(BINARY)

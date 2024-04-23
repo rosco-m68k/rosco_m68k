@@ -25,7 +25,7 @@
                 ifnd  TEST_FIRMWARE             ; building for firmware
 
                 include "../../../shared/rosco_m68k_public.asm"
-                include "../rosco_m68k_private.asm"
+                include "rosco_m68k_private.asm"
 
                 else                            ; building for RAM testing
 

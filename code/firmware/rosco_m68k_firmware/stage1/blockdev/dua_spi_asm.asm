@@ -13,7 +13,7 @@
 ; ------------------------------------------------------------
 ;
 
-                include "../../shared/rosco_m68k_public.asm"
+                include "../../../shared/rosco_m68k_public.asm"
                 section .text
 
 ; Default rosco 2.x SPI pins

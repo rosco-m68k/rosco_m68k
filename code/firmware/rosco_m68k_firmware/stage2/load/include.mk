@@ -4,4 +4,4 @@ OBJECTS := $(OBJECTS) load/load.o																						\
 	load/fat_io_lib/fat_misc.o load/fat_io_lib/fat_string.o										\
 	load/fat_io_lib/fat_table.o load/fat_io_lib/fat_write.o
 
-EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DFATFS_USE_CUSTOM_OPTS_FILE -Iload/include -I../blockdev/include
+EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DFATFS_USE_CUSTOM_OPTS_FILE -Iload/include -I../stage1/blockdev/include

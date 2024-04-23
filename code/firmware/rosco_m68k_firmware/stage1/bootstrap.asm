@@ -14,7 +14,7 @@
 ; info in the System Data Block, enables interrupts and 
 ; calls the main stage1 loader (in main1.c).
 ;------------------------------------------------------------
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
     include "rosco_m68k_private.asm"
 
     section .text

@@ -6,8 +6,8 @@ EXTRA_CFLAGS := $(EXTRA_CFLAGS)																								\
 
 BBSD_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter		                	\
             -Wall -Werror -Wpedantic -Wno-unused-function                   	\
-            -I../include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)						\
-            -DROSCO_M68K -I../blockdev/include																\
+            -I../stage1/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)						\
+            -DROSCO_M68K -I../stage1/blockdev/include																\
             $(DEFINES) -DSDFAT_LOADER
 								
 sdfat/load.o: sdfat/load.c

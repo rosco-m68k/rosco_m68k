@@ -12,7 +12,7 @@
 ; It unconditionally initializes the MFP, and provides
 ; I/O routines.
 ;------------------------------------------------------------
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
     include "rosco_m68k_private.asm"
 
     ifd REVISION1X

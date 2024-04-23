@@ -16,7 +16,7 @@
 ; the PROGRAM_LOADER from the EFP table (by default, this is
 ; the compressed stage 2 / Kermit loader in ROM).
 ;------------------------------------------------------------
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
     include "rosco_m68k_private.asm"
 
     section .text

@@ -13,7 +13,7 @@
 ; error frame types).
 ;------------------------------------------------------------
 ;
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
     section .text                     ; This is normal code
 
 ; Initialise the CPU type in the SDB. Intended to be called

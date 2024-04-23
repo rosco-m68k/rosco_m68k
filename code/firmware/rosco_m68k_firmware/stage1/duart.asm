@@ -12,7 +12,7 @@
 ; It detects and initializes the DUART, and provides
 ; I/O routines.
 ;------------------------------------------------------------
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
     include "rosco_m68k_private.asm"
 
     ifnd NO_68681

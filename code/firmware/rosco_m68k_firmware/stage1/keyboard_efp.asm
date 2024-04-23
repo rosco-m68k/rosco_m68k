@@ -11,7 +11,7 @@
 ; EFP handlers for rosco_m68k keyboard
 ;------------------------------------------------------------
 
-    include "../../shared/rosco_m68k_public.asm"
+    include "../../../shared/rosco_m68k_public.asm"
 
     section .text
 

@@ -12,7 +12,7 @@
 ; MC68901 serial driver.
 ;------------------------------------------------------------
     include "../../../shared/rosco_m68k_public.asm"
-    include "../rosco_m68k_private.asm"
+    include "../stage1/rosco_m68k_private.asm"
 
     section .text
 
