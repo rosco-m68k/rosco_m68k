@@ -74,6 +74,10 @@ endif
 
 export CFLAGS
 
+.PHONY: all clean
+
+all: $(BINARY_ZIP_OBJ)
+
 main2.o: main2.c
 	$(CC) $(SIZE_CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
 
@@ -87,7 +91,7 @@ common.o: common.c
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ -R../stage1/stage1.elf $(LIBS)
 	-chmod a-x $@
 
 $(BINARY_ZIP): $(BINARY) $(LZG)
@@ -98,10 +102,6 @@ $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
 
 $(LZG): $(LZG_SRC)
 	make -C $^
-
-.PHONY: all clean
-
-all: $(BINARY_ZIP_OBJ)
 
 clean: 
 	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)

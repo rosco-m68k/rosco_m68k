@@ -48,7 +48,7 @@ MAP=$(STAGE1_BASENAME).map
 OBJECTS=bootstrap.o mfp.o duart.o rev1.o rev2.o lzgmini_68k.o	\
 				decompress.o ansicon.o char_device.o trap14.o	\
 				cpuspeed.o cputype.o warmboot.o					\
-				keyboard_efp.o keyboard.o						\
+				keyboard_efp.o keyboard.o common.o				\
 				main1.o
 
 # Big ROM configuration (enable everything) is now default

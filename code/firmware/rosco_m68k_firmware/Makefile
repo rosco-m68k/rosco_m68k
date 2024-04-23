@@ -131,10 +131,10 @@ export LATEBANNER
 	$(AS) $(ASFLAGS) -o $@ $<
 
 $(STAGE1) : $(STAGE1_DIR)
-	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE1_FILE)
+	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $< $(STAGE1_FILE)
 
-$(STAGE2) : $(STAGE2_DIR)
-	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $^ $(STAGE2_FILE)
+$(STAGE2) : $(STAGE2_DIR) $(STAGE1)
+	CPU='$(CPU)' ARCH='$(ARCH)' TUNE='$(TUNE)' make -C $< $(STAGE2_FILE)
 
 $(ELF) : $(STAGE1) $(STAGE2)
 	$(LD) $(LDFLAGS) $^ -o $@
