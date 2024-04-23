@@ -1,5 +1,5 @@
 OUTPUT_FORMAT("binary")
-ENTRY(START)
+ENTRY(STAGE2_START)
 kermit_buffers = 0x2000;
 MEMORY
 {

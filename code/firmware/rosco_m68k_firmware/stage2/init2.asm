@@ -15,7 +15,7 @@
 
     section .text.init
 
-START::
+STAGE2_START::
     movea.l VECTORS_LOAD,A7             ; Stack to the default stack pointer vector
     lea.l   linit,A0
     jsr     (A0)
