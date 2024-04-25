@@ -10,31 +10,12 @@ EXTRA_CFLAGS?=-g
 DEFINES:=$(DEFINES) -DROSCO_M68K_KERNEL_BUILD
 CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
        -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks							\
+       -fomit-frame-pointer -fno-delete-null-pointer-checks $(EXTRA_CFLAGS)			\
        $(DEFINES)
 LDFLAGS=-Map=$(MAP) -L .. -T $(LINKER_SCRIPT)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
-AS=vasmm68k_mot
-OBJCOPY=m68k-elf-objcopy
-OBJDUMP=m68k-elf-objdump
-SIZE=m68k-elf-size
-NM=m68k-elf-nm
-RM=rm -f
 
-# GCC-version-specific settings
-ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
-CC_VERSION:=$(shell $(CC) -dumpfullversion)
-CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
-# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
-ifeq ($(CC_MAJOR),12)
-CFLAGS+=--param=min-pagesize=0
-endif
-ifeq ($(CC_MAJOR),13)
-CFLAGS+=--param=min-pagesize=0
-endif
-endif
+include ../common.mk
 
 # Output config
 STAGE1_BASENAME=stage1
@@ -56,10 +37,6 @@ WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 WITH_ATA?=true
-
-.PHONY: all clean test
-
-all: $(STAGE1) $(DISASM) $(SYM) $(MAP)
 
 ifeq ($(REVISION1X),true)
 $(info === Building rosco_m68k firmware for revision 1.x board with MC$(CPU) CPU)
@@ -131,13 +108,11 @@ $(info === Building rosco_m68k firmware with DEBUG_STUB)
 include debug_stub/include.mk
 endif
 
+.PHONY: all clean test
+
+all: $(STAGE1) $(DISASM) $(SYM) $(MAP)
+
 include easy68k/include.mk
-
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
-
-%.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
 
 kernel/kernel.a:
 	$(MAKE) -C kernel $(nodir $@)

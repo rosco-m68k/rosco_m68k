@@ -14,27 +14,8 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
        $(DEFINES)
 LDFLAGS=-Map=$(MAP) -L . -T $(LINKER_SCRIPT)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
-AS=vasmm68k_mot
-OBJCOPY=m68k-elf-objcopy
-OBJDUMP=m68k-elf-objdump
-SIZE=m68k-elf-size
-NM=m68k-elf-nm
-RM=rm -f
 
-# GCC-version-specific settings
-ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
-CC_VERSION:=$(shell $(CC) -dumpfullversion)
-CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
-# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
-ifeq ($(CC_MAJOR),12)
-CFLAGS+=--param=min-pagesize=0
-endif
-ifeq ($(CC_MAJOR),13)
-CFLAGS+=--param=min-pagesize=0
-endif
-endif
+include ./common.mk
 
 STAGE1_DIR=stage1
 STAGE1_FILE=stage1.elf
@@ -63,10 +44,6 @@ WITH_BLOCKDEV?=true
 WITH_KERMIT?=true
 WITH_DEBUG_STUB?=true
 WITH_ATA?=true
-
-.PHONY: all clean tools test
-
-all: $(BINARY_EVEN) $(BINARY_ODD) $(SYM) $(DISASM)
 
 # Set up Size-specific things appropriately..
 ifeq ($(REVISION1X),true)
@@ -122,6 +99,10 @@ export HUGEROM
 export MAME
 export NOBANNER
 export LATEBANNER
+
+.PHONY: all clean tools test
+
+all: $(BINARY_EVEN) $(BINARY_ODD) $(SYM) $(DISASM)
 
 $(STAGE1) : $(STAGE1_DIR)
 	make -C $< $(STAGE1_FILE)

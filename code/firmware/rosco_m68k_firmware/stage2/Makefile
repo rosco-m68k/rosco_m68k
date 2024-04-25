@@ -14,25 +14,10 @@ BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     															\
 EXTRA_CFLAGS=
 CFLAGS=$(BASE_CFLAGS) -O9 $(EXTRA_CFLAGS)
 SIZE_CFLAGS=$(BASE_CFLAGS) -Os $(EXTRA_CFLAGS)
-LDFLAGS=-T rosco_m68k_stage2.ld -Map=$(MAP)
+LDFLAGS=-Map=$(MAP) -T rosco_m68k_stage2.ld
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
-AS=vasmm68k_mot
-RM=rm -f
 
-# GCC-version-specific settings
-ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
-CC_VERSION:=$(shell $(CC) -dumpfullversion)
-CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
-# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
-ifeq ($(CC_MAJOR),12)
-CFLAGS+=--param=min-pagesize=0
-endif
-ifeq ($(CC_MAJOR),13)
-CFLAGS+=--param=min-pagesize=0
-endif
-endif
+include ../common.mk
 
 # Output config
 BINARY_BASENAME=loader2
@@ -51,6 +36,10 @@ LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
 OBJECTS=init2.o common.o serial.o main2.o
+
+.PHONY: all clean
+
+all: $(BINARY_ZIP_OBJ)
 
 ifeq ($(WITH_ATA), true)
 DEFINES:=$(DEFINES) -DROSCO_M68K_ATA
@@ -73,18 +62,11 @@ ifeq ($(REVISION1X),true)
 DEFINES:=$(DEFINES) -DREVISION1X
 endif
 
-.PHONY: all clean
-
-all: $(BINARY_ZIP_OBJ)
-
 main2.o: main2.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
 common.o: common.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
-
-%.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
 
 $(BINARY) : $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@ -R../stage1/stage1.elf $(LIBS)
