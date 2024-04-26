@@ -1,2 +1,2 @@
-OBJECTS := $(OBJECTS) part/part.o
-EXTRA_CFLAGS := $(EXTRA_CFLAGS) -Ipart/include
+OBJECTS+=part/part.o
+DEFINES+=-Ipart/include

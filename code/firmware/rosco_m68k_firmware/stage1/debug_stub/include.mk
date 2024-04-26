@@ -1,3 +1,2 @@
-EXTRA_CFLAGS := $(EXTRA_CFLAGS) -DHAVE_DEBUG_STUB
-OBJECTS := $(OBJECTS) debug_stub/debug_stub.o
-
+OBJECTS+=debug_stub/debug_stub.o
+DEFINES+=-DHAVE_DEBUG_STUB

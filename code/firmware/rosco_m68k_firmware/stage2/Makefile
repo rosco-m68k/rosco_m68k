@@ -1,23 +1,18 @@
-# Make rosco_m68k programs
+# Make rosco_m68k ROM stage2
 # 
 # Copyright (c)2020-2024 Ross Bamford
 # See LICENSE
 
-CPU?=68010
-ARCH?=$(CPU)
-TUNE?=$(CPU)
-DEFINES=
-BASE_CFLAGS=-std=c11 -ffreestanding -Wno-unused-parameter     															\
-            -fomit-frame-pointer -Wall -Werror -Wpedantic -Wno-unused-function							\
-            -Ifat_io_lib -Iinclude -I../stage1/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)	\
-            $(DEFINES)
-EXTRA_CFLAGS=
-CFLAGS=$(BASE_CFLAGS) -O9 $(EXTRA_CFLAGS)
-SIZE_CFLAGS=$(BASE_CFLAGS) -Os $(EXTRA_CFLAGS)
-LDFLAGS=-Map=$(MAP) -T rosco_m68k_stage2.ld
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
+ifeq ($(MAKELEVEL),0)
+$(error Cannot use stage2 as top-level Makefile)
+endif
 
 include ../common.mk
+
+INCLUDES=-Ifat_io_lib -Iinclude -I../stage1/include
+CFLAGS+=-O9
+SIZE_CFLAGS=$(CFLAGS) -Os
+LDFLAGS+=-T rosco_m68k_stage2.ld
 
 # Output config
 BINARY_BASENAME=loader2
@@ -29,22 +24,22 @@ BINARY_ZIP=$(BINARY).zip
 BINARY_ZIP_OBJ=$(BINARY_ZIP).o
 
 ifeq ($(MAME),true)
-DEFINES:=$(DEFINES) -DMAME_FIRMWARE
+DEFINES+=-DMAME_FIRMWARE
 endif
 
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS=init2.o common.o serial.o main2.o
+OBJECTS:=init2.o common.o serial.o main2.o
 
 .PHONY: all clean
 
 all: $(BINARY_ZIP_OBJ)
 
 ifeq ($(WITH_ATA), true)
-DEFINES:=$(DEFINES) -DROSCO_M68K_ATA
+DEFINES+=-DROSCO_M68K_ATA
 ifeq ($(ATA_DEBUG),true)
-DEFINES:=$(DEFINES) -DATA_DEBUG
+DEFINES+=-DATA_DEBUG
 endif
 endif
 ifeq ($(WITH_KERMIT),true)
@@ -59,7 +54,7 @@ include idehdd/include.mk
 endif
 endif
 ifeq ($(REVISION1X),true)
-DEFINES:=$(DEFINES) -DREVISION1X
+DEFINES+=-DREVISION1X
 endif
 
 main2.o: main2.c
@@ -69,7 +64,7 @@ common.o: common.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) $^ -o $@ -R../stage1/stage1.elf $(LIBS)
+	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -o $@ -R../stage1/stage1.elf $(LIBS)
 	-chmod a-x $@
 
 $(BINARY_ZIP): $(BINARY) $(LZG)

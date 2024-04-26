@@ -3,19 +3,98 @@
 # Copyright (c)2019-2024 Ross Bamford
 # See LICENSE
 
-CPU?=68000
-ARCH?=$(CPU)
-TUNE?=$(CPU)
-EXTRA_CFLAGS?=-g
-DEFINES:=$(DEFINES) -DROSCO_M68K_KERNEL_BUILD
-CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror				\
-       -Iinclude -Ikernel/include -mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE) -Os	\
-       -fomit-frame-pointer -fno-delete-null-pointer-checks $(EXTRA_CFLAGS)			\
-       $(DEFINES)
-LDFLAGS=-Map=$(MAP) -L . -T $(LINKER_SCRIPT)
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
+# Configuration options, default to rev. 2 with MC68000, with all features except VDP
+# CPU options
+export CPU?=68000
+export ARCH?=$(CPU)
+export TUNE?=$(CPU)
+# Board version
+export REVISION1X?=false
+ifeq ($(REVISION1X),true)
+export HUGEROM?=false
+else
+export HUGEROM?=true
+endif
+export MAME?=false
+# Firmware features
+export WITH_BLOCKDEV?=true
+export WITH_KERMIT?=true
+export WITH_DEBUG_STUB?=true
+export WITH_ATA?=true
+export WITH_VDP?=false
+export NO68681?=false
+export XOSERA_API_MINIMAL?=true
+# Firmware behaviour
+export NOBANNER?=false
+export LATEBANNER?=false
+export ATA_DEBUG?=false
+export NO_TICK?=false
+
+# Only rev. 1 can use BIGROM 
+ifneq ($(REVISION1X),true)
+ifeq ($(HUGEROM),false)
+$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards)
+endif
+endif
+
+# Generic ROM-type options
+ifeq ($(HUGEROM),false)
+export LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
+ROM_TYPE_NAME=BIGROM
+else
+DEFINES:=$(DEFINES) -DHUGEROM
+export LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
+ROM_TYPE_NAME=HUGEROM
+endif
+
+# Hardware vs. MAME ROM-type options
+ifeq ($(MAME),true)
+# Is built for MAME
+ifeq ($(REVISION1X),true)
+MAME_NAME=rosco
+MAMESIZE=0x00010000
+else
+MAME_NAME=rosco_classicv2
+MAMESIZE=0x00100000
+endif
+$(info === Building rosco_m68k firmware for MAME ($(MAME_NAME)))
+else
+# Is built for real hardware
+ifeq ($(HUGEROM),false)
+ROMDEVICE?=AT28C256
+else
+ROMDEVICE?=SST39SF040
+endif
+# Lookup ROM size
+ifeq ($(ROMDEVICE),AT28C256)
+ROM_CHIP_SIZE=0x00008000
+BOARD_ROM_SIZE=64KB
+else ifeq ($(ROMDEVICE),SST39SF010A)
+ROM_CHIP_SIZE=0x00020000
+BOARD_ROM_SIZE=256KB
+else ifeq ($(ROMDEVICE),SST39SF020A)
+ROM_CHIP_SIZE=0x00040000
+BOARD_ROM_SIZE=512KB
+else ifeq ($(ROMDEVICE),SST39SF040)
+ROM_CHIP_SIZE=0x00080000
+BOARD_ROM_SIZE=1MB
+else
+ifeq ($(ROM_CHIP_SIZE),)
+$(error === Unknown ROMDEVICE has been set without ROM_CHIP_SIZE)
+endif
+BOARD_ROM_SIZE?=$(ROM_CHIP_SIZE)*2B
+endif
+$(info === Building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) ($(ROM_TYPE_NAME)))
+endif
+
+# These are used in CFLAGS by common.mk
+export DEFINES:=-DROSCO_M68K_KERNEL_BUILD
+export INCLUDES:=
+export EXTRA_CFLAGS?:=
 
 include ./common.mk
+
+LDFLAGS+=-L . -T $(LINKER_SCRIPT)
 
 STAGE1_DIR=stage1
 STAGE1_FILE=stage1.elf
@@ -36,73 +115,15 @@ SYM=$(BINARY_BASENAME).sym
 MAP=$(BINARY_BASENAME).map
 BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
-
-ROMDEVICE?=SST39SF040
-
-# Big ROM configuration (enable everything) is now default
-WITH_BLOCKDEV?=true
-WITH_KERMIT?=true
-WITH_DEBUG_STUB?=true
-WITH_ATA?=true
-
-# Set up Size-specific things appropriately..
-ifeq ($(REVISION1X),true)
-HUGEROM?=false
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco))
-LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
-MAMESIZE=0x00010000
-else
-ifeq ($(HUGEROM),true)
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
-ROMDEVICE=SST39SF040
-DEFINES:=$(DEFINES) -DHUGEROM
-else
-$(info === Building rosco_m68k firmware for 64KB AT28C256 (BIGROM))
-LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
-ROMDEVICE=AT28C256
-endif
-endif
-else
-HUGEROM?=true
-ifeq ($(MAME),true)
-$(info === Building rosco_m68k firmware for MAME (rosco_classicv2))
-MAMESIZE=0x00100000
-LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
-DEFINES:=$(DEFINES) -DHUGEROM
-else
-ifeq ($(HUGEROM),false)
-$(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boards!)
-else
-$(info === Building rosco_m68k firmware for 1MB SST39SF040 (HUGEROM))
-LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
-ROMDEVICE=SST39SF040
-DEFINES:=$(DEFINES) -DHUGEROM
-endif
-endif
-endif
-
-export LINKER_SCRIPT
-export NO68681
-export NO_TICK
-export WITH_BLOCKDEV
-export WITH_ATA
-export ATA_DEBUG
-export WITH_VDP
-export XOSERA_API_MINIMAL
-export WITH_DEBUG_STUB
-export WITH_KERMIT
-export CPU ARCH TUNE
-export REVISION1X
-export HUGEROM
-export MAME
-export NOBANNER
-export LATEBANNER
+BINARY_MAME=$(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
 .PHONY: all clean tools test
 
+ifneq ($(MAME),true)
 all: $(BINARY_EVEN) $(BINARY_ODD) $(SYM) $(DISASM)
+else
+all: $(BINARY_MAME) $(SYM) $(DISASM)
+endif
 
 $(STAGE1) : $(STAGE1_DIR)
 	make -C $< $(STAGE1_FILE)
@@ -111,48 +132,54 @@ $(STAGE2) : $(STAGE2_DIR) $(STAGE1) tools
 	make -C $< $(STAGE2_FILE)
 
 $(ELF) : $(STAGE1) $(STAGE2)
-	$(LD) $(LDFLAGS) $^ -o $@
+	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -o $@
 	$(SIZE) $@
 	-chmod a-x $@
 
 $(BINARY) : $(ELF) $(DISASM) $(SYMS)
 	$(OBJCOPY) -O binary $< $@
 	-chmod a-x $@
-ifeq ($(HUGEROM),false)
-		@echo === Completed building rosco_m68k firmware for 64KB BIGROM AT28C256: $@
+ifneq ($(MAME),true)
+	@echo === Completed building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) \($(ROM_TYPE_NAME)\): $@
 else
-		@echo === Completed building rosco_m68k firmware for 1MB HUGEROM SST39SF040: $@
+	@echo === Completed building rosco_m68k firmware for MAME \($(MAME_NAME)\): $@
 endif
 
-$(SYM) : $(ELF)
-	$(NM) --numeric-sort $< >$@
-
-$(DISASM) : $(ELF)
-	$(OBJDUMP) --disassemble -S $< >$@
+$(BINARY_MAME): $(BINARY)
+ifeq ($(MAME),true)
+	srec_cat -output $@ -Binary $< -Binary -fill 0xFF 0x00000000 $(MAMESIZE)
+else
+	$(error === Cannot generate MAME ROM for real hardware)
+endif
 
 $(BINARY_EVEN): $(BINARY)
-	srec_cat -output $(BINARY_EVEN) -Binary $(BINARY) -Binary -Split 2 0
+ifneq ($(MAME),true)
+	srec_cat -output $@ -Binary $< -Binary -Split 2 0 -fill 0xFF 0x00000000 $(ROM_CHIP_SIZE)
+else
+	$(error === Cannot generate split ROM for MAME)
+endif
 
 $(BINARY_ODD): $(BINARY)
-	srec_cat -output $(BINARY_ODD) -Binary $(BINARY) -Binary -Split 2 1
+ifneq ($(MAME),true)
+	srec_cat -output $@ -Binary $< -Binary -Split 2 1 -fill 0xFF 0x00000000 $(ROM_CHIP_SIZE)
+else
+	$(error === Cannot generate split ROM for MAME)
+endif
 
 clean:
 	$(MAKE) -C $(STAGE1_DIR) clean
 	$(MAKE) -C $(STAGE2_DIR) clean
 	$(MAKE) -C tools/liblzg/src clean
-	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(ELF) $(DISASM) $(SYM) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
+	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(BINARY_MAME) $(ELF) $(DISASM) $(SYM) $(MAP)
 
 test:
 	$(MAKE) -C $(STAGE1_DIR) test
 	
 burn: $(BINARY_EVEN) $(BINARY_ODD)
+ifeq ($(MAME),true)
+	$(error === Cannot burn ROM when building for MAME)
+endif
 	ROMDEVICE=$(ROMDEVICE) ./burn.sh
 
 tools: 
 	$(MAKE) -C tools/liblzg/src
-
-ifeq ($(MAME),true)
-mame: $(BINARY)
-	srec_cat -output $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin -Binary $(BINARY) -Binary -fill 0xFF 0x00000000 $(MAMESIZE)
-endif
-
