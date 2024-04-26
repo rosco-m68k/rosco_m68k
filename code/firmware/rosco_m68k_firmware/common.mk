@@ -7,11 +7,11 @@ SIZE=m68k-elf-size
 NM=m68k-elf-nm
 RM=rm -f
 
-CFLAGS=																					\
-	-std=c11 -Os -ffreestanding -nostartfiles											\
-	-Wall -Werror -Wpedantic -Wno-unused-function -Wno-unused-parameter					\
-	$(if $(CPU),-mcpu=$(CPU)) $(if $(ARCH),-march=$(ARCH)) $(if $(TUNE),-mtune=$(TUNE))	\
-	-fomit-frame-pointer -fno-delete-null-pointer-checks								\
+CFLAGS=																	\
+	-std=c11 -Os -ffreestanding -nostartfiles							\
+	-Wall -Werror -Wpedantic -Wno-unused-function -Wno-unused-parameter	\
+	-mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)							\
+	-fomit-frame-pointer -fno-delete-null-pointer-checks				\
 	$(DEFINES) $(INCLUDES) $(EXTRA_CFLAGS)
 LDFLAGS=
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
