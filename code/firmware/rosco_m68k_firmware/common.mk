@@ -20,11 +20,14 @@ ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
 ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
 CC_VERSION:=$(shell $(CC) -dumpfullversion)
 CC_MAJOR:=$(firstword $(subst ., ,$(CC_VERSION)))
-# If this is GCC 12 or 13, add flag --param=min-pagesize=0 to CFLAGS
+# If this is GCC 12, 13, or 14, add flag --param=min-pagesize=0 to CFLAGS
 ifeq ($(CC_MAJOR),12)
 CFLAGS+=--param=min-pagesize=0
 endif
 ifeq ($(CC_MAJOR),13)
+CFLAGS+=--param=min-pagesize=0
+endif
+ifeq ($(CC_MAJOR),14)
 CFLAGS+=--param=min-pagesize=0
 endif
 endif
