@@ -90,7 +90,7 @@ endif
 # These are used in CFLAGS by common.mk
 export DEFINES:=-DROSCO_M68K_KERNEL_BUILD
 export INCLUDES:=
-export EXTRA_CFLAGS?:=
+export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
 
 include ./common.mk
 
