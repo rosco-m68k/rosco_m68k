@@ -9,8 +9,12 @@ endif
 
 include ../common.mk
 
+KERNEL_DIR=../kernel
+KERNEL_FILE=kernel.a
+KERNEL=$(KERNEL_DIR)/$(KERNEL_FILE)
+
 EXTRA_CFLAGS?=-g
-INCLUDES=-Iinclude -Ikernel/include
+INCLUDES=-Iinclude -I$(KERNEL_DIR)/include
 LDFLAGS+=-L .. -T $(LINKER_SCRIPT)
 
 # Output config
@@ -93,16 +97,13 @@ $(info === Building rosco_m68k firmware with DEBUG_STUB)
 include debug_stub/include.mk
 endif
 
-.PHONY: all clean test
+.PHONY: all clean
 
 all: $(STAGE1) $(DISASM) $(SYM) $(MAP)
 
 include easy68k/include.mk
 
-kernel/kernel.a:
-	$(MAKE) -C kernel $(nodir $@)
-
-$(STAGE1) : $(OBJECTS) kernel/kernel.a
+$(STAGE1) : $(OBJECTS) $(KERNEL)
 	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -r -o $@
 	$(SIZE) $@
 
@@ -110,8 +111,4 @@ $(DISASM) : $(STAGE1)
 	$(OBJDUMP) --disassemble -S $< >$@
 
 clean:
-	$(MAKE) -C kernel clean
 	$(RM) $(OBJECTS) $(STAGE1) $(DISASM) $(SYM) $(MAP) $(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
-
-test:
-	$(MAKE) -C kernel test

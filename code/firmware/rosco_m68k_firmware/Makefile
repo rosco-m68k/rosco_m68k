@@ -94,14 +94,17 @@ export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
 
 include ./common.mk
 
-LDFLAGS+=-L . -T $(LINKER_SCRIPT)
-
+KERNEL_DIR=kernel
+KERNEL_FILE=kernel.a
+KERNEL=$(KERNEL_DIR)/$(KERNEL_FILE)
 STAGE1_DIR=stage1
 STAGE1_FILE=stage1.elf
 STAGE1=$(STAGE1_DIR)/$(STAGE1_FILE)
 STAGE2_DIR=stage2
 STAGE2_FILE=loader2.bin.zip.o
 STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
+
+LDFLAGS+=-L . -T $(LINKER_SCRIPT)
 
 # Output config
 BINARY_BASENAME=rosco_m68k
@@ -125,11 +128,14 @@ else
 all: $(BINARY_MAME) $(SYM) $(DISASM)
 endif
 
-$(STAGE1) : $(STAGE1_DIR)
-	make -C $< $(STAGE1_FILE)
+$(KERNEL_DIR)/% : $(KERNEL_DIR)
+	$(MAKE) -C $< $*
 
-$(STAGE2) : $(STAGE2_DIR) $(STAGE1) tools
-	make -C $< $(STAGE2_FILE)
+$(STAGE1_DIR)/% : $(STAGE1_DIR) $(KERNEL)
+	$(MAKE) -C $< $*
+
+$(STAGE2_DIR)/% : $(STAGE2_DIR) $(STAGE1) tools
+	$(MAKE) -C $< $*
 
 $(ELF) : $(STAGE1) $(STAGE2)
 	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -o $@
@@ -166,14 +172,15 @@ else
 	$(error === Cannot generate split ROM for MAME)
 endif
 
+test : $(KERNEL_DIR)
+	$(MAKE) -C $< $@
+
 clean:
+	$(MAKE) -C $(KERNEL_DIR) clean
 	$(MAKE) -C $(STAGE1_DIR) clean
 	$(MAKE) -C $(STAGE2_DIR) clean
 	$(MAKE) -C tools/liblzg/src clean
 	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(BINARY_MAME) $(ELF) $(DISASM) $(SYM) $(MAP)
-
-test:
-	$(MAKE) -C $(STAGE1_DIR) test
 	
 burn: $(BINARY_EVEN) $(BINARY_ODD)
 ifeq ($(MAME),true)

@@ -1,9 +1,9 @@
-ROSCO_M68K_DIR=../../../../../..
+ROSCO_M68K_DIR=../../../../..
 
 -include $(ROSCO_M68K_DIR)/user.mk
 
 SRC_DIR=..
-R68K_DIR=../../../../../tools/r68k
+R68K_DIR=$(ROSCO_M68K_DIR)/code/tools/r68k
 SYSLIBROOT=$(ROSCO_M68K_DIR)/code/software/libs
 SYSINCDIR?=$(SYSLIBROOT)/build/include
 SYSLIBDIR?=$(SYSLIBROOT)/build/lib

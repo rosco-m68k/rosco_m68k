@@ -9,7 +9,7 @@ DEFINES=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
 FLAGS=-ffreestanding -ffunction-sections -fdata-sections							\
 				-Wall -Wextra -Wno-unused-function 									\
 				-Wno-unused-parameter -Wno-format -pedantic 						\
-				-I../include -Iinclude -Itests/include								\
+				-I../stage1/include -Iinclude -Itests/include								\
 				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
 CFLAGS=-std=c11 $(FLAGS)
 ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
