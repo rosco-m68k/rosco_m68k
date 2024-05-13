@@ -88,7 +88,7 @@ $(info === Building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) ($(RO
 endif
 
 # These are used in CFLAGS by common.mk
-export DEFINES:=-DROSCO_M68K_KERNEL_BUILD
+export DEFINES:=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
 export INCLUDES:=
 export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
 

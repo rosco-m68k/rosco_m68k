@@ -46,6 +46,7 @@ ifeq ($(WITH_KERMIT),true)
 include kermit/include.mk
 endif
 ifeq ($(WITH_BLOCKDEV),true)
+INCLUDES+=-I../stage1/blockdev/include
 include load/include.mk
 include part/include.mk
 include sdfat/include.mk

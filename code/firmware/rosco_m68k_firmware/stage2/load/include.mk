@@ -5,4 +5,4 @@ OBJECTS+=														\
 	load/fat_io_lib/fat_misc.o load/fat_io_lib/fat_string.o		\
 	load/fat_io_lib/fat_table.o load/fat_io_lib/fat_write.o
 DEFINES+=-DFATFS_USE_CUSTOM_OPTS_FILE
-INCLUDES+=-Iload/include -I../stage1/blockdev/include
+INCLUDES+=-Iload/include
