@@ -30,6 +30,11 @@ export LATEBANNER?=false
 export ATA_DEBUG?=false
 export NO_TICK?=false
 
+# These are used in CFLAGS by common.mk
+export DEFINES:=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
+export INCLUDES:=
+export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
+
 # Only rev. 1 can use BIGROM 
 ifneq ($(REVISION1X),true)
 ifeq ($(HUGEROM),false)
@@ -42,7 +47,7 @@ ifeq ($(HUGEROM),false)
 export LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
 ROM_TYPE_NAME=BIGROM
 else
-DEFINES:=$(DEFINES) -DHUGEROM
+DEFINES+=-DHUGEROM
 export LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
 ROM_TYPE_NAME=HUGEROM
 endif
@@ -86,11 +91,6 @@ BOARD_ROM_SIZE?=$(ROM_CHIP_SIZE)*2B
 endif
 $(info === Building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) ($(ROM_TYPE_NAME)))
 endif
-
-# These are used in CFLAGS by common.mk
-export DEFINES:=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
-export INCLUDES:=
-export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
 
 include ./common.mk
 
