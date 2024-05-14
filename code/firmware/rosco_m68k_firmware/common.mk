@@ -1,6 +1,10 @@
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
-AS=vasmm68k_mot
+VASM=vasmm68k_mot
+GNU_AS=m68k-elf-as
+AS=$(VASM)
+AR=m68k-elf-ar
+RANLIB=m68k-elf-ranlib
 OBJCOPY=m68k-elf-objcopy
 OBJDUMP=m68k-elf-objdump
 SIZE=m68k-elf-size
@@ -12,9 +16,11 @@ CFLAGS=																	\
 	-Wall -Werror -Wpedantic -Wno-unused-function -Wno-unused-parameter	\
 	-mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)							\
 	-fomit-frame-pointer -fno-delete-null-pointer-checks				\
-	$(DEFINES) $(INCLUDES) $(EXTRA_CFLAGS)
+	$(DEFINES) $(INCLUDES)
 LDFLAGS=
-ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
+VASMFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
+GNU_ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
+ASFLAGS=$(VASMFLAGS)
 
 # GCC-version-specific settings
 ifneq ($(findstring GCC,$(shell $(CC) --version 2>/dev/null)),)
@@ -32,8 +38,14 @@ CFLAGS+=--param=min-pagesize=0
 endif
 endif
 
+%.o : %.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) -c -o $@ $<
+
 %.o : %.asm
-	$(AS) $(ASFLAGS) -o $@ $<
+	$(AS) $(ASFLAGS) $(EXTRA_ASFLAGS) -o $@ $<
+
+%.o : %.s
+	$(AS) $(ASFLAGS) $(EXTRA_ASFLAGS) -o $@ $<
 
 %.sym : %.elf
 	$(NM) --numeric-sort $< >$@
