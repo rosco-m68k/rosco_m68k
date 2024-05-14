@@ -30,7 +30,7 @@ Pin 22 = PBERR        S0 = 1   S1 = 0
 Pin 21 = WDEN         S0 = 1   S1 = 0
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  22  ---- -x-- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 23  ---- ---- -x-- ---- ---- ---- ---- ---- ---- ---- ----
+ 23  ---- ---- -x-- x--- ---- ---- ---- ---- ---- ---- ----
  24  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  25  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  26  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

@@ -7,7 +7,7 @@
                           |                 |
                     IOSEL |  2           23 | DUIACK
                           |                 |
-                    HWRST |  3           22 | ANYIACK
+                    HWRST |  3           22 | CPUSP
                           |                 |
                       FC2 |  4           21 | BOOT
                           |                 |
@@ -23,7 +23,7 @@
                           |                 |
                       A19 | 10           15 | HALT
                           |                 |
-                       NC | 11           14 | NC
+                      A18 | 11           14 | A16
                           |                 |
-                      GND | 12           13 | NC
+                      GND | 12           13 | A17
                           -------------------

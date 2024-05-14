@@ -14,9 +14,9 @@ Pin 23 = DUIACK       S0 = 0   S1 = 0
   8  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   9  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 22 = ANYIACK      S0 = 0   S1 = 0
+Pin 22 = CPUSP        S0 = 0   S1 = 0
  10  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 11  ---- ---- -x-- x--- x--- x--- ---- ---- ---- x--- ----
+ 11  ---- ---- -x-- x--- x--- x--- ---- ---- ---- ---- ----
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  13  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  14  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -142,7 +142,7 @@ Pin 15 = HALT         S0 = 1   S1 = 0
 120  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 121  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = NC           S0 = 0   S1 = 0
+Pin 14 = A16          S0 = 0   S1 = 0
 122  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 123  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 124  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

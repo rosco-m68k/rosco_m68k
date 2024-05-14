@@ -11,7 +11,7 @@
                           |                 |
                       A21 |  4           21 | PPDTACK
                           |                 |
-                      A22 |  5           20 | IACK
+                      A22 |  5           20 | CPUSP
                           |                 |
                       A23 |  6           19 | EXPSEL
                           |                 |

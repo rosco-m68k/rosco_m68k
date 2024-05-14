@@ -7,15 +7,15 @@
                           |                 |
                        AS |  2           23 | BERR
                           |                 |
-                     IACK |  3           22 | PBERR
+                    CPUSP |  3           22 | PBERR
                           |                 |
-                       NC |  4           21 | WDEN
+                      A19 |  4           21 | WDEN
                           |                 |
-                       NC |  5           20 | WDQ3
+                      A18 |  5           20 | WDQ3
                           |                 |
-                       NC |  6           19 | WDQ2
+                      A16 |  6           19 | WDQ2
                           |                 |
-                       NC |  7           18 | WDQ1
+                      A17 |  7           18 | WDQ1
                           |                 |
                        NC |  8           17 | WDQ0
                           |                 |
