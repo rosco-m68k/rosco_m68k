@@ -33,7 +33,6 @@ STOP_HEART::
 ; Exception handlers    
 TICK_HANDLER::
     move.l  D0,-(A7)                  ; Save D0
-    move.l  D1,-(A7)                  ; Save D1
 
     ; Increment upticks
     move.l  SDB_UPTICKS,D0            ; Read SDB dword at 12
@@ -48,11 +47,8 @@ TICK_HANDLER::
     ; counted to zero, so toggle indicator 0 (if allowed) 
     ; and reset counter
     move.b  SDB_SYSFLAGS,D0           ; Get sysflags (high byte)
-
-    move.b  MFP_GPDR,D1               ; Get GPDR
-    eor.b   #1,D1                     ; Toggle bit 0
-    and.b   D0,D1                     ; Mask with flags
-    move.b  D1,MFP_GPDR               ; Set GPDR
+    and.b   #1,D0                     ; Mask bit 0 to toggle with flags
+    eor.b   D0,MFP_GPDR               ; Toggle GPDR
 
     move.w  #50,D0                    ; Reset counter
 
@@ -60,7 +56,6 @@ TICK_HANDLER::
 
     sub.w   #$1,D0                    ; Decrement counter...
     move.w  D0,SDB_TICKCNT            ; ... and write back to SDB
-    move.l  (A7)+,D1                  ; Restore D1
 
     move.b  #~$20,MFP_ISRB            ; Clear interrupt-in-service
     move.l  (A7)+,D0                  ; Restore D0
