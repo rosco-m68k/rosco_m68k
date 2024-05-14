@@ -12,10 +12,10 @@
    8   | A2       | Input
    9   | A3       | Input
   10   | A19      | Input
-  11   | NC       | Input
+  11   | A18      | Input
   12   | GND      | GND
-  13   | NC       | Input
-  14   | NC       | NC
+  13   | A17      | Input
+  14   | A16      | NC
   15   | HALT     | Output
   16   | RESET    | Output
   17   | RUNLED   | Output
@@ -23,7 +23,7 @@
   19   | BQ1      | Output
   20   | BQ2      | Output
   21   | BOOT     | Output
-  22   | ANYIACK  | Output
+  22   | CPUSP    | Output
   23   | DUIACK   | Output
   24   | VCC      | VCC
 

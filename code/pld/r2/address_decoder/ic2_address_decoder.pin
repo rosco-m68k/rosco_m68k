@@ -21,7 +21,7 @@
   17   | ODDROM   | Output
   18   | IOSEL    | Output
   19   | EXPSEL   | Output
-  20   | IACK     | Input
+  20   | CPUSP    | Input
   21   | PPDTACK  | Output
   22   | DTACK    | Output
   23   | WR       | Output
