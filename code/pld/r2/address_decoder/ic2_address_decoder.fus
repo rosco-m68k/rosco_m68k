@@ -3,7 +3,7 @@
 AR
   0  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 23 = WR           S0 = 0   S1 = 0
+Pin 23 = WR           S0 = 0   S1 = 1
   1  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
   2  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- x---
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -14,7 +14,7 @@ Pin 23 = WR           S0 = 0   S1 = 0
   8  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   9  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 22 = DTACK        S0 = 1   S1 = 0
+Pin 22 = DTACK        S0 = 1   S1 = 1
  10  ---- ---- ---x ---- ---- ---- ---- ---- ---- ---- ----
  11  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -27,7 +27,7 @@ Pin 22 = DTACK        S0 = 1   S1 = 0
  19  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  20  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 21 = PPDTACK      S0 = 0   S1 = 0
+Pin 21 = PPDTACK      S0 = 0   S1 = 1
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  22  ---- ---- ---- --x- ---- ---- ---- ---x ---- ---- ----
  23  ---- ---- ---- --x- ---- ---- ---x ---- ---- ---- ----
@@ -42,7 +42,7 @@ Pin 21 = PPDTACK      S0 = 0   S1 = 0
  32  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  33  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 20 = CPUSP        S0 = 0   S1 = 0
+Pin 20 = CPUSP        S0 = 0   S1 = 1
  34  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -59,7 +59,7 @@ Pin 20 = CPUSP        S0 = 0   S1 = 0
  47  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  48  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 19 = EXPSEL       S0 = 0   S1 = 0
+Pin 19 = EXPSEL       S0 = 0   S1 = 1
  49  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  50  ---- ---- ---- -xx- ---- x--- ---- ---- ---- ---- ---x
  51  ---- ---- ---- --x- x--- -x-- ---- ---- ---- ---- ---x
@@ -78,7 +78,7 @@ Pin 19 = EXPSEL       S0 = 0   S1 = 0
  64  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  65  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 18 = IOSEL        S0 = 0   S1 = 0
+Pin 18 = IOSEL        S0 = 0   S1 = 1
  66  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  67  ---- ---- x--- x-x- x--- x--- ---- ---- ---- ---- ----
  68  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -97,10 +97,10 @@ Pin 18 = IOSEL        S0 = 0   S1 = 0
  81  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  82  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 17 = ODDROM       S0 = 0   S1 = 0
+Pin 17 = ODDROM       S0 = 0   S1 = 1
  83  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  84  ---- ---- -x-- x-x- x--- x--- ---- -x-- ---- ---- ---x
- 85  ---- ---- ---- --x- ---- ---- ---- -x-- -x-- ---- ---x
+ 85  -x-- -x-- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- x--x
  86  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  87  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  88  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -114,10 +114,10 @@ Pin 17 = ODDROM       S0 = 0   S1 = 0
  96  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  97  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 16 = EVENROM      S0 = 0   S1 = 0
+Pin 16 = EVENROM      S0 = 0   S1 = 1
  98  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  99  ---- ---- -x-- x-x- x--- x--- -x-- ---- ---- ---- ---x
-100  ---- ---- ---- --x- ---- ---- -x-- ---- -x-- ---- ---x
+100  -x-- -x-- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- x--x
 101  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 102  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 103  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -129,12 +129,12 @@ Pin 16 = EVENROM      S0 = 0   S1 = 0
 109  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 110  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 15 = ODDRAM       S0 = 0   S1 = 0
+Pin 15 = ODDRAM       S0 = 0   S1 = 1
 111  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 112  ---- ---- -x-- -xx- -x-- -x-- ---- -x-- x--- ---- ---x
-113  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-114  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-115  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+113  ---- x--- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- ---x
+114  x--- ---- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- ---x
+115  ---- ---- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- -x-x
 116  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 117  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 118  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -142,12 +142,12 @@ Pin 15 = ODDRAM       S0 = 0   S1 = 0
 120  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 121  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 14 = EVENRAM      S0 = 0   S1 = 0
+Pin 14 = EVENRAM      S0 = 0   S1 = 1
 122  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 123  ---- ---- -x-- -xx- -x-- -x-- -x-- ---- x--- ---- ---x
-124  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-125  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
-126  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+124  ---- x--- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- ---x
+125  x--- ---- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- ---x
+126  ---- ---- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- -x-x
 127  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 128  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 129  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx

@@ -1,9 +1,9 @@
 
 
 AR
-  0  ---- ---- ---- ---- ---- ---- ---- ---x ---x ---- ----
+  0  ---- ---- ---- ---- ---- ---- ---- ---x ---- ---- ----
 
-Pin 23 = DUIACK       S0 = 0   S1 = 0
+Pin 23 = DUIACK       S0 = 0   S1 = 1
   1  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
   2  -x-- ---- -x-- x--- x--- x--- -x-- -x-- x--- x--- ----
   3  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -14,7 +14,7 @@ Pin 23 = DUIACK       S0 = 0   S1 = 0
   8  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
   9  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 22 = CPUSP        S0 = 0   S1 = 0
+Pin 22 = CPUSP        S0 = 0   S1 = 1
  10  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  11  ---- ---- -x-- x--- x--- x--- ---- ---- ---- ---- ----
  12  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -29,9 +29,9 @@ Pin 22 = CPUSP        S0 = 0   S1 = 0
 
 Pin 21 = BOOT         S0 = 1   S1 = 0
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 22  ---- ---- ---- ---x ---- ---- ---- ---- --x- ---- ----
- 23  ---- ---- ---- ---x ---- ---- ---- --x- ---- ---- ----
- 24  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 22  ---- ---- ---- x--- -x-- x--- ---- --x- ---- -x-- x---
+ 23  ---- ---- ---- x--- -x-- x--- ---- --x- ---- x--- -x--
+ 24  ---- ---- ---x ---- ---- ---- ---- ---- ---- ---- ----
  25  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  26  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  27  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -42,10 +42,10 @@ Pin 21 = BOOT         S0 = 1   S1 = 0
  32  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  33  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 20 = BQ2          S0 = 1   S1 = 0
- 34  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 35  ---- ---- ---- ---- ---x ---- ---- ---- --x- ---- ----
- 36  ---- ---- ---- ---- ---x ---- ---- --x- ---- ---- ----
+Pin 20 = NC           S0 = 0   S1 = 0
+ 34  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 35  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 36  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  37  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  38  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  39  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -59,10 +59,10 @@ Pin 20 = BQ2          S0 = 1   S1 = 0
  47  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  48  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 19 = BQ1          S0 = 1   S1 = 0
- 49  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 50  ---- ---- ---- ---- ---- ---x ---- ---- --x- ---- ----
- 51  ---- ---- ---- ---- ---- ---x ---- --x- ---- ---- ----
+Pin 19 = NC           S0 = 0   S1 = 0
+ 49  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 50  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 51  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  52  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  53  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  54  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -78,10 +78,10 @@ Pin 19 = BQ1          S0 = 1   S1 = 0
  64  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  65  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 18 = BQ0          S0 = 1   S1 = 0
- 66  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 67  ---- ---- ---- ---- ---- ---- ---- ---- --x- ---- ----
- 68  ---- ---- ---- ---- ---- ---- ---- --x- ---- ---- ----
+Pin 18 = NC           S0 = 0   S1 = 0
+ 66  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 67  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+ 68  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  69  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  70  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  71  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -97,7 +97,7 @@ Pin 18 = BQ0          S0 = 1   S1 = 0
  81  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  82  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 17 = RUNLED       S0 = 1   S1 = 0
+Pin 17 = RUNLED       S0 = 1   S1 = 1
  83  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  84  ---- ---- ---- ---- ---- ---- ---- ---- ---x ---- ----
  85  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -114,7 +114,7 @@ Pin 17 = RUNLED       S0 = 1   S1 = 0
  96  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  97  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 16 = RESET        S0 = 1   S1 = 0
+Pin 16 = RESET        S0 = 1   S1 = 1
  98  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
  99  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 100  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -129,7 +129,7 @@ Pin 16 = RESET        S0 = 1   S1 = 0
 109  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 110  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 
-Pin 15 = HALT         S0 = 1   S1 = 0
+Pin 15 = HALT         S0 = 1   S1 = 1
 111  ---- ---- x--- ---- ---- ---- ---- ---- ---- ---- ----
 112  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 113  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
