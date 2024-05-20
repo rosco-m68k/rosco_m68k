@@ -12,7 +12,7 @@ RESET.E =  HWRST
 
 RUNLED  = /HALT
 
-AR      = /RESET
+AR      = /RESET * /HALT
 BOOT.R  =  RESET *  FC2 * /FC1 *  FC0 * /A19 *  A18
         +  RESET *  FC2 * /FC1 *  FC0 *  A19 * /A18
         +  BOOT
