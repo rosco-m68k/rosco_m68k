@@ -81,6 +81,9 @@ START::
 .ISR_COPY_START:
     dbf     D0,.ISR_COPY_LOOP           ; Decrement D0 and loop if not negative, ignore cc
 
+    ; Dummy Supervisor Data access to $X40000-$XBFFFF to exit boot mode.
+    move.w  $A4FC,$040000               ; Write ILLEGAL instruction to kernel load address.
+
     bsr.w   INITSDB                     ; Initialise System Data Block
     bsr.w   INITEFPT                    ; Initialise Extension Function Pointer Table
     bsr.w   INITDEVS                    ; Initialise device blocks
