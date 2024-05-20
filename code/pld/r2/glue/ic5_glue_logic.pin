@@ -19,9 +19,9 @@
   15   | HALT     | Output
   16   | RESET    | Output
   17   | RUNLED   | Output
-  18   | BQ0      | Output
-  19   | BQ1      | Output
-  20   | BQ2      | Output
+  18   | NC       | NC
+  19   | NC       | NC
+  20   | NC       | NC
   21   | BOOT     | Output
   22   | CPUSP    | Output
   23   | DUIACK   | Output
