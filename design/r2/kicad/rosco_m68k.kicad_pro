@@ -136,7 +136,7 @@
         "min_track_width": 0.1524,
         "min_via_annular_width": 0.05,
         "min_via_diameter": 0.3,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.005,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
@@ -490,7 +490,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "rosco_m68k.net",
-      "plot": "",
+      "plot": "../CAMOutputs/",
       "pos_files": "",
       "specctra_dsn": "rosco_m68k.dsn",
       "step": "rosco_m68k.step",
