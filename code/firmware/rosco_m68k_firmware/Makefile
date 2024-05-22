@@ -120,7 +120,7 @@ BINARY_EVEN=$(BINARY_BASENAME)_even.$(BINARY_EXT)
 BINARY_ODD=$(BINARY_BASENAME)_odd.$(BINARY_EXT)
 BINARY_MAME=$(BINARY_BASENAME)_mame.$(BINARY_EXT).bin
 
-.PHONY: all clean tools test
+.PHONY: all clean tools test mame
 
 ifneq ($(MAME),true)
 all: $(BINARY_EVEN) $(BINARY_ODD) $(SYM) $(DISASM)
@@ -171,6 +171,8 @@ ifneq ($(MAME),true)
 else
 	$(error === Cannot generate split ROM for MAME)
 endif
+
+mame: $(BINARY_MAME)
 
 test : $(KERNEL_DIR)
 	$(MAKE) -C $< $@
