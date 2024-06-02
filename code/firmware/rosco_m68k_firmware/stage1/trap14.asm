@@ -159,6 +159,26 @@ FW_PRINTLN_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
     bra.s   FW_PRINTLN                ; Call FW_PRINTLN
 
+; Wraps FW_PRINTCHAR so it can be called from C-land
+;
+; Modifies: D0 (Will hold the printed character)
+FW_PRINTCHAR_C::
+    move.l  (4,A7),D0                 ; Get C char from the stack into D0
+    bra.s   FW_PRINTCHAR              ; Call FW_PRINTCHAR
+
+; Wraps FW_SENDCHAR so it can be called from C-land
+;
+; Modifies: D0 (Will hold the sent character)
+FW_SENDCHAR_C::
+    move.l  (4,A7),D0                 ; Get C char from the stack into D0
+    bra.s   FW_SENDCHAR               ; Call FW_SENDCHAR
+
+; Wraps FW_RECVCHAR so it can be called from C-land
+;
+; Modifies: D0 (return)
+FW_RECVCHAR_C::
+    bra.s   FW_RECVCHAR               ; Call FW_RECVCHAR
+
 ; Firmware PRINT null-terminated string pointed to by A0
 ; Uses PRINT function pointed to by EFP table
 ;

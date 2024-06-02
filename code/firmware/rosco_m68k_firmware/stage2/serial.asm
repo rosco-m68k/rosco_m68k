@@ -16,33 +16,6 @@
 
     section .text
 
-; Send a single character via UART from C
-SENDCHAR_C::
-    move.l  4(A7),D0
-
-; Send a single character via UART
-;
-; Trashes: MFP_UDR
-; Modifies: Nothing
-SENDCHAR::
-    move.l  A1,-(A7)
-    move.l  EFP_SENDCHAR,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rts
-
-; Receive a single character via UART.
-; Ignores overrun errors.
-;
-; Trashes: MFP_UDR
-; Modifies: D0 (return)
-RECVCHAR::
-    move.l  A1,-(A7)
-    move.l  EFP_RECVCHAR,A1
-    jsr     (A1)
-    move.l  (A7)+,A1
-    rts
-
 ; TODO Fix these for r2x, or remove them!
 ; Enable the transmitter
 ENABLE_XMIT::

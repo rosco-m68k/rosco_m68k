@@ -17,15 +17,11 @@
 
 #include <stdint.h>
 
-void DISABLE_RECV();
-void ENABLE_RECV();
-
-void DISABLE_XMIT();
 void ENABLE_XMIT();
+void DISABLE_XMIT();
 
-uint8_t RECVCHAR();
-void SENDCHAR_C(uint8_t);
-
+void ENABLE_RECV();
+void DISABLE_RECV();
 
 #endif
 

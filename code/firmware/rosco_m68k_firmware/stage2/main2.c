@@ -23,7 +23,6 @@
 #include "serial.h"
 #include "rtlsupport.h"
 
-extern void ENABLE_RECV();
 extern void red_led_off();
 
 // Linker defines

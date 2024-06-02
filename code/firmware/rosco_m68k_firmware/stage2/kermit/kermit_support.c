@@ -17,7 +17,6 @@
 #include "kermit.h"
 #include "machine.h"
 #include "platform.h"
-#include "serial.h"
 #include "rtlsupport.h"
 
 
@@ -43,7 +42,7 @@ static int readpkt(struct k_data * k, UCHAR *p, int len) {
     flag = n = 0;
 
     while (1) {
-        x = RECVCHAR();
+        x = FW_RECVCHAR_C();
         c = (k->parity) ? x & 0x7f : x & 0xff;      /* Strip parity */
 
         if (!flag && c != k->r_soh)                 /* No start of packet yet */
@@ -69,7 +68,7 @@ static int readpkt(struct k_data * k, UCHAR *p, int len) {
 
 static int tx_data(struct k_data * k, UCHAR *p, int n) {
     for (int i = 0; i < n; i++) {
-        SENDCHAR_C(*p++);
+        FW_SENDCHAR_C(*p++);
     }
 
     return(X_OK);                                   /* Success */

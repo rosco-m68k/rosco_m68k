@@ -181,14 +181,29 @@ void SET_INTR(uint8_t priority);
 void EARLY_PRINT_C(const char *str);
 
 /*
- * Firmware PRINT function (uses pointer at $414)
+ * Firmware PRINT function (uses pointer at $420)
  */
 void FW_PRINT_C(const char *str);
 
 /*
- * Firmware PRINTLN function (uses pointer at $418)
+ * Firmware PRINTLN function (uses pointer at $424)
  */
 void FW_PRINTLN_C(const char *str);
+
+/*
+ * Firmware PRINTCHAR function (uses pointer at $428)
+ */
+void FW_PRINTCHAR_C(char ch);
+
+/*
+ * Firmware SENDCHAR function (uses pointer at $430)
+ */
+void FW_SENDCHAR_C(char ch);
+
+/*
+ * Firmware RECVCHAR function (uses pointer at $434)
+ */
+char FW_RECVCHAR_C(void);
 
 /*
  * Busywait for a while. The actual time is wholly dependent
