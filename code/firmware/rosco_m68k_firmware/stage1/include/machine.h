@@ -206,6 +206,17 @@ void FW_SENDCHAR_C(char ch);
 char FW_RECVCHAR_C(void);
 
 /*
+ * Firmware CLRSCR function (uses pointer at $438)
+ */
+void FW_CLRSCR_C(void);
+
+/*
+ * Firmware MOVEXY function (uses pointer at $43C)
+ * High byte is X, low byte is Y.
+ */
+void FW_MOVEXY_C(uint16_t coord_xy);
+
+/*
  * Busywait for a while. The actual time is wholly dependent
  * on CPU (i.e. clock) speed!
  */

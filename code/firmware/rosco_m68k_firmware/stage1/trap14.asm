@@ -148,36 +148,7 @@ TRAP_14_HANDLER::
 ; Modifies: A0 (Will point to address after null terminator)
 FW_PRINT_C::
     move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINT                  ; Call FW_PRINT
-
-; Wraps FW_PRINTLN so it can be called from C-land
-;
-; Modifies: A0 (Will point to address after null terminator)
-;
-; It's cheaper size-wise to just duplicate this here...
-FW_PRINTLN_C::
-    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
-    bra.s   FW_PRINTLN                ; Call FW_PRINTLN
-
-; Wraps FW_PRINTCHAR so it can be called from C-land
-;
-; Modifies: D0 (Will hold the printed character)
-FW_PRINTCHAR_C::
-    move.l  (4,A7),D0                 ; Get C char from the stack into D0
-    bra.s   FW_PRINTCHAR              ; Call FW_PRINTCHAR
-
-; Wraps FW_SENDCHAR so it can be called from C-land
-;
-; Modifies: D0 (Will hold the sent character)
-FW_SENDCHAR_C::
-    move.l  (4,A7),D0                 ; Get C char from the stack into D0
-    bra.s   FW_SENDCHAR               ; Call FW_SENDCHAR
-
-; Wraps FW_RECVCHAR so it can be called from C-land
-;
-; Modifies: D0 (return)
-FW_RECVCHAR_C::
-    bra.s   FW_RECVCHAR               ; Call FW_RECVCHAR
+    ; Fall through to FW_PRINT
 
 ; Firmware PRINT null-terminated string pointed to by A0
 ; Uses PRINT function pointed to by EFP table
@@ -189,7 +160,14 @@ FW_PRINT::
     jsr     (A1)
     move.l  (A7)+,A1
     rts
-    
+
+; Wraps FW_PRINTLN so it can be called from C-land
+;
+; Modifies: A0 (Will point to address after null terminator)
+FW_PRINTLN_C::
+    move.l  (4,A7),A0                 ; Get C char* from the stack into A0
+    ; Fall through to FW_PRINTLN
+
 ; PRINT null-terminated string pointed to by A0 followed by CRLF.
 ; Uses PRINTLN function pointed to by EFP table
 ;
@@ -200,6 +178,13 @@ FW_PRINTLN::
     jsr     (A1)
     move.l  (A7)+,A1
     rts
+
+; Wraps FW_PRINTCHAR so it can be called from C-land
+;
+; Modifies: D0 (Will hold the printed character)
+FW_PRINTCHAR_C::
+    move.l  (4,A7),D0                 ; Get C char from the stack into D0
+    ; Fall through to FW_PRINTCHAR
 
 ; PRINT a single character contained in D0.
 ; Uses PRINTCHAR function pointed to by EFP table.
@@ -212,6 +197,13 @@ FW_PRINTCHAR::
     move.l  (A7)+,A1
     rts
 
+; Wraps FW_SENDCHAR so it can be called from C-land
+;
+; Modifies: D0 (Will hold the sent character)
+FW_SENDCHAR_C::
+    move.l  (4,A7),D0                 ; Get C char from the stack into D0
+    ; Fall through to FW_SENDCHAR
+
 ; Send a single character via UART
 ;
 ; Trashes: Nothing
@@ -222,6 +214,12 @@ FW_SENDCHAR::
     jsr     (A1)
     move.l  (A7)+,A1
     rts
+
+; Wraps FW_RECVCHAR so it can be called from C-land
+;
+; Modifies: D0 (return)
+FW_RECVCHAR_C::
+    ; Fall through to FW_RECVCHAR
 
 ; Receive a single character via UART.
 ; Ignores overrun errors.
@@ -235,6 +233,12 @@ FW_RECVCHAR::
     move.l  (A7)+,A1
     rts
 
+; Wraps FW_CLRSCR so it can be called from C-land
+;
+; Modifies: Nothing
+FW_CLRSCR_C::
+    ; Fall through to FW_CLRSCR
+
 ; Clear the screen.
 ; Uses CLRSCR function pointed to by EFP table.
 ;
@@ -245,6 +249,13 @@ FW_CLRSCR::
     jsr     (A1)
     move.l  (A7)+,A1
     rts
+
+; Wraps FW_MOVEXY so it can be called from C-land
+;
+; Modifies: D1 (Will hold the argument)
+FW_MOVEXY_C::
+    move.l  (4,A7),D1                 ; Get C uint16_t from the stack into D1
+    ; Fall through to FW_MOVEXY
 
 ; Move cursor to X,Y coordinates contained in D1.W.
 ; High byte is X, low byte is Y.
