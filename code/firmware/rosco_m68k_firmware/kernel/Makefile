@@ -1,6 +1,6 @@
 # Make rosco_m68k ROM kernel
 #
-# Copyright (c)2023 Ross Bamford & contributors
+# Copyright (c)2023-2024 Ross Bamford & contributors
 # MIT LICENSE
 
 ifeq ($(MAKELEVEL),0)

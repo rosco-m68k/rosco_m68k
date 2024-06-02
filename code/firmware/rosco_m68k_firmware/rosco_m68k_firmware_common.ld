@@ -31,9 +31,6 @@ SECTIONS
     _code = .;
     *(.text*)
     *(.rodata*)
-    /* _zip_start = .;
-    *(.zipdata)
-    _zip_end = .; */
     _code_end = .;
   } >FLASH
 

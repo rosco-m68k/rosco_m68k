@@ -1,3 +1,8 @@
+# Common variables and rules for rosco_m68k firmware
+# 
+# Copyright (c)2019-2024 Ross Bamford and contributors
+# See LICENSE
+
 CC=m68k-elf-gcc
 LD=m68k-elf-ld
 VASM=vasmm68k_mot

@@ -6,7 +6,7 @@
  * |_| |___|___|___|___|_____|_|_|_|___|___|_,_| 
  *                     |_____|       firmware v2
  * ------------------------------------------------------------
- * Copyright (c)2019-2021 Ross Bamford and contributors
+ * Copyright (c)2019-2024 Ross Bamford and contributors
  * See top-level LICENSE.md for licence information.
  *
  * C prototypes for system routines implemented in assembly.
