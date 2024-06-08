@@ -17,14 +17,14 @@
 #include <stdint.h>
 #include "bbsd.h"
 #include "load.h"
+#include "machine.h"
 #include "part.h"
 
-extern void mcPrint(const char *str);
 extern bool BBSD_support_check();
 
 bool sd_load_kernel() {
     if (!BBSD_support_check()) {
-        mcPrint("Warning: No SD support in ROM - This may indicate your ROMs are not built correctly!\r\n");
+        FW_PRINT_C("Warning: No SD support in ROM - This may indicate your ROMs are not built correctly!\r\n");
         return false;
     }
 
@@ -32,16 +32,16 @@ bool sd_load_kernel() {
     if (BBSD_initialize(&sd) == BBSD_INIT_OK) {
         switch (sd.type) {
         case BBSD_CARD_TYPE_V1:
-            mcPrint("SD v1 card:\r\n");
+            FW_PRINT_C("SD v1 card:\r\n");
             break;
         case BBSD_CARD_TYPE_V2:
-            mcPrint("SD v2 card:\r\n");
+            FW_PRINT_C("SD v2 card:\r\n");
             break;
         case BBSD_CARD_TYPE_SDHC:
-            mcPrint("SDHC card:\r\n");
+            FW_PRINT_C("SDHC card:\r\n");
             break;
         default:
-            mcPrint("Ignoring unrecognised SD card\r\n");
+            FW_PRINT_C("Ignoring unrecognised SD card\r\n");
             return false;
         }
 
@@ -51,13 +51,13 @@ bool sd_load_kernel() {
         if (pinit == PART_INIT_OK) {
             return load_kernel(&part);
         } else if (pinit == PART_INIT_BAD_SIGNATURE) {
-            mcPrint("  Bad partition signature\r\n");
+            FW_PRINT_C("  Bad partition signature\r\n");
         } else if (pinit == PART_INIT_READ_FAILURE) {
-            mcPrint("  Partition read failure\r\n");
+            FW_PRINT_C("  Partition read failure\r\n");
         } else if (pinit == PART_INIT_GENERAL_FAILURE) {
-            mcPrint("  Partition init general failure\r\n");
+            FW_PRINT_C("  Partition init general failure\r\n");
         } else {
-            mcPrint("  Partition init - unknown result!\r\n");
+            FW_PRINT_C("  Partition init - unknown result!\r\n");
         }
     }
 

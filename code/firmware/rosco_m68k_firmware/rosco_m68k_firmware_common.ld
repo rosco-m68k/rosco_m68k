@@ -31,9 +31,6 @@ SECTIONS
     _code = .;
     *(.text*)
     *(.rodata*)
-    _zip_start = .;
-    *(.zipdata)
-    _zip_end = .;
     _code_end = .;
   } >FLASH
 
@@ -53,6 +50,13 @@ SECTIONS
     *(.bss*)
     _bss_end = .;
   } >KRES2
+
+  .zipdata : ALIGN(4)
+  {
+    _zip_start = .;
+    *(.zipdata)
+    _zip_end = .;
+  } >FLASH
  
   _end = .;
 }

@@ -8,40 +8,34 @@
 ; Copyright (c)2019-2023 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
-; This is low-level UART stuff and exception handlers for the
-; MC68901 serial driver.
+; EFP handlers for rosco_m68k keyboard
 ;------------------------------------------------------------
+
     include "../../../shared/rosco_m68k_public.asm"
-    include "../stage1/rosco_m68k_private.asm"
 
     section .text
 
-; TODO Fix these for r2x, or remove them!
-; Enable the transmitter
-ENABLE_XMIT::
-    ifd REVISION1X
-    bset.b  #0,MFP_TSR
-    endif
+INSTALL_KEYBOARD_HANDLERS::
+    move.l  #.KEYBOARD_CHECK,EFP_CHECKINPUT
+    move.l  #.KEYBOARD_INPUT,EFP_INPUTCHAR
     rts
 
-; Disable the transmitter
-DISABLE_XMIT::
-    ifd REVISION1X
-    bclr.b  #0,MFP_TSR
-    endif
+.KEYBOARD_CHECK:
+    move.l  A0,-(A7)
+    move.l  A1,-(A7)
+    move.l  #keyboard_device,A0
+    jsr     CHAR_DEV_CHECKCHAR
+    move.l  (A7)+,A1
+    move.l  (A7)+,A0
+    rts
+    
+.KEYBOARD_INPUT:
+    move.l  A0,-(A7)
+    move.l  A1,-(A7)
+    move.l  #keyboard_device,A0
+    jsr     CHAR_DEV_RECVCHAR
+    move.l  (A7)+,A1
+    move.l  (A7)+,A0
     rts
 
-; Enable the receiver
-ENABLE_RECV::
-    ifd REVISION1X
-    bset.b  #0,MFP_RSR
-    endif 
-    rts
-
-; Disable the receiver
-DISABLE_RECV::
-    ifd REVISION1X
-    bclr.b  #0,MFP_RSR
-    endif
-    rts
 

@@ -11,11 +11,11 @@
 ; This is the initialization code for stage 2. 
 ;------------------------------------------------------------
     include "../../../shared/rosco_m68k_public.asm"
-    include "../rosco_m68k_private.asm"
+    include "../stage1/rosco_m68k_private.asm"
 
     section .text.init
 
-START::
+STAGE2_START::
     movea.l VECTORS_LOAD,A7             ; Stack to the default stack pointer vector
     lea.l   linit,A0
     jsr     (A0)

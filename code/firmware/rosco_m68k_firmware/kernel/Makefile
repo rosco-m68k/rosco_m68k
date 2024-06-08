@@ -1,53 +1,38 @@
 # Make rosco_m68k ROM kernel
 #
-# Copyright (c)2023 Ross Bamford & contributors
+# Copyright (c)2023-2024 Ross Bamford & contributors
 # MIT LICENSE
 
-CPU?=68010
-EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
-DEFINES=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
-FLAGS=-ffreestanding -ffunction-sections -fdata-sections							\
-				-Wall -Wextra -Wno-unused-function 									\
-				-Wno-unused-parameter -Wno-format -pedantic 						\
-				-I../include -Iinclude -Itests/include								\
-				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
-CFLAGS=-std=c11 $(FLAGS)
-ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
-VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
-ARFLAGS=
+ifeq ($(MAKELEVEL),0)
+$(error Cannot use kernel as top-level Makefile)
+endif
 
-CC=m68k-elf-gcc
-CXX=m68k-elf-g++
-AS=m68k-elf-as
-NM=m68k-elf-nm
-LD=m68k-elf-ld
-AR=m68k-elf-ar
-RANLIB=m68k-elf-ranlib
-OBJDUMP=m68k-elf-objdump
-OBJCOPY=m68k-elf-objcopy
-SIZE=m68k-elf-size
-VASM=vasmm68k_mot
-RM=rm -f
+include ../common.mk
+
+KERNEL_DIR=.
+KERNEL_FILE=kernel.a
+KERNEL=$(KERNEL_DIR)/$(KERNEL_FILE)
+
+EXTRA_CFLAGS?=-g -O1 -fomit-frame-pointer
+INCLUDES=-I../stage1/include -Iinclude -Itests/include
+
+CFLAGS+=-ffunction-sections -fdata-sections	\
+		-Wall -Wextra -Wno-unused-function 	\
+		-Wno-unused-parameter -Wno-format
+ARFLAGS=rs
 
 LIBOBJECTS=kmachine.o bitmap.o pmm.o slab.o list.o task.o sched.o api.o
 
-.PHONY: clean test
+.PHONY: all clean test
 
-all: kernel.a
+all: $(KERNEL)
 
-kernel.a: $(LIBOBJECTS)
-	$(AR) $(ARFLAGS) rs $@ $^
-	$(RANLIB) $@
-
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(EXTRA_CFLAGS) -o $@ $<
-
-%.o : %.asm
-	$(VASM) $(VASMFLAGS) $(EXTRA_VASMFLAGS) -L $(basename $@).lst -o $@ $<
+$(KERNEL): $(LIBOBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
 
 test:
 	$(MAKE) -C tests
 
 clean:
-	$(RM) kernel.a *.o *.bin *.elf *.lst
+	$(RM) $(KERNEL) $(LIBOBJECTS)
 	$(MAKE) -C tests clean
