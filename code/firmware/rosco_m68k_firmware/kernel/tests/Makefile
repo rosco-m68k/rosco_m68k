@@ -8,16 +8,16 @@ SYSLIBROOT=$(ROSCO_M68K_DIR)/code/software/libs
 SYSINCDIR?=$(SYSLIBROOT)/build/include
 SYSLIBDIR?=$(SYSLIBROOT)/build/lib
 
-CC=m68k-elf-gcc
-CXX=m68k-elf-g++
-AS=m68k-elf-as
-NM=m68k-elf-nm
-LD=m68k-elf-ld
-AR=m68k-elf-ar
-RANLIB=m68k-elf-ranlib
-OBJDUMP=m68k-elf-objdump
-OBJCOPY=m68k-elf-objcopy
-SIZE=m68k-elf-size
+CC=m68k-elf-rosco-gcc
+CXX=m68k-elf-rosco-g++
+AS=m68k-elf-rosco-as
+NM=m68k-elf-rosco-nm
+LD=m68k-elf-rosco-ld
+AR=m68k-elf-rosco-ar
+RANLIB=m68k-elf-rosco-ranlib
+OBJDUMP=m68k-elf-rosco-objdump
+OBJCOPY=m68k-elf-rosco-objcopy
+SIZE=m68k-elf-rosco-size
 VASM=vasmm68k_mot
 RM=rm -f
 

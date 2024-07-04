@@ -17,11 +17,11 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
+
 #include "load.h"
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
-#include "rtlsupport.h"
 
 extern void red_led_off();
 

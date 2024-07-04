@@ -13,14 +13,15 @@
  * ------------------------------------------------------------
  */
 
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+
 #include "load.h"
 #include "elf.h"
 #include "fat_filelib.h"
 #include "machine.h"
-#include "part.h"
 #include "system.h"
 
 extern void print_unsigned(uint32_t num, uint8_t base);
@@ -135,7 +136,7 @@ static long load_kernel_elf_phdr_load(void *file, Elf32_Phdr *phdr) {
             return -1;
     }
 
-    if (fl_fseek(file, phdr->p_offset, SEEK_SET) != 0) {
+    if (fseek(file, phdr->p_offset, SEEK_SET) != 0) {
         FW_PRINT_C("\r\n*** Failed to seek to loadable segment\r\n");
         return -1;
     }
@@ -212,7 +213,7 @@ bool load_kernel_elf(void *file) {
         return false;
     }
     for (Elf32_Half phidx = 0; phidx < ehdr.e_phnum; ++phidx) {
-        if (fl_fseek(file, ehdr.e_phoff + phidx * ehdr.e_phentsize, SEEK_SET) != 0) {
+        if (fseek(file, ehdr.e_phoff + phidx * ehdr.e_phentsize, SEEK_SET) != 0) {
             FW_PRINT_C("\r\n*** Failed to seek to ELF program header\r\n");
             return false;
         }

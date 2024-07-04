@@ -17,7 +17,7 @@
 #define __ROSCO_M68K_LOAD_H
 
 #include <stdbool.h>
-#include "part.h"
+#include <rosco_m68k/part.h>
 #include "system.h"
 
 /*

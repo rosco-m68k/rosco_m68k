@@ -9,6 +9,16 @@ endif
 
 include ../common.mk
 
+CC=m68k-elf-rosco-gcc
+LD=m68k-elf-rosco-gcc
+
+CFLAGS=																	\
+	-std=c11 -Os -nostartfiles	--param=min-pagesize=0						\
+	-Wall -Werror -Wpedantic -Wno-unused-function -Wno-unused-parameter	\
+	-mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)							\
+	-fomit-frame-pointer -fno-delete-null-pointer-checks				\
+	$(DEFINES) $(INCLUDES)
+
 INCLUDES=-Ifat_io_lib -Iinclude -I../stage1/include
 CFLAGS+=-O9
 SIZE_CFLAGS=$(CFLAGS) -Os
@@ -30,7 +40,7 @@ endif
 LZG_SRC?=../tools/liblzg/src
 LZG?=$(LZG_SRC)/tools/lzg
 
-OBJECTS:=init2.o common.o serial.o main2.o
+OBJECTS:=init2.o serial.o main2.o
 
 .PHONY: all clean
 
@@ -48,7 +58,7 @@ endif
 ifeq ($(WITH_BLOCKDEV),true)
 INCLUDES+=-I../stage1/blockdev/include
 include load/include.mk
-include part/include.mk
+# include part/include.mk
 include sdfat/include.mk
 ifeq ($(WITH_ATA), true)
 include idehdd/include.mk
@@ -65,7 +75,7 @@ common.o: common.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
 $(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -o $@ -R../stage1/stage1.elf $(LIBS)
+	$(LD) $(LDFLAGS) -Wl,-Map=$(MAP) $^ -o $@ -Wl,-R../stage1/stage1.elf -nostartfiles $(LIBS) -lrosco
 	-chmod a-x $@
 
 $(BINARY_ZIP): $(BINARY) $(LZG)

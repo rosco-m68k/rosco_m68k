@@ -18,26 +18,23 @@
 #include "bbsd.h"
 #include "load.h"
 #include "machine.h"
-#include "part.h"
-
-extern bool BBSD_support_check();
 
 bool sd_load_kernel() {
-    if (!BBSD_support_check()) {
+    if (!SD_check_support()) {
         FW_PRINT_C("Warning: No SD support in ROM - This may indicate your ROMs are not built correctly!\r\n");
         return false;
     }
 
-    BBSDCard sd;
-    if (BBSD_initialize(&sd) == BBSD_INIT_OK) {
+    SDCard sd;
+    if (SD_initialize(&sd) == SD_INIT_OK) {
         switch (sd.type) {
-        case BBSD_CARD_TYPE_V1:
+        case SD_CARD_TYPE_V1:
             FW_PRINT_C("SD v1 card:\r\n");
             break;
-        case BBSD_CARD_TYPE_V2:
+        case SD_CARD_TYPE_V2:
             FW_PRINT_C("SD v2 card:\r\n");
             break;
-        case BBSD_CARD_TYPE_SDHC:
+        case SD_CARD_TYPE_SDHC:
             FW_PRINT_C("SDHC card:\r\n");
             break;
         default:
@@ -46,7 +43,7 @@ bool sd_load_kernel() {
         }
 
         PartHandle part;
-        PartInitStatus pinit = Part_init_BBSD(&part, &sd);
+        PartInitStatus pinit = Part_init_SD(&part, &sd);
 
         if (pinit == PART_INIT_OK) {
             return load_kernel(&part);
