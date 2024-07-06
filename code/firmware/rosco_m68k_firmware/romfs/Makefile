@@ -7,7 +7,7 @@ ROSCO_SOFT?=$(ROSCO_CODE)/software
 
 COMMON_FILES=										\
 	micropython/rosco_m68k/build/upyrosco.bin		\
-	$(ROSCO_SOFT)/sdfat_menu/sdfat_menu.bin			\
+	$(ROSCO_SOFT)/sdfat_menu/ROSCODE1.BIN			\
 	$(ROSCO_SOFT)/memcheck/memcheck.bin
 
 MENU_360?=menu_360.txt
@@ -20,27 +20,38 @@ FILES_720?=											\
 	$(COMMON_FILES)
 
 IMAGE_PRE?=romfs_
-IMAGE_SUF?=.fat
+IMAGE_SUF?=.lfs
 
 IMAGE_360=$(IMAGE_PRE)360$(IMAGE_SUF)
 IMAGE_720=$(IMAGE_PRE)720$(IMAGE_SUF)
 
+STAGING=staging
+STAGING_360=$(STAGING)_360
+STAGING_720=$(STAGING)_720
+
+MKLITTLEFS_DIR?=mklittlefs
+MKLITTLEFS_CMD?=mklittlefs
+MKLITTLEFS=$(MKLITTLEFS_DIR)/$(MKLITTLEFS_CMD)
+
 .PHONY: all clean
 
-all: romfs_360.fat romfs_720.fat
+all: $(IMAGE_360) $(IMAGE_720)
 
-$(IMAGE_360): $(FILES_360)
-	$(DD) if=/dev/zero of=$@ bs=360K count=1
-	$(MFORMAT) -F -i $@ -v ROMFS -f 360 -c 1 ::
-	$(MCOPY) -i $@ $(MENU_360) ::menu.txt
-	$(MCOPY) -i $@ $(FILES_360) ::
-	mren -i romfs_360.fat ::upyrosco.bin ::ROSCODE1.BIN
+$(IMAGE_360): $(STAGING_360) $(MKLITTLEFS)
+	$(MKLITTLEFS) -c $< -b 512 -s 368640 $@
 
-$(IMAGE_720): $(FILES_360)
-	$(DD) if=/dev/zero of=$@ bs=720K count=1
-	$(MFORMAT) -F -i $@ -v ROMFS -f 720 -c 1 ::
-	$(MCOPY) -i $@ $(MENU_720) ::menu.txt
-	$(MCOPY) -i $@ $(FILES_720) ::
+$(IMAGE_720): $(STAGING_720) $(MKLITTLEFS)
+	$(MKLITTLEFS) -c $< -b 512 -s 737280 $@
+
+$(STAGING_360): $(MENU_360) $(FILES_360)
+	mkdir -p $@
+	cp -r $^ $@
+	mv $@/$(MENU_360) $@/menu.txt
+
+$(STAGING_720): $(MENU_720) $(FILES_720)
+	mkdir -p $@
+	cp -r $^ $@
+	mv $@/$(MENU_720) $@/menu.txt
 
 micropython/rosco_m68k/build/upyrosco.bin:
 	$(MAKE) -C micropython/rosco_m68k all
@@ -51,11 +62,15 @@ micropython/rosco_m68k/build/upyrosco.bin:
 $(ROSCO_SOFT)/libs/build:
 	$(MAKE) -C $(dir $@) install
 
+$(MKLITTLEFS):
+	$(MAKE) -C $(MKLITTLEFS_DIR) $(MKLITTLEFS_CMD)
+
 clean:
-	rm -rf $(IMAGE_360) $(IMAGE_720)
+	rm -rf $(IMAGE_360) $(IMAGE_720) $(STAGING_360) $(STAGING_720)
 
 clobber: clean
 	$(MAKE) -C $(ROSCO_SOFT)/sdfat_menu clean
 	$(MAKE) -C $(ROSCO_SOFT)/memcheck clean
 	$(MAKE) -C micropython/rosco_m68k clean
+	$(MAKE) -C mklittlefs clean
 

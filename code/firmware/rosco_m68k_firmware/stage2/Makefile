@@ -13,22 +13,24 @@ CC=m68k-elf-rosco-gcc
 LD=m68k-elf-rosco-gcc
 
 CFLAGS=																	\
-	-std=c11 -Os -nostartfiles	--param=min-pagesize=0						\
+	-std=c11 -g -nostartfiles --param=min-pagesize=0					\
 	-Wall -Werror -Wpedantic -Wno-unused-function -Wno-unused-parameter	\
 	-mcpu=$(CPU) -march=$(ARCH) -mtune=$(TUNE)							\
-	-fomit-frame-pointer -fno-delete-null-pointer-checks				\
+	-fno-delete-null-pointer-checks										\
 	$(DEFINES) $(INCLUDES)
 
 INCLUDES=-Ifat_io_lib -Iinclude -I../stage1/include
 CFLAGS+=-O9
 SIZE_CFLAGS=$(CFLAGS) -Os
-LDFLAGS+=-T rosco_m68k_stage2.ld
+LDFLAGS+=-T rosco_m68k_stage2.ld -Wl,--warn-common
 
 # Output config
 BINARY_BASENAME=loader2
-BINARY_EXT=bin
+BINARY_ELF_EXT=elf
+BINARY_BIN_EXT=bin
 
-BINARY=$(BINARY_BASENAME).$(BINARY_EXT)
+ELF=$(BINARY_BASENAME).$(BINARY_ELF_EXT)
+BINARY=$(BINARY_BASENAME).$(BINARY_BIN_EXT)
 MAP=$(BINARY_BASENAME).map
 BINARY_ZIP=$(BINARY).zip
 BINARY_ZIP_OBJ=$(BINARY_ZIP).o
@@ -76,9 +78,12 @@ main2.o: main2.c
 common.o: common.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
-$(BINARY) : $(OBJECTS)
-	$(LD) $(LDFLAGS) -Wl,-Map=$(MAP) $^ -o $@ -Wl,-R../stage1/stage1.elf -nostartfiles $(LIBS) -lrosco
+$(ELF) : $(OBJECTS)
+	$(LD) $(LDFLAGS) -Wl,-Map=$(MAP) $^ -o $@ -Wl,-R../stage1/stage1.elf -nostartfiles $(LIBS)
 	-chmod a-x $@
+
+$(BINARY) : $(ELF)
+	$(OBJCOPY) -O binary $< $@
 
 $(BINARY_ZIP): $(BINARY) $(LZG)
 	$(LZG) -9 $< $@
@@ -87,4 +92,4 @@ $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
 	m68k-elf-objcopy -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
 
 clean: 
-	$(RM) $(OBJECTS) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)
+	$(RM) $(OBJECTS) $(ELF) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)

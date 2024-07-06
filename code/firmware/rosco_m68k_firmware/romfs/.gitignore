@@ -1,2 +1,5 @@
 *.fat
+*.lfs
+staging_360
+staging_720
 

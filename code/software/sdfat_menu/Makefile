@@ -15,3 +15,6 @@ endif
 -include $(ROSCO_M68K_DIR)/code/software/software.mk
 
 EXTRA_LIBS=-lsdfat
+
+ROSCODE1.BIN: sdfat_menu.bin
+	cp $< $@

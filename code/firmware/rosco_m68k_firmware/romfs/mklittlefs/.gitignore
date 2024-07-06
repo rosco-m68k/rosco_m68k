@@ -1,0 +1,16 @@
+*.o
+mkspiffs
+mkspiffs.exe
+out.*
+*.tar.gz
+build
+.xmake
+.vscode
+
+# eclipse wokspace files and dirs
+.project
+.cproject
+.settings
+
+# binaries
+mklittlefs

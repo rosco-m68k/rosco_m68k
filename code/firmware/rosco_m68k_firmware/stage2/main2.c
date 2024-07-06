@@ -17,14 +17,15 @@
 #include <stdint.h>
 #include <stdnoreturn.h>
 #include <stdbool.h>
+#include <rosco_m68k/debug.h>
 
 #include "load.h"
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
 
-extern void red_led_off();
-
+extern void red_led_off(void);
+extern void _start_debugger(void);
 // Linker defines
 extern uint32_t _bss_start, _bss_end;
 static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)0x400;
@@ -39,7 +40,7 @@ void linit() {
 }
 
 noreturn void lmain() {
-    // Always do this for backwards compatibility
+    // Always do this for backwards compatibility    
     ENABLE_RECV();
 
 #ifndef MAME_FIRMWARE
@@ -57,11 +58,13 @@ noreturn void lmain() {
         goto have_kernel;
     }
 #  endif
+#endif
 #  ifdef ROMFS_LOADER
     if (romfs_load_kernel()) {
         goto have_kernel;
     }
 #  endif
+#ifndef MAME_FIRMWARE
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
     FW_PRINT_C("No bootable media found\r\n");
 #  endif
@@ -86,11 +89,11 @@ noreturn void lmain() {
     FW_PRINT_C("Starting MAME Quickload kernel...\r\n");
 #endif
 
-#if !defined(MAME_FIRMWARE)
-#  if defined SDFAT_LOADER || defined IDE_LOADER
+//#if !defined(MAME_FIRMWARE)
+#  if defined SDFAT_LOADER || defined IDE_LOADER || defined ROMFS_LOADER
 have_kernel:
 #  endif
-#endif
+//#endif
     red_led_off();
     FW_PRINT_C("\r\n");
 

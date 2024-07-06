@@ -20,7 +20,7 @@ export MAME?=false
 export WITH_BLOCKDEV?=true
 export WITH_KERMIT?=true
 export WITH_DEBUG_STUB?=true
-export WITH_ATA?=true
+export WITH_ATA?=false
 export WITH_VDP?=false
 export NO68681?=false
 export XOSERA_API_MINIMAL?=true
@@ -108,7 +108,7 @@ ROMFS_SIZE?=360
 ROMFS_DIR?=romfs
 ROMFS=romfs_$(ROMFS_SIZE)
 ROMFS_OBJ=$(ROMFS).o
-ROMFS_SRC=$(ROMFS_DIR)/$(ROMFS).fat
+ROMFS_SRC=$(ROMFS_DIR)/$(ROMFS).lfs
 
 LDFLAGS+=-L . -T $(LINKER_SCRIPT)
 

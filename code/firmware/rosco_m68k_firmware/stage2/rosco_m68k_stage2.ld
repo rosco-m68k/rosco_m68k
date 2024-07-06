@@ -1,4 +1,4 @@
-OUTPUT_FORMAT("binary")
+OUTPUT_FORMAT("elf32-m68k")
 ENTRY(STAGE2_START)
 kermit_buffers = 0x2000;
 MEMORY
@@ -32,27 +32,47 @@ SECTIONS
   .text STAGE2_LOAD :
   {
     _code = .;
-    *(.text.init)
-    *(.text)
-    *(.text.unlikely)
-    *(.rodata*)
+    *(.text*)
+      _ctors        = .;
+    KEEP(*(.ctors))           /* Run in reverse order, so non-priority ones go first  */
+    KEEP(*(SORT(.ctors.*)))   /* followed by ctors with priority */
+      _ctors_end     = .;
+
+      _dtors         = .;
+    KEEP(*(SORT(.dtors.*)))   /* dtors with priority go first */
+    KEEP(*(.dtors))           /* Followed by non-priority ones */
+      _dtors_end     = .;
+
+    . = ALIGN(4);
+    *(.rodata .rodata.*)
+
+    . = ALIGN(4);
+    KEEP(*(.gcc_except_table))
+
+    . = ALIGN(4);
+    KEEP(*(.init*))     /* maybe we should keep these in their sections 🤔... */
+    KEEP(*(.fini*))
     _code_end = .;
   } >BASERAM
 
-  .data : ALIGN(4)
+  . = DATA_SEGMENT_ALIGN(CONSTANT(MAXPAGESIZE), CONSTANT(COMMONPAGESIZE));
+
+  .data ALIGN(4) :
   {
     _data_start = .;
     *(.data*)
     _data_end = .;
   } >BASERAM
   
-  .bss : ALIGN(4)
+  .bss ALIGN(4) :
   {
     _bss_start = .;
     *(COMMON)
     *(.bss*)
     _bss_end = .;
   } >BASERAM
+
+  . = DATA_SEGMENT_END(.);
 
   _end = .;
 }
