@@ -1,0 +1,4 @@
+Program Loader:rom/sdfat_menu.bin
+MicroPython:rom/upyrosco.bin
+System configuration:rom/sysconfig.bin
+Memory check & diagnostic:rom/memcheck.bin

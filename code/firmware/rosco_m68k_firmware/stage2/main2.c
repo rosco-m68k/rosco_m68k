@@ -33,11 +33,6 @@ static volatile SystemDataBlock * const sdb = (volatile SystemDataBlock * const)
 uint8_t *kernel_load_ptr = (uint8_t*) KERNEL_LOAD_ADDRESS;
 KMain kernel_entry = (KMain) KERNEL_LOAD_ADDRESS;
 
-#ifdef KERMIT_LOADER
-// This is provided by Kermit
-extern int receive_kernel();
-#endif
-
 void linit() {
     // zero .bss
     for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
@@ -59,6 +54,11 @@ noreturn void lmain() {
 #  endif
 #  ifdef IDE_LOADER
     if (ide_load_kernel()) {
+        goto have_kernel;
+    }
+#  endif
+#  ifdef ROMFS_LOADER
+    if (romfs_load_kernel()) {
         goto have_kernel;
     }
 #  endif

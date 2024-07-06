@@ -267,7 +267,11 @@ bool load_kernel(PartHandle *part) {
             print_unsigned(load_part_num + 1, 10);  // Print partition numbers as 1-indexed
             FW_PRINT_C(": ");
 
-            fl_attach_media(media_read, media_write);
+            int attach_result = fl_attach_media(media_read, media_write);
+            if (attach_result != FAT_INIT_OK) {
+                printf("fl_attach_media failed: 0x%08x\n", attach_result);
+                return false;
+            }
 
             void *file;
             if ((file = fl_fopen(FILENAME_BIN, "r"))) {

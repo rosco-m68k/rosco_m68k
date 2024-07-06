@@ -104,6 +104,12 @@ STAGE2_DIR=stage2
 STAGE2_FILE=loader2.bin.zip.o
 STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 
+ROMFS_SIZE?=360
+ROMFS_DIR?=romfs
+ROMFS=romfs_$(ROMFS_SIZE)
+ROMFS_OBJ=$(ROMFS).o
+ROMFS_SRC=$(ROMFS_DIR)/$(ROMFS).fat
+
 LDFLAGS+=-L . -T $(LINKER_SCRIPT)
 
 # Output config
@@ -137,7 +143,20 @@ $(STAGE1_DIR)/% : $(STAGE1_DIR) $(KERNEL)
 $(STAGE2_DIR)/% : $(STAGE2_DIR) $(STAGE1) tools
 	$(MAKE) -C $< $*
 
+$(ROMFS_OBJ): $(ROMFS_SRC)
+	$(OBJCOPY)														\
+	--rename-section .data=.romfs,alloc,load,readonly,data,contents \
+	-I binary 														\
+	-O elf32-m68k $< $@
+
+$(ROMFS_SRC):
+	$(MAKE) -C $(dir $@) $(notdir $@)
+
+ifeq ($(HUGEROM), true)
+$(ELF) : $(STAGE1) $(STAGE2) $(ROMFS_OBJ)
+else
 $(ELF) : $(STAGE1) $(STAGE2)
+endif
 	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -o $@
 	$(SIZE) $@
 	-chmod a-x $@
@@ -181,6 +200,7 @@ clean:
 	$(MAKE) -C $(KERNEL_DIR) clean
 	$(MAKE) -C $(STAGE1_DIR) clean
 	$(MAKE) -C $(STAGE2_DIR) clean
+	$(MAKE) -C $(ROMFS_DIR) clean
 	$(MAKE) -C tools/liblzg/src clean
 	$(RM) $(BINARY) $(BINARY_ODD) $(BINARY_EVEN) $(BINARY_MAME) $(ELF) $(DISASM) $(SYM) $(MAP)
 	

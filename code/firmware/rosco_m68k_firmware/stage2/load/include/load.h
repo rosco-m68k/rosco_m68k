@@ -27,6 +27,10 @@ typedef void (*KMain)(volatile SystemDataBlock * const);
 
 bool load_kernel(PartHandle *part);
 
+#ifdef KERMIT_LOADER
+// This is provided by Kermit
+extern int receive_kernel();
+#endif
 #ifdef SDFAT_LOADER
 // This is provided by the SD/FAT loader
 extern bool sd_load_kernel();
@@ -34,6 +38,10 @@ extern bool sd_load_kernel();
 #ifdef IDE_LOADER
 // This is provided by the IDE/FAT loader
 extern bool ide_load_kernel();
+#endif
+#ifdef ROMFS_LOADER
+// This is provided by the ROMFS/FAT loader
+extern bool romfs_load_kernel();
 #endif
 
 #endif  //__ROSCO_M68K_LOAD_H

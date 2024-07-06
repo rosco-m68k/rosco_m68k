@@ -19,9 +19,9 @@
 #include "load.h"
 #include "machine.h"
 
+// TODO this is a bit naughty, these are not public in the stdlib...
 PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device);
 void print_unsigned(uint32_t num, uint8_t base);
-bool ATA_support_check();
 
 static bool try_boot(uint8_t device_id) {
     ATADevice device;

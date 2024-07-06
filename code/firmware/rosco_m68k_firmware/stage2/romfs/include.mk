@@ -1,0 +1,2 @@
+OBJECTS+=romfs/load.o
+DEFINES+=-DROMFS_LOADER

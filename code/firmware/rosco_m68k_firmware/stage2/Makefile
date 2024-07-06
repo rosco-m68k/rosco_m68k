@@ -58,10 +58,12 @@ endif
 ifeq ($(WITH_BLOCKDEV),true)
 INCLUDES+=-I../stage1/blockdev/include
 include load/include.mk
-# include part/include.mk
 include sdfat/include.mk
 ifeq ($(WITH_ATA), true)
 include idehdd/include.mk
+endif
+ifeq ($(HUGEROM), true)
+include romfs/include.mk
 endif
 endif
 ifeq ($(REVISION1X),true)
