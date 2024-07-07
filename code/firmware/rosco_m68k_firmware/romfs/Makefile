@@ -54,6 +54,7 @@ $(STAGING_360): $(MENU_360) $(FILES_360)
 $(STAGING_720): $(MENU_720) $(FILES_720)
 	mkdir -p $@
 	cp -r $^ $@
+	mv $@/upyrosco.bin $@/ROSCODE1.BIN
 	mv $@/$(MENU_720) $@/menu.txt
 
 micropython/rosco_m68k/build/upyrosco.bin:
@@ -70,10 +71,10 @@ $(MKLITTLEFS):
 
 clean:
 	rm -rf $(IMAGE_360) $(IMAGE_720) $(STAGING_360) $(STAGING_720)
+	$(MAKE) -C micropython/rosco_m68k clean
 
 clobber: clean
 	$(MAKE) -C $(ROSCO_SOFT)/sdfat_menu clean
 	$(MAKE) -C $(ROSCO_SOFT)/memcheck clean
-	$(MAKE) -C micropython/rosco_m68k clean
 	$(MAKE) -C mklittlefs clean
 

@@ -65,7 +65,13 @@ ifeq ($(WITH_ATA), true)
 include idehdd/include.mk
 endif
 ifeq ($(HUGEROM), true)
+ifeq ($(ROMFS_SIZE), 360)
+DEFINES+=-DROMFS_BLOCKS=720
 include romfs/include.mk
+else ifeq ($(ROMFS_SIZE), 720)
+DEFINES+=-DROMFS_BLOCKS=1440
+include romfs/include.mk
+endif
 endif
 endif
 ifeq ($(REVISION1X),true)

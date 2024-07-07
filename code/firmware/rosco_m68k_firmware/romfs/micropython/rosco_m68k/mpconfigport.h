@@ -10,6 +10,8 @@
 #define MICROPY_ENABLE_GC                       (1)
 
 #define MICROPY_HELPER_REPL                     (1)
+#define MICROPY_REPL_AUTO_INDENT                (1)
+
 // #define MICROPY_DEBUG_PRINTER                   (&mp_stderr_print)
 // #define MICROPY_DEBUG_PRINTERS                  (1)
 // #define MICROPY_ERROR_REPORTING                 (MICROPY_ERROR_REPORTING_DETAILED)

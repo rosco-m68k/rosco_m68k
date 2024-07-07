@@ -1,3 +1,6 @@
+#include <stdint.h>
+#include <stdio.h>
+
 #include "py/builtin.h"
 #include "py/compile.h"
 #include "py/gc.h"
@@ -6,13 +9,25 @@
 #include "shared/runtime/gchelper.h"
 #include "shared/runtime/pyexec.h"
 
-// Allocate memory for the MicroPython GC heap.
-static char heap[4096];
+extern uint32_t _end;
+volatile uint32_t *memsize = (uint32_t*)0x414;
 
 int main() {
+    // Set up MP heap.
+    uint32_t l_memsize = *memsize;
+    void *heap_begin;
+
+    if (l_memsize > 0x100000) {
+        // just use expansion RAM, ignore the onboard
+        // naive hack, but it'll do for now...
+        heap_begin = (void*)0x100000;
+    } else {
+        heap_begin = &_end;
+    }
+
     // Initialise the MicroPython runtime.
     mp_stack_ctrl_init();
-    gc_init(heap, heap + sizeof(heap));
+    gc_init(heap_begin, ((void*)(*memsize - 32768)));
     mp_init();
 
     // Start a normal REPL; will exit when ctrl-D is entered on a blank line.

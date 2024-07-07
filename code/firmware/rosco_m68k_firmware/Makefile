@@ -58,9 +58,11 @@ ifeq ($(MAME),true)
 ifeq ($(REVISION1X),true)
 MAME_NAME=rosco
 MAMESIZE=0x00010000
+BOARD_ROM_SIZE=64KB
 else
 MAME_NAME=rosco_classicv2
 MAMESIZE=0x00100000
+BOARD_ROM_SIZE=1MB
 endif
 $(info === Building rosco_m68k firmware for MAME ($(MAME_NAME)))
 else
@@ -104,7 +106,14 @@ STAGE2_DIR=stage2
 STAGE2_FILE=loader2.bin.zip.o
 STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 
-ROMFS_SIZE?=360
+ifeq ($(HUGEROM), true)
+ifeq ($(BOARD_ROM_SIZE), 1MB)
+export ROMFS_SIZE?=720
+else ifeq ($(BOARD_ROM_SIZE), 512KB)
+export ROMFS_SIZE?=360
+endif
+endif
+
 ROMFS_DIR?=romfs
 ROMFS=romfs_$(ROMFS_SIZE)
 ROMFS_OBJ=$(ROMFS).o
@@ -152,8 +161,15 @@ $(ROMFS_OBJ): $(ROMFS_SRC)
 $(ROMFS_SRC):
 	$(MAKE) -C $(dir $@) $(notdir $@)
 
+# ROMFS only included in 512KB or 1MB HUGEROM.
 ifeq ($(HUGEROM), true)
+ifeq ($(BOARD_ROM_SIZE), 1MB)
 $(ELF) : $(STAGE1) $(STAGE2) $(ROMFS_OBJ)
+else ifeq ($(BOARD_ROM_SIZE), 512KB)
+$(ELF) : $(STAGE1) $(STAGE2) $(ROMFS_OBJ)
+else
+$(ELF) : $(STAGE1) $(STAGE2)
+endif
 else
 $(ELF) : $(STAGE1) $(STAGE2)
 endif
