@@ -8,12 +8,8 @@
 
 // Allocate memory for the MicroPython GC heap.
 static char heap[4096];
-static char *stack_top;
 
 int main() {
-    char stack_dummy;
-    stack_top = (char*)&stack_dummy;
-
     // Initialise the MicroPython runtime.
     mp_stack_ctrl_init();
     gc_init(heap, heap + sizeof(heap));

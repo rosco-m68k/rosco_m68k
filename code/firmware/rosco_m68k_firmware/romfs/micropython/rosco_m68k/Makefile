@@ -20,17 +20,25 @@ LDFLAGS = -Wl,-Map=$@.map,--cref $(CFLAGS_M68K) -lm
 BASENAME=upyrosco
 LIB_BASE=upy_rosco
 
+LIBS=-lm
+
 # Define the required source files.
 SRC_C = 										\
     main.c										\
     mphalport.c									\
+	modules/modrosco.c							\
     shared/readline/readline.c					\
     shared/runtime/gchelper_generic.c			\
     shared/runtime/pyexec.c						\
-    shared/runtime/stdout_helpers.c				\
-
+    shared/runtime/stdout_helpers.c
+	
 # Define source files containung qstrs.
-SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c
+SRC_QSTR += 									\
+	modules/modrosco.c							\
+	shared/readline/readline.c 					\
+	shared/runtime/stdout_helpers.c 			\
+	shared/runtime/sys_stdio_mphal.c 			\
+	shared/runtime/pyexec.c
 
 OBJ = $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 
