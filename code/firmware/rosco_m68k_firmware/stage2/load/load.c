@@ -24,6 +24,13 @@
 #include "machine.h"
 #include "system.h"
 
+#ifdef DEBUG_ROMFS
+#include <stdio.h>
+#define debugf(...)         printf(__VA_ARGS__)
+#else
+#define debugf(...)         ((void)(0))
+#endif
+
 extern void print_unsigned(uint32_t num, uint8_t base);
 
 extern uint8_t *kernel_load_ptr;
@@ -269,7 +276,7 @@ bool load_kernel(PartHandle *part) {
 
             int attach_result = fl_attach_media(media_read, media_write);
             if (attach_result != FAT_INIT_OK) {
-                printf("fl_attach_media failed: 0x%08x\n", attach_result);
+                debugf("fl_attach_media failed: 0x%08x\n", attach_result);
                 return false;
             }
 
