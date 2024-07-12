@@ -20,6 +20,10 @@ int main() {
     if (l_memsize > 0x100000) {
         // just use expansion RAM, ignore the onboard
         // naive hack, but it'll do for now...
+        //
+        // TODO this is slower than a small heap with generic GC,
+        // but hopefully we can fix that...
+        //
         heap_begin = (void*)0x100000;
     } else {
         heap_begin = &_end;

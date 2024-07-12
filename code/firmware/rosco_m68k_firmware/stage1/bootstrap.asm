@@ -278,7 +278,7 @@ INITMEMCOUNT:
 
 .DONE
     jsr     RESTORE_BERR_HANDLER        ; Restore bus error handler
-    move.l  A0,SDB_MEMSIZE
+    move.l  #1048576,SDB_MEMSIZE ;A0,SDB_MEMSIZE
     rts
 
 

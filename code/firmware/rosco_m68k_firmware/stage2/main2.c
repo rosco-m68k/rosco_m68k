@@ -24,6 +24,11 @@
 #include "system.h"
 #include "serial.h"
 
+#if defined(XOSERA_API_MINIMAL)
+#include "xosera_ansiterm_m68k.h"
+#include "intro.h"
+#endif
+
 extern void red_led_off(void);
 extern void _start_debugger(void);
 // Linker defines
@@ -42,6 +47,11 @@ void linit() {
 noreturn void lmain() {
     // Always do this for backwards compatibility    
     ENABLE_RECV();
+
+#if defined(XOSERA_API_MINIMAL)
+    intro_end();
+    XANSI_CON_INIT();
+#endif
 
 #ifndef MAME_FIRMWARE
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)

@@ -77,6 +77,10 @@ endif
 ifeq ($(REVISION1X),true)
 DEFINES+=-DREVISION1X
 endif
+ifneq ($(XOSERA_API_MINIMAL),false)
+DEFINES+=-DXOSERA_API_MINIMAL
+INCLUDES+=-I../stage1/videoXoseraANSI -I../stage1/splash/include
+endif
 
 main2.o: main2.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
