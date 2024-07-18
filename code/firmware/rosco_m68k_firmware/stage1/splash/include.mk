@@ -3,7 +3,7 @@
 
 SPLASH_DEBUG?=false
 
-IMAGEBASE?=splash_green
+IMAGEBASE?=full_splash_03_424_8bit
 IMAGEEXT=pcx
 IMAGESRC=splash/$(IMAGEBASE).$(IMAGEEXT)
 
