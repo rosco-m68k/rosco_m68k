@@ -4,6 +4,3 @@
 [submodule "code/firmware/rosco_m68k_firmware/romfs/micropython/core"]
 	path = code/firmware/rosco_m68k_firmware/romfs/micropython/core
 	url = https://github.com/micropython/micropython.git
-[submodule "code/firmware/rosco_m68k_firmware/Xosera"]
-	path = code/firmware/rosco_m68k_firmware/Xosera
-	url = https://github.com/XarkLabs/Xosera.git
