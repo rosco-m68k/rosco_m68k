@@ -62,6 +62,8 @@ extern void initialize_keyboard();
 extern void PRINT_BANNER(void);
 #endif
 
+bool stage1_have_xosera;
+
 /*
  * This is what a Stage 2 entry point should look like.
  */
@@ -183,6 +185,7 @@ noreturn void main1() {
 #ifdef LATE_BANNER    
     bool have_video = false;
 #endif
+    stage1_have_xosera = false;
 
     if (sdb->magic != 0xB105D47A) {
         FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
@@ -204,6 +207,7 @@ noreturn void main1() {
 #ifdef LATE_BANNER
         have_video = true;
 #endif
+        stage1_have_xosera = true;
         intro();
         goto skip9958;
     }

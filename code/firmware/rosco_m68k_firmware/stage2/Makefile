@@ -80,6 +80,10 @@ endif
 ifneq ($(XOSERA_API_MINIMAL),false)
 DEFINES+=-DXOSERA_API_MINIMAL
 INCLUDES+=-I../stage1/videoXoseraANSI -I../stage1/splash/include
+ifeq ($(HUGEROM),true)
+INCLUDES+=-Iboot_menu
+LIBS+=boot_menu/libboot_menu.a
+endif
 endif
 
 main2.o: main2.c
@@ -88,7 +92,7 @@ main2.o: main2.c
 common.o: common.c
 	$(CC) $(SIZE_CFLAGS) -c -o $@ $<
 
-$(ELF) : $(OBJECTS)
+$(ELF) : $(OBJECTS) $(LIBS)
 	$(LD) $(LDFLAGS) -Wl,-Map=$(MAP) $^ -o $@ -Wl,-R../stage1/stage1.elf -nostartfiles $(LIBS)
 	-chmod a-x $@
 
@@ -101,5 +105,14 @@ $(BINARY_ZIP): $(BINARY) $(LZG)
 $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
 	m68k-elf-objcopy -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
 
+ifneq ($(XOSERA_API_MINIMAL),false)
+boot_menu/libboot_menu.a:
+	$(MAKE) -C boot_menu libboot_menu.a
+
+clean_boot_menu:
+	$(MAKE) -C boot_menu clean
+clean: clean_boot_menu
+else
 clean: 
+endif
 	$(RM) $(OBJECTS) $(ELF) $(BINARY) $(BINARY_ZIP) $(BINARY_ZIP_OBJ) $(MAP)

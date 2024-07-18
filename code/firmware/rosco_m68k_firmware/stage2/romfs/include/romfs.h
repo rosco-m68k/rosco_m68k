@@ -25,6 +25,13 @@
 
 #include "lfs.h"
 
+// TODO this is hardcoded to 360KB, needs to support 1440 (for 720KB) too...
+//
+// Should be linker-provided really...
+#ifndef ROMFS_BASE
+#define ROMFS_BASE          (((void*)(0x00E26000)))
+#endif
+
 #ifndef ROMFS_BLOCKSIZE
 #define ROMFS_BLOCKSIZE     ((512))
 #endif
@@ -103,5 +110,7 @@ ROMFS_ERR romfs_file_seek(ROMFS_File *file, off_t ofs);
 long romfs_file_tell(ROMFS_File *file);
 ROMFS_ERR romfs_file_delete(ROMFS_File *file);
 ROMFS_ERR romfs_unmount(ROMFS *fs);
+
+ROMFS_ERR romfs_try_load(char *filename, void *romfs_addr, void *load_buffer, int load_buffer_size);
 
 #endif

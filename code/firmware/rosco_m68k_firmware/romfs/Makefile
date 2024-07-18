@@ -48,13 +48,11 @@ $(IMAGE_720): $(STAGING_720) $(MKLITTLEFS)
 $(STAGING_360): $(MENU_360) $(FILES_360)
 	mkdir -p $@
 	cp -r $^ $@
-	mv $@/upyrosco.bin $@/ROSCODE1.BIN
 	mv $@/$(MENU_360) $@/menu.txt
 
 $(STAGING_720): $(MENU_720) $(FILES_720)
 	mkdir -p $@
 	cp -r $^ $@
-	mv $@/upyrosco.bin $@/ROSCODE1.BIN
 	mv $@/$(MENU_720) $@/menu.txt
 
 micropython/rosco_m68k/build/upyrosco.bin:
