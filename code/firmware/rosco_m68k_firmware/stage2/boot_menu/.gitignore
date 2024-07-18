@@ -1,0 +1,10 @@
+.vscode
+**/*.o
+*.bin
+*.elf
+*.dis
+*.map
+*.sym
+sdl2/test
+tests/test_blit_rects
+.DS_Store
