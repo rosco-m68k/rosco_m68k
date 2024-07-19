@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
+#include <errno.h>
 
 #include "load.h"
 #include "elf.h"
@@ -24,12 +25,14 @@
 #include "machine.h"
 #include "system.h"
 
-#ifdef DEBUG_ROMFS
+#ifdef DEBUG_SDLOADER
 #include <stdio.h>
 #define debugf(...)         printf(__VA_ARGS__)
 #else
 #define debugf(...)         ((void)(0))
 #endif
+
+#define O_RDONLY        0x0000          /* open for reading only */
 
 extern void print_unsigned(uint32_t num, uint8_t base);
 
@@ -51,10 +54,12 @@ static PartHandle *load_part;
 static uint8_t load_part_num;
 
 static int media_read(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+    debugf("MEDIA READ: Part #%d; %d sector(s) starting at %d", load_part_num, sector_count, sector);
     return Part_read(load_part, load_part_num, buffer, sector, sector_count) == sector_count ? 1 : 0;
 }
 
 static int media_write(uint32_t sector, uint8_t *buffer, uint32_t sector_count) {
+    debugf("[BUG]: MEDIA WRITE: Part #%d; %d sector(s) starting at %d", load_part_num, sector_count, sector);
     return 0;
 }
 
@@ -73,21 +78,30 @@ bool load_kernel_bin(void *file) {
     }
     FW_PRINT_C("\r\n");
 
-    if (c != EOF) {
-        FW_PRINT_C("*** Kernel load error\r\n");
+    if (!fl_feof(file)) {
+        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Load error (EOF not reached)\r\n");
 
         return false;
     } else {
         uint32_t total_ticks = sdb->upticks - start;
         uint32_t total_secs = (total_ticks + 50) / 100;
         uint32_t load_size = current_load_ptr - kernel_load_ptr;
-        FW_PRINT_C("Loaded ");
-        print_unsigned(load_size, 10);
-        FW_PRINT_C(" bytes in ~");
-        print_unsigned(total_secs ? total_secs : 1, 10);
-        FW_PRINT_C(" sec.\r\n");
 
-        return true;
+        if (load_size > 0) {
+            FW_PRINT_C("Loaded ");
+            print_unsigned(load_size, 10);
+            FW_PRINT_C(" bytes in ~");
+            print_unsigned(total_secs ? total_secs : 1, 10);
+            FW_PRINT_C(" sec.\r\n");
+
+            return true;
+        } else {
+            FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Loaded 0 bytes in ~");
+            print_unsigned(total_secs ? total_secs : 1, 10);
+            FW_PRINT_C(" sec.\r\n");
+
+            return false;
+        }
     }
 }
 
@@ -281,14 +295,14 @@ bool load_kernel(PartHandle *part) {
             }
 
             void *file;
-            if ((file = fl_fopen(FILENAME_BIN, "r"))) {
+            if ((file = fl_fopen(FILENAME_BIN, O_RDONLY))) {
                 FW_PRINT_C("Loading \"");
                 FW_PRINT_C(FILENAME_BIN);
                 FW_PRINT_C("\"");
                 bool result = load_kernel_bin(file);
                 fl_fclose(file);
                 return result;
-            } else if ((file = fl_fopen(FILENAME_ELF, "r"))) {
+            } else if ((file = fl_fopen(FILENAME_ELF, O_RDONLY))) {
                 FW_PRINT_C("Loading \"");
                 FW_PRINT_C(FILENAME_ELF);
                 FW_PRINT_C("\"");
@@ -296,6 +310,7 @@ bool load_kernel(PartHandle *part) {
                 fl_fclose(file);
                 return result;
             } else {
+                print_unsigned(errno, 10);
                 FW_PRINT_C("(not bootable)\r\n");
             }
         }
