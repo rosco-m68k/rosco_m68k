@@ -32,6 +32,7 @@
 // only one Xosera console at a time
 #if defined(XOSERA_API_MINIMAL)
 #include "xosera_ansiterm_m68k.h"
+#include "xosera_m68k_defs.h"
 #include "intro.h"
 #endif
 #ifdef VIDEO9958_CON
@@ -203,7 +204,8 @@ noreturn void main1() {
     INSTALL_EASY68K_TRAP_HANDLERS();
 
 #if defined(XOSERA_API_MINIMAL)
-    if (XANSI_HAVE_XOSERA()) {
+    // side-effect - sets up base in SDB
+    if (XANSI_HAVE_XOSERA(XM_BASEADDR_OLD) || XANSI_HAVE_XOSERA(XM_BASEADDR_NEW)) {
 #ifdef LATE_BANNER
         have_video = true;
 #endif

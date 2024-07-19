@@ -21,7 +21,8 @@
 
 ; See: https:;github.com/XarkLabs/Xosera/blob/master/REFERENCE.md
 
-XM_BASEADDR             equ     $f80061     ; Xosera rosco_m68k 68010 register base address
+XM_BASEADDR_OLD         equ     $f80060     ; Xosera rosco_m68k 68010 register base address (r1 board)
+XM_BASEADDR_NEW         equ     $f80061     ; Xosera rosco_m68k 68010 register base address (XoseRAM)
 
 ; Xosera XR Memory Regions (size in 16-bit words)
 XR_CONFIG_REGS          equ     $0000       ; (R/W) $0000-$0007 8 config/ctrl registers

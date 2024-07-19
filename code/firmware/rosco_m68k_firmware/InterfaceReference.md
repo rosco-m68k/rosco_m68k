@@ -1512,10 +1512,7 @@ exception handlers and TRAP routines.
 | 0x408   | 2    | Internal counter used by timer tick handler               |
 | 0x40A   | 2    | System flags (see below)                                  |
 | 0x40C   | 4    | Upticks counter, updated by timer tick handler            |
-| 0x410   | 1    | Easy68k 'echo on' flag                                    |
-| 0x411   | 1    | Easy68k 'prompt on' flag                                  |
-| 0x412   | 1    | Easy68k 'LF display' flag                                 |
-| 0x413   | 1    | Internal flags used by timer tick handler                 |
+| 0x410   | 4    | Xosera base address (or 0 if not detected)                |
 | 0x414   | 4    | Size of the first block of contiguious memory             |
 | 0x418   | 4    | Default UART base address                                 |
 | 0x41C   | 4    | CPU Info (see below)                                      |
@@ -1667,6 +1664,29 @@ This area is reserved for future Firmware expansion.
 
 This area is reserved for the firmware's BSS section. The content
 and layout of this area may change without notice.
+
+# 2.7. Firmware Version Identifier
+
+**Start Address**: 0xE00100
+**End Address**: 0xE00103
+**Size**: 3 bytes
+
+The longword at the top of the ROM exception table determines the 
+firmware version and some information about its (static) version-related
+requirements and capabilities.
+
+Most significant word is flags, least significant word is split into major
+(MSB) and minor (LSB) version identifiers.
+
+## Flags:
+
+```
+bit 0 - 11: Reserved
+bit 12    : Supports SDB_XOSERABASE field (Version 2.5+)
+bit 13    : Flashable ROM (i.e. HUGEROM).
+bit 14    : Requires larger system data area
+bit 15    : Snapshot version
+```
 
 # 3. Character Devices
 

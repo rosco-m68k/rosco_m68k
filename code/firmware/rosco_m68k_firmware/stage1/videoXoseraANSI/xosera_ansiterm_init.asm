@@ -43,18 +43,21 @@ XANSI_CON_DATA_END      equ     $57F            ; 128 bytes reserved (~0x60 used
                 ifnd  TEST_FIRMWARE             ; building for firmware
 
 ; This verifies it is safe to touch Xosera memory (something HW responding via DTACK)
+;
+; Stores base address in SDB_XOSERABASE as a side-effect.
 XANSI_HAVE_XOSERA::
                 move.l  a0,-(sp)
                 jsr     INSTALL_TEMP_BERR_HANDLER
                 move.l  #.POST_WRITE,BERR_CONT_ADDR
 
-                move.l  #XM_BASEADDR,a0
+                move.l  8(a7),a0
                 move.b  (a0),d0
 
 .POST_WRITE:
                 tst.b   BERR_FLAG
                 bne.s   .NOXVID
 
+                move.l  a0,SDB_XOSERABASE
                 moveq.l #1,d0
                 bra.s   .DONE
 

@@ -22,7 +22,7 @@ ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf -I $(XOSERA_M68K_API) $(DEFINES)
 LDFLAGS=-Wl,--gc-sections
 EXTRA_CFLAGS?=
-DEFINES?=-DXOSERA_STATIC
+DEFINES?=
 
 EXTRA_LIBS?=
 LIBS=$(EXTRA_LIBS) -lxosera_m68k

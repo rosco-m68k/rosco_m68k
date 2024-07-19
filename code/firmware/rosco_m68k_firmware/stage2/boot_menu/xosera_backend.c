@@ -20,10 +20,6 @@
 #include <stdarg.h>
 
 #include <rosco_m68k/machine.h>
-
-#ifndef XOSERA_STATIC
-#define XOSERA_STATIC
-#endif
 #include <rosco_m68k/xosera_m68k_api.h>
 
 #include "view.h"
