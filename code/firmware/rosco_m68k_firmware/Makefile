@@ -27,7 +27,7 @@ export XOSERA_API_MINIMAL?=true
 export WITH_KERNEL?=false
 # Firmware behaviour
 export NOBANNER?=false
-export LATEBANNER?=false
+export LATEBANNER?=true
 export ATA_DEBUG?=false
 export NO_TICK?=false
 

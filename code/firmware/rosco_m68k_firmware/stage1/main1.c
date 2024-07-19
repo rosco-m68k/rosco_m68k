@@ -240,7 +240,9 @@ if (!have_video) {
     sdb->cpu_speed = cpuspeed(sdb->cpu_model);
 #endif
 
+if (!stage1_have_xosera) {
     print_cpu_mem_info();
+}
 
 #ifdef BLOCKDEV_SUPPORT
 #ifdef ROSCO_M68K_ATA
