@@ -12,7 +12,7 @@ CC=m68k-elf-rosco-gcc
 CXX=m68k-elf-rosco-g++
 AS=m68k-elf-rosco-as
 NM=m68k-elf-rosco-nm
-LD=m68k-elf-rosco-ld
+LD=m68k-elf-rosco-gcc
 AR=m68k-elf-rosco-ar
 RANLIB=m68k-elf-rosco-ranlib
 OBJDUMP=m68k-elf-rosco-objdump
@@ -27,19 +27,15 @@ DEFINES=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD -DUNIT_TESTS
 FLAGS=-ffreestanding -ffunction-sections -fdata-sections							\
 				-Wall -Wextra -Wno-unused-function 									\
 				-Wno-unused-parameter -Wno-format -pedantic 						\
-				-I../include -Iinclude -I$(SYSINCDIR)								\
+				-I../include -Iinclude												\
 				-mcpu=$(CPU) -march=$(CPU) -mtune=$(CPU) $(DEFINES)
 CFLAGS=-std=c11 $(FLAGS)
 ASFLAGS=-mcpu=$(CPU) -march=$(CPU)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 ARFLAGS=
-LIBS=-lrosco_m68k -lgcc
-GCC_LIBS?=$(shell $(CC) --print-search-dirs 											\
-		| grep libraries:\ =														\
-    | sed 's/libraries: =/-L/g' 													\
-    | sed 's/:/m68000\/ -L/g')m68000/
+LIBS=
 LDSCRIPT?=$(SYSLIBDIR)/ld/serial/hugerom_rosco_m68k_program.ld
-LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) --gc-sections --oformat=elf32-m68k
+LDFLAGS=-Wl,--gc-sections -Wl,--oformat=elf32-m68k
 
 .PHONY: clean test
 
@@ -62,7 +58,7 @@ list.bin: list.elf
 	$(OBJCOPY) -O binary $< $@
 
 list.elf: list.o __test_list.o
-	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(SIZE) $@
 	-chmod a-x $@
 
@@ -70,7 +66,7 @@ pmm.bin: pmm.elf
 	$(OBJCOPY) -O binary $< $@
 
 pmm.elf: pmm.o __test_kmachine.o __test_list.o __test_pmm.o
-	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(SIZE) $@
 	-chmod a-x $@
 
@@ -78,7 +74,7 @@ bitmap.bin: bitmap.elf
 	$(OBJCOPY) -O binary $< $@
 
 bitmap.elf: bitmap.o __test_bitmap.o
-	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(SIZE) $@
 	-chmod a-x $@
 
@@ -86,7 +82,7 @@ slab.bin: slab.elf
 	$(OBJCOPY) -O binary $< $@
 
 slab.elf: slab.o __test_kmachine.o __test_list.o __test_pmm.o __test_slab.o
-	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(SIZE) $@
 	-chmod a-x $@
 
@@ -106,7 +102,7 @@ ALLTEST_OBJS=rtest/suite.o							\
 			 __test_kmachine.o
 
 units.elf: $(ALLTEST_OBJS)
-	$(LD) $(LDFLAGS) $(GCC_LIBS) $^ -o $@ $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 	$(SIZE) $@
 	-chmod a-x $@
 

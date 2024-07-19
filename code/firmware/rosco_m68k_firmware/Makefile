@@ -24,6 +24,7 @@ export WITH_ATA?=false
 export WITH_VDP?=false
 export NO68681?=false
 export XOSERA_API_MINIMAL?=true
+export WITH_KERNEL?=false
 # Firmware behaviour
 export NOBANNER?=false
 export LATEBANNER?=false
@@ -31,7 +32,7 @@ export ATA_DEBUG?=false
 export NO_TICK?=false
 
 # These are used in CFLAGS by common.mk
-export DEFINES:=-DROSCO_M68K -DROSCO_M68K_KERNEL_BUILD
+export DEFINES:=-DROSCO_M68K
 export INCLUDES:=
 export EXTRA_CFLAGS:=$(EXTRA_CFLAGS)
 
@@ -96,9 +97,13 @@ endif
 
 include ./common.mk
 
+ifeq ($(WITH_KERNEL), true)
+DEFINES+=-DROSCO_M68K_KERNEL_BUILD
 KERNEL_DIR=kernel
 KERNEL_FILE=kernel.a
 KERNEL=$(KERNEL_DIR)/$(KERNEL_FILE)
+endif
+
 STAGE1_DIR=stage1
 STAGE1_FILE=stage1.elf
 STAGE1=$(STAGE1_DIR)/$(STAGE1_FILE)
@@ -143,8 +148,10 @@ else
 all: $(BINARY_MAME) $(SYM) $(DISASM)
 endif
 
+ifeq ($(WITH_KERNEL), true)
 $(KERNEL_DIR)/% : $(KERNEL_DIR)
 	$(MAKE) -C $< $*
+endif
 
 $(STAGE1_DIR)/% : $(STAGE1_DIR) $(KERNEL)
 	$(MAKE) -C $< $*
@@ -209,11 +216,18 @@ endif
 
 mame: $(BINARY_MAME)
 
+ifeq ($(WITH_KERNEL), true)
 test : $(KERNEL_DIR)
 	$(MAKE) -C $< $@
+else
+test :
+endif
+	$(MAKE) -C stage2/boot_menu/tests
 
 clean:
+ifeq ($(WITH_KERNEL), true)
 	$(MAKE) -C $(KERNEL_DIR) clean
+endif
 	$(MAKE) -C $(STAGE1_DIR) clean
 	$(MAKE) -C $(STAGE2_DIR) clean
 	$(MAKE) -C $(ROMFS_DIR) clean

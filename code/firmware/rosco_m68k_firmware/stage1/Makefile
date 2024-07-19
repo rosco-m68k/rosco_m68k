@@ -50,7 +50,7 @@ DEFINES+=-DLATE_BANNER
 endif
 endif
 
-ifneq ($(NO_KERNEL),true)
+ifeq ($(WITH_KERNEL),true)
 $(info === Building rosco_m68k firmware with ROM kernel for revision 2.x board)
 DEFINES+=-DWITH_KERNEL
 endif
@@ -104,7 +104,11 @@ all: $(STAGE1) $(DISASM) $(SYM) $(MAP)
 
 include easy68k/include.mk
 
+ifeq ($(WITH_KERNEL),true)
 $(STAGE1) : $(OBJECTS) $(KERNEL)
+else
+$(STAGE1) : $(OBJECTS)
+endif
 	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -r -o $@
 	$(SIZE) $@
 

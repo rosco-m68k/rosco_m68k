@@ -259,8 +259,10 @@ if (!have_video) {
     // We have enough setup done now that we can handle future warm reboot. Let's set that up..
     initialize_warm_reboot();
 
+#ifdef WITH_KERNEL
     // Initialize the kernel
     initialize_kernel();
+#endif
 
     // Reload stack pointer and call program loader
     hot_boot();
