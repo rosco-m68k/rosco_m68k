@@ -73,7 +73,7 @@ extern void dprintf(const char * fmt, ...) __attribute__((format(__printf__, 1, 
 #endif
 
 #define DEFAULT_XOSERA_CONFIG 1           // default Xosera config (#1 848x480)
-#define DEFAULT_COLOR         0x02        // rosco_m68k "retro" dark green on black
+#define DEFAULT_COLOR         0x17        // new rosco_m68k white on dark blue
 #define MAX_CSI_PARMS         16          // max CSI parameters per sequence
 #define MAX_QUERY_LEN         16          // max query response length (including NUL terminator)
 
@@ -1877,7 +1877,7 @@ static const char xansiterm_banner2[] = " XANSI \x1b[93m|_____|\x1b[1;37m  Class
 
 
 // initialize XANSI // TODO: ICP default values in flash config
-bool xansiterm_INIT()
+bool xansiterm_INIT(bool show_banner)
 {
     xosera_info_t init_data;
 
@@ -1919,36 +1919,40 @@ bool xansiterm_INIT()
     }
 
     xansi_reset(true);
-    xansiterm_PRINT(xansiterm_banner);
-    char * vs = init_data.description_str;
-    *vs++     = td->ver_code[0];
-    *vs++     = '.';
-    *vs++     = td->ver_code[1];
-    *vs++     = td->ver_code[2];
-    *vs++     = '\0';
-    xansiterm_PRINT(init_data.description_str);
-    xansiterm_PRINT(xansiterm_banner2);
-    char * ft = init_data.description_str;
-    if (!(_FIRMWARE_REV & (1U << 31)))
-    {
-        *ft++ = ' ';
-        *ft++ = ' ';
-        *ft++ = ' ';
-        *ft++ = ' ';
-    }
-    str_hex(&ft, (_FIRMWARE_REV >> 8) & 0xf);
-    *ft++ = '.';
-    str_hex(&ft, (_FIRMWARE_REV >> 0) & 0xff);
-    if (_FIRMWARE_REV & (1U << 31))
-    {
+
+    if (show_banner) {
+        xansiterm_PRINT(xansiterm_banner);
+        char * vs = init_data.description_str;
+        *vs++     = td->ver_code[0];
+        *vs++     = '.';
+        *vs++     = td->ver_code[1];
+        *vs++     = td->ver_code[2];
+        *vs++     = '\0';
+        xansiterm_PRINT(init_data.description_str);
+        xansiterm_PRINT(xansiterm_banner2);
+
+        char * ft = init_data.description_str;
+        if (!(_FIRMWARE_REV & (1U << 31)))
+        {
+            *ft++ = ' ';
+            *ft++ = ' ';
+            *ft++ = ' ';
+            *ft++ = ' ';
+        }
+        str_hex(&ft, (_FIRMWARE_REV >> 8) & 0xf);
         *ft++ = '.';
-        *ft++ = 'D';
-        *ft++ = 'E';
-        *ft++ = 'V';
+        str_hex(&ft, (_FIRMWARE_REV >> 0) & 0xff);
+        if (_FIRMWARE_REV & (1U << 31))
+        {
+            *ft++ = '.';
+            *ft++ = 'D';
+            *ft++ = 'E';
+            *ft++ = 'V';
+        }
+        *ft++ = '\0';
+        xansiterm_PRINTLN(init_data.description_str);
+        xansiterm_PRINTLN(0);
     }
-    *ft++ = '\0';
-    xansiterm_PRINTLN(init_data.description_str);
-    xansiterm_PRINTLN(0);
 
     return true;
 }

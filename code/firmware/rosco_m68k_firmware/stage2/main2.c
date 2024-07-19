@@ -84,7 +84,7 @@ static bool handle_boot_menu(void) {
 
             intro_end();
             MC_DELAY_MSEC_10(POST_SPLASH_DELAY_MSEC10);
-            XANSI_CON_INIT();
+            XANSI_CON_INIT(false);
 
             if (selection >= 0) {
                 ROMFS_ERR load_prog_result;
@@ -114,10 +114,10 @@ static bool handle_boot_menu(void) {
                 FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Boot menu failed; Falling back to program loader...\r\n");
             }
         } else {
-            XANSI_CON_INIT();
+            XANSI_CON_INIT(false);
         }
     } else {
-        XANSI_CON_INIT();
+        XANSI_CON_INIT(false);
     }
 
     return false;

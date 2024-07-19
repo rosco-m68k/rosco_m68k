@@ -229,7 +229,9 @@ XANSI_CON_INIT::
                 move.w  sr,d3                   ; save SR
                 ori.w   #$0200,sr               ; no interrupts during init...
 
+                move.l  24(a7),-(a7)            ; Push bool argument
                 jsr     xansiterm_INIT          ; return in d0
+                add.l   #4,A7                   ; Pop argument
 
                 tst.b   d0
                 beq.s   .INITDONE

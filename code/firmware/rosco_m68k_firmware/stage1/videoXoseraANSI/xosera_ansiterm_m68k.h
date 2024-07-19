@@ -27,8 +27,8 @@
 
 // external terminal functions
 bool         XANSI_HAVE_XOSERA(void);                    // sanity check if HW responds at Xosera address (vs BUS error)
-bool         XANSI_CON_INIT(void);                       // initialize xansiterm and set EFP functions
-bool         xansiterm_INIT(void);                       // initialize xansiterm (called from XANSI_CON_INIT)
+bool         XANSI_CON_INIT(bool show_banner);           // initialize xansiterm and set EFP functions
+bool         xansiterm_INIT(bool show_banner);           // initialize xansiterm (called from XANSI_CON_INIT)
 const char * xansiterm_PRINT(const char * str);          // EFP output NUL terminated string routine
 const char * xansiterm_PRINTLN(const char * str);        // EFP output NUL terminated string ending with "\r\n"
 void         xansiterm_PRINTCHAR(char c);                // EFP output char routine
