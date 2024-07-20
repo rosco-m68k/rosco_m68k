@@ -72,6 +72,14 @@
 bool use_ruler = false;
 #endif
 
+typedef enum {
+    NORMAL          = 0,
+    ESCAPED,
+    CURSOR_CODE,
+} INPUT_STATE;
+
+static volatile xmreg_t * xosera_ptr;
+
 volatile bool xosera_flip = false;
 volatile uint32_t xosera_current_page = XO_PAGE_0_ADDR;
 
@@ -81,6 +89,8 @@ static volatile uint32_t *cpuinfo = (uint32_t*)0x41c;
 static volatile uint32_t *memsize = (uint32_t*)0x414;
 
 static uint16_t next_font_address;
+
+static INPUT_STATE input_state;
 
 #ifdef DEBUG_MENU_BACKEND
 static void dputc(char c) {
@@ -159,7 +169,8 @@ static uint32_t expand_8_pixel_font_line(uint8_t line) {
 }
 
 bool backend_init(void) {
-    xv_prep();
+    xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)SDB_XOSERABASE)))));
+    input_state = NORMAL;
 
 #   if VIEW_HRES == 320
     dprintf("Calling xosera_init(XINIT_CONFIG_640x480)...");
@@ -204,8 +215,6 @@ bool backend_init(void) {
 }
 
 void backend_clear(void) {
-    xv_prep();
-
     uint16_t color = BLIT_COLOR(current_color);
 
 #ifdef OPTIMISTIC_BLITTER
@@ -242,8 +251,6 @@ BACKEND_FONT_COOKIE backend_load_font(const uint8_t *font, int font_width, int f
         return 0;
     }
 
-    xv_prep();
-
     // copy font
     xm_setw(WR_ADDR, next_font_address);
     for (int i = 0; i < font_height * char_count; i++) {
@@ -264,8 +271,6 @@ void backend_text_write(const char *str, int x, int y, BACKEND_FONT_COOKIE font,
 
     // TODO support different font (for small text)
     unsigned char c;
-
-    xv_prep();
 
     uint16_t font_width_words = pixels_to_words(font_width) + 1;
 
@@ -303,19 +308,75 @@ void backend_text_write(const char *str, int x, int y, BACKEND_FONT_COOKIE font,
 
 BACKEND_EVENT backend_poll_event(void) {
     if (mcCheckchar()) {
-        switch (mcReadchar()) {
-        // TODO support cursor escapes
-        case 'w':
-        case 'W':
-            return UP;
-        case 's':
-        case 'S':
-            return DOWN;
-        case 0x0a:
-        case 0x0d:
-            return QUIT;
+        switch (input_state) {
+        case NORMAL:
+            switch (mcReadchar()) {
+            case 'w':
+            case 'W':
+                return UP;
+            case 's':
+            case 'S':
+                return DOWN;
+            case 0x0a:
+            case 0x0d:
+                return QUIT;
+            case 0x1b:
+                input_state = ESCAPED;
+                return NONE;
+            default:
+                return NONE;
+            }
+
+        case ESCAPED:
+            switch (mcReadchar()) {
+            case 'w':
+            case 'W':
+                input_state = NORMAL;
+                return UP;
+            case 's':
+            case 'S':
+                input_state = NORMAL;
+                return DOWN;
+            case 0x0a:
+            case 0x0d:
+                input_state = NORMAL;
+                return QUIT;
+            case 0x1b:
+                return NONE;
+            case '[':
+                input_state = CURSOR_CODE;
+                return NONE;
+            default:
+                input_state = NORMAL;
+                return NONE;                
+            }
+
+        case CURSOR_CODE:
+            switch (mcReadchar()) {
+            case 'w':
+            case 'W':
+            case 'A':
+                input_state = NORMAL;
+                return UP;
+            case 's':
+            case 'S':
+            case 'B':
+                input_state = NORMAL;
+                return DOWN;
+            case 0x0a:
+            case 0x0d:
+                input_state = NORMAL;
+                return QUIT;
+            case 0x1b:
+                input_state = ESCAPED;
+                return NONE;
+            default:
+                input_state = NORMAL;
+                return NONE;                
+            }
         }
     }
+
     return NONE;
 }
 
@@ -356,8 +417,6 @@ static inline void rect_blit(
     uint16_t height,
     uint16_t width_words
 ) {
-    xv_prep();
-
 #ifdef OPTIMISTIC_BLITTER
     xwait_blit_ready();
 #endif
@@ -506,8 +565,6 @@ void backend_fill_rect(Rect *rect) {
 }
 
 void backend_present(void) {
-    xv_prep();
-
     while (xosera_flip) {
         // busywait, we're going too fast (unlikely)
         //
