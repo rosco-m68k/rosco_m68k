@@ -16,6 +16,9 @@ jobs:
         - name: Hack GITHUB_WORKSPACE 🥷
           run: |
             sudo chown -R linuxbrew "$GITHUB_WORKSPACE"
+        - name: Install xxd
+          run: |
+            sudo apt-get install -y xxd
         - name: Generate build stamp & artifact output
           run: |
             date +%Y%m%d_%H%M%S > "$GITHUB_WORKSPACE/stamp.txt"
