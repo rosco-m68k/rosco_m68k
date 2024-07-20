@@ -23,21 +23,31 @@
 #include "machine.h"
 #include "system.h"
 #include "serial.h"
-#include "rosco_boot_menu.h"
 
 #if defined(XOSERA_API_MINIMAL)
 #include "xosera_m68k_api.h"
 #include "xosera_ansiterm_m68k.h"
+#ifdef WITH_SPLASH
 #include "intro.h"
+#endif
+#ifdef WITH_BOOT_MENU
+#include "rosco_boot_menu.h"
 #include "parse_menu.h"
+#endif
+#ifdef WITH_ROMFS
 #include "romfs.h"
+#endif
 
+#ifdef WITH_BOOT_MENU
 #define MAX_MENU_ITEMS                  10
 static MenuItem menu_items[MAX_MENU_ITEMS];
 static char* menu_texts[MAX_MENU_ITEMS];
 #endif
+#endif
 
+#ifdef WITH_SPLASH
 #define POST_SPLASH_DELAY_MSEC10        50
+#endif
 
 // Stage 1 sets this to indicate we have Xosera, so need to close out the init splash...
 extern bool stage1_have_xosera;
@@ -58,7 +68,7 @@ void linit() {
     for (uint32_t *dst = &_bss_start; dst < &_bss_end; *dst = 0, dst++);
 }
 
-#if defined(XOSERA_API_MINIMAL)
+#if defined(WITH_BOOT_MENU)
 // If this returns true, it means a program has been loaded at the kernel_load_ptr.
 //
 // Otherwise, it means an 'exit' or bad menu item was selected.
@@ -129,14 +139,19 @@ noreturn void lmain() {
     ENABLE_RECV();
 
 #if defined(XOSERA_API_MINIMAL)
+#ifdef WITH_SPLASH
     if (stage1_have_xosera) {
         intro_end();
         MC_DELAY_MSEC_10(POST_SPLASH_DELAY_MSEC10);
-
+#endif
+#ifdef WITH_BOOT_MENU
         if (handle_boot_menu()) {
             goto have_kernel;
         };
+#endif
+#ifdef WITH_SPLASH        
     }
+#endif
 #endif
 
 #ifndef MAME_FIRMWARE

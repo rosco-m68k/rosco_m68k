@@ -83,6 +83,7 @@ INCLUDES+=-I../stage1/videoXoseraANSI -I../stage1/splash/include
 ifeq ($(HUGEROM),true)
 INCLUDES+=-Iboot_menu
 LIBS+=boot_menu/libboot_menu.a
+DEFINES+=-DWITH_BOOT_MENU -DWITH_ROMFS -DWITH_SPLASH
 endif
 endif
 

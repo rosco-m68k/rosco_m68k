@@ -90,7 +90,10 @@ endif
 ifneq ($(XOSERA_API_MINIMAL),false)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)
 include videoXoseraANSI/include.mk
+ifneq ($(HUGEROM),false)
+DEFINES+=-DWITH_SPLASH
 include splash/include.mk
+endif
 endif
 
 ifeq ($(WITH_DEBUG_STUB),true)
