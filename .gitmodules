@@ -1,3 +1,6 @@
 [submodule "code/firmware/rosco_m68k_firmware/romfs/micropython/core"]
 	path = code/firmware/rosco_m68k_firmware/romfs/micropython/core
 	url = https://github.com/micropython/micropython.git
+[submodule "code/firmware/rosco_m68k_firmware/romfs/mklittlefs"]
+	path = code/firmware/rosco_m68k_firmware/romfs/mklittlefs
+	url = https://github.com/earlephilhower/mklittlefs.git
