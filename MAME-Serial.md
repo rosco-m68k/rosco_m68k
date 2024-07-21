@@ -44,6 +44,8 @@ your terminal to plain TCP, localhost, port 1234. Once connected, you can get th
 out of the way (it won't do anything in this setup and hit g in the MAME debugger and you should 
 be off to the races.
 
+![MAME running with terminal attached](images/mame-running.png)
+
 ### GDB Debugging
 
 It’s probably worth noting that you can do the same thing with the second UART port by passing
