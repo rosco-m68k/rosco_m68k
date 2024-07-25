@@ -9,7 +9,7 @@ You probably can do that in the ini, but I've found it's easier to go into the M
 it up there. If you run:
 
 ```shell
-./sbc rosco_classicv2 -window -rs232a null_modem -bitb socket.localhost:1234
+./sbc rosco_classicv2 -window -rs232a null_modem
 ```
 
 You should be taken into the MAME UI, where you will need to open up the machine settings page. 
