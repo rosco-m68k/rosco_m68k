@@ -95,6 +95,9 @@ endif
 $(info === Building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) ($(ROM_TYPE_NAME)))
 endif
 
+export ROM_CHIP_SIZE
+export BOARD_ROM_SIZE
+
 include ./common.mk
 
 ifeq ($(WITH_KERNEL), true)

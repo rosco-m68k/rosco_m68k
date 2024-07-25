@@ -23,6 +23,10 @@
 
 #include "splash.h"
 
+#ifdef HAVE_SPLASH_AUDIO
+#include "bong.h"
+#endif
+
 #define COPPER_GLITCH
 
 #ifdef DEBUG_SPLASH

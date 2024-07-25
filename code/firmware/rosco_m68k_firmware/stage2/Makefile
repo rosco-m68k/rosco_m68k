@@ -81,9 +81,13 @@ ifneq ($(XOSERA_API_MINIMAL),false)
 DEFINES+=-DXOSERA_API_MINIMAL
 INCLUDES+=-I../stage1/videoXoseraANSI -I../stage1/splash/include
 ifeq ($(HUGEROM),true)
+ifeq ($(BOARD_ROM_SIZE),256KB)
+DEFINES+=-DWITH_SPLASH
+else
 INCLUDES+=-Iboot_menu
 LIBS+=boot_menu/libboot_menu.a
 DEFINES+=-DWITH_BOOT_MENU -DWITH_ROMFS -DWITH_SPLASH
+endif
 endif
 endif
 
