@@ -41,6 +41,14 @@
 #define GLITCH_SWITCH_CHANCE    70000
 #endif
 
+#ifdef HAVE_SPLASH_AUDIO
+#define AUDIO_RATE              11025
+#define AUDIO_BUFFER_SIZE       0x100
+#define TILE_FONT_SIZE          0x800
+#define AUDIO_BUFFER_A          ((XR_TILE_ADDR+TILE_FONT_SIZE))
+#define AUDIO_BUFFER_B          ((AUDIO_BUFFER_A+AUDIO_BUFFER_SIZE))
+#endif
+
 #define SHOW_DELAY              3
 
 #define FADE_IN_DELAY           3
@@ -52,21 +60,80 @@ volatile uint32_t *upticks  = (uint32_t*)0x40c;
 
 void MC_DELAY_MSEC_10(int);
 
-#ifdef COPPER_GLITCH
-static void glitch_delay(uint32_t secs) {
+static void splash_delay_loop(uint32_t secs) {
     xv_prep();
 
+    uint32_t now = *upticks;
     uint32_t end_ticks;
     if (secs == 0) {
         end_ticks = UINT_MAX;
     } else {
-        end_ticks = *upticks + (secs * 100);
+        end_ticks = now + (secs * 100);
     }
 
+#   ifdef COPPER_GLITCH
     bool cop_on = true;
     bool in_glitch = false;
+#   endif
+
+#   ifdef HAVE_SPLASH_AUDIO
+    uint32_t audio_start_ticks = now + 100;
+    
+    uint32_t clk_hz = xosera_sample_hz();
+    uint16_t period = (clk_hz + AUDIO_RATE - 1) / AUDIO_RATE;        // rate is samples per second
+    dprintf("Period is %d\n", period);
+
+    xreg_setw(AUD_CTRL, AUD_CTRL_AUD_EN_F);
+    xreg_setw(AUD0_PERIOD, period);
+    xreg_setw(AUD0_VOL, MAKE_AUD_VOL(AUD_VOL_FULL / 2, AUD_VOL_FULL / 2));
+
+    bool prime = true;
+    bool done = false;
+    uint32_t src_ptr = 0;
+    uint32_t current_buf = AUDIO_BUFFER_A;
+#   endif
 
     while (*upticks < end_ticks) {
+
+        // Handle audio sample feeding if compiled in...
+#       ifdef HAVE_SPLASH_AUDIO
+        if ((*upticks > audio_start_ticks) && (prime || (xm_getw(INT_CTRL) & INT_CTRL_AUD0_INTR_F))) {
+            xm_setw(INT_CTRL, INT_CTRL_AUD_ALL_F);
+            prime = false;
+
+            if (done) {
+                // disable audio system
+                xreg_setw(AUD_CTRL, 0x0000);
+            }
+
+            // copy data to buffer
+            int copy_len = AUDIO_BUFFER_SIZE;
+            int data_remain = bong_data_len - src_ptr;
+            if (data_remain < AUDIO_BUFFER_SIZE) {
+                dprintf("Fetched last chunk of %d\n", data_remain);
+                copy_len = data_remain;
+                done = true;        // Signal done next time we get an interrupt pending...
+            }
+            copy_len /= 2;
+
+            xm_setw(WR_XADDR, current_buf);
+
+            for (int i = 0; i < copy_len; i++) {
+                uint16_t word = bong_data[src_ptr++] << 8;
+                word |= bong_data[src_ptr++];
+
+                xm_setw(XDATA, word);
+            }            
+
+            xreg_setw(AUD0_LENGTH, (copy_len - 1) | AUD_LENGTH_TILEMEM_F);
+            xreg_setw(AUD0_START, current_buf);
+
+            current_buf = (current_buf == AUDIO_BUFFER_A) ? AUDIO_BUFFER_B : AUDIO_BUFFER_A;
+        }
+#       endif
+
+        // Handle glitch effect if compiled in...
+#       ifdef COPPER_GLITCH
         if (in_glitch) {
             // do we want to exit the glitch?
             if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > 92500) {
@@ -97,9 +164,14 @@ static void glitch_delay(uint32_t secs) {
                 in_glitch = true;
             }
         }
+#       endif
     }
+
+#   ifdef HAVE_SPLASH_AUDIO
+    // Disable audio, just in case sound was longer than delay...
+    xreg_setw(AUD_CTRL, 0x0000);
+#   endif
 }
-#endif
 
 void intro(void) {
 #   ifdef COPPER_GLITCH
@@ -152,13 +224,13 @@ void intro(void) {
 #   ifdef COPPER_GLITCH
     xwait_vblank();
     xreg_setw(COPP_CTRL, 0x0000);
+#   endif
 
-    glitch_delay(SHOW_DELAY);
+    splash_delay_loop(SHOW_DELAY);
 
+#   ifdef COPPER_GLITCH
     xreg_setw(COPP_CTRL, 0x0000);
     dprintf("Done glitching\n");
-#   else
-    MC_DELAY_MSEC_10(SHOW_DELAY * 100);
 #   endif
 }
 

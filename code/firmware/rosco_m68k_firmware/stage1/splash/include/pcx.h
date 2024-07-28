@@ -62,6 +62,6 @@ typedef struct {
          | ((palentry.g) & 0xF0)        \
          | ((palentry.b) & 0xF0 >> 4)))
 
-bool show_pcx(uint32_t buf_size, uint8_t *buf, uint8_t fade_delay);
+bool show_pcx(uint32_t buf_size, const uint8_t *buf, uint8_t fade_delay);
 
 #endif

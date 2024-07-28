@@ -15,7 +15,11 @@ IMAGEEXT=pcx
 IMAGESRC=splash/$(IMAGEBASE).$(IMAGEEXT)
 
 ifeq ($(BOARD_ROM_SIZE),1MB)
+ifeq ($(LONG_SPLASH_AUDIO),true)
 AUDIOBASE?=dropped_major_c1_shorter_11khz
+else
+AUDIOBASE?=dropped_major_c1_shortest_11khz
+endif
 HAVE_AUDIO=true
 DEFINES+=-DHAVE_SPLASH_AUDIO
 else ifeq ($(BOARD_ROM_SIZE),512KB)
@@ -42,7 +46,7 @@ endif
 splash/splash.h: $(IMAGESRC)
 	echo "#ifndef _SPLASH_DATA_H" > $@
 	echo "#define _SPLASH_DATA_H" >> $@
-	xxd -i $(IMAGESRC) | sed -E "s/$(IMAGEBASE)_$(IMAGEEXT)/data/g" | sed -E "s/splash_data\[\] =/splash_data\[\] __attribute__\(\(section\(\".rodata\"\)\)\)=/g" >> $@
+	xxd -i $(IMAGESRC) | sed -E "s/$(IMAGEBASE)_$(IMAGEEXT)/data/g" | sed -E "s/unsigned char splash_data\[\] =/const unsigned char splash_data\[\] __attribute__\(\(section\(\".rodata\"\)\)\)=/g" >> $@
 
 	echo "#endif" >> $@
 
@@ -50,7 +54,7 @@ ifeq ($(HAVE_AUDIO),true)
 splash/bong.h: $(AUDIOSRC)
 	echo "#ifndef _BONG_DATA_H" > $@
 	echo "#define _BONG_DATA_H" >> $@
-	xxd -i $(AUDIOSRC) | sed -E "s/splash_$(AUDIOBASE)_$(AUDIOEXT)/bong_data/g" | sed -E "s/bong_data\[\] =/bong_data\[\] __attribute__\(\(section\(\".rodata\"\)\)\)=/g" >> $@
+	xxd -i $(AUDIOSRC) | sed -E "s/splash_$(AUDIOBASE)_$(AUDIOEXT)/bong_data/g" | sed -E "s/unsigned char bong_data\[\] =/const unsigned char bong_data\[\] __attribute__\(\(section\(\".rodata\"\)\)\)=/g" >> $@
 	echo "#endif" >> $@
 endif
 

@@ -34,7 +34,7 @@ static uint16_t swap(uint16_t be) {
     return ((be & 0xFF00) >> 8) | ((be & 0x00FF) << 8); 
 }
 
-static bool load_palette(uint8_t *buf, __attribute__((unused)) uint8_t shift) {
+static bool load_palette(const uint8_t *buf, __attribute__((unused)) uint8_t shift) {
     xv_prep();
 
     if (*buf++ != 0x0C) {
@@ -81,7 +81,7 @@ static void draw(uint8_t pix) {
     }
 }
 
-static bool load_image(uint32_t buf_size, uint8_t *buf) {
+static bool load_image(uint32_t buf_size, const uint8_t *buf) {
     xv_prep();
     xm_setw(WR_ADDR, 0);
 
@@ -105,7 +105,7 @@ static bool load_image(uint32_t buf_size, uint8_t *buf) {
     return true;
 }
 
-bool show_pcx(uint32_t buf_size, uint8_t *buf, __attribute__((unused)) uint8_t fade_delay) {    
+bool show_pcx(uint32_t buf_size, const uint8_t *buf, __attribute__((unused)) uint8_t fade_delay) {    
     if (buf_size < 128) {
         dprintf("ERROR: Buffer is too small\n");
         return false;
