@@ -43,8 +43,8 @@
 
 #ifdef HAVE_SPLASH_AUDIO
 #define AUDIO_RATE              11025
-#define AUDIO_BUFFER_SIZE       0x100
-#define TILE_FONT_SIZE          0x800
+#define AUDIO_BUFFER_SIZE       0x200
+#define TILE_FONT_SIZE          0x1000
 #define AUDIO_BUFFER_A          ((XR_TILE_ADDR+TILE_FONT_SIZE))
 #define AUDIO_BUFFER_B          ((AUDIO_BUFFER_A+AUDIO_BUFFER_SIZE))
 #endif
@@ -78,7 +78,7 @@ static void splash_delay_loop(uint32_t secs) {
 
 #   ifdef HAVE_SPLASH_AUDIO
     uint32_t audio_start_ticks = now + 100;
-    
+
     uint32_t clk_hz = xosera_sample_hz();
     uint16_t period = (clk_hz + AUDIO_RATE - 1) / AUDIO_RATE;        // rate is samples per second
     dprintf("Period is %d\n", period);
