@@ -36,7 +36,6 @@ SECTIONS
 
   .data : ALIGN(4)
   {
-    *(.early_data*)
     _data_start = .;
     _data_load_start = _data_start - ADDR(.data) + LOADADDR(.data);
     *(.data*)
@@ -44,12 +43,17 @@ SECTIONS
     _data_load_end = _data_end - ADDR(.data) + LOADADDR(.data);
   } >KRES2 AT>FLASH
 
-   .bss (NOLOAD) : ALIGN(4)
+  .bss (NOLOAD) : ALIGN(4)
   {
     _bss_start = .;
     *(.bss*)
     _bss_end = .;
   } >KRES2
+
+  .earlydata : ALIGN(4)
+  {
+    *(.early_data*)
+  } >KRES2 AT>FLASH
 
   .zipdata : ALIGN(4)
   {
