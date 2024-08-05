@@ -6,5 +6,5 @@
 *.map
 *.sym
 sdl2/test
-tests/test_blit_rects
+tests/test_parse_menu
 .DS_Store
