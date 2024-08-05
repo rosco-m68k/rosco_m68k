@@ -27,7 +27,7 @@
 
 // This is defined to work around unknown issues with xwait_bit_ready, 
 // and should be removed once we understand those.
-//#define BLIT_WAIT_HACK
+#define BLIT_WAIT_HACK
 
 #if (VIEW_HRES == 640) || (VIEW_HRES == 848)
 #error Xosera backend does not currently support high-resolution mode
