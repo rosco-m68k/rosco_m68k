@@ -212,9 +212,6 @@ void view_repaint(View *view, bool force) {
         selection_rect.w = view->main_box.w - 2;
         selection_rect.h = LINE_HEIGHT - 1;  // -1 so as not to overdraw border on last item!
         backend_set_color(COLOR_SELECTION_BAR);
-#ifdef BLIT_DEBUG
-        printf("SELECTION    ::::::: ");
-#endif   
         backend_fill_rect(&selection_rect);
 
         // Items text
@@ -253,6 +250,15 @@ void view_repaint(View *view, bool force) {
             backend_text_write(secs_buf, selection_rect.x + selection_rect.w - 12, selection_rect.y + 2, small_font, NUM_FONT_WIDTH, NUM_FONT_HEIGHT);
         }
 #       endif
+
+        // TODO redrawing the outline, since something (I suspect maybe text _somehow_?) is overdrawing the left line of the one drawn above.
+        //      Weirdly, _removing_ the one above caused some serious corruption, but repeating is fine. Could suggest maybe we're not 
+        //      properly setting all blitter registers or something, needs investigating...
+        //
+        //      would be nice to figure out what / why, since it's a bug _somewhere_ (it doesn't happen with SDL2 backend)
+        //
+        backend_set_color(COLOR_BLACK);
+        backend_draw_rect(&view->main_box);
 
         // Animations (front)
         paint_anim_layer((Animation*)view->model->animations_front.next);

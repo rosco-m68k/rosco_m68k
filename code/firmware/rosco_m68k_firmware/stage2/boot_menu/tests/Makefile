@@ -6,7 +6,7 @@ LDFLAGS=
 all: test
 
 clean:
-	rm -rf *.o test_blit_rects test_parse_menu
+	rm -rf *.o test_parse_menu
 
 %.o: ../%.c
 	$(CC) -c $(CFLAGS) -o $@ $<
@@ -14,18 +14,11 @@ clean:
 unity/unity.o: unity/unity.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-test_blit_rects.o: test_blit_rects.c
-	$(CC) -c $(CFLAGS) -o $@ $<
-
-test_blit_rects: test_blit_rects.o unity/unity.o
-	$(CC) $(LDFLAGS) -o $@ $^
-
 test_parse_menu.o: test_parse_menu.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 test_parse_menu: test_parse_menu.o parse_menu.o unity/unity.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
-test: test_blit_rects test_parse_menu
-	./test_blit_rects
+test: test_parse_menu
 	./test_parse_menu

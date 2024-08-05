@@ -112,7 +112,7 @@ $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
 
 ifneq ($(XOSERA_API_MINIMAL),false)
 boot_menu/libboot_menu.a:
-	$(MAKE) -C boot_menu libboot_menu.a
+	$(MAKE) -C boot_menu tests libboot_menu.a
 
 clean_boot_menu:
 	$(MAKE) -C boot_menu clean

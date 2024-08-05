@@ -140,8 +140,27 @@ uint32_t backend_get_memsize(void) {
 }
 
 void backend_draw_rect(Rect *rect) {
-    SDL_Rect sdl_rect = { .x = rect->x, .y = rect->y, .w = rect->w, .h = rect->h };
-    SDL_RenderDrawRect(renderer, &sdl_rect);
+    // SDL_Rect sdl_rect = { .x = rect->x, .y = rect->y, .w = rect->w, .h = rect->h };
+    // SDL_RenderDrawRect(renderer, &sdl_rect);
+
+    Rect temp;
+
+    // left line
+    printf("RECT AT %d %d %d %d\n", rect->x, rect->y, rect->w, rect->h);
+    temp.x = rect->x; temp.y = rect->y; temp.w = 1; temp.h = rect->h;
+    backend_fill_rect(&temp);
+
+    // right line
+    temp.x = rect->x + rect->w - 1; temp.y = rect->y; temp.w = 1; temp.h = rect->h;
+    backend_fill_rect(&temp);
+
+    // top line
+    temp.x = rect->x; temp.y = rect->y; temp.w = rect->w; temp.h = 1;
+    backend_fill_rect(&temp);
+
+    // bottom line
+    temp.x = rect->x; temp.y = rect->y + rect->h - 1; temp.w = rect->w; temp.h = 1;
+    backend_fill_rect(&temp);
 }
 
 void backend_fill_rect(Rect *rect) {
