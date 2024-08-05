@@ -5,6 +5,7 @@
 
 # Configuration options, default to rev. 2 with MC68000, with all features except VDP
 # CPU options
+export FIRMWARE_BUILD=true
 export CPU?=68000
 export ARCH?=$(CPU)
 export TUNE?=$(CPU)

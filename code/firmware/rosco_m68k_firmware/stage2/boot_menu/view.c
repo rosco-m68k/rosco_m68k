@@ -257,8 +257,8 @@ void view_repaint(View *view, bool force) {
         //
         //      would be nice to figure out what / why, since it's a bug _somewhere_ (it doesn't happen with SDL2 backend)
         //
-        backend_set_color(COLOR_BLACK);
-        backend_draw_rect(&view->main_box);
+        // backend_set_color(COLOR_BLACK);
+        // backend_draw_rect(&view->main_box);
 
         // Animations (front)
         paint_anim_layer((Animation*)view->model->animations_front.next);

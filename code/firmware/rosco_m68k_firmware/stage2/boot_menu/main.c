@@ -28,13 +28,13 @@
 
 #include "backend.h"
 
-#ifndef ROSCO_M68K
+#ifndef ROSCO_M68K_FIRMWARE
 static int demo_n_menu_items = 4;
 static char* demo_menu_items[] = {
-    "Program loader",
-    "MicroPython",
-    "System configuration",
-    "Memory check & diagnostic",
+    "Test menu item 1",
+    "Test menu item 2",
+    "Test menu item 3",
+    "Test menu item 4",
 };
 #endif
 
@@ -84,8 +84,19 @@ int do_boot_menu(char **menu_items, int n_menu_items) {
     return model.selection;
 }
 
-#ifndef ROSCO_M68K
+#ifndef ROSCO_M68K_FIRMWARE
+#ifdef ROSCO_M68K
+#include <rosco_m68k/machine.h>
+#else
+#define mcCheckchar()       ((0))
+#define mcReadchar()        ((0))
+#endif
+
 int main(void) {
+    while (mcCheckchar()) {
+        mcReadchar();
+    }
+
     do_boot_menu(demo_menu_items, demo_n_menu_items);
     return 0;
 }
