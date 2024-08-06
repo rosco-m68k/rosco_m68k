@@ -92,8 +92,6 @@ static bool handle_boot_menu(void) {
 
             int selection = do_boot_menu(menu_texts, n_items);
 
-            intro_end();
-            MC_DELAY_MSEC_10(POST_SPLASH_DELAY_MSEC10);
             XANSI_CON_INIT(false);
 
             if (selection >= 0) {
