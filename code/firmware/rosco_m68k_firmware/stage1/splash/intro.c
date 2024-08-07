@@ -104,31 +104,33 @@ static void splash_delay_loop(uint32_t secs) {
             if (done) {
                 // disable audio system
                 xreg_setw(AUD_CTRL, 0x0000);
+            } else {
+
+                // copy data to buffer
+                int copy_len = AUDIO_BUFFER_SIZE;
+                int data_remain = bong_data_len - src_ptr;
+                if (data_remain < AUDIO_BUFFER_SIZE) {
+                    dprintf("Fetched last chunk of %d\n", data_remain);
+                    copy_len = data_remain;
+                    done = true;        // Signal done next time we get an interrupt pending...
+                }
+                copy_len >>= 1;
+
+                xm_setw(WR_XADDR, current_buf);
+
+                for (int i = 0; i < copy_len; i++) {
+                    uint16_t word = bong_data[src_ptr++] << 8;
+                    word |= bong_data[src_ptr++];
+
+                    xm_setw(XDATA, word);
+                }
+
+                xreg_setw(AUD0_LENGTH, (copy_len - 1) | AUD_LENGTH_TILEMEM_F);
+                xreg_setw(AUD0_START, current_buf);
+
+                // switch to next buffer for next time around
+                current_buf = (current_buf == AUDIO_BUFFER_A) ? AUDIO_BUFFER_B : AUDIO_BUFFER_A;
             }
-
-            // copy data to buffer
-            int copy_len = AUDIO_BUFFER_SIZE;
-            int data_remain = bong_data_len - src_ptr;
-            if (data_remain < AUDIO_BUFFER_SIZE) {
-                dprintf("Fetched last chunk of %d\n", data_remain);
-                copy_len = data_remain;
-                done = true;        // Signal done next time we get an interrupt pending...
-            }
-            copy_len /= 2;
-
-            xm_setw(WR_XADDR, current_buf);
-
-            for (int i = 0; i < copy_len; i++) {
-                uint16_t word = bong_data[src_ptr++] << 8;
-                word |= bong_data[src_ptr++];
-
-                xm_setw(XDATA, word);
-            }            
-
-            xreg_setw(AUD0_LENGTH, (copy_len - 1) | AUD_LENGTH_TILEMEM_F);
-            xreg_setw(AUD0_START, current_buf);
-
-            current_buf = (current_buf == AUDIO_BUFFER_A) ? AUDIO_BUFFER_B : AUDIO_BUFFER_A;
         }
 #       endif
 
