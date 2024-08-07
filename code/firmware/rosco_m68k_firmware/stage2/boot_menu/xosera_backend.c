@@ -25,9 +25,9 @@
 #include "view.h"
 #include "backend.h"
 
-// This is defined to work around unknown issues with xwait_bit_ready, 
-// and should be removed once we understand those.
-#define BLIT_WAIT_HACK
+// This is _probably_ no longer needed, but leaving it here for a short while
+// in case we need to do any further tests...
+//#define BLIT_WAIT_HACK
 
 #if (VIEW_HRES == 640) || (VIEW_HRES == 848)
 #error Xosera backend does not currently support high-resolution mode
@@ -219,6 +219,10 @@ bool backend_init(void) {
 void backend_clear(void) {
     uint16_t color = BLIT_COLOR(current_color);
 
+#ifndef BLIT_WAIT_HACK
+    xwait_blit_ready();                                 // wait until blit queue empty
+#endif
+
     xreg_setw(BLIT_CTRL,  0x0001);                      // no transp, s-const
     xreg_setw(BLIT_ANDC,  0x0000);                      // and-complement (0xffff)
     xreg_setw(BLIT_XOR,   0x0000);                      // xor with 0x0000
@@ -228,9 +232,6 @@ void backend_clear(void) {
     xreg_setw(BLIT_DST_D, xosera_current_page);         // Clear current page
     xreg_setw(BLIT_SHIFT, 0xFF00);                      // No blit shift
     xreg_setw(BLIT_LINES, VIEW_VRES - 1);               // All the lines
-#ifndef BLIT_WAIT_HACK
-    xwait_blit_ready();                                 // wait until blit queue empty
-#endif
     xreg_setw(BLIT_WORDS, (VIEW_HRES / 4) - 1);         // All the pixels (at 4bpp)
 
 #ifdef BLIT_WAIT_HACK
@@ -283,6 +284,10 @@ void backend_text_write(const char *str, int x, int y, BACKEND_FONT_COOKIE font,
         const uint16_t font_ptr = ((uint16_t)font) + (c * font_height * 2);
         uint16_t start_word = xosera_rect_start_word_v(x, y, LINE_WIDTH_WORDS);
 
+#ifndef BLIT_WAIT_HACK
+        xwait_blit_ready();                                     // wait until blit queue empty
+#endif
+
         xreg_setw(BLIT_CTRL,  0x0010);                          // 0 transp, source mem
         xreg_setw(BLIT_ANDC,  color_comp);                      // and-complement (0xffff)
         xreg_setw(BLIT_XOR,   0x0000);                          // xor with 0x0000
@@ -292,10 +297,6 @@ void backend_text_write(const char *str, int x, int y, BACKEND_FONT_COOKIE font,
         xreg_setw(BLIT_DST_D, xosera_current_page + start_word);// Start at correct place for text
         xreg_setw(BLIT_SHIFT, blit_shift);                      // Use computed shift
         xreg_setw(BLIT_LINES, font_height - 1);                 // Whole font height (8 or 16)
-
-#ifndef BLIT_WAIT_HACK
-        xwait_blit_ready();                                     // wait until blit queue empty
-#endif
         xreg_setw(BLIT_WORDS, font_width_words - 1);            // Full font width
 
 #ifdef BLIT_WAIT_HACK
@@ -429,6 +430,10 @@ static inline void backend_fill_rect_v(int16_t x, int16_t y, int16_t w, int16_t 
     uint16_t mod  = (VIEW_HRES / PIXELS_PER_WORD) - ww;                                                     // destination bitmap modulo
     uint16_t mask = (fw_mask[x & SUBPIXEL_MASK] | lw_mask[(x + w) & SUBPIXEL_MASK]) << LW_MASK_SHIFT;       // fw mask & lw mask
 
+#ifndef BLIT_WAIT_HACK
+    xwait_blit_ready();                                      // wait until blit queue empty
+#endif
+
     xreg_setw(BLIT_CTRL, MAKE_BLIT_CTRL(0, 0, 0, 1));        // tr_val=NA, tr_8bit=NA, tr_enable=FALSE, const_S=TRUE
     xreg_setw(BLIT_ANDC, 0x0000);                            // ANDC constant (0=no effect)
     xreg_setw(BLIT_XOR, 0x0000);                             // XOR constant (0=no effect)
@@ -438,9 +443,6 @@ static inline void backend_fill_rect_v(int16_t x, int16_t y, int16_t w, int16_t 
     xreg_setw(BLIT_DST_D, va);                               // VRAM address of upper left word
     xreg_setw(BLIT_SHIFT, mask);                             // first/last word masking (no shifting)
     xreg_setw(BLIT_LINES, h);                                // lines = height-1
-#ifndef BLIT_WAIT_HACK
-    xwait_blit_ready();                                      // wait until blit queue empty
-#endif
     xreg_setw(BLIT_WORDS, ww - 1);                           // width = blit width -1 (and go!)
 
 #ifdef BLIT_WAIT_HACK
