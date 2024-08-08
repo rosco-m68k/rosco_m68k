@@ -26,7 +26,7 @@ TRAP_14_HANDLER::
     move.l  A1,-(A7)
     move.l  D1,-(A7)
 
-    cmp.l   #16,D1                      ; Is function code in range?
+    cmp.l   #17,D1                      ; Is function code in range?
     bhi.s   .EPILOGUE                   ; Nope, leave...
 
     add.l   D1,D1                       ; Multiply FC...
@@ -52,6 +52,7 @@ TRAP_14_HANDLER::
     dc.l    .EPILOGUE                   ; FC == 14 ; RESERVED
     dc.l    .EPILOGUE                   ; FC == 15 ; RESERVED
     dc.l    .DEV_CTRL                   ; FC == 16 ; DEV_CTRL if so...
+    dc.l    .RECVCHAR                   ; FC == 17 ; RECVCHAR if so...
     
 .EPILOGUE
     move.l  (A7)+,D1
