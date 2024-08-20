@@ -44,16 +44,6 @@ $(error === Invalid option combination: Cannot build AT28C256 ROMs for r2.x boar
 endif
 endif
 
-# Generic ROM-type options
-ifeq ($(HUGEROM),false)
-export LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
-ROM_TYPE_NAME=BIGROM
-else
-DEFINES+=-DHUGEROM
-export LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
-ROM_TYPE_NAME=HUGEROM
-endif
-
 # Hardware vs. MAME ROM-type options
 ifeq ($(MAME),true)
 # Is built for MAME
@@ -78,13 +68,17 @@ endif
 ifeq ($(ROMDEVICE),AT28C256)
 ROM_CHIP_SIZE=0x00008000
 BOARD_ROM_SIZE=64KB
+ROM_TYPE_NAME=BIGROM
 else ifeq ($(ROMDEVICE),SST39SF010A)
+ROM_TYPE_NAME=HUGEROM
 ROM_CHIP_SIZE=0x00020000
 BOARD_ROM_SIZE=256KB
 else ifeq ($(ROMDEVICE),SST39SF020A)
+ROM_TYPE_NAME=HUGEROM
 ROM_CHIP_SIZE=0x00040000
 BOARD_ROM_SIZE=512KB
 else ifeq ($(ROMDEVICE),SST39SF040)
+ROM_TYPE_NAME=HUGEROM
 ROM_CHIP_SIZE=0x00080000
 BOARD_ROM_SIZE=1MB
 else
@@ -94,6 +88,22 @@ endif
 BOARD_ROM_SIZE?=$(ROM_CHIP_SIZE)*2B
 endif
 $(info === Building rosco_m68k firmware for $(BOARD_ROM_SIZE) $(ROMDEVICE) ($(ROM_TYPE_NAME)))
+endif
+
+# Generic ROM-type options
+ifeq ($(HUGEROM),false)
+export LINKER_SCRIPT=rosco_m68k_firmware_64k.ld
+else 
+DEFINES+=-DHUGEROM
+ifeq ($(BOARD_ROM_SIZE),256KB)
+export LINKER_SCRIPT=rosco_m68k_firmware_256k.ld
+else ifeq ($(BOARD_ROM_SIZE),512KB)
+export LINKER_SCRIPT=rosco_m68k_firmware_512k.ld
+else ifeq ($(BOARD_ROM_SIZE),1MB)
+export LINKER_SCRIPT=rosco_m68k_firmware_1M.ld
+else
+$(error === Unsupported BOARD_ROM_SIZE $(BOARD_ROM_SIZE) - this is probably a bug)
+endif
 endif
 
 export ROM_CHIP_SIZE

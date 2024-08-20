@@ -33,7 +33,7 @@
 #endif
 
 #ifndef ROMFS_BLOCKSIZE
-#define ROMFS_BLOCKSIZE     ((512))
+#define ROMFS_BLOCKSIZE     ((4096))
 #endif
 #ifndef ROMFS_BLOCKS
 #error ROMFS_BLOCKS must be specified at build time!

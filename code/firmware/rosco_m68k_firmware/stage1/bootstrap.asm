@@ -150,7 +150,7 @@ INITSDB:
     move.l  #$C001C001,SDB_STATUS       ; OK OSHI Code
     move.w  #50,SDB_TICKCNT             ; Heartbeat flash counter at 50 (1 per second)
     move.w  #$FF00,SDB_SYSFLAGS         ; Initial system flags word (enable LEDs and CTS)
-    move.b  #0,SDB_XOSERABASE           ; Initial internal flags
+    move.b  #0,SDB_XOSERABASE           ; Base address for Xosera (where fitted, populated during detection)
     move.l  #0,SDB_UPTICKS              ; Zero upticks
     move.l  #RAMLIMIT,SDB_MEMSIZE       ; Default memory size
     move.l  #0,SDB_UARTBASE             ; Clear before UART detection
@@ -278,7 +278,7 @@ INITMEMCOUNT:
 
 .DONE
     jsr     RESTORE_BERR_HANDLER        ; Restore bus error handler
-    move.l  #1048576,SDB_MEMSIZE ;A0,SDB_MEMSIZE
+    move.l  A0,SDB_MEMSIZE
     rts
 
 

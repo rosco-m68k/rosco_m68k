@@ -7,7 +7,6 @@ ROSCO_SOFT?=$(ROSCO_CODE)/software
 
 COMMON_FILES=										\
 	micropython/rosco_m68k/build/upyrosco.bin		\
-	$(ROSCO_SOFT)/sdfat_menu/sdfat_menu.bin			\
 	$(ROSCO_SOFT)/memcheck/memcheck.bin
 
 MENU_360?=menu_360.txt
@@ -19,7 +18,7 @@ FILES_360?=											\
 FILES_720?=											\
 	$(COMMON_FILES)
 
-BLOCKSIZE?=512
+BLOCKSIZE?=4096
 
 IMAGE_PRE?=romfs_
 IMAGE_SUF?=.lfs
