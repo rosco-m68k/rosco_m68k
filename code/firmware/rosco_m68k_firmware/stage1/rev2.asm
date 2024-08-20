@@ -70,8 +70,8 @@ TICK_HANDLER::
     btst.b  #0,SDB_SYSFLAGS           ; Is sysflag (high byte) bit 0 set?
     beq.s   .TICKRESET                ; bail now if not...
 
-    move.b  SDB_INTFLAGS,D1
-    tst.b   D1                        ; Is INTFLAGS zero?
+    move.b  LEDFLAGS,D1
+    tst.b   D1                        ; Is LEDFLAGS zero?
     beq.s   .TURNON                   ; If so, go to turn on
     
     ; If here, LED is already on, turn it off
@@ -85,7 +85,7 @@ TICK_HANDLER::
     move.b  #1,D1
     
 .LEDDONE
-    move.b  D1,SDB_INTFLAGS
+    move.b  D1,LEDFLAGS
 
 .TICKRESET
     move.w  #50,D0                    ; Reset counter
@@ -176,5 +176,9 @@ ILLEGAL_INSTRUCTION_HANDLER::
     bra.s   ILLEGAL_INSTRUCTION_HANDLER
     
     rte                               ; Never reached
+
+    section .bss
+
+LEDFLAGS    ds.w    1
 
     endif

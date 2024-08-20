@@ -15,13 +15,13 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "ata.h"
+#include "rosco_m68k/ata.h"
 #include "load.h"
 #include "machine.h"
-#include "part.h"
 
-extern void print_unsigned(uint32_t num, uint8_t base);
-extern bool ATA_support_check();
+// TODO this is a bit naughty, these are not public in the stdlib...
+PartInitStatus Part_init_ATA(PartHandle *handle, ATADevice *device);
+void print_unsigned(uint32_t num, uint8_t base);
 
 static bool try_boot(uint8_t device_id) {
     ATADevice device;
@@ -69,7 +69,7 @@ static bool try_boot(uint8_t device_id) {
 }
 
 bool ide_load_kernel() {
-    if (!ATA_support_check()) {
+    if (!ATA_check_support()) {
         FW_PRINT_C("Warning: No IDE support in ROM - This may indicate your ROMs are not built correctly!\r\n");
         return false;
     }

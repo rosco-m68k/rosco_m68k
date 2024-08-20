@@ -50,7 +50,7 @@ DEFINES+=-DLATE_BANNER
 endif
 endif
 
-ifneq ($(NO_KERNEL),true)
+ifeq ($(WITH_KERNEL),true)
 $(info === Building rosco_m68k firmware with ROM kernel for revision 2.x board)
 DEFINES+=-DWITH_KERNEL
 endif
@@ -90,6 +90,10 @@ endif
 ifneq ($(XOSERA_API_MINIMAL),false)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)
 include videoXoseraANSI/include.mk
+ifneq ($(HUGEROM),false)
+DEFINES+=-DWITH_SPLASH
+include splash/include.mk
+endif
 endif
 
 ifeq ($(WITH_DEBUG_STUB),true)
@@ -103,7 +107,11 @@ all: $(STAGE1) $(DISASM) $(SYM) $(MAP)
 
 include easy68k/include.mk
 
+ifeq ($(WITH_KERNEL),true)
 $(STAGE1) : $(OBJECTS) $(KERNEL)
+else
+$(STAGE1) : $(OBJECTS)
+endif
 	$(LD) $(LDFLAGS) -Map=$(MAP) $^ -r -o $@
 	$(SIZE) $@
 

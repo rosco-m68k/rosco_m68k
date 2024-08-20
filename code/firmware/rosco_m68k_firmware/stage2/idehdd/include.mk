@@ -1,2 +1,2 @@
-OBJECTS+=idehdd/ata.o idehdd/load.o
+OBJECTS+=idehdd/load.o
 DEFINES+=-DIDE_LOADER

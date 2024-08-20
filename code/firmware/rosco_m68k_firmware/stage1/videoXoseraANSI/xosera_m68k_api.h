@@ -159,6 +159,10 @@ void xosera_set_pointer(int16_t  x_pos,                  // native pixel X for p
 
 #define NUM_ELEMENTS(a) (sizeof(a) / sizeof(a[0]))
 
+// TODO Move this, it needs to be kept in sync with the shared assembly include...
+#define SDB_XOSERABASE      0x410
+#define XM_BASEADDR         ((*((volatile uint32_t*)SDB_XOSERABASE)))
+
 // NOTE: Since Xosera is using a 6800-style 8-bit bus, it uses only data lines 8-15 of each 16-bit word (i.e., only the
 //       odd byte of each word) this makes the size of its register map in memory appear doubled and is the reason for
 //       the pad bytes in the struct below.  Byte access is fine but for word or long access to this struct, the MOVEP
