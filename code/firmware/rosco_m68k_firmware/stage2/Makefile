@@ -66,10 +66,10 @@ include idehdd/include.mk
 endif
 ifeq ($(HUGEROM), true)
 ifeq ($(ROMFS_SIZE), 360)
-DEFINES+=-DROMFS_BLOCKS=720
+DEFINES+=-DROMFS_BLOCKS=45
 include romfs/include.mk
 else ifeq ($(ROMFS_SIZE), 720)
-DEFINES+=-DROMFS_BLOCKS=1440
+DEFINES+=-DROMFS_BLOCKS=90
 include romfs/include.mk
 endif
 endif

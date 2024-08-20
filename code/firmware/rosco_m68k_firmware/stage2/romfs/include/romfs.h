@@ -25,15 +25,12 @@
 
 #include "lfs.h"
 
-// TODO this is hardcoded to 360KB, needs to support 1440 (for 720KB) too...
-//
-// Should be linker-provided really...
 #ifndef ROMFS_BASE
 #define ROMFS_BASE          (((void*)(0x00E26000)))
 #endif
 
 #ifndef ROMFS_BLOCKSIZE
-#define ROMFS_BLOCKSIZE     ((4096))
+#define ROMFS_BLOCKSIZE     ((8192))
 #endif
 #ifndef ROMFS_BLOCKS
 #error ROMFS_BLOCKS must be specified at build time!

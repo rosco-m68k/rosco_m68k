@@ -18,7 +18,7 @@ FILES_360?=											\
 FILES_720?=											\
 	$(COMMON_FILES)
 
-BLOCKSIZE?=4096
+BLOCKSIZE?=8192
 
 IMAGE_PRE?=romfs_
 IMAGE_SUF?=.lfs
