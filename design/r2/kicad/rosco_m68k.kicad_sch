@@ -1,144 +1,289 @@
-(kicad_sch (version 20230121) (generator eeschema)
-
-  (uuid 9031bb33-c6aa-4758-bf5c-3274ed3ebab7)
-
-  (paper "A4")
-
-  (title_block
-    (title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
-    (date "2024-04-15")
-    (rev "2.2")
-    (company "The Really Old-School Company Limited")
-    (comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
-    (comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
-    (comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
-    (comment 4 "Copyright 2019-2024 Ross Bamford and Contributors")
-  )
-
-  (lib_symbols
-  )
-
-
-  (sheet (at 71.12 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-00005e53b4b8)
-    (property "Sheetname" "CPU" (at 71.12 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "CPU.kicad_sch" (at 71.12 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "2"))
-      )
-    )
-  )
-
-  (sheet (at 215.9 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-00005e53bc83)
-    (property "Sheetname" "Expansion" (at 215.9 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "Expansion.kicad_sch" (at 215.9 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "4"))
-      )
-    )
-  )
-
-  (sheet (at 119.38 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-000061622e90)
-    (property "Sheetname" "DUART" (at 119.38 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "DUART.kicad_sch" (at 119.38 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "3"))
-      )
-    )
-  )
-
-  (sheet (at 191.77 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-00006162e38e)
-    (property "Sheetname" "Reset" (at 191.77 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "Reset.kicad_sch" (at 191.77 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "7"))
-      )
-    )
-  )
-
-  (sheet (at 95.25 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-0000616b7c9b)
-    (property "Sheetname" "Memory" (at 95.25 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "Memory.kicad_sch" (at 95.25 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "6"))
-      )
-    )
-  )
-
-  (sheet (at 167.64 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 00000000-0000-0000-0000-0000617d19f3)
-    (property "Sheetname" "GALs" (at 167.64 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "GALs.kicad_sch" (at 167.64 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "5"))
-      )
-    )
-  )
-
-  (sheet (at 143.51 82.55) (size 15.24 25.4) (fields_autoplaced)
-    (stroke (width 0.1524) (type solid))
-    (fill (color 0 0 0 0.0000))
-    (uuid 6adec69a-411a-403d-8d52-6c6bad743b78)
-    (property "Sheetname" "FTDI (Optional)" (at 143.51 81.8384 0)
-      (effects (font (size 1.27 1.27)) (justify left bottom))
-    )
-    (property "Sheetfile" "FTDI.kicad_sch" (at 143.51 108.5346 0)
-      (effects (font (size 1.27 1.27)) (justify left top))
-    )
-    (instances
-      (project "rosco_m68k"
-        (path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7" (page "8"))
-      )
-    )
-  )
-
-  (sheet_instances
-    (path "/" (page "1"))
-  )
+(kicad_sch
+	(version 20231120)
+	(generator "eeschema")
+	(generator_version "8.0")
+	(uuid "9031bb33-c6aa-4758-bf5c-3274ed3ebab7")
+	(paper "A4")
+	(title_block
+		(title "ROSCO_M68K GENERAL PURPOSE MC68010 COMPUTER")
+		(date "2024-06-09")
+		(rev "2.2")
+		(company "The Really Old-School Company Limited")
+		(comment 1 "OSHWA UK000006 (https://certification.oshwa.org/uk000006.html)")
+		(comment 2 "See https://github.com/roscopeco/rosco_m68k/blob/master/LICENCE.hardware.txt")
+		(comment 3 "Open Source Hardware licenced under CERN Open Hardware Licence")
+		(comment 4 "Copyright 2019-2024 Ross Bamford and Contributors")
+	)
+	(lib_symbols)
+	(sheet
+		(at 71.12 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-00005e53b4b8")
+		(property "Sheetname" "CPU"
+			(at 71.12 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "CPU.kicad_sch"
+			(at 71.12 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 215.9 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-00005e53bc83")
+		(property "Sheetname" "Expansion"
+			(at 215.9 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Expansion.kicad_sch"
+			(at 215.9 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 119.38 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-000061622e90")
+		(property "Sheetname" "DUART"
+			(at 119.38 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "DUART.kicad_sch"
+			(at 119.38 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 191.77 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-00006162e38e")
+		(property "Sheetname" "Reset"
+			(at 191.77 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Reset.kicad_sch"
+			(at 191.77 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "7")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 95.25 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-0000616b7c9b")
+		(property "Sheetname" "Memory"
+			(at 95.25 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Memory.kicad_sch"
+			(at 95.25 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "6")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 167.64 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "00000000-0000-0000-0000-0000617d19f3")
+		(property "Sheetname" "GALs"
+			(at 167.64 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "GALs.kicad_sch"
+			(at 167.64 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 143.51 82.55)
+		(size 15.24 25.4)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "6adec69a-411a-403d-8d52-6c6bad743b78")
+		(property "Sheetname" "FTDI (Optional)"
+			(at 143.51 81.8384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "FTDI.kicad_sch"
+			(at 143.51 108.5346 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "rosco_m68k"
+				(path "/9031bb33-c6aa-4758-bf5c-3274ed3ebab7"
+					(page "8")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
 )
