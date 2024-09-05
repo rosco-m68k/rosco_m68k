@@ -53,44 +53,71 @@ static bool detect_keyboard(CharDevice *device) {
         chr = try_get_char(device);
         if (chr != *id_str++) {
             return false;
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad ident\r\n");
+#endif
         }
     }
 
     chr = try_get_char(device);
     if (chr != IDENT_MODE_ASCII) {
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad mode\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr == -1) {    // key count
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad key count\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr == -1) {    // led count
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad LED count\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr == -1) {    // capabilities
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad capabilities\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr != 0) {     // reserved - must be 0
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad reserved\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr != 0) {     // reserved2 - must be 0
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad reserved 2\r\n");
+#endif
         return false;
     }
 
     chr = try_get_char(device);
     if (chr != CMD_ACK) {   // required ack
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Bad ack\r\n");
+#endif
         return false;
     }
 
+#ifdef DEBUG_KEYBOARD_DETECT
+    FW_PRINT_C("Detect success\r\n");
+#endif
     return true;
 }
 

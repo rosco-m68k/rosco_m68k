@@ -21,8 +21,7 @@ SDB_STATUS      equ     $404              ; Status code
 SDB_TICKCNT     equ     $408              ; (Internal) Tick counter
 SDB_SYSFLAGS    equ     $40A              ; Sys Flags (see InterfaceReference)
 SDB_UPTICKS     equ     $40C              ; Upticks counter
-SDB_E68K_STATE  equ     $410              ; (Internal) E68k state
-SDB_INTFLAGS    equ     $413              ; (Internal) Flags
+SDB_XOSERABASE  equ     $410              ; Xosera base address
 SDB_MEMSIZE     equ     $414              ; Memory size (first block)
 SDB_UARTBASE    equ     $418              ; Default UART base address
 SDB_CPUINFO     equ     $41C              ; CPU Info (see IntefaceReference)

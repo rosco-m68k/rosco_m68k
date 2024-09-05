@@ -13,12 +13,11 @@
  * ------------------------------------------------------------
  */
 
+#include <string.h>
 #include "cdefs.h"
 #include "kermit.h"
 #include "machine.h"
 #include "platform.h"
-#include "rtlsupport.h"
-
 
 /* Large kermit structures are kept in free memory 0x02000-0x40000 */
 UCHAR o_buf[OBUFLEN+8] __attribute__ ((section (".kermit")));   /* File output buffer */

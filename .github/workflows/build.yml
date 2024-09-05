@@ -11,6 +11,8 @@ jobs:
     steps:
         - name: Checkout code
           uses: actions/checkout@v1
+          with:
+            submodules: recursive
         - name: Hack GITHUB_WORKSPACE 🥷
           run: |
             sudo chown -R linuxbrew "$GITHUB_WORKSPACE"

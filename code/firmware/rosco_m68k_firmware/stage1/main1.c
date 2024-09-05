@@ -28,9 +28,14 @@
 #include "task.h"
 #include "kernelapi.h"
 
+
 // only one Xosera console at a time
 #if defined(XOSERA_API_MINIMAL)
 #include "xosera_ansiterm_m68k.h"
+#include "xosera_m68k_defs.h"
+#ifdef WITH_SPLASH
+#include "intro.h"
+#endif
 #endif
 #ifdef VIDEO9958_CON
 #include "video9958.h"
@@ -58,6 +63,10 @@ extern void print_unsigned(uint32_t num, uint8_t base);
 extern void initialize_keyboard();
 #ifdef LATE_BANNER
 extern void PRINT_BANNER(void);
+#endif
+
+#ifdef WITH_SPLASH
+bool stage1_have_xosera;
 #endif
 
 /*
@@ -181,6 +190,9 @@ noreturn void main1() {
 #ifdef LATE_BANNER    
     bool have_video = false;
 #endif
+#ifdef WITH_SPLASH
+    stage1_have_xosera = false;
+#endif
 
     if (sdb->magic != 0xB105D47A) {
         FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: SDB Magic mismatch; SDB is trashed. Stop.\r\n");
@@ -198,9 +210,16 @@ noreturn void main1() {
     INSTALL_EASY68K_TRAP_HANDLERS();
 
 #if defined(XOSERA_API_MINIMAL)
-    if (XANSI_HAVE_XOSERA() && XANSI_CON_INIT()) {
+    // side-effect - sets up base in SDB
+    if (XANSI_HAVE_XOSERA(XM_BASEADDR_OLD) || XANSI_HAVE_XOSERA(XM_BASEADDR_NEW)) {
 #ifdef LATE_BANNER
         have_video = true;
+#endif
+#ifdef WITH_SPLASH
+        stage1_have_xosera = true;
+        intro();    
+#else
+        XANSI_CON_INIT(true);
 #endif
         goto skip9958;
     }
@@ -233,7 +252,13 @@ if (!have_video) {
     sdb->cpu_speed = cpuspeed(sdb->cpu_model);
 #endif
 
+#ifdef WITH_SPLASH
+if (!stage1_have_xosera) {
+#endif
     print_cpu_mem_info();
+#ifdef WITH_SPLASH
+}
+#endif
 
 #ifdef BLOCKDEV_SUPPORT
 #ifdef ROSCO_M68K_ATA
@@ -252,8 +277,10 @@ if (!have_video) {
     // We have enough setup done now that we can handle future warm reboot. Let's set that up..
     initialize_warm_reboot();
 
+#ifdef WITH_KERNEL
     // Initialize the kernel
     initialize_kernel();
+#endif
 
     // Reload stack pointer and call program loader
     hot_boot();

@@ -15,14 +15,15 @@
 ; MSW is flags, LSW is split into major (MSB) and minor (LSB)
 ;
 ; Flags:
-; bit 0 - 12: Reserved
+; bit 0 - 11: Reserved
+; bit 12    : Supports SDB_XOSERABASE field (Version 2.5+)
 ; bit 13    : Flashable ROM (i.e. HUGEROM).
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version
   ifd HUGEROM
-RELEASE_VER     equ     $E0000250
+RELEASE_VER     equ     $F0000250
   else
-RELEASE_VER     equ     $C0000250
+RELEASE_VER     equ     $D0000250
   endif
 
 VECTORS_LOAD    equ     $00000000

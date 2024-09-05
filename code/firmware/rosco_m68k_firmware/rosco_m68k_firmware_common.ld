@@ -12,10 +12,11 @@ MEMORY
   UMEM    : org = 0x00002000, l = LENGTH(BASERAM) + ORIGIN(BASERAM) - ORIGIN(UMEM)
 }
 
-PROVIDE(STAGE2_LOAD     = 0x000F0000);
 PROVIDE(RAMBASE         = ORIGIN(BASERAM));
 PROVIDE(RAMLIMIT        = ORIGIN(UMEM)    + LENGTH(UMEM));
 PROVIDE(EXPTOP          = ORIGIN(EXPRAM)  + LENGTH(EXPRAM));
+PROVIDE(STAGE2_LOAD     = 0x000C0000);
+PROVIDE(STAGE2_SIZE     = RAMLIMIT-STAGE2_LOAD);
 
 /* Minimal items for XANSI in C */
 PROVIDE(_EFP_INPUTCHAR  = ORIGIN(EFPT)  + 0x074); /* Receive a character via input  */
@@ -36,7 +37,6 @@ SECTIONS
 
   .data : ALIGN(4)
   {
-    *(.early_data*)
     _data_start = .;
     _data_load_start = _data_start - ADDR(.data) + LOADADDR(.data);
     *(.data*)
@@ -44,12 +44,17 @@ SECTIONS
     _data_load_end = _data_end - ADDR(.data) + LOADADDR(.data);
   } >KRES2 AT>FLASH
 
-   .bss (NOLOAD) : ALIGN(4)
+  .bss (NOLOAD) : ALIGN(4)
   {
     _bss_start = .;
     *(.bss*)
     _bss_end = .;
   } >KRES2
+
+  .earlydata : ALIGN(4)
+  {
+    *(.early_data*)
+  } >KRES2 AT>FLASH
 
   .zipdata : ALIGN(4)
   {
