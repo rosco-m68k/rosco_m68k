@@ -21,12 +21,6 @@
 TRAP_15_VECTOR      equ     $2f
 TRAP_15_VECTOR_ADDR equ     TRAP_15_VECTOR*4
 
-; Globals
-ECHO_ON             equ     $410
-PROMPT_ON           equ     $411
-LF_DISPLAY          equ     $412
-
-
 ; TRAP 15 provides access to Easy68K-compatible tasks
 ;
 ; D0 is expected to contain the task number (function code). Other arguments
@@ -401,6 +395,12 @@ INSTALL_EASY68K_TRAP_HANDLERS::
 * ************************************************************************** *
 * ************************************************************************** *
 ; Data
+    section .bss
+ECHO_ON     ds.b    1
+PROMPT_ON   ds.b    1
+LF_DISPLAY  ds.b    1
+PAD         ds.b    1
+
 * ************************************************************************** *
 ; Consts...
 SZ_CRLF         dc.b        $D, $A, 0

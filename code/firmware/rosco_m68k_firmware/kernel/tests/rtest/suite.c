@@ -19,10 +19,12 @@ void bitmap_suite();
 void slab_suite();
 void interrupts_suite();
 
-void kmain(void) {
+int main(void) {
     list_suite();
     pmm_suite();
     bitmap_suite();
     slab_suite();
     interrupts_suite();
+
+    return 0;
 }

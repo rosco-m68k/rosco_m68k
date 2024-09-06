@@ -15,6 +15,16 @@ appropriate) a firmware interface to enable easy use is also provided
 
 ## Building
 
+> **Note** To build this, you will require the `m68k-elf-rosco` toolchain.
+> This can be installed from source, or via the homebrew tap.
+
+> **Note** This build uses submodules. Ensure you initialize them before 
+> you start working with the code:
+>
+> `git submodule update --init --recursive`
+>
+> If you don't, you'll get weird errors (at best) or build broken firmware.
+
 The build supports building either 1MB (for Revision 2.x mainboards) or 
 64KB ROMs (for Revision 1.x mainboards). Selected options will vary depending
 on the ROM size being built. 

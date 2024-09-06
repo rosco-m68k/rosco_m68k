@@ -1,0 +1,54 @@
+;*
+;* vim: set et ts=4 sw=4
+;*------------------------------------------------------------
+;*                                  ___ ___ _
+;*  ___ ___ ___ ___ ___       _____|  _| . | |_
+;* |  _| . |_ -|  _| . |     |     | . | . | '_|
+;* |_| |___|___|___|___|_____|_|_|_|___|___|_,_|
+;*                     |_____|
+;* ------------------------------------------------------------
+;* Copyright (c) 2024 The rosco_m68k open source project
+;* MIT License
+;*
+;* Copper program for rolling interlace bars effect
+;* ------------------------------------------------------------
+;*
+
+.include "xosera_m68k_defs.inc"
+
+entry
+;            VPOS    #300           ; for rosco_m68k screen only
+            MOVI    #$0000,XR_VID_CTRL
+            MOVI    #$0000,XR_PA_H_SCROLL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            MOVI    #$000F,XR_PA_H_SCROLL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_PA_H_SCROLL
+            MOVI    #$8000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$0000,XR_VID_CTRL
+            HPOS    #H_EOL
+            MOVI    #$8000,XR_VID_CTRL
+            MOVI    #$0004,XR_PA_H_SCROLL
+            HPOS    #H_EOL
+            BRLT    entry
+            VPOS    #$3FF

@@ -3,17 +3,17 @@
 # Copyright (c)2019-2024 Ross Bamford and contributors
 # See LICENSE
 
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
+CC=m68k-elf-rosco-gcc
+LD=m68k-elf-rosco-ld
 VASM=vasmm68k_mot
-GNU_AS=m68k-elf-as
+GNU_AS=m68k-elf-rosco-as
 AS=$(VASM)
-AR=m68k-elf-ar
-RANLIB=m68k-elf-ranlib
-OBJCOPY=m68k-elf-objcopy
-OBJDUMP=m68k-elf-objdump
-SIZE=m68k-elf-size
-NM=m68k-elf-nm
+AR=m68k-elf-rosco-ar
+RANLIB=m68k-elf-rosco-ranlib
+OBJCOPY=m68k-elf-rosco-objcopy
+OBJDUMP=m68k-elf-rosco-objdump
+SIZE=m68k-elf-rosco-size
+NM=m68k-elf-rosco-nm
 RM=rm -f
 
 CFLAGS=																	\
