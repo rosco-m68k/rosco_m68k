@@ -1,4 +1,3 @@
 Program loader:exit
 MicroPython:rom/upyrosco.bin
-System configuration:rom/sysconfig.bin
 Memory check & diagnostic:rom/memcheck.bin
