@@ -232,9 +232,31 @@ XANSI_CON_INIT::
                 move.w  sr,d3                   ; save SR
                 ori.w   #$0200,sr               ; no interrupts during init...
 
-                move.l  24(a7),-(a7)            ; Push bool argument
+                ifnd    TEST_FIRMWARE
+                lea.l   XANSI_CON_DATA.w,a0
+                else
+                lea.l   _private_xansiterm_data,a0
+                endif
+
+                ; push the CHECKINPUT to be wrapped
+                move.l  EFP_CHECKINPUT.w,d1
+                cmpi.l  #XANSI_CON_CHECKINPUT,d1
+                bne.s   .CHECKINPUT_IS_NOT_XO   ; Branch if CHECKINPUT is not hooked yet, so push current EFP_CHECKINPUT in d1
+                move.l  8(a0),d1                ; Else CHECKINPUT was already hooked, load saved pointer to d1
+.CHECKINPUT_IS_NOT_XO
+                move.l  d1,-(a7)
+
+                ; push the INPUTCHAR to be wrapped
+                move.l  EFP_INPUTCHAR.w,d1
+                cmpi.l  #XANSI_CON_INPUTCHAR,d1
+                bne.s   .INPUTCHAR_IS_NOT_XO    ; Branch if INPUTCHAR is not hooked yet, so push current EFP_INPUTCHAR in d1
+                move.l  4(a0),d1                ; Else INPUTCHAR was already hooked, load saved pointer to d1
+.INPUTCHAR_IS_NOT_XO
+                move.l  d1,-(a7)
+
+                move.l  32(a7),-(a7)            ; Push bool argument
                 jsr     xansiterm_INIT          ; return in d0
-                add.l   #4,A7                   ; Pop argument
+                add.l   #12,A7                  ; Pop arguments
 
                 tst.b   d0
                 beq.s   .INITDONE
