@@ -97,7 +97,11 @@ int main(void) {
         mcReadchar();
     }
 
-    do_boot_menu(demo_menu_items, demo_n_menu_items);
+    int res = do_boot_menu(demo_menu_items, demo_n_menu_items);
+
+    puts("\033c");
+    printf("\ndo_boot_menu returned = %d\n", res);
+
     return 0;
 }
 #endif

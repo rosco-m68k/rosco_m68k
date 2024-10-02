@@ -31,6 +31,7 @@
 #include "intro.h"
 #endif
 #ifdef WITH_BOOT_MENU
+#include "model.h"
 #include "rosco_boot_menu.h"
 #include "parse_menu.h"
 #endif
@@ -51,6 +52,8 @@ static char* menu_texts[MAX_MENU_ITEMS];
 
 // Stage 1 sets this to indicate we have Xosera, so need to close out the init splash...
 extern bool stage1_have_xosera;
+extern bool skip_splash;
+extern bool skip_to_uart_loader;
 
 // Linker defines
 extern uint32_t _bss_start, _bss_end;
@@ -75,7 +78,13 @@ void linit() {
 //
 // This also initializes the console as a side-effect, which kinda sucks... 
 //
-static bool handle_boot_menu(void) {
+typedef enum _boot_menu_res {
+    RES_NONE        = 0,    // use default program loader (or load error)
+    RES_LOAD_OK     = 1,    // loaded ok
+    RES_UART_LOADER = 2     // UART load detected. skip to UART loader
+} boot_menu_res;
+
+static boot_menu_res handle_boot_menu(void) {
     // May as well use the kernel load pointer as a temp place to store the menu, we won't need it until after
     // the menu is done anyhow...
     ROMFS_ERR load_menu_result = romfs_try_load("/menu.txt", (void*)ROMFS_BASE, (void*)kernel_load_ptr, 2048);
@@ -94,32 +103,37 @@ static bool handle_boot_menu(void) {
 
             XANSI_CON_INIT(false);
 
-            if (selection >= 0) {
-                ROMFS_ERR load_prog_result;
-
-                switch (menu_items[selection].type) {
-                case MENU_ITEM_EXIT:
-                    return false;
-                case MENU_ITEM_ROMFS:
-                    FW_PRINT_C("Loading '");
-                    FW_PRINT_C(menu_items[selection].text);
-                    FW_PRINT_C("' - please wait.\r\n");
-
-                    load_prog_result = romfs_try_load(menu_items[selection].data, (void*)ROMFS_BASE, (void*)kernel_load_ptr, -1);
-                    if (load_prog_result > 0) {
-                        return true;
-                    } else {
-                        FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Failed to load '");
-                        FW_PRINT_C(menu_items[selection].data);
-                        FW_PRINT_C("' from ROMFS; Falling back to program loader... \r\n");
-                        return false;
-                    }
-                default:
-                    FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Unexpected menu result [PROBABLE FIRMWARE BUG]\r\n");
-                    return false;
-                }
-            } else {
+            if (selection < 0) {
                 FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Boot menu failed; Falling back to program loader...\r\n");
+                return RES_NONE;
+            }
+
+            if (selection == MENU_SKIP_TO_LOADER) {
+                return RES_UART_LOADER;
+            }
+
+            ROMFS_ERR load_prog_result;
+
+            switch (menu_items[selection].type) {
+            case MENU_ITEM_EXIT:
+                return RES_NONE;
+            case MENU_ITEM_ROMFS:
+                FW_PRINT_C("Loading '");
+                FW_PRINT_C(menu_items[selection].text);
+                FW_PRINT_C("' - please wait.\r\n");
+
+                load_prog_result = romfs_try_load(menu_items[selection].data, (void*)ROMFS_BASE, (void*)kernel_load_ptr, -1);
+                if (load_prog_result > 0) {
+                    return RES_LOAD_OK;
+                } else {
+                    FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Failed to load '");
+                    FW_PRINT_C(menu_items[selection].data);
+                    FW_PRINT_C("' from ROMFS; Falling back to program loader... \r\n");
+                    return RES_NONE;
+                }
+            default:
+                FW_PRINT_C("\x1b[1;31mSEVERE\x1b[0m: Unexpected menu result [PROBABLE FIRMWARE BUG]\r\n");
+                return RES_NONE;
             }
         } else {
             XANSI_CON_INIT(false);
@@ -128,7 +142,7 @@ static bool handle_boot_menu(void) {
         XANSI_CON_INIT(false);
     }
 
-    return false;
+    return RES_NONE;
 }
 #endif
 
@@ -140,12 +154,18 @@ noreturn void lmain() {
 #ifdef WITH_SPLASH
     if (stage1_have_xosera) {
         intro_end();
-        MC_DELAY_MSEC_10(POST_SPLASH_DELAY_MSEC10);
+        if (!skip_splash)
+        {
+            MC_DELAY_MSEC_10(POST_SPLASH_DELAY_MSEC10);
+        }
 #endif
 #ifdef WITH_BOOT_MENU
-        if (handle_boot_menu()) {
+        boot_menu_res menu_res = handle_boot_menu();
+        if (menu_res == RES_LOAD_OK) {
             goto have_kernel;
-        };
+        }
+        if (menu_res == RES_UART_LOADER)
+            goto start_uart_loader;
 #endif
 #ifdef WITH_SPLASH        
     }
@@ -177,6 +197,7 @@ noreturn void lmain() {
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
     FW_PRINT_C("No bootable media found\r\n");
 #  endif
+start_uart_loader:
 #  ifdef KERMIT_LOADER
     FW_PRINT_C("Ready for Kermit receive...\r\n");
 

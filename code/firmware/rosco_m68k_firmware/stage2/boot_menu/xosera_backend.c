@@ -318,6 +318,8 @@ BACKEND_EVENT backend_poll_event(void) {
             case 's':
             case 'S':
                 return DOWN;
+            case 'k':                   // "hack" to detect kermit UART upload
+                return UART_LOAD;
             case 0x0a:
             case 0x0d:
                 return QUIT;

@@ -44,7 +44,7 @@ CP=cp
 
 COPASM=$(XOSERA_M68K_API)/bin/copasm
 
-ifeq ($(FIRMWARE_BUILD), true)
+ifeq ($(FIRMWARE_BUILD),true)
 DEFINES+=-DROSCO_M68K_FIRMWARE
 endif
 
