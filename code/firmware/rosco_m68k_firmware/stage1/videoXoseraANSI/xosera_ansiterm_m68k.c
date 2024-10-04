@@ -37,10 +37,8 @@
 #else
 
 #define DEBUG 0        // must be zero (no printf in firmware)
-// thse are missing from kernel machine.h
+// this is missing from kernel machine.h
 extern unsigned int _FIRMWARE_REV;        // rosco ROM firmware revision
-extern void         (*_EFP_INPUTCHAR)();
-extern void         (*_EFP_CHECKINPUT)();
 
 #endif
 
@@ -1877,7 +1875,7 @@ static const char xansiterm_banner2[] = " XANSI \x1b[93m|_____|\x1b[1;37m  Class
 
 
 // initialize XANSI // TODO: ICP default values in flash config
-bool xansiterm_INIT(bool show_banner)
+bool xansiterm_INIT(bool show_banner, void (*efp_inputchar)(), void (*efp_checkinput)())
 {
     xosera_info_t init_data;
 
@@ -1892,8 +1890,8 @@ bool xansiterm_INIT(bool show_banner)
     xansiterm_data * td = get_xansi_data();
     xosera_memclear(td, sizeof(*td));
     // default values (others will be zero or computed)
-    td->device_inputchar  = _EFP_INPUTCHAR;
-    td->device_checkinput = _EFP_CHECKINPUT;
+    td->device_inputchar  = efp_inputchar;
+    td->device_checkinput = efp_checkinput;
     td->gfx_ctrl = MAKE_GFX_CTRL(0x00, 0, 0, 0, 0, 0);          // 16-colors 0-15, 1-BPP tiled, H repeat x1, V repeat x1
     td->tile_ctrl[0] = MAKE_TILE_CTRL(0x0000, 0, 0, 16);        // 1st font in tile RAM (8x16 ST font - default)
     td->tile_ctrl[1] = MAKE_TILE_CTRL(0x0800, 0, 0, 8);         // 2nd font in tile RAM (8x8 ST font)
