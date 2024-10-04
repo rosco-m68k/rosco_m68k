@@ -14,7 +14,7 @@ MAKEFLAGS += --no-builtin-rules
 
 FLAGS=-ffunction-sections -fdata-sections -fomit-frame-pointer						\
       -Wall -Wextra -Werror -Wno-unused-function -pedantic							\
-      -g -O2 $(DEFINES)
+      -Wno-array-bounds -g -O2 $(DEFINES)
 
 CFLAGS=-std=c2x -Wno-format -Iwelcome/include $(FLAGS)
 CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
