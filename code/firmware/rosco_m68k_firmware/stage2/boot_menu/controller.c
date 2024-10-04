@@ -129,6 +129,9 @@ bool control(Model *model) {
         }
 
         return true;
+    case UART_LOAD:
+        model->selection = MENU_SKIP_TO_LOADER; // indicate skip to kermit loader
+        return false;
 #ifndef __ROSCO_M68K_ROM__
     case QUIT:
         return false;

@@ -76,6 +76,9 @@ typedef enum {
     CURSOR_CODE,
 } INPUT_STATE;
 
+static bool uart_present = false;       // used for kermit upload check
+static CharDevice uart_device;
+
 static volatile xmreg_t * xosera_ptr;
 
 volatile bool xosera_flip = false;
@@ -173,6 +176,11 @@ static uint32_t expand_8_pixel_font_line(uint8_t line) {
 bool backend_init(void) {
     xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)SDB_XOSERABASE)))));
     input_state = NORMAL;
+
+    // setup uart_device for kermit check
+    if (mcGetDevice(0, &uart_device)) {
+        uart_present = true;
+    }
 
 #   if VIEW_HRES == 320
     dprintf("Calling xosera_init(XINIT_CONFIG_640x480)...");
@@ -308,16 +316,29 @@ void backend_text_write(const char *str, int x, int y, BACKEND_FONT_COOKIE font,
 }
 
 BACKEND_EVENT backend_poll_event(void) {
-    if (mcCheckInput()) {
+    int in_c = 0;
+
+    // check for input on UART A (for kermit) or normal input
+    if (uart_present && mcCheckDevice(&uart_device)) {
+        in_c = mcReadDevice(&uart_device);
+    } else if (mcCheckInput()) {
+        in_c = mcInputchar();
+    }
+
+    if (in_c > 0) {
         switch (input_state) {
         case NORMAL:
-            switch (mcInputchar()) {
+            switch (in_c) {
             case 'w':
             case 'W':
                 return UP;
             case 's':
             case 'S':
                 return DOWN;
+            case 'k':                   // detect 1st kermit UART upload packet
+            case 0x01:                  // detect 2nd kermit UART upload packet
+            case 0x11:                  // detect any retry kermit UART upload packets
+                return UART_LOAD;
             case 0x0a:
             case 0x0d:
                 return QUIT;
@@ -329,7 +350,7 @@ BACKEND_EVENT backend_poll_event(void) {
             }
 
         case ESCAPED:
-            switch (mcInputchar()) {
+            switch (in_c) {
             case 'w':
             case 'W':
                 input_state = NORMAL;
@@ -353,7 +374,7 @@ BACKEND_EVENT backend_poll_event(void) {
             }
 
         case CURSOR_CODE:
-            switch (mcInputchar()) {
+            switch (in_c) {
             case 'w':
             case 'W':
             case 'A':

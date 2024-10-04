@@ -15,6 +15,7 @@
 
 #include <stdlib.h>
 #include <machine.h>
+#include <char_device.h>
 #include <limits.h>
 
 #include "xosera_m68k_api.h"
@@ -60,6 +61,17 @@ volatile uint32_t *upticks  = (uint32_t*)0x40c;
 
 void MC_DELAY_MSEC_10(int);
 
+extern bool skip_splash;
+static bool try_get_char() {
+    CharDevice kermit_device;
+    if (GET_CHAR_DEVICE_C(0, &kermit_device)) {
+        if (CHAR_DEV_CHECKCHAR_C(&kermit_device)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 static void splash_delay_loop(uint32_t secs) {
     xv_prep();
 
@@ -94,6 +106,12 @@ static void splash_delay_loop(uint32_t secs) {
 #   endif
 
     while (*upticks < end_ticks) {
+
+        // if a char pressed, exit slash immediately
+        if (try_get_char()) {
+            skip_splash = true;
+            return;
+        }
 
         // Handle audio sample feeding if compiled in...
 #       ifdef HAVE_SPLASH_AUDIO
@@ -241,6 +259,16 @@ void intro_end(void) {
     xv_prep();
 
     for (int i = 0; i < 16; i++) {
+        // if a char pressed, exit slash immediately
+        if (skip_splash || try_get_char()) {
+            skip_splash = true;
+            xmem_setw_next_addr(XR_COLOR_B_ADDR);
+            for (int i = 0; i < 256; i++) {
+                xmem_setw_next(0xf000);
+            }
+            return;    // indicate skipped
+        }
+
         xwait_vblank();
 
         uint16_t alpha = i << 12;

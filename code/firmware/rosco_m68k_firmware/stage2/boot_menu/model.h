@@ -23,6 +23,8 @@
 #include "list.h"
 #include "animation.h"
 
+#define MENU_SKIP_TO_LOADER 0xff    // selection value from do_boot_menu when UART load detected
+
 typedef struct {
     /* Mutable - included in dirty check */
     uint8_t     selection;
