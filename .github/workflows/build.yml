@@ -43,7 +43,7 @@ jobs:
         - name: Build firmware - r2 512K (SST39SF020)
           run: |
             cd code/firmware/rosco_m68k_firmware
-            ROMDEVICE=SST39SF020 make clean all test
+            ROMDEVICE=SST39SF020A make clean all test
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf020.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf020.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Build firmware - r2 Flash (SST39SF020)
@@ -54,7 +54,7 @@ jobs:
         - name: Build firmware - r2 256K (SST39SF010)
           run: |
             cd code/firmware/rosco_m68k_firmware
-            ROMDEVICE=SST39SF010 make clean all test
+            ROMDEVICE=SST39SF010A make clean all test
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf010.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf010.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Build firmware - r2 Flash (SST39SF010)
