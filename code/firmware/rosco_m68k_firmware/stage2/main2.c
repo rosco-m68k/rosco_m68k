@@ -164,8 +164,10 @@ noreturn void lmain() {
         if (menu_res == RES_LOAD_OK) {
             goto have_kernel;
         }
+#if defined(KERMIT_LOADER) && !defined(MAME_FIRMWARE)
         if (menu_res == RES_UART_LOADER)
             goto start_uart_loader;
+#endif
 #endif
 #ifdef WITH_SPLASH        
     }
@@ -197,8 +199,10 @@ noreturn void lmain() {
 #  if (defined SDFAT_LOADER) || (defined IDE_LOADER)
     FW_PRINT_C("No bootable media found\r\n");
 #  endif
-start_uart_loader:
 #  ifdef KERMIT_LOADER
+#    ifdef WITH_BOOT_MENU
+start_uart_loader:
+#    endif
     FW_PRINT_C("Ready for Kermit receive...\r\n");
 
     BUSYWAIT_C(100000);
