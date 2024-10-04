@@ -29,17 +29,39 @@ jobs:
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_stdlibs.tar.gz libs
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_stdlibs.tar.gz "$GITHUB_WORKSPACE/artifacts"
             make clean all
-        - name: Build firmware - r2 Base
+        - name: Build firmware - r2 Base (SST39SF040)
           run: |
             cd code/firmware/rosco_m68k_firmware
             make clean all test
-            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz *.rom
-            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x.tar.gz "$GITHUB_WORKSPACE/artifacts"
-        - name: Build firmware - r2 Flash
+            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf040.tar.gz *.rom
+            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf040.tar.gz "$GITHUB_WORKSPACE/artifacts"
+        - name: Build firmware - r2 Flash (SST39SF040)
           run: |
             cd code/software/updateflash
             ROM_BIN=../../firmware/rosco_m68k_firmware/rosco_m68k.rom make clean all
-            cp updateflash.bin "$GITHUB_WORKSPACE"/artifacts/rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_flash.bin
+            cp updateflash.bin "$GITHUB_WORKSPACE"/artifacts/rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf040_flash.bin
+        - name: Build firmware - r2 512K (SST39SF020)
+          run: |
+            cd code/firmware/rosco_m68k_firmware
+            ROMDEVICE=SST39SF020 make clean all test
+            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf020.tar.gz *.rom
+            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf020.tar.gz "$GITHUB_WORKSPACE/artifacts"
+        - name: Build firmware - r2 Flash (SST39SF020)
+          run: |
+            cd code/software/updateflash
+            ROM_BIN=../../firmware/rosco_m68k_firmware/rosco_m68k.rom make clean all
+            cp updateflash.bin "$GITHUB_WORKSPACE"/artifacts/rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf020_flash.bin
+        - name: Build firmware - r2 256K (SST39SF010)
+          run: |
+            cd code/firmware/rosco_m68k_firmware
+            ROMDEVICE=SST39SF010 make clean all test
+            tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf010.tar.gz *.rom
+            cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf010.tar.gz "$GITHUB_WORKSPACE/artifacts"
+        - name: Build firmware - r2 Flash (SST39SF010)
+          run: |
+            cd code/software/updateflash
+            ROM_BIN=../../firmware/rosco_m68k_firmware/rosco_m68k.rom make clean all
+            cp updateflash.bin "$GITHUB_WORKSPACE"/artifacts/rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_2.x_sst39sf010_flash.bin
         - name: Build firmware - r2 MAME
           run: |
             cd code/firmware/rosco_m68k_firmware
