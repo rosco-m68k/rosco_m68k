@@ -67,6 +67,8 @@ extern void PRINT_BANNER(void);
 
 #ifdef WITH_SPLASH
 bool stage1_have_xosera;
+bool skip_splash;
+bool skip_to_uart_loader;
 #endif
 
 /*
@@ -192,6 +194,8 @@ noreturn void main1() {
 #endif
 #ifdef WITH_SPLASH
     stage1_have_xosera = false;
+    skip_splash = false;
+    skip_to_uart_loader = false;
 #endif
 
     if (sdb->magic != 0xB105D47A) {

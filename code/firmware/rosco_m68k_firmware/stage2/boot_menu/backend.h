@@ -10,7 +10,8 @@ typedef enum {
     NONE,
     QUIT,
     UP,
-    DOWN
+    DOWN,
+    UART_LOAD // UART load detected, skip to UART loader
 } BACKEND_EVENT;
 
 typedef enum {
