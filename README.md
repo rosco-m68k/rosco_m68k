@@ -74,9 +74,40 @@ https://certification.oshwa.org/uk000006.html
 
 ## Evolution
 
-<img src="images/first-populated-prototype.jpg" width="700"/> 
-<img src="images/revision_1_pop_unpop.jpg" width="350"/> <img src="images/r1-populated.png" width="350"/> 
-<img src="images/mainboard-1.2.jpg" width="350"/> <img src="images/r1.2-se-populated.png" width="350"/> 
-<img src="images/mainboard-2.1.jpg" width="350"/> <img src="images/mainboard-2.2-ftdi.jpg" width="350"/> 
+<table>
+<tr>
+<td colspan="2">
+<img src="images/first-populated-prototype.jpg" width="700"/>
+</td>
+</tr>
+<tr>
+<td>
+<img src="images/revision_1_pop_unpop.jpg" width="350"/>
+</td>
+<td>
+<img src="images/r1-populated.png" width="350"/> 
+</td>
+</tr>
+<tr>
+<td>
+<img src="images/mainboard-1.2.jpg" width="350"/>
+</td>
+<td>
+<img src="images/r1.2-se-populated.png" width="350"/> 
+</td>
+</tr>
+<tr>
+<td>
+<img src="images/mainboard-2.1.jpg" width="350"/>
+</td>
+<td>
+<img src="images/mainboard-2.2-ftdi.jpg" width="350"/> 
+</td>
+</tr>
+<tr>
+<td colspan="2">
 <img src="images/xoseram_rev_b_on_010.jpg" width="850"/>
+</td>
+</tr>
+</table>
 
