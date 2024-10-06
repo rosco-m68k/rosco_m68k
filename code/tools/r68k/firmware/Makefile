@@ -14,13 +14,13 @@ CFLAGS=-std=c11 -ffreestanding -nostartfiles -Wall -Wpedantic -Werror		\
        $(DEFINES)
 LDFLAGS=-T ./rosco_m68k_translator.ld -Map=$(MAP)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES) -align
-CC=m68k-elf-gcc
-LD=m68k-elf-ld
+CC=m68k-elf-rosco-gcc
+LD=m68k-elf-rosco-ld
 AS=vasmm68k_mot
-OBJCOPY=m68k-elf-objcopy
-OBJDUMP=m68k-elf-objdump
-SIZE=m68k-elf-size
-NM=m68k-elf-nm
+OBJCOPY=m68k-elf-rosco-objcopy
+OBJDUMP=m68k-elf-rosco-objdump
+SIZE=m68k-elf-rosco-size
+NM=m68k-elf-rosco-nm
 RM=rm -f
 
 # Output config

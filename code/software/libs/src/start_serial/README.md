@@ -9,8 +9,8 @@ the correct linker script might be:
 
 ```bash
 export LIBDIR=../libs/build
-m68k-elf-gcc -ffreestanding -o kmain.o -c kmain.c
-m68k-elf-ld T $LIBDIR/ld/serial/rosco_m68k_program.ld -L $LIBDIR -o myprog.bin main.o -lstart_serial
+m68k-elf-rosco-gcc -ffreestanding -o kmain.o -c kmain.c
+m68k-elf-rosco-ld T $LIBDIR/ld/serial/rosco_m68k_program.ld -L $LIBDIR -o myprog.bin main.o -lstart_serial
 ```
 
 For a more complete example, see the `Makefile` in one of the example

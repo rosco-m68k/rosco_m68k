@@ -31,21 +31,21 @@ CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 GCC_LIBS?=$(shell $(CC) --print-search-dirs \
           | grep libraries:\ = \
           | sed 's/libraries: =/-L/g' \
-          | sed 's/:/m68000\/ -L/g')m68000/
+          | sed 's/:/\/ -L/g')
 LIBS=$(EXTRA_LIBS) -lprintf -lcstdlib -lmachine -lstart_serial -lgcc
 ASFLAGS=-mcpu=$(CPU) -march=$(ARCH)
 VASMFLAGS=-Felf -m$(CPU) -quiet -Lnf $(DEFINES)
 LDFLAGS=-T $(LDSCRIPT) -L $(SYSLIBDIR) -Map=$(MAP) --gc-sections --oformat=elf32-m68k $(EXTRA_LDFLAGS)
 
-CC=m68k-elf-gcc
-CXX=m68k-elf-g++
-AS=m68k-elf-as
-LD=m68k-elf-ld
-NM=m68k-elf-nm
-LD=m68k-elf-ld
-OBJDUMP=m68k-elf-objdump
-OBJCOPY=m68k-elf-objcopy
-SIZE=m68k-elf-size
+CC=m68k-elf-rosco-gcc
+CXX=m68k-elf-rosco-g++
+AS=m68k-elf-rosco-as
+LD=m68k-elf-rosco-ld
+NM=m68k-elf-rosco-nm
+LD=m68k-elf-rosco-ld
+OBJDUMP=m68k-elf-rosco-objdump
+OBJCOPY=m68k-elf-rosco-objcopy
+SIZE=m68k-elf-rosco-size
 VASM=vasmm68k_mot
 RM=rm -f
 CP=cp

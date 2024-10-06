@@ -1,4 +1,14 @@
-# Rosco_m68k Standard Libraries
+# Rosco_m68k Bare-Metal Standard Libraries
+
+> **Note**: These libraries are should only be used for legacy programs, or where 
+> bare-metal with minimal C runtime support is specifically needed.
+>
+> If you have a need to use these, you'll know why you need them and what you're
+> getting yourself into. You will need to compile free-standing and without standard
+> includes etc.
+>
+> For most use-cases, it is recommended to use the C libraries and support code that
+> comes with the `m68k-elf-rosco` toolchain. 
 
 This directory contains the standard libraries that support writing
 programs for the rosco_m68k. The libraries are contained in 
@@ -93,8 +103,8 @@ the correct linker script might be:
 
 ```
 export LIBDIR=../libs/build
-m68k-elf-gcc -ffreestanding -o kmain.o -c kmain.c
-m68k-elf-ld T $LIBDIR/ld/serial/rosco_m68k_program.ld -L $LIBDIR -o myprog.bin main.o -lstart_serial
+m68k-elf-rosco-gcc -ffreestanding -o kmain.o -c kmain.c
+m68k-elf-rosco-ld T $LIBDIR/ld/serial/rosco_m68k_program.ld -L $LIBDIR -o myprog.bin main.o -lstart_serial
 ```
 
 For a more complete example, see the `Makefile` in one of the example
