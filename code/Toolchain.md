@@ -10,7 +10,7 @@ toolchain with the following commands:
 
 ```bash
 brew tap rosco-m68k/toolchain
-brew install gcc-cross-m68k@11 vasm-m68k srecord minipro
+brew install rosco-m68k-toolchain@13.rb srecord minipro
 ```
 
 This will automatically download, build and install all the dependencies that
@@ -20,6 +20,10 @@ It'll take a few minutes, as it builds binutils and GCC from source. Once it's
 done, you're ready to rock.
 
 ## The Slightly-Less Easy Way - Building the Toolchain
+
+See https://github.com/rosco-m68k/newlib-rosco-build/blob/main/README.md
+
+## The Old Way - Building the Bare Metal Toolchain (advanced users)
 
 0. Configure build environment (Linux only)
 
