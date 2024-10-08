@@ -17,8 +17,18 @@
 #include "char_device.h"
 
 #define CMD_IDENT           ((uint8_t)0xf0)
+#define CMD_LED_POWRED      ((uint8_t)0x1)
+#define CMD_LED_POWGRN      ((uint8_t)0x2)
+#define CMD_LED_POWBLU      ((uint8_t)0x3)
+#define CMD_LED_DISK        ((uint8_t)0x5)
+#define CMD_MODE_SET        ((uint8_t)0x10)
+#define CMD_MOUSE_STRM_OFF  ((uint8_t)0x22)
+
 #define CMD_ACK             ((uint8_t)0xff)
-#define IDENT_MODE_ASCII    ((uint8_t)0x01)
+
+#define CMD_MODE_SCAN       ((uint8_t)0x00)
+#define CMD_MODE_ASCII      ((uint8_t)0x01)
+
 #define TIMEOUT_TICKS       20
 
 CharDevice keyboard_device;
@@ -27,7 +37,7 @@ static volatile long *ticks = (volatile long *)0x40c;
 void INSTALL_KEYBOARD_HANDLERS(void);
 
 static int try_get_char(CharDevice *device) {
-    long end = *ticks + 20;
+    long end = *ticks + TIMEOUT_TICKS;
 
     while (*ticks < end) {
         if (CHAR_DEV_CHECKCHAR_C(device)) {
@@ -36,6 +46,57 @@ static int try_get_char(CharDevice *device) {
     }
 
     return -1;
+}
+
+static inline __attribute__((always_inline)) bool try_send_command_0(uint8_t command, CharDevice *device) {
+    CHAR_DEV_SENDCHAR_C(command, device);
+
+    if (try_get_char(device) != CMD_ACK) {
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Command 0x%02x [0x%02x] failed\r\n", command, argument);
+#endif
+        return false;
+    }
+
+    return true;
+}
+
+static inline __attribute__((always_inline)) bool try_send_command_1(uint8_t command, uint8_t argument, CharDevice *device) {
+    CHAR_DEV_SENDCHAR_C(command, device);
+    CHAR_DEV_SENDCHAR_C(argument, device);
+
+    if (try_get_char(device) != CMD_ACK) {
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Command 0x%02x [0x%02x] failed\r\n", command, argument);
+#endif
+        return false;
+    }
+
+    return true;
+}
+
+static bool try_reset_keyboard(CharDevice *device) {
+    // Reset LEDs
+    if (!try_send_command_0(CMD_MOUSE_STRM_OFF, device)) {
+        return false;
+    }
+    if (!try_send_command_1(CMD_LED_POWRED, 0xff, device)) {
+        return false;
+    }
+    if (!try_send_command_1(CMD_LED_POWGRN, 0x00, device)) {
+        return false;
+    }
+    if (!try_send_command_1(CMD_LED_POWBLU, 0x00, device)) {
+        return false;
+    }
+    if (!try_send_command_1(CMD_LED_DISK, 0x00, device)) {
+        return false;
+    }
+    if (!try_send_command_1(CMD_MODE_SET, CMD_MODE_ASCII, device)) {
+        return false;
+    }
+
+    return true;
 }
 
 static bool detect_keyboard(CharDevice *device) {
@@ -60,7 +121,7 @@ static bool detect_keyboard(CharDevice *device) {
     }
 
     chr = try_get_char(device);
-    if (chr != IDENT_MODE_ASCII) {
+    if (chr != CMD_MODE_ASCII && chr != CMD_MODE_SCAN) {
 #ifdef DEBUG_KEYBOARD_DETECT
         FW_PRINT_C("Bad mode\r\n");
 #endif
@@ -115,6 +176,13 @@ static bool detect_keyboard(CharDevice *device) {
         return false;
     }
 
+    if (!try_reset_keyboard(device)) {
+#ifdef DEBUG_KEYBOARD_DETECT
+        FW_PRINT_C("Reset failed\r\n");
+#endif
+        return false;
+    }
+
 #ifdef DEBUG_KEYBOARD_DETECT
     FW_PRINT_C("Detect success\r\n");
 #endif
@@ -145,5 +213,10 @@ void initialize_keyboard() {
     } else {
         FW_PRINT_C("No keyboard detected\r\n");
 #endif
+    }
+
+    // Mop up any stray characters in case not a keyboard...
+    while (CHAR_DEV_CHECKCHAR_C(&keyboard_device)) {
+        CHAR_DEV_RECVCHAR_C(&keyboard_device);
     }
 }
