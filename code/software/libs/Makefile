@@ -15,11 +15,11 @@ CFLAGS=-std=c11 $(FLAGS)
 CXXFLAGS=-std=c++20 -fno-exceptions -fno-rtti $(FLAGS)
 ASFLAGS=-Felf -m$(CPU) -quiet $(DEFINES)
 ARFLAGS=
-CC=m68k-elf-gcc
-CXX=m68k-elf-g++
-LD=m68k-elf-ld
-AR=m68k-elf-ar
-RANLIB=m68k-elf-ranlib
+CC=m68k-elf-rosco-gcc
+CXX=m68k-elf-rosco-g++
+LD=m68k-elf-rosco-ld
+AR=m68k-elf-rosco-ar
+RANLIB=m68k-elf-rosco-ranlib
 AS=vasmm68k_mot
 RM_F=rm -f
 RM_RF=$(RM_F) -r

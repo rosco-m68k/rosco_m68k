@@ -17,7 +17,7 @@
 ; Often with just the PC crash address you can narrow down the source code
 ; causing the problem with e.g:
 ;
-; m68k-elf-addr2line -e myprogram.elf 0x1234
+; m68k-elf-rosco-addr2line -e myprogram.elf 0x1234
 ;
 ; This will often give a line "near" the problem (usually after the actual
 ; cause), but is still very helpful.

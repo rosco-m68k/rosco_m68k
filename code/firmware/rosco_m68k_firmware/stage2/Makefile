@@ -11,6 +11,7 @@ include ../common.mk
 
 CC=m68k-elf-rosco-gcc
 LD=m68k-elf-rosco-gcc
+OBJCOPY=m68k-elf-rosco-objcopy
 
 CFLAGS=																	\
 	-std=c11 -g -nostartfiles --param=min-pagesize=0					\
@@ -108,7 +109,7 @@ $(BINARY_ZIP): $(BINARY) $(LZG)
 	$(LZG) -9 $< $@
 
 $(BINARY_ZIP_OBJ): $(BINARY_ZIP)
-	m68k-elf-objcopy -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
+	$(OBJCOPY) -I binary -O elf32-m68k -B m68k --rename-section .data=.zipdata $< $@
 
 ifneq ($(XOSERA_API_MINIMAL),false)
 boot_menu/libboot_menu.a:

@@ -38,12 +38,12 @@
  *
  * If you have a rosco_m68k elf file, generated with debug information (-g)
  * then you can usually get the C source line of the code that caused the
- * exception (or close to it, often the line after) using m68k-elf-addr2line,
- * the "-e" option followed by your program elf file and the PC address from
- * the debug information printed (preceeded with "0x" for hex).  For example,
- * for the crash above:
+ * exception (or close to it, often the line after) using 
+ * m68k-elf-rosco-addr2line, the "-e" option followed by your program elf 
+ * file and the PC address from the debug information printed (preceeded 
+ * with "0x" for hex).  For example, for the crash above:
  *
- * m68k-elf-addr2line -e example.elf 0x115A
+ * m68k-elf-rosco-addr2line -e example.elf 0x115A
  *
  * NOTE: On 68010/12 CPUs the PC counter (and "op") may be up to five words
  * ahead of the actual location where the exception occurred on a bus or
