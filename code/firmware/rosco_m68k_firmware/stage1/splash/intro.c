@@ -37,7 +37,7 @@
 #endif
 
 #ifdef COPPER_GLITCH
-#define ENTER_GLITCH_CHANCE     99990
+#define ENTER_GLITCH_CHANCE     99950
 #define EXIT_GLITCH_CHANCE      92500
 #define GLITCH_SWITCH_CHANCE    70000
 #endif
@@ -48,6 +48,7 @@
 #define TILE_FONT_SIZE          0x1000
 #define AUDIO_BUFFER_A          ((XR_TILE_ADDR+TILE_FONT_SIZE))
 #define AUDIO_BUFFER_B          ((AUDIO_BUFFER_A+AUDIO_BUFFER_SIZE))
+#define AUDIO_START_DELAY       50
 #endif
 
 #define SHOW_DELAY              3
@@ -89,7 +90,7 @@ static void splash_delay_loop(uint32_t secs) {
 #   endif
 
 #   ifdef HAVE_SPLASH_AUDIO
-    uint32_t audio_start_ticks = now + 100;
+    uint32_t audio_start_ticks = now + AUDIO_START_DELAY;
 
     uint32_t clk_hz = xosera_sample_hz();
     uint16_t period = (clk_hz + AUDIO_RATE - 1) / AUDIO_RATE;        // rate is samples per second
@@ -99,10 +100,14 @@ static void splash_delay_loop(uint32_t secs) {
     xreg_setw(AUD0_PERIOD, period);
     xreg_setw(AUD0_VOL, MAKE_AUD_VOL(AUD_VOL_FULL / 2, AUD_VOL_FULL / 2));
 
-    bool prime = true;
     bool done = false;
     uint32_t src_ptr = 0;
-    uint32_t current_buf = AUDIO_BUFFER_A;
+    uint32_t current_buf = AUDIO_BUFFER_A;  // "current" here refers to buffer we're working on, not which is playing!
+    bool need_load = true;
+
+    uint16_t *bong_data_words = (uint16_t*)bong_data;
+    uint16_t bong_data_words_len = bong_data_len >> 1;
+    uint16_t current_buf_data_len_words = 0;
 #   endif
 
     while (*upticks < end_ticks) {
@@ -115,40 +120,48 @@ static void splash_delay_loop(uint32_t secs) {
 
         // Handle audio sample feeding if compiled in...
 #       ifdef HAVE_SPLASH_AUDIO
-        if ((*upticks > audio_start_ticks) && (prime || (xm_getw(INT_CTRL) & INT_CTRL_AUD0_INTR_F))) {
-            xm_setw(INT_CTRL, INT_CTRL_AUD_ALL_F);
-            prime = false;
 
+        // Firstly, do we need to load the current audio buffer ready for next buffer switch?
+        if (need_load) {
+            // copy data to buffer - this is going to be off-by-one with odd-sized buffers,
+            // but it doesn't really matter...
+            //
+            int data_remain = bong_data_words_len - src_ptr;
+            if (data_remain < AUDIO_BUFFER_SIZE) {
+                dprintf("Fetched last chunk of %d\n", data_remain);
+                current_buf_data_len_words  = data_remain;
+                done = true;        // Signal done next time we get an interrupt pending...
+            } else {
+                current_buf_data_len_words = AUDIO_BUFFER_SIZE;
+            }
+
+            xm_setw(WR_XADDR, current_buf);
+
+            for (int i = 0; i < current_buf_data_len_words; i++) {
+                xm_setw(XDATA, bong_data_words[src_ptr++]);
+            }
+
+            need_load = false;
+        }
+
+        // Is it time to actually switch audio buffers?
+        if ((*upticks > audio_start_ticks) && ((xm_getw(INT_CTRL) & INT_CTRL_AUD0_INTR_F))) {
             if (done) {
                 // disable audio system
                 xreg_setw(AUD_CTRL, 0x0000);
             } else {
-
-                // copy data to buffer
-                int copy_len = AUDIO_BUFFER_SIZE;
-                int data_remain = bong_data_len - src_ptr;
-                if (data_remain < AUDIO_BUFFER_SIZE) {
-                    dprintf("Fetched last chunk of %d\n", data_remain);
-                    copy_len = data_remain;
-                    done = true;        // Signal done next time we get an interrupt pending...
-                }
-                copy_len >>= 1;
-
-                xm_setw(WR_XADDR, current_buf);
-
-                for (int i = 0; i < copy_len; i++) {
-                    uint16_t word = bong_data[src_ptr++] << 8;
-                    word |= bong_data[src_ptr++];
-
-                    xm_setw(XDATA, word);
-                }
-
-                xreg_setw(AUD0_LENGTH, (copy_len - 1) | AUD_LENGTH_TILEMEM_F);
+                xreg_setw(AUD0_LENGTH, (current_buf_data_len_words - 1) | AUD_LENGTH_TILEMEM_F);
                 xreg_setw(AUD0_START, current_buf);
 
                 // switch to next buffer for next time around
                 current_buf = (current_buf == AUDIO_BUFFER_A) ? AUDIO_BUFFER_B : AUDIO_BUFFER_A;
+
+                // Signal we need to load the buffer next time around
+                need_load = true;
             }
+
+            // Ack / clear interrupt flag
+            xm_setw(INT_CTRL, INT_CTRL_AUD_ALL_F);
         }
 #       endif
 
@@ -156,7 +169,7 @@ static void splash_delay_loop(uint32_t secs) {
 #       ifdef COPPER_GLITCH
         if (in_glitch) {
             // do we want to exit the glitch?
-            if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > 92500) {
+            if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > EXIT_GLITCH_CHANCE) {
                 // exit glitch
                 cop_on = false;
                 in_glitch = false;
@@ -164,7 +177,7 @@ static void splash_delay_loop(uint32_t secs) {
                 xreg_setw(COPP_CTRL, 0x0000);
             } else {
                 // random glitchiness
-                if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > 70000) {
+                if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > GLITCH_SWITCH_CHANCE) {
                     if (cop_on) {
                         cop_on = false;
                         xwait_vblank();
@@ -180,7 +193,7 @@ static void splash_delay_loop(uint32_t secs) {
             }
         } else {
             // do we want to enter a glitch?
-            if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > 99990) {
+            if ((rand() / (RAND_MAX / (100000 + 1) + 1)) > ENTER_GLITCH_CHANCE) {
                 in_glitch = true;
             }
         }
@@ -237,8 +250,6 @@ void intro(void) {
     dprintf("Copper initialized\n");
 #   endif
 
-    // 1.5s delay for screen to sync...
-    // MC_DELAY_MSEC_10(150);
     show_pcx(splash_data_len, splash_data, FADE_IN_DELAY);
 
 #   ifdef COPPER_GLITCH
