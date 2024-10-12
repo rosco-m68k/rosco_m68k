@@ -3,7 +3,7 @@
 # Copyright (c)2019-2024 Ross Bamford
 # See LICENSE
 
-# Configuration options, default to rev. 2 with MC68000, with all features except VDP
+# Configuration options, default to rev. 2 with MC68000 with standard feature set
 # CPU options
 export FIRMWARE_BUILD=true
 export CPU?=68000
@@ -25,7 +25,9 @@ export WITH_ATA?=false
 export WITH_VDP?=false
 export NO68681?=false
 export XOSERA_API_MINIMAL?=true
+export WITH_SPLASH_AUDIO?=true
 export WITH_KERNEL?=false
+export WITH_USB_HID?=false
 # Firmware behaviour
 export NOBANNER?=false
 export LATEBANNER?=true
