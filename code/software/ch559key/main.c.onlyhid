@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdbool.h>
+#include <rosco_m68k/machine.h>
+
+#include "buffered_uart.h"
+#include "usbhid.h"
+
+static RingBuffer buffer;
+static CharDevice device;
+static USBHID hid;
+
+static void hid_handler(USBHIDPacket *packet) {
+    printf("Packet from device %d [endpoint: 0x%02x : type 0x%02x : msgtype 0x%02x]: %d bytes\n", 
+            packet->device, packet->endpoint, packet->type, packet->msgtype, packet->payload_len);
+    for (int i = 0; i < packet->payload_len; i++) {
+        printf("0x%02x ", packet->payload[i]);
+    }
+    printf("\n\n");
+}
+
+int kmain() {
+
+    if (!mcCheckDeviceSupport()) {
+        printf("No device support; Bailing\n");
+        return 1;
+    }
+
+    printf("We have %d device(s)\n", mcGetDeviceCount());
+
+    if (mcGetDeviceCount() < 2) {
+        printf("Insufficient devices (need 2, found %d)\n", mcGetDeviceCount());
+        return 1;
+    }
+
+    if (!mcGetDevice(1, &device)) {
+        printf("Failed to get keyboard device; Bailing\n");
+        return 1;
+    }
+
+    hid.handler = hid_handler;
+    buffer.mask = 0x3ff;
+
+    install_interrupt(&device, NULL, &buffer);
+
+    printf("Got keyboard device type 0x%02x at 0x%08lx\n", device.device_type, device.data);
+    printf("Recvptr = 0x%08lx : Checkptr = 0x%08lx\n", device.recvptr, device.checkptr);
+
+    printf("Read loop...\n");
+
+    while (true) {
+        uint8_t in;
+        if (ring_unbuffer_char(&buffer, &in)) {
+            usb_hid_process_input(in, &hid);
+        }
+    }
+}
+

@@ -86,6 +86,18 @@ $(info === Building rosco_m68k firmware with V9958 VDP)
 include video9958/include.mk
 endif
 
+# Must do this before we do Xosera / Splash etc since they are dependent...
+ifeq ($(WITH_USB_HID),true)
+ifeq ($(REVISION1X),true)
+$(error === Invalid option combination: Cannot build Revision 1.x firmware with USB HID support)
+else
+$(info === Building rosco_m68k firmware with (EXPERIMENTAL) USB Keyboard)
+$(info ===--> Splash audio disabled for space reasons...)
+export WITH_SPLASH_AUDIO=false
+include usb_hid/include.mk
+endif
+endif
+
 # only one Xosera console at a time
 ifneq ($(XOSERA_API_MINIMAL),false)
 $(info === Building rosco_m68k firmware with Xosera ANSI console)

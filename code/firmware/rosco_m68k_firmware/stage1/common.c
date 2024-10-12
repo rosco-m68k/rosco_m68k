@@ -1,4 +1,28 @@
 #include <stdint.h>
+#include <stddef.h>
+
+void* memchr(const void *s, int c, int n) {
+  const unsigned char *src = (const unsigned char *)s;
+
+  while (n-- > 0) {
+      if (*src == c) {
+          return (char*)src;
+      }
+      src++;
+  }
+  return NULL;
+}
+
+void* memcpy(void *__restrict s1, const void *__restrict s2, int n) {
+    // totally naive implementation, will do for now...
+    uint8_t *fbuf = (uint8_t*) s2;
+    uint8_t *tbuf = (uint8_t*) s1;
+
+    for (uint8_t *end = fbuf + n; fbuf < end; *tbuf++ = *fbuf++)
+        ;
+
+    return tbuf;
+}
 
 unsigned long divmod(unsigned long num, unsigned long den, int mod) {
     unsigned long bit = 1;

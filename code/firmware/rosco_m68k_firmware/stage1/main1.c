@@ -60,7 +60,12 @@ extern noreturn void hot_boot(void);
 extern uint32_t decompress_stage2(uint32_t src_addr, uint32_t size);
 extern uint32_t cpuspeed(uint8_t model);
 extern void print_unsigned(uint32_t num, uint8_t base);
+
+#ifdef USB_HID
+extern bool init_usb_hid_input_subsys();
+#endif
 extern void initialize_keyboard();
+
 #ifdef LATE_BANNER
 extern void PRINT_BANNER(void);
 #endif
@@ -208,8 +213,14 @@ noreturn void main1() {
     START_HEART();
 #endif
 
+#ifdef USB_HID
+    if (!init_usb_hid_input_subsys()) {
+#endif
     // Initialize the keyboard if available
     initialize_keyboard();
+#ifdef USB_HID
+    }
+#endif
 
     INSTALL_EASY68K_TRAP_HANDLERS();
 

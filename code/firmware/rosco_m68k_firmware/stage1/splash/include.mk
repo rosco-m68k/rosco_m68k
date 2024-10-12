@@ -14,6 +14,9 @@ IMAGEBASE?=full_splash_03_424_8bit
 IMAGEEXT=pcx
 IMAGESRC=splash/$(IMAGEBASE).$(IMAGEEXT)
 
+ifeq ($(WITH_SPLASH_AUDIO), false)
+HAVE_AUDIO=false
+else
 ifeq ($(BOARD_ROM_SIZE),1MB)
 ifeq ($(LONG_SPLASH_AUDIO),true)
 AUDIOBASE?=dropped_major_c1_shorter_11khz
@@ -31,6 +34,7 @@ HAVE_AUDIO=false
 endif
 AUDIOEXT=raw
 AUDIOSRC=splash/$(AUDIOBASE).$(AUDIOEXT)
+endif
 
 ifeq ($(SPLASH_DEBUG), true)
 OBJECTS+=splash/dprint.o
