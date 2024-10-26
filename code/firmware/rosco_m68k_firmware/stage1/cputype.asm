@@ -83,7 +83,7 @@ INIT_CPU_TYPE::
     ; point!
 
     mc68030
-    pmove   MMUSR,M16BUF              ; Try PMOVE
+    pmove   TC,M16BUF                 ; Try PMOVE
     mc68000
 .CONT3:
     tst.b   IIFLAG                    ; Was it illegal?
