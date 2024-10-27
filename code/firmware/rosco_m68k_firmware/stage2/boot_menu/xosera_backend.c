@@ -20,7 +20,7 @@
 #include <stdarg.h>
 
 #include <rosco_m68k/machine.h>
-#include <rosco_m68k/xosera_m68k_api.h>
+#include <rosco_m68k/xosera.h>
 
 #include "view.h"
 #include "backend.h"
@@ -174,7 +174,7 @@ static uint32_t expand_8_pixel_font_line(uint8_t line) {
 }
 
 bool backend_init(void) {
-    xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)SDB_XOSERABASE)))));
+    xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)0x410)))));
     input_state = NORMAL;
 
     // setup uart_device for kermit check
