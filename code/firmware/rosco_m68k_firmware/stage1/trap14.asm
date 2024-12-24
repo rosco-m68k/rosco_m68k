@@ -251,6 +251,23 @@ FW_INPUTCHAR::
     move.l  (A7)+,A1
     rts
 
+; Wraps FW_CHECKINPUT so it can be called from C-land
+;
+; Modifies: D0 (return)
+FW_CHECKINPUT_C::
+    ; Fall through to FW_CHECKINPUT
+
+; Checks the default input device for a waiting character.
+;
+; Trashes: Nothing
+; Modifies: D0 (return)
+FW_CHECKINPUT::
+    move.l  A1,-(A7)
+    move.l  EFP_CHECKINPUT,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+
 ; Wraps FW_CLRSCR so it can be called from C-land
 ;
 ; Modifies: Nothing

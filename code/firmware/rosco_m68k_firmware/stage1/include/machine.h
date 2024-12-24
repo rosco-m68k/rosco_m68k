@@ -15,8 +15,9 @@
 #ifndef _ROSCOM68K_MACHINE_H
 #define _ROSCOM68K_MACHINE_H
 
-#include <stdnoreturn.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <stdnoreturn.h>
 
 #ifdef REVISION1X
 #define MFP_GPDR      0xf80001
@@ -209,6 +210,11 @@ char FW_RECVCHAR_C(void);
  * Firmware INPUTCHAR function (uses pointer at $494)
  */
 char FW_INPUTCHAR_C(void);
+
+/*
+ * Firmware CHECKINPUT function (uses pointer at $498)
+ */
+bool FW_CHECKINPUT_C(void);
 
 /*
  * Firmware CLRSCR function (uses pointer at $438)

@@ -221,7 +221,12 @@ debug_stub::
                 cmp.b   #16,d4
                 blt     .regloop
                 and.w   #$F0FF,sr               ; Re-enable interrupts
-                jsr     FW_INPUTCHAR            ; Wait for keypress
+.clrbuf         jsr     FW_CHECKINPUT           ; Check for any existing characters in buffer
+                tst.b   d0                      ; Test return value, 0=empty, 1=characters available
+                beq.s   .bufclr                 ; If 0, no characters pending, wait for keypress
+                jsr     FW_INPUTCHAR            ; Else, character available, clear it
+                bra.s   .clrbuf                 ; Loop until input buffer cleared
+.bufclr         jsr     FW_INPUTCHAR            ; Wait for keypress
                 move.l  4.w,a0                  ; And warmboot
                 jmp     (a0)
 
