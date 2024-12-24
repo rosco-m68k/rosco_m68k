@@ -206,6 +206,11 @@ void FW_SENDCHAR_C(char ch);
 char FW_RECVCHAR_C(void);
 
 /*
+ * Firmware INPUTCHAR function (uses pointer at $494)
+ */
+char FW_INPUTCHAR_C(void);
+
+/*
  * Firmware CLRSCR function (uses pointer at $438)
  */
 void FW_CLRSCR_C(void);

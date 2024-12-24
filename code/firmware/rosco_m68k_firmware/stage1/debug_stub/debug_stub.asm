@@ -221,6 +221,7 @@ debug_stub::
                 cmp.b   #16,d4
                 blt     .regloop
                 and.w   #$F0FF,sr               ; Re-enable interrupts
+                jsr     FW_INPUTCHAR            ; Wait for keypress
                 move.l  4.w,a0                  ; And warmboot
                 jmp     (a0)
 

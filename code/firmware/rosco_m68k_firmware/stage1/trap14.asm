@@ -233,6 +233,24 @@ FW_RECVCHAR::
     move.l  (A7)+,A1
     rts
 
+; Wraps FW_INPUTCHAR so it can be called from C-land
+;
+; Modifies: D0 (return)
+FW_INPUTCHAR_C::
+    ; Fall through to FW_INPUTCHAR
+
+; Receive a single character via default input device.
+; Ignores UART overrun errors.
+;
+; Trashes: Nothing
+; Modifies: D0 (return)
+FW_INPUTCHAR::
+    move.l  A1,-(A7)
+    move.l  EFP_INPUTCHAR,A1
+    jsr     (A1)
+    move.l  (A7)+,A1
+    rts
+
 ; Wraps FW_CLRSCR so it can be called from C-land
 ;
 ; Modifies: Nothing
