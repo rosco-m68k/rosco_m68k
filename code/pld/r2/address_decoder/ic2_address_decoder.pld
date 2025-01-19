@@ -4,19 +4,13 @@ DECODER
 A18   A19       A20       A21       A22       A23     UDS       LDS   BOOT    LGEXP  RW    GND
 AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    CPUSP PPDTACK DTACK  WR    VCC
 
-/EVENRAM  =  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 *                      BOOT
-          +  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 *  A19 *              /BOOT
-          +  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 *         A18 *       /BOOT
-          +  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 *               /RW * /BOOT
-/ODDRAM   =  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 *                      BOOT
-          +  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 *  A19 *              /BOOT
-          +  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 *         A18 *       /BOOT
-          +  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 *               /RW * /BOOT
+/EVENRAM  =  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 * BOOT
+/ODDRAM   =  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 * BOOT
 
 /EVENROM  =  CPUSP * /AS * /UDS *  A23 *  A22 *  A21 * /A20
-          +  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 * /A19 * /A18 *  RW * /BOOT
+          +  CPUSP * /AS * /UDS * /A23 * /A22 * /A21 * /A20 * /BOOT
 /ODDROM   =  CPUSP * /AS * /LDS *  A23 *  A22 *  A21 * /A20
-          +  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 * /A19 * /A18 *  RW * /BOOT
+          +  CPUSP * /AS * /LDS * /A23 * /A22 * /A21 * /A20 * /BOOT
 
 /IOSEL    =  CPUSP * A23 * A22 * A21 * A20
 
@@ -25,11 +19,11 @@ AS    EVENRAM   ODDRAM    EVENROM   ODDROM    IOSEL   EXPSEL    CPUSP PPDTACK DT
           +  CPUSP * /AS * /A23 * A20
           +  CPUSP * /AS * /A22 * A21
 
-/PPDTACK  =  CPUSP * /EVENROM
-          +  CPUSP * /ODDROM
-          +  CPUSP * /EVENRAM
-          +  CPUSP * /ODDRAM
-          +  CPUSP * /LGEXP * /EXPSEL
+/PPDTACK  =  /EVENROM
+          +  /ODDROM
+          +  /EVENRAM
+          +  /ODDRAM
+          +  /LGEXP * /EXPSEL
 
 /WR       = RW
 
