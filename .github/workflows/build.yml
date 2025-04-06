@@ -81,7 +81,7 @@ jobs:
             tar czf rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_1.x_hugerom.tar.gz *.rom
             cp rosco_m68k_fw_$(cat "$GITHUB_WORKSPACE/branch.txt")_$(cat "$GITHUB_WORKSPACE/stamp.txt")_mainboard_1.x_hugerom.tar.gz "$GITHUB_WORKSPACE/artifacts"
         - name: Upload artifacts
-          uses: actions/upload-artifact@v3
+          uses: actions/upload-artifact@v4
           with:
             name: build-snapshots
             path: artifacts/
