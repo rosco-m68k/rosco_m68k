@@ -17,4 +17,4 @@ endif
 
 BD_EXTRA_CFLAGS=-O3
 
-blockdev/%.o: CLFAGS+=$(BD_EXTRA_CFLAGS)
+blockdev/%.o: CFLAGS+=$(BD_EXTRA_CFLAGS)
