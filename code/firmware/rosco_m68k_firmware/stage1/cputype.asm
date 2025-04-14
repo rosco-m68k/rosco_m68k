@@ -30,16 +30,16 @@ INIT_CPU_TYPE::
 
     clr.b   IIFLAG                    ; Reset illegal flag
     move.l  #.CONT0,CONTADDR          ; Set up continue address
-    clr.w   D0
+    clr.l   D0
     mc68010
-    movec   D0,VBR                    ; Try to set VBR
+    movec   D0,VBR                    ; Try to set VBR, also resets it on reboot
     mc68000
 .CONT0:
     tst.b   IIFLAG                    ; Was it illegal?
     beq.s   .TRY010                   ; Go on for 010 and up if not...
 
-    clr.l   D0                        ; Else it's an 000
-    bra.w   .DONE
+                                      ; Else it's an 000
+    bra.w   .DONE                     ; D0.L already cleared aboce
 
 .TRY010:
     clr.b   IIFLAG                    ; Reset illegal flag
