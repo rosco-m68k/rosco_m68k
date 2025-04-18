@@ -41,7 +41,7 @@ INIT_CPU_TYPE::
     beq.s   .TRY010                   ; Go on for 010 and up if not...
 
                                       ; Else it's an 000
-    bra.w   .DONE                     ; D0.L already cleared aboce
+    bra.w   .DONE                     ; D0.L already cleared above
 
 .TRY010:
     clr.b   IIFLAG                    ; Reset illegal flag
