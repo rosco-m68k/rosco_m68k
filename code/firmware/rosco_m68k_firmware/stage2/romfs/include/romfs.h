@@ -25,8 +25,9 @@
 
 #include "lfs.h"
 
+extern char _ROMFS_BASE[];
 #ifndef ROMFS_BASE
-#define ROMFS_BASE          (((void*)(0x00E26000)))
+#define ROMFS_BASE          (((void*)_ROMFS_BASE))
 #endif
 
 #ifndef ROMFS_BLOCKSIZE

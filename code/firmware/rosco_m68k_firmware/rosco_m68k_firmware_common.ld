@@ -12,18 +12,21 @@ MEMORY
   UMEM    : org = 0x00002000, l = LENGTH(BASERAM) + ORIGIN(BASERAM) - ORIGIN(UMEM)
 }
 
-PROVIDE(RAMBASE         = ORIGIN(BASERAM));
-PROVIDE(RAMLIMIT        = ORIGIN(UMEM)    + LENGTH(UMEM));
-PROVIDE(EXPTOP          = ORIGIN(EXPRAM)  + LENGTH(EXPRAM));
-PROVIDE(STAGE2_LOAD     = 0x000C0000);
-PROVIDE(STAGE2_SIZE     = RAMLIMIT-STAGE2_LOAD);
+PROVIDE(RAMBASE             = ORIGIN(BASERAM));
+PROVIDE(RAMLIMIT            = ORIGIN(UMEM)    + LENGTH(UMEM));
+PROVIDE(EXPTOP              = ORIGIN(EXPRAM)  + LENGTH(EXPRAM));
+PROVIDE(STAGE2_LOAD         = 0x000C0000);
+PROVIDE(STAGE2_SIZE         = RAMLIMIT-STAGE2_LOAD);
 
 /* Minimal items for XANSI in C */
-PROVIDE(_EFP_INPUTCHAR  = ORIGIN(EFPT)  + 0x074); /* Receive a character via input  */
-PROVIDE(_EFP_CHECKINPUT = ORIGIN(EFPT)  + 0x078); /* Check char ready from input    */
-PROVIDE(XANSI_CON_DATA  = ORIGIN(VDA)   + 0x000); /* XANSI data ($0500-$057F)       */
+PROVIDE(_EFP_INPUTCHAR      = ORIGIN(EFPT)  + 0x074); /* Receive a character via input  */
+PROVIDE(_EFP_CHECKINPUT     = ORIGIN(EFPT)  + 0x078); /* Check char ready from input    */
+PROVIDE(XANSI_CON_DATA      = ORIGIN(VDA)   + 0x000); /* XANSI data ($0500-$057F)       */
 
-PROVIDE(_FIRMWARE_REV   = ORIGIN(FLASH) + 0x400); /* Firmware revision code         */
+PROVIDE(_FIRMWARE_REV       = ORIGIN(FLASH) + 0x400); /* Firmware revision code         */
+
+PROVIDE(_ROMFS_FLASH_OFFSET = 0x40000);
+PROVIDE(_ROMFS_BASE         = ORIGIN(FLASH) + _ROMFS_FLASH_OFFSET);
 
 SECTIONS
 {
