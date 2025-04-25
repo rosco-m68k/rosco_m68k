@@ -13,7 +13,7 @@ INC += -I$(TOP)
 INC += -I$(BUILD)
 
 # Set CFLAGS and libraries.
-CFLAGS_M68K = -mcpu=68000 -march=68000 -mtune=68000 -DMICROPY_GCREGS_SETJMP=1
+CFLAGS_M68K = -mcpu=68000 -march=68000 -mtune=68000 -DMICROPY_GCREGS_SETJMP=1 -O1
 CFLAGS = $(INC) -Wall -Werror -Wno-attributes -Wno-return-type -std=c99 $(CFLAGS_M68K) $(COPT)
 LDFLAGS = -Wl,-Map=$@.map,--cref $(CFLAGS_M68K) -lm
 
