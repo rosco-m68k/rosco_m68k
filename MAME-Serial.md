@@ -1,3 +1,6 @@
+[Home](index.md) | [Getting Started](getting-started.md) | [Connecting](connecting.md) | [Running the Examples](running-the-examples.md) | [Toolchain Installation](toolchain-installation.md) | [Building the Software](building-the-software.md) | [Installing the Emulator](installing-the-emulator.md) | [Debugging with MAME](MAME-serial.md) | [Using SD Cards](SDCardGuide.md)
+### GDB Debugging
+
 ## Using MAME with a virtual serial port
 
 You can use MAME with a virtual serial port, instead of sending serial output to the emulated
@@ -52,3 +55,6 @@ It’s probably worth noting that you can do the same thing with the second UART
 `-rs232b` and setting a socket up, which you can then connect to with GDB (using an appropriate
 `target remote` command) if you’re using the GDB support in the standard library 🙂.
 
+---
+
+[Home](index.md) | [Getting Started](getting-started.md) | [Connecting](connecting.md) | [Running the Examples](running-the-examples.md) | [Toolchain Installation](toolchain-installation.md) | [Building the Software](building-the-software.md) | [Installing the Emulator](installing-the-emulator.md) | [Debugging with MAME](MAME-serial.md) | [Using SD Cards](SDCardGuide.md)
