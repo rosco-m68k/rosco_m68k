@@ -1,3 +1,5 @@
+[Home](index.md) | [Getting Started](getting-started.md) | [Connecting](connecting.md) | [Running the Examples](running-the-examples.md) | [Toolchain Installation](toolchain-installation.md) | [Building the Software](building-the-software.md) | [Installing the Emulator](installing-the-emulator.md) | [Debugging with MAME](MAME-serial.md) | [Using SD Cards](SDCardGuide.md)
+
 # SD Card Hookup & User Guide
 
 With Firmware 1.3, SD Cards are now supported directly by the firmware. This feature works will all boards that are supported by Firmware 1.3, though the electrical hookup and usage varies.
@@ -32,3 +34,7 @@ If you have the `BIGROM` build of Firmware 1.3, your rosco_m68k will look for an
 
 It is recommended that, where this capability exists, you use Xark's [sdfat_menu](code/software/sdfat_menu) (see above).
 
+
+---
+
+[Home](index.md) | [Getting Started](getting-started.md) | [Connecting](connecting.md) | [Running the Examples](running-the-examples.md) | [Toolchain Installation](toolchain-installation.md) | [Building the Software](building-the-software.md) | [Installing the Emulator](installing-the-emulator.md) | [Debugging with MAME](MAME-serial.md) | [Using SD Cards](SDCardGuide.md)
