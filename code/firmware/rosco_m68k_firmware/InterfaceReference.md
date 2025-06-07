@@ -753,7 +753,7 @@ Nothing
 
 **Description**
 
-Print the character in `D0.B` to by `A0` to the system's *default console*.
+Print the character in `D0.B` to the system's *default console*.
 
 Where the default console is a serial terminal, this routine may block until
 there is space in the UART's transmit buffer for the character - as such, 
