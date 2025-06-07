@@ -24,22 +24,24 @@ INIT_CPU_TYPE::
     movem.l D0-D1/A0,-(A7)            ; Save regs
 
     move.l  $10,IISAVED               ; Save illegal instruction handler
-    move.l  $2C,FLSAVED               ; Save F-line too (for move16 test)
+    move.l  $2C,FLSAVED               ; Save F-line (for move16 test)
+    move.l  $F4,UIISAVED              ; Save unimpl. integer instruction (for movep test)
     move.l  #IIHANDLER,$10            ; and install our temporary one...
-    move.l  #IIHANDLER,$2C            ; ... to both vectors
+    move.l  #IIHANDLER,$2C            ; ...
+    move.l  #IIHANDLER,$F4            ; ... to all three vectors
 
     clr.b   IIFLAG                    ; Reset illegal flag
     move.l  #.CONT0,CONTADDR          ; Set up continue address
-    clr.w   D0
+    clr.l   D0
     mc68010
-    movec   D0,VBR                    ; Try to set VBR
+    movec   D0,VBR                    ; Try to set VBR, also resets it on reboot
     mc68000
 .CONT0:
     tst.b   IIFLAG                    ; Was it illegal?
     beq.s   .TRY010                   ; Go on for 010 and up if not...
 
-    clr.l   D0                        ; Else it's an 000
-    bra.w   .DONE
+                                      ; Else it's an 000
+    bra.w   .DONE                     ; D0.L already cleared above
 
 .TRY010:
     clr.b   IIFLAG                    ; Reset illegal flag
@@ -113,8 +115,9 @@ INIT_CPU_TYPE::
     or.l    D1,D0                     ; Set them to indicate 010
     move.l  D0,SDB_CPUINFO            ; And update the SDB 
 
-    move.l  IISAVED,$10               ; Restore original handler
-    move.l  FLSAVED,$2C               ; for both II and FL
+    move.l  IISAVED,$10               ; Restore original handlers for II,
+    move.l  FLSAVED,$2C               ; ... FL,
+    move.l  UIISAVED,$F4              ; ... and UII
 
     movem.l (A7)+,D0-D1/A0            ; Restore regs
     rts                               ; And return
@@ -138,6 +141,7 @@ SZCPU     dc.b    'MC680', 0
 M16BUF    equ     $500
 IISAVED   equ     $510
 FLSAVED   equ     $514
-CONTADDR  equ     $518
-IIFLAG    equ     $51C
+UIISAVED  equ     $518
+CONTADDR  equ     $51C
+IIFLAG    equ     $520
 
