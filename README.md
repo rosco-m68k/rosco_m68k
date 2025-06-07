@@ -10,7 +10,7 @@ This repository holds design files, firmware and software for the Really Old-Sch
 extensible and capable 16/32-bit retro computer that is completely open source.
 
 This project contains all the design files and source code for the project. For 
-documentation (including assembly instructions) please see https://rosco-m68k.com
+documentation (including assembly instructions) please see the [getting started guide](index.md).
 
 You can find the project along with some logs about its development history
 on Hackaday: https://hackaday.io/project/164305-yet-another-m68k-homebrew

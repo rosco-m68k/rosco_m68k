@@ -127,9 +127,9 @@ STAGE2=$(STAGE2_DIR)/$(STAGE2_FILE)
 
 ifeq ($(HUGEROM), true)
 ifeq ($(BOARD_ROM_SIZE), 1MB)
-export ROMFS_SIZE?=720
+export ROMFS_SIZE?=640
 else ifeq ($(BOARD_ROM_SIZE), 512KB)
-export ROMFS_SIZE?=360
+export ROMFS_SIZE?=320
 endif
 endif
 

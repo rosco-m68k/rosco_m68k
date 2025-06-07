@@ -12,15 +12,15 @@ MEMORY
 /* Installed flash memory map */
 MEMORY
 {
-  FLASH   : org = ORIGIN(ROMSPC), l = 1024K  /* Minimum flash chip size */
+  FLASH   : org = ORIGIN(ROMSPC), l = 1024K /* Minimum flash chip size */
 }
 
 INCLUDE rosco_m68k_firmware_common.ld
 
 SECTIONS {  
-  .romfs 0x00E26000 : ALIGN(4)
+  .romfs _ROMFS_BASE : ALIGN(4)
   {
-    ASSERT(_zip_end <= 0x26000, "Error: No room left for ROMFS region");
+    ASSERT(ABSOLUTE(_zip_end) <= _ROMFS_BASE, "Error: No room left for ROMFS region");
     _romfs = .;
     *(.romfs*)
     _romfs_end = .;
