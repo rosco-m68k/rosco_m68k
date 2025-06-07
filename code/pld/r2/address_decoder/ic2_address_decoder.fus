@@ -29,11 +29,11 @@ Pin 22 = DTACK        S0 = 1   S1 = 1
 
 Pin 21 = PPDTACK      S0 = 0   S1 = 1
  21  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
- 22  ---- ---- ---- --x- ---- ---- ---- ---x ---- ---- ----
- 23  ---- ---- ---- --x- ---- ---- ---x ---- ---- ---- ----
- 24  ---- ---- ---- --x- ---- ---- ---- ---- ---- ---x ----
- 25  ---- ---- ---- --x- ---- ---- ---- ---- ---x ---- ----
- 26  ---- ---- ---- --x- ---x ---- ---- ---- ---- -x-- ----
+ 22  ---- ---- ---- ---- ---- ---- ---- ---x ---- ---- ----
+ 23  ---- ---- ---- ---- ---- ---- ---x ---- ---- ---- ----
+ 24  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---x ----
+ 25  ---- ---- ---- ---- ---- ---- ---- ---- ---x ---- ----
+ 26  ---- ---- ---- ---- ---x ---- ---- ---- ---- -x-- ----
  27  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  28  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  29  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -100,7 +100,7 @@ Pin 18 = IOSEL        S0 = 0   S1 = 1
 Pin 17 = ODDROM       S0 = 0   S1 = 1
  83  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  84  ---- ---- -x-- x-x- x--- x--- ---- -x-- ---- ---- ---x
- 85  -x-- -x-- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- x--x
+ 85  ---- ---- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- ---x
  86  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  87  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
  88  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -117,7 +117,7 @@ Pin 17 = ODDROM       S0 = 0   S1 = 1
 Pin 16 = EVENROM      S0 = 0   S1 = 1
  98  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
  99  ---- ---- -x-- x-x- x--- x--- -x-- ---- ---- ---- ---x
-100  -x-- -x-- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- x--x
+100  ---- ---- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- ---x
 101  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 102  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 103  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -132,9 +132,9 @@ Pin 16 = EVENROM      S0 = 0   S1 = 1
 Pin 15 = ODDRAM       S0 = 0   S1 = 1
 111  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 112  ---- ---- -x-- -xx- -x-- -x-- ---- -x-- x--- ---- ---x
-113  ---- x--- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- ---x
-114  x--- ---- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- ---x
-115  ---- ---- -x-- -xx- -x-- -x-- ---- -x-- -x-- ---- -x-x
+113  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+114  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+115  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 116  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 117  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 118  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
@@ -145,9 +145,9 @@ Pin 15 = ODDRAM       S0 = 0   S1 = 1
 Pin 14 = EVENRAM      S0 = 0   S1 = 1
 122  ---- ---- ---- ---- ---- ---- ---- ---- ---- ---- ----
 123  ---- ---- -x-- -xx- -x-- -x-- -x-- ---- x--- ---- ---x
-124  ---- x--- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- ---x
-125  x--- ---- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- ---x
-126  ---- ---- -x-- -xx- -x-- -x-- -x-- ---- -x-- ---- -x-x
+124  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+125  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
+126  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 127  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 128  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
 129  xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx
