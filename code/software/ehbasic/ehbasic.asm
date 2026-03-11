@@ -207,150 +207,210 @@ VEC_IN:
 * Smeml(a3) and Sfncl(a3) hold ABSOLUTE addresses (not offsets).
 
 ; SD_ensure_ready: initialise SD card and FAT library on every LOAD/SAVE.
-; Returns d0=1 (ready) or d0=0 (failed). Preserves d2-d7/a2-a6/a3.
+; Returns D0=1 (ready) or D0=0 (failed). Preserves D2-D7/A2-A6/A3.
 SD_ensure_ready:
-	jsr     SD_check_support
-	tst.b   d0
-	beq.s   .ser_fail
-	jsr     SD_FAT_initialize
-	tst.b   d0
-	beq.s   .ser_fail
-	moveq   #1,d0
-	rts
-.ser_fail:
-	moveq   #0,d0
-	rts
+    jsr     SD_check_support
+    tst.b   D0
+    beq.s   .SER_FAIL
+    jsr     SD_FAT_initialize
+    tst.b   D0
+    beq.s   .SER_FAIL
+    moveq   #1,D0
+    rts
+.SER_FAIL
+    moveq   #0,D0
+    rts
 
-; --- LOAD routine for rosco_m68k ---
+; SD_parse_filename: parse optional filename argument from BASIC.
+; Entry: D0 = first non-space byte after LOAD/SAVE token (from dispatch).
+;        A5 = points to that same byte.  A3 = BASIC RAM base.
+; Exit:  A2 = pointer to null-terminated filename (path_buf or BASICPRG_FN).
+;        A5 advanced past any string expression (unchanged if using default).
+; Clobbers D0, D1, A0, A1.
+SD_parse_filename:
+    tst.b   D0                      ; null = end of statement?
+    beq.s   .SPF_DEFAULT            ; yes -> use default filename
+    cmp.b   #$3A,D0                 ; colon = next statement separator?
+    beq.s   .SPF_DEFAULT            ; yes -> use default filename
+    bsr     LAB_EVEX                ; back up A5 one, then evaluate expression (LAB_GVAL will re-advance)
+    tst.b   Dtypef(A3)              ; bit 7 set = string type
+    bpl     LAB_SNER                ; not a string -> Syntax error
+    bsr     LAB_22B6                ; A0=string ptr, D0.w=string length
+    tst.w   D0
+    beq.s   .SPF_DEFAULT            ; empty string -> use default
+    lea     path_buf,A2
+    move.b  (A0),D1
+    cmp.b   #'/',D1
+    beq.s   .SPF_COPY               ; already starts with / -> skip prepend
+    move.b  #'/',(A2)+              ; prepend leading /
+.SPF_COPY
+    move.l  A2,A1
+    move.w  D0,D1
+.SPF_LOOP
+    move.b  (A0)+,(A1)+
+    subq.w  #1,D1
+    bne.s   .SPF_LOOP
+    clr.b   (A1)
+    lea     path_buf,A2
+    rts
+.SPF_DEFAULT
+    lea     BASICPRG_FN(pc),A2
+    rts
+
+; SD_null_outp: V_OUTPv replacement during LOAD — silently discards all output.
+SD_null_outp:
+    rts
+
+; SD_inpt_from_file: V_INPTv replacement during LOAD.
+; Two-phase EOF: first EOF returns a synthetic CR ($0D) so LAB_1357 flushes
+; whatever line is currently accumulating in Ibuffs (handles files with no
+; trailing newline).  The *next* call (ld_eof_pending set) restores vectors,
+; flushes the stack and jumps directly to LAB_1274 ("Ready").
+; Also translates LF ($0A) -> CR ($0D).
+SD_inpt_from_file:
+    movem.l d1/a0/a1,-(sp)
+    tst.b   ld_eof_pending          ; already saw EOF last call?
+    bne.s   .SIF_DO_CLEANUP         ; yes -> restore and print Ready
+    move.l  saved_ld_file,-(SP)
+    jsr     fl_fgetc
+    addq.l  #4,SP
+    tst.l   D0
+    bpl.s   .SIF_GOT                ; D0 >= 0 -> valid byte
+    ; First EOF: close file, set flag, return synthetic CR to flush last line
+    move.l  saved_ld_file,-(SP)
+    jsr     fl_fclose
+    addq.l  #4,SP
+    clr.l   saved_ld_file
+    move.b  #1,ld_eof_pending
+    movem.l (sp)+,d1/a0/a1
+    moveq   #$0D,D0                 ; synthetic CR terminates last line
+    ori.b   #1,CCR
+    rts
+.SIF_DO_CLEANUP
+    ; Second call after EOF: restore vectors, flush stack, print "Ready"
+    move.l  saved_inpt_vec,V_INPTv(A3)
+    move.l  saved_ld_outp_vec,V_OUTPv(A3)
+    clr.b   ld_eof_pending
+    movem.l (sp)+,d1/a0/a1
+    lea     ram_base(A3),SP         ; flush stack (same as LAB_1491)
+    jmp     LAB_1274                ; print "Ready" and enter command loop
+.SIF_GOT
+    cmp.b   #$0A,D0                 ; LF?
+    bne.s   .SIF_NOT_LF
+    moveq   #$0D,D0                 ; translate LF -> CR
+.SIF_NOT_LF
+    movem.l (sp)+,d1/a0/a1
+    ori.b   #1,CCR                  ; carry set = got character
+    rts
+
+; SD_outp_to_file: V_OUTPv replacement during SAVE.
+; D0.b = character to write. Sets sv_write_error on failure.
+SD_outp_to_file:
+    movem.l d1/a0/a1,-(sp)
+    tst.b   sv_skip_count           ; still suppressing initial bytes?
+    beq.s   .SOF_WRITE
+    subq.b  #1,sv_skip_count        ; consume this byte without writing
+    bra.s   .SOF_OK
+.SOF_WRITE
+    and.l   #$FF,D0
+    move.l  saved_sv_file,-(SP)
+    move.l  D0,-(SP)
+    jsr     fl_fputc
+    addq.l  #8,SP
+    tst.l   D0
+    bpl.s   .SOF_OK
+    move.b  #1,sv_write_error
+.SOF_OK
+    movem.l (sp)+,d1/a0/a1
+    rts
+
+; --- LOAD routine for rosco_m68k (ASCII) ---
 VEC_LD:
-	; Ensure SD card and FAT filesystem are ready
-	bsr     SD_ensure_ready
-	tst.b   d0
-	beq.s   .load_sd_error
+    move.b  (A5),D0
+    bsr     SD_parse_filename       ; A2 = filename, A5 advanced if expr given
+    bsr     SD_ensure_ready
+    tst.b   D0
+    beq.s   .VLD_SD_ERROR
+    pea     read_mode_str
+    move.l  A2,-(SP)
+    jsr     fl_fopen
+    addq.l  #8,SP
+    tst.l   D0
+    beq.s   .VLD_FO_ERROR
+    move.l  D0,saved_ld_file
+    clr.b   ld_eof_pending          ; ensure clean state at start of LOAD
+    move.l  V_INPTv(A3),saved_inpt_vec
+    lea     SD_inpt_from_file(pc),A0
+    move.l  A0,V_INPTv(A3)
+    move.l  V_OUTPv(A3),saved_ld_outp_vec  ; suppress echo during load
+    lea     SD_null_outp(pc),A0
+    move.l  A0,V_OUTPv(A3)
+    bsr     LAB_1463                ; like NEW: clear program, init all vars, flush stack
+    jmp     LAB_127D                ; enter BASIC input loop (lines are read from file)
+.VLD_SD_ERROR
+    moveq   #$30,D7
+    jmp     LAB_XERR
+.VLD_FO_ERROR
+    moveq   #$32,D7
+    jmp     LAB_XERR
 
-	; Open file for reading: fl_fopen(path, mode) — push right to left
-	pea     read_mode_str           ; rightmost arg first
-	pea     BASICPRG_FN             ; leftmost arg last
-	jsr     fl_fopen
-	add.l   #8,sp
-	tst.l   d0
-	beq.s   .load_fo_error
-	move.l  d0,d3                   ; d3 = file handle (callee-saved)
-
-	; Compute destination buffer and maximum byte count from RAM layout
-	move.l  Smeml(a3),d1            ; d1 = absolute start of program area (buf)
-	move.l  Ememl(a3),d2            ; d2 = absolute end of available memory
-	sub.l   d1,d2                   ; d2 = maximum bytes available
-
-	; Read file: fl_fread(buf, size, count, file) — push right to left
-	move.l  d3,-(sp)                ; file (rightmost)
-	move.l  d2,-(sp)                ; count
-	move.l  #1,-(sp)                ; size = 1
-	move.l  d1,-(sp)                ; buf (leftmost)
-	jsr     fl_fread
-	add.l   #16,sp
-	move.l  d0,d2                   ; d2 = bytes actually read (callee-saved)
-
-	; Close file
-	move.l  d3,-(sp)
-	jsr     fl_fclose
-	add.l   #4,sp
-
-	; Set Sfncl = Smeml + bytes_read; then update all variable-area pointers from it.
-	move.l  Smeml(a3),d1
-	add.l   d2,d1                   ; d1 = Smeml + bytes_read
-	move.l  d1,Sfncl(a3)
-	move.l  d1,Svarl(a3)            ; start of variables = end of program
-	move.l  d1,Sstrl(a3)            ; start of strings
-	move.l  d1,Sarryl(a3)           ; start of arrays
-	move.l  d1,Earryl(a3)           ; end of arrays
-	move.l  Ememl(a3),Sstorl(a3)    ; bottom of string space = top of RAM
-	moveq   #0,d0
-	move.l  d0,Cpntrl(a3)           ; clear continue pointer
-	rts
-
-.load_sd_error:
-	lea	.ld_sd_msg(pc),a0
-	bsr	LAB_18C3
-	moveq   #$2E,d7
-	jmp     LAB_XERR
-
-.load_fo_error:
-	lea	.ld_fo_msg(pc),a0
-	bsr	LAB_18C3
-	moveq   #$2E,d7
-	jmp     LAB_XERR
-
-.ld_sd_msg:	dc.b	"LOAD: SD init failed",13,10,0
-.ld_fo_msg:	dc.b	"LOAD: file not found (BASICPRG.BIN)",13,10,0
-			even
-
-BASICPRG_FN:    dc.b    "/BASICPRG.BIN",0
+BASICPRG_FN:    dc.b    "/BASICPRG.BAS",0
 read_mode_str:  dc.b    "rb",0
                 even
 
-; --- SAVE routine for rosco_m68k ---
+; --- SAVE routine for rosco_m68k (ASCII) ---
 VEC_SV:
-	; Compute byte count: nothing to save if program area is empty
-	move.l  Sfncl(a3),d2            ; d2 = absolute end of program
-	move.l  Smeml(a3),d1            ; d1 = absolute start of program (buf addr)
-	sub.l   d1,d2                   ; d2 = byte count
-	tst.l   d2
-	ble.s   .save_prog_error
-
-	; Ensure SD card and FAT filesystem are ready
-	bsr     SD_ensure_ready
-	tst.b   d0
-	beq.s   .save_sd_error
-
-	; Open file for writing: fl_fopen(path, mode) — push right to left
-	pea     write_mode_str          ; rightmost arg first
-	pea     BASICPRG_FN             ; leftmost arg last
-	jsr     fl_fopen
-	add.l   #8,sp
-	tst.l   d0
-	beq.s   .save_fo_error
-	move.l  d0,d3                   ; d3 = file handle (callee-saved)
-
-	; Recompute buf/count (d1 is scratch and may have been clobbered by fl_fopen)
-	move.l  Sfncl(a3),d2            ; d2 = byte count (Sfncl - Smeml)
-	move.l  Smeml(a3),d1            ; d1 = buf address
-	sub.l   d1,d2
-
-	; Write program: fl_fwrite(buf, size, count, file) — push right to left
-	move.l  d3,-(sp)                ; file (rightmost)
-	move.l  d2,-(sp)                ; count
-	move.l  #1,-(sp)                ; size = 1
-	move.l  d1,-(sp)                ; buf (leftmost)
-	jsr     fl_fwrite
-	add.l   #16,sp
-
-	; Close file
-	move.l  d3,-(sp)
-	jsr     fl_fclose
-	add.l   #4,sp
-
-	rts
-
-.save_prog_error:
-	moveq   #$2E,d7
-	jmp     LAB_XERR
-
-.save_sd_error:
-	lea	.sv_sd_msg(pc),a0
-	bsr	LAB_18C3
-	moveq   #$2E,d7
-	jmp     LAB_XERR
-
-.save_fo_error:
-	lea	.sv_fo_msg(pc),a0
-	bsr	LAB_18C3
-	moveq   #$2E,d7
-	jmp     LAB_XERR
-
-.sv_sd_msg:	dc.b	"SAVE: SD init failed",13,10,0
-.sv_fo_msg:	dc.b	"SAVE: file open failed",13,10,0
-			even
+    move.b  (A5),D0
+    bsr     SD_parse_filename       ; A2 = filename, A5 advanced if expr given
+    movea.l Smeml(A3),A0
+    tst.l   (A0)                    ; empty program = null link word?
+    beq     .VSV_EMPTY              ; yes -> nothing to save, silent return
+    bsr     SD_ensure_ready
+    tst.b   D0
+    beq.s   .VSV_SD_ERROR
+    move.l  A2,-(SP)
+    jsr     fl_remove               ; remove any existing file (ignore errors)
+    addq.l  #4,SP
+    pea     write_mode_str
+    move.l  A2,-(SP)
+    jsr     fl_fopen
+    addq.l  #8,SP
+    tst.l   D0
+    beq.s   .VSV_FO_ERROR
+    move.l  D0,saved_sv_file
+    clr.b   sv_write_error
+    move.b  #2,sv_skip_count        ; skip leading CRLF that LAB_LIST emits before first line
+    move.l  V_OUTPv(A3),saved_outp_vec
+    lea     SD_outp_to_file(pc),A0
+    move.l  A0,V_OUTPv(A3)
+    move.b  #$FF,ccflag(A3)         ; inhibit CTRL-C check during SAVE
+    move.l  A5,-(SP)                ; save A5 (LAB_LIST reads (A5) for range arg)
+    lea     Ibuffs(A3),A5
+    clr.b   (A5)                    ; null = no range argument -> LIST all lines
+    moveq   #0,D0                   ; carry clear, D0=0 -> list all lines
+    bsr     LAB_LIST
+    move.l  (SP)+,A5                ; restore A5
+    move.b  #$00,ccflag(A3)         ; re-enable CTRL-C check
+    move.l  saved_outp_vec,V_OUTPv(A3)
+    tst.b   sv_write_error
+    bne.s   .VSV_WR_ERROR
+    move.l  saved_sv_file,-(SP)
+    jsr     fl_fclose
+    addq.l  #4,SP
+.VSV_EMPTY
+    rts
+.VSV_SD_ERROR
+    moveq   #$30,D7
+    jmp     LAB_XERR
+.VSV_FO_ERROR
+    moveq   #$34,D7
+    jmp     LAB_XERR
+.VSV_WR_ERROR
+    move.l  saved_sv_file,-(SP)
+    jsr     fl_fclose
+    addq.l  #4,SP
+    moveq   #$34,D7
+    jmp     LAB_XERR
 
 write_mode_str: dc.b    "wb",0
                 even
@@ -8937,6 +8997,9 @@ LAB_BAER
 	dc.w	LAB_AD-LAB_BAER			* $2A address
 	dc.w	LAB_FO-LAB_BAER			* $2C format
 	dc.w	LAB_NI-LAB_BAER			* $2E not implemented
+	dc.w	LAB_NS-LAB_BAER			* $30 No SD card
+	dc.w	LAB_LF-LAB_BAER			* $32 File not found
+	dc.w	LAB_SF-LAB_BAER			* $34 Save failed
 
 LAB_NF	dc.b	'NEXT without FOR',$00
 LAB_SN	dc.b	'Syntax',$00
@@ -8962,6 +9025,9 @@ LAB_WD	dc.b	'Wrong dimensions',$00
 LAB_AD	dc.b	'Address',$00
 LAB_FO	dc.b	'Format',$00
 LAB_NI  dc.b    'Not implemented',$00
+LAB_NS	dc.b	'No SD card',$00
+LAB_LF	dc.b	'File not found',$00
+LAB_SF	dc.b	'Save failed',$00
 
 
 *************************************************************************************
@@ -9394,6 +9460,18 @@ LAB_SMSG
 * RIGHT$	. RIGHT$(<sexpr>,<nexpr>)					* done
 * MID$	. MID$(<sexpr>,<nexpr>[,<nexpr>])				* done
 * USING$	. USING$(<sexpr>,<nexpr>[,<nexpr>]...])			* done
+
+	section .bss,bss
+	align   4
+saved_ld_file:    ds.l 1   ; file handle during LOAD (0 = not open)
+saved_inpt_vec:   ds.l 1   ; saved V_INPTv vector during LOAD
+saved_ld_outp_vec:ds.l 1   ; saved V_OUTPv vector during LOAD (echo suppression)
+saved_sv_file:    ds.l 1   ; file handle during SAVE (0 = not open)
+saved_outp_vec:   ds.l 1   ; saved V_OUTPv vector during SAVE
+sv_write_error:   ds.b 1   ; non-zero if fl_fputc failed during SAVE
+sv_skip_count:    ds.b 1   ; bytes to suppress at start of SAVE (initial CRLF from LAB_LIST)
+ld_eof_pending:   ds.b 1   ; non-zero after first EOF in SD_inpt_from_file
+path_buf:         ds.b 262 ; filename work buffer (max 255 + '/' prefix + null + pad)
 
 	section .data,data
     align   12
