@@ -67,6 +67,8 @@ nobrk		EQU	0				* null response to INPUT causes a break
 
     include "../../shared/rosco_m68k_public.asm"
   	include	"ehdefs.inc"
+
+    xref    _end                    * linker symbol: end of all sections (code+data+bss)
   
 							* RAM offset definitions
 
@@ -196,19 +198,162 @@ VEC_IN:
 
 *************************************************************************************
 *
-* LOAD routine for the rosco_m68k (not yet implemented)
-
-VEC_LD
-	MOVEQ		#$2E,d7			        * error code $2E "Not implemented" error
-	BRA		LAB_XERR			* do error #d7, then warm start
-
-*************************************************************************************
+* LOAD/SAVE routines for rosco_m68k using sdfat/fat_filelib
 *
-* SAVE routine for the rosco_m68k (not yet implemented)
+* Calling convention (cdecl): arguments pushed right-to-left; d0/d1/a0/a1 are
+* scratch; d2-d7/a2-a6 are callee-saved.  a3 is the ehBASIC RAM base pointer
+* and must never be clobbered.
+*
+* Smeml(a3) and Sfncl(a3) hold ABSOLUTE addresses (not offsets).
 
-VEC_SV
-	MOVEQ		#$2E,d7			        * error code $2E "Not implemented" error
-	BRA		LAB_XERR			* do error #d7, then warm start
+; SD_ensure_ready: initialise SD card and FAT library on every LOAD/SAVE.
+; Returns d0=1 (ready) or d0=0 (failed). Preserves d2-d7/a2-a6/a3.
+SD_ensure_ready:
+	jsr     SD_check_support
+	tst.b   d0
+	beq.s   .ser_fail
+	jsr     SD_FAT_initialize
+	tst.b   d0
+	beq.s   .ser_fail
+	moveq   #1,d0
+	rts
+.ser_fail:
+	moveq   #0,d0
+	rts
+
+; --- LOAD routine for rosco_m68k ---
+VEC_LD:
+	; Ensure SD card and FAT filesystem are ready
+	bsr     SD_ensure_ready
+	tst.b   d0
+	beq.s   .load_sd_error
+
+	; Open file for reading: fl_fopen(path, mode) — push right to left
+	pea     read_mode_str           ; rightmost arg first
+	pea     BASICPRG_FN             ; leftmost arg last
+	jsr     fl_fopen
+	add.l   #8,sp
+	tst.l   d0
+	beq.s   .load_fo_error
+	move.l  d0,d3                   ; d3 = file handle (callee-saved)
+
+	; Compute destination buffer and maximum byte count from RAM layout
+	move.l  Smeml(a3),d1            ; d1 = absolute start of program area (buf)
+	move.l  Ememl(a3),d2            ; d2 = absolute end of available memory
+	sub.l   d1,d2                   ; d2 = maximum bytes available
+
+	; Read file: fl_fread(buf, size, count, file) — push right to left
+	move.l  d3,-(sp)                ; file (rightmost)
+	move.l  d2,-(sp)                ; count
+	move.l  #1,-(sp)                ; size = 1
+	move.l  d1,-(sp)                ; buf (leftmost)
+	jsr     fl_fread
+	add.l   #16,sp
+	move.l  d0,d2                   ; d2 = bytes actually read (callee-saved)
+
+	; Close file
+	move.l  d3,-(sp)
+	jsr     fl_fclose
+	add.l   #4,sp
+
+	; Set Sfncl = Smeml + bytes_read; then update all variable-area pointers from it.
+	move.l  Smeml(a3),d1
+	add.l   d2,d1                   ; d1 = Smeml + bytes_read
+	move.l  d1,Sfncl(a3)
+	move.l  d1,Svarl(a3)            ; start of variables = end of program
+	move.l  d1,Sstrl(a3)            ; start of strings
+	move.l  d1,Sarryl(a3)           ; start of arrays
+	move.l  d1,Earryl(a3)           ; end of arrays
+	move.l  Ememl(a3),Sstorl(a3)    ; bottom of string space = top of RAM
+	moveq   #0,d0
+	move.l  d0,Cpntrl(a3)           ; clear continue pointer
+	rts
+
+.load_sd_error:
+	lea	.ld_sd_msg(pc),a0
+	bsr	LAB_18C3
+	moveq   #$2E,d7
+	jmp     LAB_XERR
+
+.load_fo_error:
+	lea	.ld_fo_msg(pc),a0
+	bsr	LAB_18C3
+	moveq   #$2E,d7
+	jmp     LAB_XERR
+
+.ld_sd_msg:	dc.b	"LOAD: SD init failed",13,10,0
+.ld_fo_msg:	dc.b	"LOAD: file not found (BASICPRG.BIN)",13,10,0
+			even
+
+BASICPRG_FN:    dc.b    "/BASICPRG.BIN",0
+read_mode_str:  dc.b    "rb",0
+                even
+
+; --- SAVE routine for rosco_m68k ---
+VEC_SV:
+	; Compute byte count: nothing to save if program area is empty
+	move.l  Sfncl(a3),d2            ; d2 = absolute end of program
+	move.l  Smeml(a3),d1            ; d1 = absolute start of program (buf addr)
+	sub.l   d1,d2                   ; d2 = byte count
+	tst.l   d2
+	ble.s   .save_prog_error
+
+	; Ensure SD card and FAT filesystem are ready
+	bsr     SD_ensure_ready
+	tst.b   d0
+	beq.s   .save_sd_error
+
+	; Open file for writing: fl_fopen(path, mode) — push right to left
+	pea     write_mode_str          ; rightmost arg first
+	pea     BASICPRG_FN             ; leftmost arg last
+	jsr     fl_fopen
+	add.l   #8,sp
+	tst.l   d0
+	beq.s   .save_fo_error
+	move.l  d0,d3                   ; d3 = file handle (callee-saved)
+
+	; Recompute buf/count (d1 is scratch and may have been clobbered by fl_fopen)
+	move.l  Sfncl(a3),d2            ; d2 = byte count (Sfncl - Smeml)
+	move.l  Smeml(a3),d1            ; d1 = buf address
+	sub.l   d1,d2
+
+	; Write program: fl_fwrite(buf, size, count, file) — push right to left
+	move.l  d3,-(sp)                ; file (rightmost)
+	move.l  d2,-(sp)                ; count
+	move.l  #1,-(sp)                ; size = 1
+	move.l  d1,-(sp)                ; buf (leftmost)
+	jsr     fl_fwrite
+	add.l   #16,sp
+
+	; Close file
+	move.l  d3,-(sp)
+	jsr     fl_fclose
+	add.l   #4,sp
+
+	rts
+
+.save_prog_error:
+	moveq   #$2E,d7
+	jmp     LAB_XERR
+
+.save_sd_error:
+	lea	.sv_sd_msg(pc),a0
+	bsr	LAB_18C3
+	moveq   #$2E,d7
+	jmp     LAB_XERR
+
+.save_fo_error:
+	lea	.sv_fo_msg(pc),a0
+	bsr	LAB_18C3
+	moveq   #$2E,d7
+	jmp     LAB_XERR
+
+.sv_sd_msg:	dc.b	"SAVE: SD init failed",13,10,0
+.sv_fo_msg:	dc.b	"SAVE: file open failed",13,10,0
+			even
+
+write_mode_str: dc.b    "wb",0
+                even
 
 *************************************************************************************
 *
@@ -239,7 +384,7 @@ kmain::
 .cachedone
     mc68000
 
-	MOVEA.l	#FREE_MEM,a0		* tell BASIC where RAM starts
+	MOVEA.l	#_end,a0			* tell BASIC where RAM starts (after all BSS)
 	MOVE.l  _SDB_MEM_SIZE,d0    * total rosco_m68k memory size
 	SUB.l	a0,d0	            * minus starting RAM address
 
@@ -1677,8 +1822,8 @@ LAB_174B
 
 LAB_174E
 	MOVE.b	(a5)+,d0			* faster increment past THEN
-	MOVEQ		#TK_ELSE,d3			* set search for ELSE token
-	MOVEQ		#TK_IF,d4			* set search for IF token
+	MOVEQ		#-87,d3			* set search for ELSE token ($A9)
+	MOVEQ		#-117,d4			* set search for IF token ($8B)
 	MOVEQ		#0,d5				* clear the nesting depth
 LAB_1750
 	MOVE.b	(a5)+,d0			* get next BASIC byte & increment ptr
@@ -2790,7 +2935,7 @@ LAB_GBYT
 	CMP.b		#$3A,d0			* compare with ":"
 	BCC.s		RTS_001			* exit if >= (not numeric, carry clear)
 
-	MOVEQ		#$D0,d6			* set -"0"
+	MOVEQ		#-48,d6			* set -"0"
 	ADD.b		d6,d0				* add -"0"
 	SUB.b		d6,d0				* subtract -"0"
 RTS_001						* carry set if byte = "0"-"9"
@@ -4080,7 +4225,7 @@ LAB_214B
 	BRA.s		LAB_2176			* branch into loop at end loop test
 
 LAB_2161
-	BSR		LAB_2206			* test and set if this is the highest string
+	JSR		LAB_2206			* test and set if this is the highest string (fix BSR out of range)
 	LEA		10(a0),a0			* increment to next string
 LAB_2176
 	CMPA.l	a2,a0				* compare end of area with pointer
@@ -4583,7 +4728,7 @@ LAB_GTBY
 LAB_EVBY
 	BSR		LAB_EVPI			* evaluate positive integer expression
 							* result in d0 and Itemp
-	MOVEQ		#$80,d1			* set mask/2
+	MOVEQ		#-128,d1			* set mask/2 (fix MOVEQ out of range)
 	ADD.l		d1,d1				* =$FFFFFF00
 	AND.l		d0,d1				* check top 24 bits
 	BNE		LAB_FCER			* if <> 0 do function call error/warm start
@@ -5696,7 +5841,7 @@ LAB_2831
 	BEQ.s		LAB_284J			* branch if mantissa = 0
 
 	MOVE.l	d1,-(sp)			* save d1
-	MOVEQ		#$A0,d1			* set for no floating bits
+	MOVEQ		#-96,d1			* set for no floating bits (fix MOVEQ out of range)
 	SUB.b		FAC1_e(a3),d1		* subtract FAC1 exponent
 	BCS		LAB_OFER			* do overflow if too big
 
@@ -5734,7 +5879,7 @@ LAB_284J
 * perform INT()
 
 LAB_INT
-	MOVEQ		#$A0,d0			* set for no floating bits
+	MOVEQ		#-96,d0			* set for no floating bits (fix MOVEQ out of range)
 	SUB.b		FAC1_e(a3),d0		* subtract FAC1 exponent
 	BLS.s		LAB_IRTS			* exit if exponent >= $A0
 							* (too big for fraction part!)
@@ -6537,7 +6682,7 @@ LAB_ATGO
 	MOVE.b	#$FF,cosout(a3)		* set inverse result needed
 LAB_ATLE
 	MOVE.l	FAC1_m(a3),d0		* get FAC1 mantissa
-	MOVEQ		#$82,d1			* set to correct exponent
+	MOVEQ		#-126,d1			* set to correct exponent (fix MOVEQ out of range)
 	SUB.b		FAC1_e(a3),d1		* subtract FAC1 exponent (always <= 1)
 	LSR.l		d1,d0				* shift in two integer part bits
 	LEA		TAB_ATNC(pc),a0		* get pointer to arctan table
@@ -9253,7 +9398,7 @@ LAB_SMSG
 	section .data,data
     align   12
 FREE_MEM:
-	
+
 *************************************************************************************
 
 	END	code_start
