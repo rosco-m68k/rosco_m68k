@@ -192,7 +192,20 @@ ccnull		equ	$05ea		* CTRL-C last received byte 'life' timer
 file_byte	equ	$05eb		* load/save data byte
 file_id		equ	$05ec		* load/save file ID
 
-prg_strt	equ	$05f0		* start of BASIC program
+* SD card LOAD/SAVE workspace — mutable state kept in A3 workspace so it
+* lives in RAM even when executing from ROM.
+sd_saved_ld_file        equ $05f0  * .l — file handle during LOAD (0 = not open)
+sd_saved_inpt_vec       equ $05f4  * .l — saved V_INPTv vector during LOAD
+sd_saved_ld_outp_vec    equ $05f8  * .l — saved V_OUTPv vector during LOAD
+sd_saved_sv_file        equ $05fc  * .l — file handle during SAVE (0 = not open)
+sd_saved_outp_vec       equ $0600  * .l — saved V_OUTPv vector during SAVE
+sd_sv_write_error       equ $0604  * .b — non-zero if fl_fputc failed during SAVE
+sd_sv_skip_count        equ $0605  * .b — bytes to suppress at start of SAVE
+sd_ld_eof_pending       equ $0606  * .b — non-zero after first EOF in SD_inpt_from_file
+                                   * $0607 pad
+sd_path_buf             equ $0608  * .b[262] — filename work buffer ($0608-$070D)
+
+prg_strt	equ	$0710		* start of BASIC program
 
 * Use these two lines when running from ROM
 *ram_addr	EQU	$02000		* RAM start address

@@ -3,15 +3,30 @@
 This is a port of Lee Davison's Enhanced Basic for 680x0 to the rosco_m68k.
 
 It can be loaded into RAM (by the serial bootloader) where it will currently run
-directly from the load address (i.e. it does not relocate low like most of the 
+directly from the load address (i.e. it does not relocate low like most of the
 other software does, because of some idiosyncracies in the way its memory is laid
-out - this is likely to change in the future). BASIC RAM is kept below this and 
-comprises 128K at the moment.
+out - this is likely to change in the future). BASIC RAM starts immediately after
+the loaded binary and uses all remaining physical RAM as reported by the System
+Data Block — typically nearly all available RAM (e.g. ~998 KB on a 1 MB board).
 
 It should also support being built into a ROM, though this is as-yet untested.
 
 Note that EhBASIC, like any good BASIC, is case-sensitive! Commands must be in
 uppercase, or you will receive an error message.
+
+## SD Card: LOAD and SAVE
+
+Programs can be saved to and loaded from an SD card (requires SD card support).
+
+```
+LOAD ["filename"]
+SAVE ["filename"]
+```
+
+If _filename_ is omitted, `/BASICPRG.BAS` is used. Files are stored as ASCII
+BASIC text. A leading `/` is added automatically if omitted from the filename.
+Folders are supported but must pre-exist; folder creation is not supported.
+SAVE overwrites any existing file of the same name.
 
 References:
 
@@ -35,26 +50,24 @@ option to the make command:
 ### With MC68681 Dual UART expansion board
 
 To work with the MC68681 expansion on older mainboards (without Firmware
-1.3 or above), you must pass `FIRMWARE_IO=false` and `MC68681=true` 
+1.3 or above), you must pass `FIRMWARE_IO=false` and `MC68681=true`
 options to the make command:
 
 `FIRMWARE_IO=false MC68681=true make clean all`
 
-------------------------------------------------------------------------
+# EhBASIC68
 
- EhBASIC68
+Enhanced BASIC is a BASIC interpreter for the 68k family microprocessors. It
+is constructed to be quick and powerful and easily ported between 68k systems.
+It requires few resources to run and includes instructions to facilitate easy
+low level handling of hardware devices. It also retains most of the powerful
+high level instructions from similar BASICs.
 
- Enhanced BASIC is a BASIC interpreter for the 68k family microprocessors. It
- is constructed to be quick and powerful and easily ported between 68k systems.
- It requires few resources to run and includes instructions to facilitate easy
- low level handling of hardware devices. It also retains most of the powerful
- high level instructions from similar BASICs.
+EhBASIC is copyright Lee Davison 2002 - 2012 and free for educational or
+personal use only.
+For commercial use please contact me at leeedavison@lgooglemail.com for conditions.
 
- EhBASIC is copyright Lee Davison 2002 - 2012 and free for educational or
- personal use only.
- For commercial use please contact me at leeedavison@lgooglemail.com for conditions.
+For more information on EhBASIC68, other versions of EhBASIC and other projects
+please visit my site at ..
 
- For more information on EhBASIC68, other versions of EhBASIC and other projects
- please visit my site at ..
-
-  http://mycorner.no-ip.org/index.html
+http://mycorner.no-ip.org/index.html

@@ -14,7 +14,7 @@ endif
 
 -include $(ROSCO_M68K_DIR)/code/software/software.mk
 
-EXTRA_LIBS=-lvterm
+EXTRA_LIBS=-lvterm -lsdfat
 
 ifeq ($(FIRMWARE_IO),false)
 ifeq ($(MC68681),true)
