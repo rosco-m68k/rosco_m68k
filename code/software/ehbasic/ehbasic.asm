@@ -1882,8 +1882,8 @@ LAB_174B
 
 LAB_174E
 	MOVE.b	(a5)+,d0			* faster increment past THEN
-	MOVEQ		#-87,d3			* set search for ELSE token ($A9)
-	MOVEQ		#-117,d4			* set search for IF token ($8B)
+	MOVEQ		#TK_ELSE,d3			* set search for ELSE token
+	MOVEQ		#TK_IF,d4			* set search for IF token
 	MOVEQ		#0,d5				* clear the nesting depth
 LAB_1750
 	MOVE.b	(a5)+,d0			* get next BASIC byte & increment ptr
@@ -2995,7 +2995,7 @@ LAB_GBYT
 	CMP.b		#$3A,d0			* compare with ":"
 	BCC.s		RTS_001			* exit if >= (not numeric, carry clear)
 
-	MOVEQ		#-48,d6			* set -"0"
+	MOVEQ		#$D0,d6			* set -"0"
 	ADD.b		d6,d0				* add -"0"
 	SUB.b		d6,d0				* subtract -"0"
 RTS_001						* carry set if byte = "0"-"9"
@@ -4285,7 +4285,7 @@ LAB_214B
 	BRA.s		LAB_2176			* branch into loop at end loop test
 
 LAB_2161
-	JSR		LAB_2206			* test and set if this is the highest string (fix BSR out of range)
+	BSR		LAB_2206			* test and set if this is the highest string
 	LEA		10(a0),a0			* increment to next string
 LAB_2176
 	CMPA.l	a2,a0				* compare end of area with pointer
@@ -4788,7 +4788,7 @@ LAB_GTBY
 LAB_EVBY
 	BSR		LAB_EVPI			* evaluate positive integer expression
 							* result in d0 and Itemp
-	MOVEQ		#-128,d1			* set mask/2 (fix MOVEQ out of range)
+	MOVEQ		#$80,d1			* set mask/2
 	ADD.l		d1,d1				* =$FFFFFF00
 	AND.l		d0,d1				* check top 24 bits
 	BNE		LAB_FCER			* if <> 0 do function call error/warm start
@@ -5901,7 +5901,7 @@ LAB_2831
 	BEQ.s		LAB_284J			* branch if mantissa = 0
 
 	MOVE.l	d1,-(sp)			* save d1
-	MOVEQ		#-96,d1			* set for no floating bits (fix MOVEQ out of range)
+	MOVEQ		#$A0,d1			* set for no floating bits
 	SUB.b		FAC1_e(a3),d1		* subtract FAC1 exponent
 	BCS		LAB_OFER			* do overflow if too big
 
@@ -5939,7 +5939,7 @@ LAB_284J
 * perform INT()
 
 LAB_INT
-	MOVEQ		#-96,d0			* set for no floating bits (fix MOVEQ out of range)
+	MOVEQ		#$A0,d0			* set for no floating bits
 	SUB.b		FAC1_e(a3),d0		* subtract FAC1 exponent
 	BLS.s		LAB_IRTS			* exit if exponent >= $A0
 							* (too big for fraction part!)
@@ -6742,7 +6742,7 @@ LAB_ATGO
 	MOVE.b	#$FF,cosout(a3)		* set inverse result needed
 LAB_ATLE
 	MOVE.l	FAC1_m(a3),d0		* get FAC1 mantissa
-	MOVEQ		#-126,d1			* set to correct exponent (fix MOVEQ out of range)
+	MOVEQ		#$82,d1			* set to correct exponent
 	SUB.b		FAC1_e(a3),d1		* subtract FAC1 exponent (always <= 1)
 	LSR.l		d1,d0				* shift in two integer part bits
 	LEA		TAB_ATNC(pc),a0		* get pointer to arctan table
