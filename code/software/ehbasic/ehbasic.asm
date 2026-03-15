@@ -238,7 +238,7 @@ SD_parse_filename:
     bsr     LAB_22B6                ; A0=string ptr, D0.w=string length
     tst.w   D0
     beq.s   .SPF_DEFAULT            ; empty string -> use default
-    lea     path_buf,A2
+    lea     sd_path_buf(A3),A2
     move.b  (A0),D1
     cmp.b   #'/',D1
     beq.s   .SPF_COPY               ; already starts with / -> skip prepend
@@ -251,7 +251,7 @@ SD_parse_filename:
     subq.w  #1,D1
     bne.s   .SPF_LOOP
     clr.b   (A1)
-    lea     path_buf,A2
+    lea     sd_path_buf(A3),A2
     rts
 .SPF_DEFAULT
     lea     BASICPRG_FN(pc),A2
@@ -269,28 +269,28 @@ SD_null_outp:
 ; Also translates LF ($0A) -> CR ($0D).
 SD_inpt_from_file:
     movem.l d1/a0/a1,-(sp)
-    tst.b   ld_eof_pending          ; already saw EOF last call?
+    tst.b   sd_ld_eof_pending(A3)   ; already saw EOF last call?
     bne.s   .SIF_DO_CLEANUP         ; yes -> restore and print Ready
-    move.l  saved_ld_file,-(SP)
+    move.l  sd_saved_ld_file(A3),-(SP)
     jsr     fl_fgetc
     addq.l  #4,SP
     tst.l   D0
     bpl.s   .SIF_GOT                ; D0 >= 0 -> valid byte
     ; First EOF: close file, set flag, return synthetic CR to flush last line
-    move.l  saved_ld_file,-(SP)
+    move.l  sd_saved_ld_file(A3),-(SP)
     jsr     fl_fclose
     addq.l  #4,SP
-    clr.l   saved_ld_file
-    move.b  #1,ld_eof_pending
+    clr.l   sd_saved_ld_file(A3)
+    move.b  #1,sd_ld_eof_pending(A3)
     movem.l (sp)+,d1/a0/a1
     moveq   #$0D,D0                 ; synthetic CR terminates last line
     ori.b   #1,CCR
     rts
 .SIF_DO_CLEANUP
     ; Second call after EOF: restore vectors, flush stack, print "Ready"
-    move.l  saved_inpt_vec,V_INPTv(A3)
-    move.l  saved_ld_outp_vec,V_OUTPv(A3)
-    clr.b   ld_eof_pending
+    move.l  sd_saved_inpt_vec(A3),V_INPTv(A3)
+    move.l  sd_saved_ld_outp_vec(A3),V_OUTPv(A3)
+    clr.b   sd_ld_eof_pending(A3)
     movem.l (sp)+,d1/a0/a1
     lea     ram_base(A3),SP         ; flush stack (same as LAB_1491)
     jmp     LAB_1274                ; print "Ready" and enter command loop
@@ -307,19 +307,19 @@ SD_inpt_from_file:
 ; D0.b = character to write. Sets sv_write_error on failure.
 SD_outp_to_file:
     movem.l d1/a0/a1,-(sp)
-    tst.b   sv_skip_count           ; still suppressing initial bytes?
+    tst.b   sd_sv_skip_count(A3)    ; still suppressing initial bytes?
     beq.s   .SOF_WRITE
-    subq.b  #1,sv_skip_count        ; consume this byte without writing
+    subq.b  #1,sd_sv_skip_count(A3) ; consume this byte without writing
     bra.s   .SOF_OK
 .SOF_WRITE
     and.l   #$FF,D0
-    move.l  saved_sv_file,-(SP)
+    move.l  sd_saved_sv_file(A3),-(SP)
     move.l  D0,-(SP)
     jsr     fl_fputc
     addq.l  #8,SP
     tst.l   D0
     bpl.s   .SOF_OK
-    move.b  #1,sv_write_error
+    move.b  #1,sd_sv_write_error(A3)
 .SOF_OK
     movem.l (sp)+,d1/a0/a1
     rts
@@ -337,12 +337,12 @@ VEC_LD:
     addq.l  #8,SP
     tst.l   D0
     beq.s   .VLD_FO_ERROR
-    move.l  D0,saved_ld_file
-    clr.b   ld_eof_pending          ; ensure clean state at start of LOAD
-    move.l  V_INPTv(A3),saved_inpt_vec
+    move.l  D0,sd_saved_ld_file(A3)
+    clr.b   sd_ld_eof_pending(A3)   ; ensure clean state at start of LOAD
+    move.l  V_INPTv(A3),sd_saved_inpt_vec(A3)
     lea     SD_inpt_from_file(pc),A0
     move.l  A0,V_INPTv(A3)
-    move.l  V_OUTPv(A3),saved_ld_outp_vec  ; suppress echo during load
+    move.l  V_OUTPv(A3),sd_saved_ld_outp_vec(A3)  ; suppress echo during load
     lea     SD_null_outp(pc),A0
     move.l  A0,V_OUTPv(A3)
     bsr     LAB_1463                ; like NEW: clear program, init all vars, flush stack
@@ -377,10 +377,10 @@ VEC_SV:
     addq.l  #8,SP
     tst.l   D0
     beq.s   .VSV_FO_ERROR
-    move.l  D0,saved_sv_file
-    clr.b   sv_write_error
-    move.b  #2,sv_skip_count        ; skip leading CRLF that LAB_LIST emits before first line
-    move.l  V_OUTPv(A3),saved_outp_vec
+    move.l  D0,sd_saved_sv_file(A3)
+    clr.b   sd_sv_write_error(A3)
+    move.b  #2,sd_sv_skip_count(A3) ; skip leading CRLF that LAB_LIST emits before first line
+    move.l  V_OUTPv(A3),sd_saved_outp_vec(A3)
     lea     SD_outp_to_file(pc),A0
     move.l  A0,V_OUTPv(A3)
     move.b  #$FF,ccflag(A3)         ; inhibit CTRL-C check during SAVE
@@ -391,10 +391,10 @@ VEC_SV:
     bsr     LAB_LIST
     move.l  (SP)+,A5                ; restore A5
     move.b  #$00,ccflag(A3)         ; re-enable CTRL-C check
-    move.l  saved_outp_vec,V_OUTPv(A3)
-    tst.b   sv_write_error
+    move.l  sd_saved_outp_vec(A3),V_OUTPv(A3)
+    tst.b   sd_sv_write_error(A3)
     bne.s   .VSV_WR_ERROR
-    move.l  saved_sv_file,-(SP)
+    move.l  sd_saved_sv_file(A3),-(SP)
     jsr     fl_fclose
     addq.l  #4,SP
 .VSV_EMPTY
@@ -406,7 +406,7 @@ VEC_SV:
     moveq   #$34,D7
     jmp     LAB_XERR
 .VSV_WR_ERROR
-    move.l  saved_sv_file,-(SP)
+    move.l  sd_saved_sv_file(A3),-(SP)
     jsr     fl_fclose
     addq.l  #4,SP
     moveq   #$34,D7
@@ -9460,18 +9460,6 @@ LAB_SMSG
 * RIGHT$	. RIGHT$(<sexpr>,<nexpr>)					* done
 * MID$	. MID$(<sexpr>,<nexpr>[,<nexpr>])				* done
 * USING$	. USING$(<sexpr>,<nexpr>[,<nexpr>]...])			* done
-
-	section .bss,bss
-	align   4
-saved_ld_file:    ds.l 1   ; file handle during LOAD (0 = not open)
-saved_inpt_vec:   ds.l 1   ; saved V_INPTv vector during LOAD
-saved_ld_outp_vec:ds.l 1   ; saved V_OUTPv vector during LOAD (echo suppression)
-saved_sv_file:    ds.l 1   ; file handle during SAVE (0 = not open)
-saved_outp_vec:   ds.l 1   ; saved V_OUTPv vector during SAVE
-sv_write_error:   ds.b 1   ; non-zero if fl_fputc failed during SAVE
-sv_skip_count:    ds.b 1   ; bytes to suppress at start of SAVE (initial CRLF from LAB_LIST)
-ld_eof_pending:   ds.b 1   ; non-zero after first EOF in SD_inpt_from_file
-path_buf:         ds.b 262 ; filename work buffer (max 255 + '/' prefix + null + pad)
 
 	section .data,data
     align   12
