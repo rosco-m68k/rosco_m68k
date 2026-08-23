@@ -8,6 +8,8 @@
 ; Copyright (c)2019-2022 Ross Bamford and contributors
 ; See top-level LICENSE.md for licence information.
 ;
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 ; This is the DUART code. 
 ; It detects and initializes the DUART, and provides
 ; I/O routines.

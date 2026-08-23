@@ -33,6 +33,8 @@ SPI_COPI        equ     (1<<SPI_COPI_B)
 SPI_CIPO        equ     (1<<SPI_CIPO_B)
 RED_LED         equ     (1<<RED_LED_B)
 
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 ; NOTE: Since DUART GPIO is active-low, use register aliases for DUART ports to be less confusing
 DUART_INPUT     equ     DUART_BASE_MBR2+R_INPUTPORT     ; R_INPUTPORT      = GPIO input address
 DUART_OUT_LO    equ     DUART_BASE_MBR2+W_OPR_SETCMD    ; W_OPR_SETCMD     = GPIO output LO address

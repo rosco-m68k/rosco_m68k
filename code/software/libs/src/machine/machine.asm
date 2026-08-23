@@ -279,6 +279,8 @@ mcSendDevice::
 ; Call device control function
 ;
 ; Trashes: D0, A0
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 ; Modifies: DUART registers
     section .text.mcDeviceCtrl
 mcDeviceCtrl::

@@ -9,6 +9,8 @@
  * Copyright (c)2023 Ross Bamford
  * See top-level LICENSE.md for licence information.
  *
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
  * Buffered (interrupt-driven) DUART support
  * ------------------------------------------------------------
  */
