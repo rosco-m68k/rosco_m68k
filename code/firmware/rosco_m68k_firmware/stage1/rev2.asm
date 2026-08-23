@@ -10,6 +10,8 @@
 ;
 ; This is the r2 board-specific code.
 ; It contains the revision-specific exception handlers
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 ; and routines, aside from the DUART initialisation and
 ; DUART I/O.
 ;------------------------------------------------------------

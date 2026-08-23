@@ -58,6 +58,8 @@ static volatile uint8_t *DUART_INPUTPORT = (uint8_t*)DUART_R_INPUTPORT;
 
 static SPI_INLINE void digitalWrite(uint8_t pinmask, bool value) {
     if (value) {
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
         *DUART_OUTHIPORT = pinmask;
     } else {
         *DUART_OUTLOPORT = pinmask;

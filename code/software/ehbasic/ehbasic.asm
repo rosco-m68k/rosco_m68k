@@ -116,6 +116,8 @@ VEC_OUT:
 * input a character from the console into register d0
 * else return Cb=0 if there's no character available
 
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 L_DUART_SRA      equ     $f80022      ; R register 1
 L_DUART_RBA      equ     $f80026      ; R register 3
 

@@ -167,6 +167,8 @@ MFP_VECBASE equ     $40
   endif     ; REVISION1X
 
 
+; DUART = Dual Asynchronous Receiver/Transmitter (two serial channels).
+; Offsets below are relative to the DUART base address in the memory map.
 ; Equates for MC68681 DUART
 ; ------------------------------------------------------------
 ;
